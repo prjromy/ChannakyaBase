@@ -381,7 +381,10 @@ namespace ChannakyaBase.BLL.Service
                 }
 
                 uow.Commit();
-                returnMessage.Msg = "successfully Saved";
+
+                //var customerInfo = uow.Repository<CustInfo>().GetAll().Select(x=>x.CID).LastOrDefault();
+                var id = cinfo.CID;
+                returnMessage.Msg = "Customer Saved successfully #"+ id;
                 returnMessage.Success = true;
                 return returnMessage;
             }

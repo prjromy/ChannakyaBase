@@ -161,7 +161,7 @@ namespace ChannakyaBase.BLL.Service
         {
             var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == PID).Select(x => x.LAmt).FirstOrDefault();
             var result = true;
-            if (agreeAmount > LAMount)
+            if (agreeAmount < LAMount)
             {
                 result = false;
                 return result;
@@ -785,9 +785,9 @@ namespace ChannakyaBase.BLL.Service
                     bool isFixedProduct = checkCondition.IsFixed;
                     bool isNominable = checkCondition.IsNomianable;
                     var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
-                    if (aModelDetails.AgreementAmount <= LAMount)
+                    if (aModelDetails.AgreementAmount < LAMount)
                     {
-                        returnMessage.Msg = "Agreement Amount must be less then  Limit amount of product!!";
+                        returnMessage.Msg = "Agreement Amount must be greater than  Limit amount of product!!";
                         returnMessage.Success = false;
                         return returnMessage;
                     }
@@ -1082,7 +1082,7 @@ namespace ChannakyaBase.BLL.Service
                         financeParameterService.ChargeUnverifiedTransaction(commonService, ChargeDetailsList, iaccno, TaskVerifierList, 5);
                     }
                     transaction.Commit();
-                    returnMessage.Msg = "Account create Successfully";
+                    returnMessage.Msg = "Account Created Successfully" + iaccno;
                     returnMessage.Success = true;
                 }
 
@@ -1406,7 +1406,7 @@ namespace ChannakyaBase.BLL.Service
                             CTId = c.CTId,
                             Country = c.Country
                         };
-            var CodeCurrencyList = query.Distinct().OrderBy(x=>x.CurrencyName).ToList();
+            var CodeCurrencyList = query.Distinct().OrderBy(x=>x.CurrencyName).Where(x=>x.CTId==1).ToList();
             return CodeCurrencyList;
         }
 
