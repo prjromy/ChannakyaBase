@@ -14,7 +14,7 @@
     var menuTemplateTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.MTText, "Select MenuTemplate", "");
     if (ViewBag.Id != 0)
     {
-        menuTemplateTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 1, ViewBag.MTText, "Select MenuTemplate", "");
+        menuTemplateTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Convert.ToInt32(Model.MTId), ViewBag.MTText, "Select MenuTemplate", "");
     }
 
     var treeobjDesignation = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, "", "Select Designation", "");

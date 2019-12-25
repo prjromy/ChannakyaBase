@@ -18,7 +18,7 @@
     if (Model.MTId != 0)
     {
         menutreeobj = new Loader.ViewModel.TreeViewParam(true, true, false, 0, 1, ViewBag.ActiveText, "Assign Menu", "");
-        Destreeobj = new Loader.ViewModel.TreeViewParam(false, allowGrp, true, 0, 1, ViewBag.ActiveText, "Select Designation", "");
+        Destreeobj = new Loader.ViewModel.TreeViewParam(false, allowGrp, true, 0, Convert.ToInt32(Model.DesignationId), ViewBag.ActiveText, "Select Designation", "");
         title = "Edit Menu Template";
     }
     var valueSubmit = "Create";
