@@ -1,0 +1,751 @@
+﻿
+@model List<ChannakyaAccounting.Models.ViewModel.OpeningBalanceViewModel>
+@using PagedList;
+@using PagedList.Mvc;
+
+
+@using ChannakyaAccounting.Models.Helper
+@using DataEntities = ChannakyaAccounting.Repository.UnitOfWork.Implementation_Classes;
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    //  var test = ViewBag.F2Type;
+    var count = 0;
+    var status = ViewBag.Edit;
+    var title = "Opening Balance Entry For General Ledger";
+    ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService voucherBalanceService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+    ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService subsiService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+    //List<SelectListItem> amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2" } };
+}
+<div class="box box-warning VoucherBalance-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="col-md-offset-10">
+        <div class="input-group">
+            @Html.TextBox("BranchName", null, new { @class = "BranchName form-control", @placeholder = "Search Ledger", @id = "branchNameSearch" })
+
+        </div>
+    </div>
+    @using (Html.BeginForm("CreateGeneralBalance", "VoucherBalance", FormMethod.Post, new { @id = "createFinAcc" }))
+    {
+
+        <div class="ledger-list-model">
+            
+             
+
+                    <div class="table-responsive scroll-bar">
+
+                        <table id="voucherBalanceTable" class="table table-bordred">
+
+                            <thead>
+                                <tr>
+                                    <th>
+                                        S.N
+                                    </th>
+                                    <th>
+                                        LedgerName
+                                    </th>
+                                    @*<th>
+                                            Particulars
+                                        </th>*@
+
+                                    <th>
+                                        Opening Balance
+                                    </th>
+                                    <th class="col-md-1">
+                                        Balance Type
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+
+                                @for (int i = 0; i < Model.Count(); i++)
+                                {
+
+                                    List<SelectListItem> amountType = null;
+                                    if (Model[i].Id == 0)
+                                    {
+                                        amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2" } };
+                                    }
+                                    else
+                                    {
+                                        if (Model[i].OPBal < 0)
+                                        {
+                                            amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2", Selected = true } };
+                                            Model[i].OPBal = Convert.ToDecimal(Model[i].OPBal * (-1));
+                                        }
+                                        else
+                                        {
+                                            amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1", Selected = true }, new SelectListItem { Text = "Cr", Value = "2" } };
+                                        }
+                                    }
+
+
+
+                                    @Html.HiddenFor(x => Model[i].Id)
+                                    
+                                    @Html.HiddenFor(x => Model[i].FId)
+
+
+                                    bool isSubsi = false;
+
+                                    <tr>
+
+                                        <td>@(count += 1)</td>
+
+                                        <td>
+
+                                            <span class="voucherBalLedgerName">@Model[i].LedgerName</span>
+                                            @Html.Hidden("SId", null, new { @class = "subsiIdMain", Value = Model[i].Id })
+                                            @Html.Hidden("FId", null, new { @class = "FId", Value = Model[i].FId })
+                                        </td>
+
+                                        <td>
+                                            @if (status == 1)
+                                            {
+                                                @Html.HiddenFor(x => Model[i].OPBal, new { @class = "subsiOpeningBalanceHidden" })
+                                                @Html.TextBoxFor(x => Model[i].OPBal, new { @class = "form-control opening-total-balance subsiOpeningBalance" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(x => Model[i].OPBal, new { @class = "form-control opening-total-balance", disabled = "disabled" })
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (status == 1)
+                                            {
+                                                @Html.HiddenFor(x => Model[i].AmountType, new { @class = "amntsTypehidden" })
+                                                @Html.DropDownListFor(x => Model[i].AmountType, amountType, new { @class = "form-control amntType amntsType" })
+                                                @*@Html.TextBoxFor(x=>Model[i].AmountType, new { @class = "form-control " })*@
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(x => Model[i].AmountType, amountType, new { @class = "form-control amntType",disabled = "disabled" })
+                                            }
+                                        </td>
+
+
+                                    </tr>
+
+
+                                }
+                            </tbody>
+                            <tfoot class="total-balance">
+                                <tr>
+                                    <td colspan="2" align="right">
+                                        Total Balance
+                                    </td>
+                                    <td>
+                                        <p align="right" class="totalOpBal opening-total-balance "></p>
+                                    </td>
+                                    <td>
+                                        <p align="right" class="totalOpBalType amntType"></p>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+
+
+                    </div>
+                </div>
+          
+     
+        if (status == 1)
+        {
+            <div class="box-footer">
+
+                <div class="col-md-offset-11">
+                    <input type="submit" id="btnSubmit" value="Save" class="btn btn-default" />
+                </div>
+
+            </div><!-- box-footer -->
+        }
+
+    }
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script>
+    //$("#createFinAcc").on('click', 'btnSubmit', function () {
+    //    debugger;
+    //});
+    $("#createFinAcc").submit(function (e) {
+        debugger;
+        var form = $(this);
+        form.validate();
+        if (form.valid() == false) {
+            InfoAlert("The Required Feild is Empty");
+            return false;
+        }
+        var currentEvent = $(this);
+        e.stopImmediatePropagation();
+        var formdata = new FormData($(this)[0]);
+        var GenOpeningList = [
+        ];
+        var subsiDataList = [
+        ];
+        var allContainer = $('table#voucherBalanceTable').find('tbody').find('tr');
+       
+        $(allContainer).each(function (index, item) {
+            var GenOpening = {};
+            var Id = $(item).find('.subsiIdMain').val();
+            var thisLedgerId = $(item).find('.FId').val();
+            var openingBalance = $(item).find('.subsiOpeningBalance').val();
+            var amountType = $(item).find('.amntType').val();
+            GenOpening['Id'] = parseInt(Id);
+            GenOpening['OPBal'] = openingBalance;
+            GenOpening['FId'] =parseInt (thisLedgerId);
+            GenOpening['AmountType'] = parseInt(amountType);
+            GenOpeningList.push(GenOpening);
+        });
+
+   
+        var test = subsiDataList;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $.ajax({
+                url: '@Url.Action("CreateGeneralBalance", "VoucherBalance")',
+                type: 'POST',
+                data: JSON.stringify({ openingBalanceList: GenOpeningList}),
+                async: false,
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                success: function (data) {
+                    debugger;
+                    if (data == "FY") {
+                        ErrorAlert("Please Select Inital Fidcal Year");
+                    }
+                    else {
+                        $(".content").html(data);
+                        SuccessAlert("Opening Balance Saved Successfully", 15000)
+                    }
+                   
+                    //$.fn.updateTreeview('VoucherBalance', '_UpdateVoucherBalanceTree', nodeId, -1)
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        }).fail(function () {
+            //$.MessageBox("you clicked no");
+        });
+
+        return false;
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var typeText = "Dr";
+        var mainContainer = $('table#voucherBalanceTable').find('tbody').find('tr');
+        var totalContainer = $('table#voucherBalanceTable').find('tfoot');
+        var totalSum = 0;
+        $(mainContainer).each(function (index, item) {
+            debugger;
+            var opBal = parseFloat($(item).find('.opening-total-balance').val()).toFixed(2);
+            var amntType = $(item).find('.amntType').val();
+            if (amntType == 2) {
+                opBal = -1 * opBal;
+            }
+            if (!isNaN(opBal)) {
+                //(parseFloat(finalCreditAmount) + parseFloat(amountCredit)).toFixed(2)
+                totalSum = (parseFloat(totalSum) + parseFloat(opBal)).toFixed(2);
+            }
+
+
+        });
+        //alert(totalSum)
+        if (totalSum < 0) {
+            totalSum = -1 * totalSum;
+            typeText = "Cr";
+        }
+        $(totalContainer).find('.totalOpBal').text(totalSum);
+        $(totalContainer).find('.totalOpBalType').text(typeText);
+
+    });
+
+    $('.VoucherBalance-create').on('click', '#btnSubsiSearch', function (e) {
+        debugger;
+
+        var accName = $(this).closest('td').find('.searchSubsiAccName').val();
+        var accNo = $(this).closest('td').find('.searchSubsiAccNo').val();
+        var ledgerId = $(this).closest('td').attr('ledgerid');
+        var parentId = $(this).closest('td').find('.load-paged-list-here').find('tr:first').attr('parentId');
+        var subsiContainer = $(this).closest('.load-subsi-to-me').find('.load-paged-list-here');
+
+        $.ajax({
+            type: 'POST',
+            url: '/VoucherBalance/AddSubsiBalance',
+            data: { ledgerId: ledgerId, accNo: accNo, AccName: accName, parentId: parentId },
+            dataType: 'html',
+            success: function (data) {
+                debugger;
+                $(subsiContainer).html(data);
+            }
+
+        });
+
+    });
+
+    $('.VoucherBalance-create').on('keyup', ".BranchName", function (e) {
+        debugger;
+        var query = $(this).val();
+        var filter = query.toUpperCase();
+        var allTableRow = $('.VoucherBalance-create').find('.ledger-list-model').find('tr');
+
+        if (filter != "") {
+            $(allTableRow).each(function (index, item) {
+
+                debugger;
+                var findList = $(item).find('.voucherBalLedgerName').text().toUpperCase();
+                if (findList != "") {
+                    if (findList.includes(filter)) {
+                        debugger;
+                        $(item).css('display', 'table');
+                        $(item).next().css('display', 'table');
+                    }
+                    else {
+                        $(item).css('display', 'none');
+                        $(item).next().css('display', 'none');
+                    }
+                }
+
+            });
+        }
+        else {
+            $(allTableRow).each(function (index, item) {
+                var findList = $(item).find('.voucherBalLedgerName').text().toUpperCase();
+                if (findList != "") {
+                    $(item).css('display', 'table');
+                    $(item).next().css('display', 'table');
+                }
+
+            });
+        }
+
+
+
+    });
+
+    function expandSubsi(id, currentEvent) {
+        debugger;
+
+        var subsicontainer = $(currentEvent).closest('tr').next();
+        var subsicontainerBody = subsicontainer.find(".subsi-container-body");
+        var url = '/VoucherBalance/AddSubsiBalance';
+        var data = { ledgerId: id };
+        //$.get(url, data, function (data) {
+
+        //$(subsicontainer).html(data);
+        if ($(currentEvent).find('i').hasClass('fa-minus') == true) {
+            $(subsicontainer).hide();
+            //$(currentEvent).closest('tr').next().hide();
+        }
+        else {
+            $(subsicontainer).show();
+
+            $.ajax({
+                url: url,
+                data: { ledgerId: id },
+                type: 'GET',
+                dataType: 'html',
+                success: function (value) {
+                    debugger;
+                    $(subsicontainerBody).html(value);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            //$(currentEvent).closest('tr').next().show();
+        }
+        $(currentEvent).find('i').toggleClass('fa-minus');
+
+        //});
+    }
+
+    $(document).ready(function () {
+
+        //$('VoucherBalance-create').on('change', '.ledger-detail', function () {
+
+        //    var ledgerId = $(this).attr('id');
+
+
+        //});
+
+        $('.VoucherBalance-create').on('click', 'i#btnledgersearch', function () {
+
+            debugger;
+            var url = $('#getAllLedger').data('url');
+            $.get(url, function (data) {
+
+                $('#getAllLedger').html(data);
+                debugger;
+
+                $('#getAllLedger').modal('show');
+            });
+
+        });
+
+        $('select#IsManual').change(function () {
+            var ddId = $(this).val();
+            var fromtablecontainer = $('.VoucherBalance-create').find('.from-table')
+            
+            if (ddId == 1) {
+
+                $(fromtablecontainer).show();
+            }
+            else {
+                $(fromtablecontainer).hide();
+            }
+
+
+
+        });
+
+
+        $("#createVoucherBalance").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty");
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createVoucherBalance').find('input#DDId').val();
+
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "VoucherBalance")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        //$.fn.updateTreeview('VoucherBalance', '_UpdateVoucherBalanceTree', nodeId, -1)
+
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+    });
+    $.fn.GetLayoutVoucherBalance = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/VoucherBalance/GetLayoutVoucherBalance/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+</script>
+<script>
+    $('.subsiOpeningBalance').on('change', function () {
+        debugger;
+        var container = $('table#voucherBalanceTable').find('tbody').find('tr');
+        var amttype = $('.amntsType').val();
+        var sumOfOpeningBal = 0;
+        var allTotabBalance = $('.total-balance').find('.opening-total-balance').text();
+        var subclassid = $(this).closest('tr').find('.subsiIdMain').val();
+        var antype = $('.total-balance').find('.amntType').text();
+
+        if (allTotabBalance == "")
+        {
+            allTotabBalance = 0;
+        }
+
+        if (antype =="Cr") {
+            allTotabBalance = (-1) * allTotabBalance;
+        }
+        $(container).each(function (index, item) {
+            debugger;
+            var amttype = $(item).find('.amntsType').val();
+            var subsiId = $(item).find('.subsiIdMain').val();
+            if (subclassid == subsiId) {
+
+                if (amttype == 1) {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+
+                    sumOfOpeningBal = sumOfOpeningBal + remaining
+                }
+
+                else {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+                    sumOfOpeningBal = sumOfOpeningBal - remaining
+                }
+                $(item).find('.subsiOpeningBalanceHidden').val(changeAmount);
+            }
+          
+        });
+        sumOfOpeningBal = sumOfOpeningBal + parseFloat(allTotabBalance)
+        if (sumOfOpeningBal < 0) {
+            $('.total-balance').find('.amntType').text("Cr");
+            sumOfOpeningBal = sumOfOpeningBal * (-1);
+            $('.total-balance').find('.opening-total-balance').text(sumOfOpeningBal);
+        }
+        else {
+          $('.total-balance').find('.amntType').text("Dr");
+            $('.total-balance').find('.opening-total-balance').text(sumOfOpeningBal);
+
+        }
+       // $('#TotalBalance').val(sumOfOpeningBal);
+    });
+    $('.amntsType').on('change', function () {
+        debugger;
+
+        var container = $('table#voucherBalanceTable').find('tbody').find('tr');
+        var amttype = $('.amntsType').val();
+        var sumOfOpeningBal = 0;
+        var allTotabBalance = $('.total-balance').find('.opening-total-balance').text();
+        var subclassid = $(this).closest('tr').find('.subsiIdMain').val();
+        var antype = $('.total-balance').find('.amntType').text();
+        if (allTotabBalance == "")
+        {
+            allTotabBalance = 0;
+        }
+        if (antype =="Cr") {
+            allTotabBalance = (-1) * allTotabBalance;
+        }
+        $(container).each(function (index, item) {
+            debugger;
+            var amttype = $(item).find('.amntsType').val();
+            var subsiId = $(item).find('.subsiIdMain').val();
+            if (subclassid == subsiId)
+            {
+                if (amttype == 1) {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                   // var lastType = $(item).find('.amntsTypehidden').val()
+                    var remaining = changeAmount - firstAmount
+                    if (remaining == 0) {
+                            remaining = 2 * changeAmount;
+                    }
+                    sumOfOpeningBal = sumOfOpeningBal + 2 * changeAmount
+                }
+                else {
+                    var lastType = $(item).find('.amntsTypehidden').val()
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+                    var lastType = $(item).find('.amntsTypehidden').val()
+                    if (remaining == 0) {
+                            remaining = (-2) * changeAmount;
+                    }
+                    // sumOfOpeningBal = sumOfOpeningBal + remaining
+                    sumOfOpeningBal = sumOfOpeningBal + (-2) * changeAmount;
+                }
+                $(item).find('.subsiOpeningBalanceHidden').val(changeAmount);
+            }
+
+          
+        });
+        sumOfOpeningBal = sumOfOpeningBal + parseFloat(allTotabBalance)
+        if (sumOfOpeningBal < 0) {
+            $('.total-balance').find('.amntType').text("Cr");
+   
+            sumOfOpeningBal = sumOfOpeningBal * (-1);
+            $('.total-balance').find('.opening-total-balance').text(sumOfOpeningBal);
+        }
+        else {
+            $('.total-balance').find('.amntType').text("Dr");
+            $('.total-balance').find('.opening-total-balance').text(sumOfOpeningBal);
+        }
+    });
+
+
+</script>
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+<style>
+    .scroll-bar table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        .scroll-bar table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+
+    .scroll-bar thead tr {
+        width: 100%;
+    }
+
+    .scroll-bar table tbody {
+        /* body takes all the remaining available space */
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: auto;
+        max-height: 60vh;
+    }
+
+        .scroll-bar table tbody tr {
+            width: 100%;
+        }
+
+    .scroll-bar table thead, table tbody tr {
+        display: table;
+        table-layout: fixed;
+    }
+
+    .scroll-bar table tfoot tr {
+        width: 100%;
+        display: table;
+        table-layout: fixed;
+    }
+</style>
+<script type="text/javascript">
+
+
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.deposit-product-container').show();
+        }
+        if (F2type == "Deposit VoucherBalance") {
+            $('.deposit-VoucherBalance-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.deposit-product-container').hide();
+        $('.deposit-VoucherBalance-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+
+
+    }
+
+</script>
+@*@if (Model.FinSys2 != null)
+    {
+        if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <script type="text/javascript">
+                $('.dimension-group').show();
+
+            </script>
+            if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+            {
+                var nodeId = Model.Fid;
+                <script type="text/javascript">
+                    $('.dimension-group').show();
+                    $("#nextbtn").show();
+
+                </script>
+            }
+
+        }
+    }*@
+
+
+
+
+
+<style>
+    .dimension-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-VoucherBalance {
+        left: 296px;
+        top: -67px;
+    }
+</style>
+

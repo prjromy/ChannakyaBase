@@ -1,0 +1,326 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanRegAccOpenViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var durationType = Model.AccountDetailsViewModel.DateFormat == 1 ? "Month(s)" : "Day(s)";
+
+    var nk = @Model;
+    CommonService cs = new CommonService();
+    Model.FDLoanAcc = cs.GetAccountNumberToString(nk.FDLoanAcId);
+
+}
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<div class="box box-success loanRegistration">
+    <div class="box-header with-border ">
+        <h3 class="box-title">Loan Registration Verify</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        @using (Html.BeginForm("LoanRegistration", "Credit", FormMethod.Post, new { id = "LoanRegistration-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="loanRegistration-transaction">
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <fieldset>
+                    @Html.HiddenFor(x=>x.isAccepted)
+                    <legend style="font-size:14px;font-weight:bold">Client-Details</legend>
+                    <div class="table-responsive table-click-customer">
+                        @{Html.RenderAction("UnverifiedCustomerDetails", Model.RegId);}
+                    </div>
+                    
+                </fieldset>
+                <div class="loan-registration-details">
+                    @{Html.RenderPartial("LoanRegDetails", Model);}
+                    <div class="form-group">
+                        @Html.Label("Sanction Amount", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.SAmt, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SAmt, "", new { @class = "text-danger" })
+                        </div>
+                       
+                        @Html.Label("Granted Duration ["+ durationType+"]", new { @class = "control-label col-md-2 day-month" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.GrantedDuration, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.GrantedDuration, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                @*<div class="box-footer">
+                    <div class="form-group">
+
+                        <input type="button"  class="btn btn-success btn-registration-sheet-Verify" data-eventid="18" data-val="deposit transaction" data-verify="1" data-isMultiVerifier="false" value="Verify" name="btn1"/>
+                        <input type="button"  class="btn btn-danger btn-registration-sheet-Verify" data-eventid="18" onclick="changestatus(1)" data-val="deposit transaction" data-isMultiVerifier="false" value="Reject" name="btn1"/>
+                    </div>
+                </div>*@
+                <!-- box-footer -->
+            </div>
+                        }
+
+    </div>
+</div>
+
+<script>
+    function changestatus(value) {
+        debugger;
+       var abc= $("#isAccepted").val(value);
+    }
+
+
+
+    $('#AccountDetailsViewModel_SchemeId').on('change', function () {
+        debugger;
+        var schemId = $(this).val();
+        debugger;
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetProductBySchemeId",
+            datatype: "Json",
+            data: { schemeId: schemId },
+            success: function (result) {
+                debugger;
+                var optionList = '';
+                $.each(result.Product, function (index, item) {
+                    optionList = optionList + "<option value='" + item.ProductId + "'>" + item.ProductName + "</option>"
+                })
+                $('#PID').html(optionList);
+
+                $('#PID').trigger('change');
+
+            }
+        })
+    });
+
+    $('#PID').on('change', function () {
+        debugger;
+        var productId = $("#PID option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetAllLoanProductDetailsByPid",
+            datatype: "Json",
+            data: { productId: productId },
+            success: function (result) {
+                debugger;
+                $("#Duration").val(result.Duration);
+                $('#Durtype').val(result.Durtype);
+                if (result.HasIndividualDuration) {
+                    $("#Duration").prop('readonly', false);
+                    $("#GrantedDuration").prop('readonly', false);
+                }
+                else {
+                    $("#Duration").prop('readonly', true);
+                    $("#GrantedDuration").val(result.Duration);
+                    $("#GrantedDuration").prop('readonly', true);
+                }
+                var durationType = result.durState == 1 ? "Month(s)" : "Day(s)";
+                var allObj = $('.loan-registration-details').find('.day-month');
+                $(allObj).each(function (index, item) {
+                    if (index == 0) {
+                        $(item).html("Duration" + '[' + durationType + ']');
+                    }
+                    else {
+                        $(item).html("Granted Duration" + '[' + durationType + ']');
+                    }
+                });
+            }
+        })
+    })
+    $('#PAYSID').on('change', function () {
+        debugger;
+
+        var paysid = $("#PAYSID option:selected").val();
+
+        if (paysid == 5 || paysid == 6) {
+
+            $(".schedule-day").removeClass('hidden');
+        }
+        else {
+            $(".schedule-day").addClass('hidden');
+        }
+
+    })
+
+    $(".btn-registration-sheet-Verify").on("click", function (e) {
+        debugger;
+        var strictVerifiable = $('.loanRegistration-transaction').find('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        ismultiVerify = $(this).attr('isMultiVerifier');
+        var rejected = $("#isAccepted").val();
+        if (strictVerifiable == true && rejected != 1) {
+            taskVerifierList(eventid, ismultiVerify);
+        }
+        else
+        {
+            debugger;
+            LoanVerifySave();
+        }
+    })
+    function LoanVerifySave() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            
+
+            $('#LoanRegistration-form').ajaxSubmit({
+                success: function (result) {
+                    debugger;
+                    var url;
+
+                    if (result.Success) {
+                         
+                        SuccessAlert(result.Msg)
+                        document.getElementById('alert-success').scrollIntoView();
+                        $.ajax({
+                            url: "/Credit/LoanRegistration",
+                            type: 'get',
+                            async: false,
+                            success: function (abc) {
+                                $(".content").html(abc)
+                              
+                            }
+
+                        })
+
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+    $("#GrantedDuration").on("change", function () {
+        debugger;
+        var duration =  $("#GrantedDuration").val();
+        var productDuration = $("#Duration").val();
+        if (parseInt(duration) > parseInt(productDuration)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Granted Duration shoud not be greater than Product Duration "
+            }).done(function () {
+                $("#GrantedDuration").val(productDuration);
+                return false;
+            }).fail(function () {
+            })
+            return false;
+        }
+    });
+    //$("#SAmt").on("change", function () {
+    //    debugger;
+    //    var samount = $("#SAmt").val();
+    //    var Lamount = $("#LAmt").val();
+    //    if (parseInt(samount) > parseInt(Lamount)) {
+    //        $.MessageBox({
+    //            buttonDone: "OK",
+    //            message: "Approved Amount  should not be greater than Quotation Amount."
+    //        }).done(function () {
+    //            $("#SAmt").val(Lamount);
+    //        }).fail(function () {
+    //        })
+    //        return false;
+    //    }
+    //});
+
+
+    $("#SAmt").on('change', function () {
+        debugger;
+        var fdloan = $("#FDLoanAllow").val();
+
+        var fdloanval = $("#LoanAccountOpen-form").find(".schemevalue").val();
+
+        var accountId = $(".guaranty-account").find('.account-id').val()
+        var sAmount = 0;
+        sAmount = $(this).val();
+        var Pid = $('#PID').val();
+        var quotationAmount = $('#LAmt').val();
+        if (fdloan == "true") {
+            //var sAmount = 0;
+            //sAmount = $(this).val()
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/CheckFDLoanDetails',
+                data: {
+                    Pid: Pid,
+                    quotationAmount: quotationAmount,
+                    sAmount: sAmount,
+                    accountId: accountId,
+                },
+                success: function (fdloan) {
+                    debugger;
+                    if (sAmount > fdloan.MinValue) {
+                        $("#SAmt").val(fdloan.Balance)
+                        $('#BlockedAmt').val(fdloan.Balance)
+                        ErrorAlert("Amount is greater then Available to withdraw!!", 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    } else {
+                        debugger;
+                        $("#BlockedAmt").val(sAmount);
+                    }
+
+
+                },
+
+            });
+        }
+        else {
+            debugger;
+
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/GetWithOutFDLoanDetails',
+
+                data: {
+                    Pid: Pid,
+                    quotationAmount: quotationAmount,
+                    sAmount: sAmount,
+                },
+                success: function (fdloan) {
+                    debugger;
+                    if (sAmount > fdloan.MinValue) {
+
+                        ErrorAlert("Amount must not be greater than " + fdloan.MinValue, 5000);
+                        $("#SAmt").val(fdloan.MinValue).focus();
+                        document.getElementById('alert-error').scrollIntoView();
+                    } else {
+                        $("#SAmt").val(sAmount).focus();
+                    }
+
+
+                },
+
+            });
+        }
+    })
+
+
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Content/Custom/Customer.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+

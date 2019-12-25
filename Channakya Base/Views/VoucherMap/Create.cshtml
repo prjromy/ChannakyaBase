@@ -1,0 +1,198 @@
+﻿@model ChannakyaAccounting.Models.Models.VoucherNo
+@using ChannakyaAccounting.Helper
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var test = Model;
+
+    var title = "Map Voucher";
+   
+    if (Model.VNId != 0)
+    {
+        title = "Edit Voucher Map";
+    }
+    var valueSubmit = "Create";
+    if (Model.VNId != 0)
+    {
+        valueSubmit = "Save";
+    }
+    ChannakyaAccounting.Service.VoucherMap.VoucherMapService subService = new ChannakyaAccounting.Service.VoucherMap.VoucherMapService();
+
+}
+<div class="box box-warning VoucherMap-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "VoucherMap", FormMethod.Post, new { @id = "createVoucherMap" }))
+    {
+        <div class="modal fade" id="getcustomerDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetCustomerDetails", "MapVoucher")'></div>
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(x => x.VNId)
+                <div class="form-group col-md-12">
+                    @Html.Label("Voucher Type", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x=>Model.VTypeId,subService.GetVoucherType().OrderBy(x=>x.Text),"Select Voucher Type",new { @class="form-control"})
+                        @Html.ValidationMessageFor(model => model.VTypeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Batch", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => Model.BId, subService.GetBatchName().OrderBy(x => x.Text), "Select Batch", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Fiscal Year", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => Model.FYID, subService.GetFiscalYear(), "Select Fiscal Year", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PVoucherMapId").focus();
+        $("#createVoucherMap").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).find('.section-treeview#PVoucherMapId').find('.internal-value').val()
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $.ajax({
+                    url: '@Url.Action("Create", "VoucherMap")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        $(container).html(data);
+                        //$.fn.updateTreeview('VoucherMap', '_UpdateVoucherMapTree', nodeId, -1)
+                        $.fn.GetLayoutVoucherMap();
+                        
+                        if (@Model.VNId == 0)
+                        {
+                            SuccessAlert("Voucher Detail Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Voucher Detail Edited Succesfully.",1500);
+                        }
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+    });
+    $.fn.GetLayoutVoucherMap = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/VoucherMap/Index/",
+            dataType: "html",
+            success: function (data) {
+                $('section.content').html(data);
+            }
+        });
+    };
+
+    //$('select#BId').change(function () {
+
+    //    debugger;
+    //    var vtypeId = $(this).closest('form#createVoucherMap').find('select#VNId').val();
+    //    if(vtypeId==0 || vtypeId==null)
+    //    {
+    //        ErrorAlert("Please Select Voucher Type",5000)
+    //        return false;
+    //    }
+    //    var batchNo = $(this).val();
+
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/MapVoucher/EditVoucherMapDropDown/",
+    //        data:{vtypeId:vtypeId,batchNo:batchNo},
+    //        dataType: "html",
+    //        success: function (data) {
+    //            debugger;
+    //            $('section.content').html(data);
+    //            //$.ajax({
+    //            //    type: "POST",
+    //            //    url: "/MapVoucher/GenerateAccNumber/",
+    //            //    data:{ledgerId:ledgerId},
+    //            //    dataType: "html",
+    //            //    success: function (accNo) {
+    //            //        $('input#AccNo').val(accNo);
+    //            //    }
+    //            //});
+
+    //        }
+    //    })
+
+
+
+    //});
+
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+</style>

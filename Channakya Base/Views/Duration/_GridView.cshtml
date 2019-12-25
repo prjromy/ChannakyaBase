@@ -1,0 +1,50 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.DurationAccViewModel
+
+
+@{
+    var test = Model;
+    var Duration1TypeClass = "background-color:#00c0ef !important";
+  
+    
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+@*<span class="icon">
+
+
+    </span>*@
+<div class="info-box bg-aqua" style="@Duration1TypeClass">
+    <div class="info-box-icon icon">
+        <img class="DurationImage" id="@Model.Id" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        
+    </div>
+    <div class="info-box-content inner" Duration-caption="@Model.Duration1">
+        <span class="deleteNode" id="@Model.Id" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="DurationCaption" data-toggle="tooltip" data-placement="top" title="@Model.Duration1" style="cursor:pointer;"> @Model.Duration1</span>
+        <span class="info-box-number">@Model.Value days</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @*<span class="progress-description">
+            @empService.GetStatusName(Model.Status)
+        </span>*@
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #Duration1Caption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

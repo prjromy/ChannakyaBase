@@ -1,0 +1,42 @@
+﻿@model  List<Loader.Models.Company>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>
+                             Branch Name
+                            </th>
+                            <th>
+                                Branch Address
+                            </th>
+                            <th>
+                               Phone No
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Prefix
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @Html.Partial("_ListView", item)
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

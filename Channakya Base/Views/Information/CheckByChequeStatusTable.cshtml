@@ -1,0 +1,183 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    string Status = "";
+    string Color = "";
+    InformationService informationService = new InformationService();
+}
+
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-striped table-hover table-cheque-block-unblock-deactive-status-chaqModel">
+        
+        <tr>
+            <th>
+                ChequeNumber
+            </th>
+            <th>
+                Trans Date
+            </th>
+            <th>Status</th>
+            <th>Select All</th>
+        </tr>
+
+        @for (int i = 0; i < Model.AchqList.Count(); i++)
+        {
+            @Html.HiddenFor(x => Model.AchqList[i].rno)
+          
+
+            if (Model.AchqList[i].cstate == 2)
+            {
+                Status = "Active";
+                Color = "#5cb85c";
+            }
+            else if (Model.AchqList[i].cstate == 4)
+            {
+                Status = "Pieces Blocked";
+                Color = "#ff3300";
+            }
+            else if (Model.AchqList[i].cstate == 3)
+            {
+                Status = "Blocked";
+                Color = "#cc0000";
+            }
+            else if (Model.AchqList[i].cstate == 5)
+            {
+                Status = "Deactive";
+                Color = "#cc0000";
+            }
+            <tr id="tr-main-@Model.AchqList[i].rno">
+                @Html.HiddenFor(x => Model.AchqList[i].cstate, new { @class = "select-cheque-status" })
+
+                <td>
+
+                    <button type="button" class="btn btn-custome btn-less-chq-num" Rno="@Model.AchqList[i].rno" Action="Show">
+                        <i class='fa fa-plus  on-@Model.AchqList[i].rno' title='show details'></i>
+                        <i class='fa fa-minus off-@Model.AchqList[i].rno hidden' title='hide details'></i>
+                    </button>
+                    @Html.DisplayFor(moel => Model.AchqList[i].cfrom)-@Html.DisplayFor(model => Model.AchqList[i].cto)
+
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetDate(Model.AchqList[i].tdate)
+                </td>
+                <td>
+                    <span class="btn-custome" style="background-color:@Color;color:white">@Status</span>
+                </td>
+                @if (Model.cstate != 5)
+                {
+                    <td>
+                        @Html.CheckBoxFor(x => Model.AchqList[i].IsSelectet, new { @class = "select-cheque", Rno = Model.AchqList[i].rno })
+                    </td>
+
+                }
+                else
+                {
+                    <td></td>
+                }
+
+
+            </tr>
+            <tr id="hide-show-@Model.AchqList[i].rno" class="hidden">
+                <td colspan="4">
+                    <div id="load-details-@Model.AchqList[i].rno"></div>
+
+                </td>
+            </tr>        }
+    </table>
+
+</div>
+<style>
+    .btn-custome {
+        padding: 0px 3px;
+        font-size: 11px;
+        line-height: 1.5;
+        border-radius: 14px;
+    }
+
+    .rotate-fa {
+        transform: rotate(+86deg);
+    }
+</style>
+
+<script>
+    $('.btn-less-chq-num').on('click', function () {
+      
+       
+        var currentRno = $(this).attr('Rno')
+        var attrShowHide = $(this).attr('Action');
+        var chooseTr = $(this).closest('tr');
+        var chq_arr = [];
+        var chequeDetailsSelect = $(this).parents().find('.table-cheque-block-unblock-deactive-status-chaqModel').find('#hide-show-' + currentRno).find('table').find('.cheque-details-row-' + currentRno);
+        $.map(chequeDetailsSelect, function (val, i) {
+
+            if ($(val).find('.select-cheque-number').is(':checked')) {
+                chq_arr.push($(val).find('.chequeNumber').val())
+            }
+
+        });
+        var currentStatus = $(chooseTr).find(".select-cheque-status").val()
+        if (applyStatus == 2 && currentStatus == 4) {
+            $("#ApplyStatus").val(4)
+        }
+        var applyStatus = $("#ApplyStatus").val()
+        var cstate = $("#cstate").val()
+        var chkAction = "";
+        if (attrShowHide == 'Show') {
+            $('.off-' + currentRno).removeClass('hidden');
+            $('.on-' + currentRno).addClass('hidden');
+            $(this).attr('Action', 'Hide')
+            $('#hide-show-' + currentRno).removeClass('hidden');
+            //$(action).attr('Action', 'Hide')
+            if (applyStatus == 5 || applyStatus == 3) {
+                chkAction = "readOnly";
+            }
+            getChequeDetails1(currentRno, chq_arr, chkAction, cstate);
+        } else {
+            $('.on-' + currentRno).removeClass('hidden');
+            $('.off-' + currentRno).addClass('hidden');
+
+            $(this).attr('Action', 'Show')
+            //  getChequeDetails(currentRno, isSelect);
+            $('#hide-show-' + currentRno).addClass('hidden');
+
+            // return;
+        }
+
+    });
+
+    $(".select-cheque").on("click", function () {
+      
+        var applyStatus = $("#cstate").val()
+        var chkAction = "";
+        var isSelect = $(this).prop("checked");
+        var currentRno = $(this).attr('Rno')
+        var currentOn = $(this).closest("tr").find('.on-' + currentRno)
+        var currentOff = $(this).closest("tr").find('.off-' + currentRno)
+        var action = $(this).closest("tr").find('.btn-less-chq-num')
+        var currentStatus = $(this).closest("tr").find(".select-cheque-status").val()
+        //var len = $('input[type="checkbox"].select-cheque:checked').length;
+        //if (len == 1) {
+        if (applyStatus==2&&currentStatus == 4) {
+             $("#ApplyStatus").val(4)
+        }
+        $(currentOff).removeClass('hidden');
+        $(currentOn).addClass('hidden');
+        $(action).attr('Action', 'Hide')
+        if ($("#ApplyStatus").val() == 5 || $("#ApplyStatus").val() == 3) {
+            chkAction = "readOnly";
+        }
+        getChequeDetails(currentRno, isSelect, chkAction, applyStatus);
+        //} else if (len > 1 || len == 0) {
+        //    $(this).prop('checked', false);
+        //    $(currentOff).removeClass('hidden');
+        //    $(currentOn).addClass('hidden');
+        //    $(action).attr('Action', 'Hide')
+        //    getChequeDetails(currentRno, false, "");
+        //}
+    })
+</script>
+

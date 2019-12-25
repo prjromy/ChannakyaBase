@@ -1,0 +1,32 @@
+﻿@model ChannakyaAccounting.Models.Models.InterestValue
+@{ 
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    var test = Model;
+}
+
+<div class="tab-content">
+    <div id="depositBasisId" class="tab-pane fade in active">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        Duration
+                    </th>
+                    @foreach (var item in depositBasisList)
+                    {
+                        <th class="depositBasis" id="@item.Id">@item.Name</th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @Html.EditorFor(x => x.DurationList)
+            </tbody>
+        </table>
+    </div>
+
+</div>
+

@@ -1,0 +1,47 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustSectCertContViewModel
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            <h3>Contact List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+            <div class="pre-scrollable">
+                <table class="table">
+                    <tr>
+                        <th>
+                            Contact
+                        </th>
+                        <th>
+                            Abb
+                        </th>
+                        <th>
+                           State
+                        </th>
+                    </tr>
+                    @for (int item = 0; item < Model.ContactDefList.Count(); item++)
+                    { 
+                        @Html.HiddenFor(model => model.ContactDefList[item].CTCntID)
+                        @Html.HiddenFor(model => model.ContactDefList[item].CNoabb)
+                        @Html.HiddenFor(model => model.ContactDefList[item].CNodesc)
+                        @Html.HiddenFor(model => model.ContactDefList[item].CNotype)
+
+                        <tr>
+                            <td>
+                                @Model.ContactDefList[item].CNodesc
+                            </td>
+                            <td>
+                                @Model.ContactDefList[item].CNoabb
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(x => Model.ContactDefList[item].ContStatus, new SelectList(ViewBag.ContactOption, "Value", "Text", Model.ContactDefList[item].ContStatus), "No", new { @class = "form-control contacttype-list" })
+                            </td>
+                        </tr>
+                    }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                 

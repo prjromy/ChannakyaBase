@@ -1,0 +1,92 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChangeProductInterestViewModel
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "ChangeInterestIndex";
+}
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Change Product Interest</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="ChangeProductInterest">
+        @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+        <div id="ChangeProductInterest-create" class="ChangeProductInterestCreate">
+            @{Html.RenderAction("_ChangeProductInterest", "TransactionSetup");}
+        </div>
+        @*<div id="ChangeProductInterest-list" class="ChangeProductInterestList" >
+                @{Html.RenderAction("_ChangeProductInterestList", "TransactionSetup");}
+            </div>*@
+    </div>
+</div>
+<script>
+    function OnFailure(errorMsg) {
+        debugger;
+        ErrorAlert(errorMsg);
+    }
+
+    function createSuccess(result) {
+        //alert("On sucess function entered");
+        debugger
+        if (result.Success == true) {
+            $.ajax({
+                url: '@Url.Action("ChangeProductInterestIndex", "TransactionSetup")',
+                type: 'GET',
+                processData: false,
+                success: function (data) {
+                    debugger
+                    $('section.content').html("");
+                    $('section.content').html(data);
+
+                    SuccessAlert(result.Msg, 4000);
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+        }
+        else {
+            ErrorAlert(result.Msg, 4000);
+        }
+    }
+
+    var isAllChecked = true;
+    //$(document).ready(function () {
+    $('#ChangeProductInterest-list').on('change', '#Check_All', function () {
+        debugger
+        if (this.checked == true) {
+            $("#ChangeProductInterest-list").find('.checkone').prop('checked', true);
+            //$(".apply-to-product-only").prop('checked', true);
+        }
+        else {
+            $("#ChangeProductInterest-list").find('.checkone').prop('checked', false);
+            //$(".apply-to-product-only").prop('checked', false);
+
+        }
+    })
+    //})
+    $('#ChangeProductInterest-list').on('change', '.checkone', function () {
+        debugger
+        $("#ChangeProductInterest-list").find("table > tbody > tr").each(function (trcount, obj) {
+            if ($(obj).find(".checkone").prop('checked') == false && isAllChecked == true) {
+                isAllChecked = false;
+            }
+        });
+        if (isAllChecked == true) {
+            //$('#Check_All').prop('checked', true);
+            $("#ChangeProductInterest-list").find('#Check_All').prop('checked', true);
+            //$(".ChangeProductInterestCreate").find('.apply-to-product-only').prop('checked', true);
+        }
+        else {
+            $("#ChangeProductInterest-list").find('#Check_All').prop('checked', false);
+            //$(".ChangeProductInterestCreate").find('.apply-to-product-only').prop('checked', false);
+            isAllChecked = true;
+        }
+
+    });
+</script>

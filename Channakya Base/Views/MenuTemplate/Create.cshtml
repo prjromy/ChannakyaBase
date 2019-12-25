@@ -1,0 +1,435 @@
+﻿@model Loader.Models.MenuTemplate
+@using Loader.Helper
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+@{
+    Layout = null;
+    var MenuTemplateTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    var menutreeobj = new Loader.ViewModel.TreeViewParam(true, true, false, 0, 0, "", "Assign Menu", "");
+    bool allowGrp = false;
+    if (ViewBag.AllowInGroup == "true")
+    {
+        allowGrp = true;
+    }
+    var test = Model;
+    var Destreeobj = new Loader.ViewModel.TreeViewParam(false, allowGrp, true, 0, 0, ViewBag.ActiveText, "Select Designation", "");
+    Loader.ViewModel.TreeViewParam paramData = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Menu Template";
+    if (Model.MTId != 0)
+    {
+        menutreeobj = new Loader.ViewModel.TreeViewParam(true, true, false, 0, 1, ViewBag.ActiveText, "Assign Menu", "");
+        Destreeobj = new Loader.ViewModel.TreeViewParam(false, allowGrp, true, 0, 1, ViewBag.ActiveText, "Select Designation", "");
+        title = "Edit Menu Template";
+    }
+    var valueSubmit = "Create";
+    if (Model.MTId != 0)
+    {
+        valueSubmit = "Save";
+    }
+}
+
+<div class="box box-warning Menutemplate-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*@using (Ajax.BeginForm("GetPatients", "Patient", new AjaxOptions
+        {//GetPatients is name of method in PatientController
+            InsertionMode = InsertionMode.Replace, //target element(#patientList) will be replaced
+            UpdateTargetId = "patientList",
+            LoadingElementId = "loader" // div with .gif loader - that is shown when data are loading
+        }))*@
+    @using (Html.BeginForm("Create", "MenuTemplate", FormMethod.Post, new { @id = "createMenutemplate" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.MTId)
+
+                @if (ViewBag.WithDesignation == 1)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.Label("Designation", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.DesignationId, Destreeobj)
+                            @Html.ValidationMessageFor(model => model.DesignationId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.MTName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.MTName, new { htmlAttributes = new { @class = "form-control templateName" } })
+                        @Html.ValidationMessageFor(model => model.MTName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    @Html.Label("Select Menu", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-4 MenuTemplate-treeview section-treeview" style="max-height:300px;overflow:auto;">
+                        @Html.Partial("~/Views/Shared/_TreeView.cshtml", MenuTemplateTreeview,
+                                     new ViewDataDictionary { { "param", menutreeobj } })
+                    </div>
+                </div>
+
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PMenutemplateId").focus();
+
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            if(imagecontent!=null)
+            {
+                form1.append('file', imagecontent);
+
+                Imageform.append('file', imagecontent)
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    url: "Menutemplate/DisplayImage",
+                    data: Imageform,
+                    success: function (ImageContent) {
+                        debugger;
+                        $('#loadimage').empty();
+                        $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                        // $('#loadimage').attr("content", imagecontent);
+                    }
+                });
+            }
+        });
+
+
+        $("#createMenutemplate").submit(function () {
+            debugger;
+            var DGid = $(this).closest('.box-body').find('.section-treeview').find('input.internal-value').val();
+            if(DGid==0)
+            {
+                InfoAlert("Please select Designation",1500);
+                return false;
+            }
+
+            var MenuTemplateName = $(this).closest('.box-body').find('input.templateName').val();
+            if (MenuTemplateName == "") {
+                InfoAlert("Please select Template Name", 1500);
+                return false;
+            }
+           // var menuCheck = $(this).closest('.treeview-area').find('.section-treeview').find('li').val();
+            //var SelectTree = $(this).closest('.treeview-area').find('li.')
+
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+            var createfrom = new FormData();
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).find('.section-treeview#PMenutemplateId').find('.internal-value').val();
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger;
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Menutemplate")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (result) {
+                      
+                        if (result.Success == true) {
+                                
+                            $.ajax({
+
+
+                                url: "MenuTemplate/Create",
+                                type: 'GET',
+                                async: false,
+                                success: function (data) {
+                                    debugger;
+                                    $(container).html(data);
+                                }
+                            })
+
+                              
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+                        if (@Model.MTId == 0)
+                        {
+                            debugger;
+                            SuccessAlert("MenuTemplate Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            debugger;
+                            SuccessAlert("MenuTemplate Edited Succesfully.",1500);
+                            }
+
+                            $.fn.GetLayoutMenu();
+                        }
+
+                        
+                     
+                       
+                        else{
+                            ErrorAlert(result.Msg, 15000)
+                    }
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(result.Msg, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+        $.fn.GetLayoutMenu = function () {
+            debugger;
+            var url="/Menu/GetLayoutMenu/";
+            $.ajax({
+                type: "POST",
+                url:url,
+                dataType: "html",
+                success: function (data) {
+                    debugger;
+                    $('aside.main-sidebar').html(data);
+                    $('section.sidebar').addClass('sidebarcss');
+                }
+            });
+            //var data = $('aside.main-sidebar').load(url);
+            //$('aside.main-sidebar').load(url);
+        };
+        @*$('form').submit(function () {
+            debugger;
+            var serializedForm = $(this).serialize();
+            var nodeId = $(this).find('.section-treeview#PMenutemplateId').find('.internal-value').val()
+            var data = { Menutemplate: serializedForm,form1 }
+            $.ajax({
+                url: '@Url.Action("Create", "Menutemplate")',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "POST",
+                data:serializedForm,
+                success: function () {
+                    debugger;
+                    $.fn.updateTreeview('Menutemplate', '_UpdateMenutemplateTree', nodeId, -1)
+                    //function (controller, action, selectedNode, rootNode)
+                    //$('.Menutemplate-treeview').find('.treeview-area').load("/Menutemplate/_GetMenutemplateTree", { param: TreeViewParam })
+                    //debugger;
+                    //$('#explore-details').find('#list').load("/Menutemplate/_Details", { parentId: pid, allowSelectGroup: allowselect })
+                },
+                error: function (result) {
+                    alert("Failed");
+                }
+
+            });
+
+            return false;
+        });*@
+
+
+        $('.Menutemplate-create').on('change', '#IsGroup', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".Menutemplate-create").find(".action-controller")
+            var contextCheck = $(this).closest(".Menutemplate-create").find("input#IsContextMenutemplate").prop("checked")
+            if (!this.checked && contextCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Menutemplate")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.Menutemplate-create').on('change', '#IsContextMenutemplate', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".Menutemplate-create").find(".action-controller")
+            var groupCheck = $(this).closest(".Menutemplate-create").find("input#IsGroup").prop("checked")
+            if (!this.checked && groupCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Menutemplate")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+
+    $('.section-treeview').on('click',"input.treeview-checkbox",function () {
+        debugger;
+        var isChecked = $(this).prop('checked');
+        if(isChecked==true)
+        {
+            $(this).closest('ul').closest('li').find('span.treeview-checkbox-container').first().find('input.treeview-checkbox').prop('checked', true);
+        }
+        else
+        {
+            $(this).closest('ul').closest('li').find('span.treeview-checkbox-container').first().find('input.treeview-checkbox').prop('checked', false);
+            var allElement = $(this).closest('ul').closest('li').find('span.treeview-checkbox-container');
+            $(allElement).each(function(index,item){
+                if($(item).find('input.treeview-checkbox').prop('checked')==true)
+                {
+                    $(this).closest('ul').closest('li').find('span.treeview-checkbox-container').first().find('input.treeview-checkbox').prop('checked', true);
+                }
+
+            });
+
+        }
+
+
+
+    });
+
+        $('.Menutemplate-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+            //data.fromPopUp = 'false';
+
+            //$dlg_dpicker.load("/MenuTemplate/_GetDesignationTreePopUp", { param: data.param })
+
+            if (data.fromPopUp == 'false') {
+
+                //$dlg_dpicker.load("/MenuTemplate/_GetMenuTemplateTreePopup", { param: data.param })
+                e.stopPropagation();
+                var TreeViewParam = {
+                    Controller: '',
+                    Action: '',
+                    WithCheckBox: data.param.withCheckBox,
+                    AllowSelectGroup: data.param.allowSelectGroupNode,
+                    WithImageIcon: data.param.withImageIcon,
+                    WithOutMe: 0,// data.withOutMe,
+                    Title: data.param.Title,
+                    SelectedNodeId: 0,
+                    Filter: data.param.Filter,
+                    SelectedNodeText: ''
+                }
+
+                var url = "/MenuTemplate/_GetDesignationTreePopUp"
+                var container = $(this).closest('.MenuTemplate-explore').find('.treeview-area');
+
+                $dlg_dpicker.load(url, { param: TreeViewParam });
+            }
+            else {
+                if(data.param.Title=="Select Designation")
+                {
+                    $dlg_dpicker.find('.treeview-area').load("/Menutemplate/_GetDesignationTree", { param: data.param })
+                }
+                else
+                {
+                    e.stopPropagation();
+                    var TreeViewParam = {
+                        Controller: '',
+                        Action: '',
+                        WithCheckBox: data.withCheckBox,
+                        AllowSelectGroup: data.allowSelectGroupNode,
+                        WithImageIcon: data.withImageIcon,
+                        WithOutMe: 0,// data.withOutMe,
+                        Title: '',
+                        SelectedNodeId: 0,
+                        Filter: data.param.Filter,
+                        SelectedNodeText: ''
+                    }
+
+                    var url = "/MenuTemplate/_GetMenuTemplateTree"
+                    var container = $(this).closest('.MenuTemplate-explore').find('.treeview-area');
+
+                    $(container).load(url, { param: TreeViewParam });
+                }
+
+
+            }
+
+
+        });
+
+    });
+
+
+</script>
+
+<style>
+    div#loadimage {
+        zoom: 27%;
+        margin: -89px -3px -29px 81px;
+    }
+</style>
+

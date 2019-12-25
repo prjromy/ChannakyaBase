@@ -1,0 +1,189 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    Layout = null;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Change Cheque Book Status(Block, Unblock, Deactive) </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+
+
+    @using (Html.BeginForm("ChequeChangeStatus", "Information", FormMethod.Post, new { id = "cheque-transaction-form" }))
+    {
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IAccno, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-6">
+                                @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.ChequeTransHistory.GetDescription(), EAccountFilter.AllowCheque.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessageFor(model => model.IAccno, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.cstate, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(x => x.cstate, InformationUtilityService.GetChequeStatus(), "--Please Select--", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.cstate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div id="cheque-transaction-status-change">
+
+                                </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-6">
+                                    @Html.TextAreaFor(x => x.Remarks, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-12">
+                    <input type="button" value="Save" class="btn btn-default btn-cheque-transaction-save" />
+                </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    function getChequeDetails(rno, isSelect, showWith, applyStatus) {
+
+        $.ajax({
+            type: 'GET',
+            url: '/Information/_chequeNumberDetails',
+            data: {
+                rno: rno,
+                isSelect: isSelect,
+                showWith: showWith,
+                applyStatus: applyStatus
+            },
+            success: function (result) {
+                $('#hide-show-' + rno).removeClass('hidden');
+                $('#load-details-' + rno).html(result);
+
+            },
+        });
+    }
+
+    $("#cstate").on("change", function () {
+        debugger;
+        var statusId = $("#cstate option:selected").val();
+        var iAccNo = $("input.account-id#IAccno").val();
+        if (iAccNo == "" || iAccNo==0)
+        {
+            $.MessageBox({
+                buttonDone: "OK",
+               
+                message: "Please select account number first!!!"
+            }).done(function () {
+               
+            }).fail(function () {
+
+            });
+            return;
+        }
+        $.ajax({
+            type: 'GET',
+            url: '/Information/ChequelistByStatusAndAccountId',
+            data: {
+                statusId: statusId,
+                iAccNo: iAccNo
+            },
+            success: function (chequeTrans) {
+                if (statusId == 5)
+                {
+                    $('.btn-cheque-transaction-save').addClass('hidden')
+                } else
+                {
+                    $('.btn-cheque-transaction-save').removeClass('hidden')
+                }
+                $("#cheque-transaction-status-change").html(chequeTrans);
+            },
+        });
+    });
+    $(function () {
+        $.validator.unobtrusive.parse('#cheque-transaction-form');
+        $(".btn-cheque-transaction-save").on("click", function () {
+            debugger;
+            $('#cheque-transaction-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#cheque-transaction-form'));
+            if ($("#cheque-transaction-form").valid()) {
+
+                chequeTransaction();
+
+            } else {
+                return false;
+            }
+
+        })
+
+    });
+
+    function chequeTransaction() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#cheque-transaction-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Information/ChequeChangeStatus",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>

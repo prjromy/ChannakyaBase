@@ -1,0 +1,40 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.SectorDef
+
+
+@using (Ajax.BeginForm("_Create", "SectorDef", new AjaxOptions
+{
+    UpdateTargetId = "sector-list",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createSuccess"
+    //OnFailure = "errMessage"
+
+}
+                           , new { id = "createSubmitForm" }))
+{
+    <div class="form-horizontal createform">
+        <fieldset>
+            <legend>New Sector </legend>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.CDepSectorNam, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-5">
+                    @Html.EditorFor(model => model.CDepSectorNam, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control focusdiv", @placeholder = "Sector Name" } })
+                    @Html.ValidationMessageFor(model => model.CDepSectorNam, "", new { @class = "text-danger" })
+                    <br />
+                    <input type="button" value="Save" id="btn-save-submit" class="btn btn-default btn-save " />
+                    @*<input type="submit" value="Save" class="btn btn-default btn-save " />*@
+                    <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+                </div>
+            </div>
+        </fieldset>
+
+    </div>
+}
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+
+

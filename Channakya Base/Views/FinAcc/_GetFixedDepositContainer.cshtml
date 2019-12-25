@@ -1,0 +1,130 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+@using ChannakyaAccounting.Helper
+
+@{
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    var capruleList = depositProduct.GetCapitalizationRule();
+    var calcRuleList = depositProduct.GetCalculationRule(Model.FixedDepositList.PolicyIntCalcId);
+    var test = Model;
+
+}
+
+@*@Html.Partial("_FixedDepositContainer", Model.FixedDepositList)*@
+
+<br />
+<div class="container col-md-12">
+    <div class="row">
+
+        <div class="form-group col-md-12">
+            @Html.Label("Interest Calculation Rule", new { @class = "col-sm-3  control-label col-form-label" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(m => m.FixedDepositList.PolicyIntCalcId, calcRuleList, "Select Calculation Rule", new { @class = "form-control" })
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="tab-content">
+
+
+
+    <div id="depositBasisId" class="">
+        <table class="table table-bordered col-md-12">
+            <thead>
+                <tr>
+                    <th>
+                        Duration
+                    </th>
+                    <th>
+                        Capitalization Rule
+                    </th>
+                    @*<th>
+                            Interest Rate
+                        </th>*@
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int j = 0; j < Model.FixedDepositList.DurationList.Count(); j++)
+                {
+                    @Html.HiddenFor(x => Model.FixedDepositList.DurationList[j].Id)
+                    <tr class="DurationList">
+                        <th scope="row" class="Duration" id="@Model.FixedDepositList.DurationList[j].Id">@Model.FixedDepositList.DurationList[j].Duration1</th>
+                        @*<td>@Html.DropDownListFor(x => Model.FixedDepositList.DurationList[j].ProductDurationInt.ICBId,new SelectList(capruleList, "Value","Text",Model.FixedDepositList.DurationList[j].ProductDurationInt.ICBId), "Select Rule", new { @class = "form-control" })</td>*@
+                        <td>
+
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-4">
+                                            RuleName
+                                        </th>
+                                        <th>
+                                            Interest rate
+                                        </th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int k = 0; k < Model.FixedDepositList.DurationList[j].CaptList.Count(); k++)
+                                    {
+                                        @Html.HiddenFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ICBDurID)
+                                        @Html.HiddenFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.Id)
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ICBDurNam)
+                                            </td>
+                                            <td>
+                                                @if (Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.Id != 0)
+                                                {
+                                                    <input type="button" producticb-id="@Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.Id" onclick="showPopupToEditProduct(this)" class="btn btn-link pull-right" value="Edit" style="margin: -13px -10px -5px -9px" />
+                                                    @Html.TextBoxFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.InterestRate, new { @class = "form-control makeDisable ", @placeholder = "Enter Interest Rate"})
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBoxFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.InterestRate, new { @class = "form-control ", @placeholder = "Enter Interest Rate" })
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+
+
+                            </table>
+
+
+
+                        </td>
+                        @*<td>
+                                @for (int k = 0; k < Model.FixedDepositList.DurationList[j].CaptList.Count(); k++)
+                                {
+
+                                    @Html.TextBoxFor(x => Model.FixedDepositList.DurationList[j].CaptList[k].ProductDurationInt.InterestRate, new { @class = "form-control", @placeholder = "Enter Interest Rate" })
+                                }
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+</div>
+
+<style>
+    .makeDisable {
+        pointer-events: none;
+        opacity: 0.699;
+    }
+</style>

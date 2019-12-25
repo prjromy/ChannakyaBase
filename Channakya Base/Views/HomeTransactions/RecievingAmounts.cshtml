@@ -1,0 +1,74 @@
+﻿@model ChannakyaBase.Model.ViewModel.HomeTransactionsViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+
+<tr>
+
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.DesignationId)
+    @Html.HiddenFor(x => x.FUserid)
+    @Html.HiddenFor(x => x.TNO)
+    @Html.HiddenFor(x => x.Dramt) 
+    <td>
+        <span style="float:right"> @Model.Dramt.ToString("0.00")</span>
+    </td>
+    <td>
+        @Model.EmployeeName
+    </td>
+    <td>
+      @Model.DGName
+    </td>
+
+    @if(Model.Status==21){
+    <td>
+        <span class="label label-success" >New</span>
+    </td>
+    }
+    else
+    {
+        <td>
+            <span class="label label-danger">Rejected</span>
+        </td>
+    }
+    <td>
+       <input type="submit" class="btn btn-sm btn-success  btn-view-teller-receiving-details" tno="@Model.TNO"  value="View Details">
+        @*<input type="button" value="Accept" class="btn btn-success btn-accept" onclick="Accept(@Model.TNO,1)" />
+        <input type="button" value="Reject" class="btn btn-danger btn-reject" onclick="Accept(@Model.TNO,2)"/>*@
+    </td>
+</tr>
+<script>
+    $('.btn-view-teller-receiving-details').on('click', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var tNo = $(this).attr('tno');
+        //var status = $(this).attr('status');
+        $.ajax({
+            type: "GET",
+            url: "/HomeTransactions/ViewDetailCashTransaction",
+            data: { TNO: tNo},
+            success: function (result) {
+
+                $('#view-teller-receiving-details').html(result).modal({
+
+                    'show': true,
+                    'backdrop': 'static'
+
+
+
+
+                })
+            
+
+
+            }
+
+               
+        });
+
+    
+
+
+    });
+</script>

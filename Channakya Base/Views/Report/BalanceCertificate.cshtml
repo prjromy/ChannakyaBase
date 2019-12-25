@@ -1,0 +1,85 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Balance Certificate</h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        <fieldset>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-4 ">
+                        @Html.Label("Account No:")
+                        @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Other.GetDescription())
+                    </div>
+                    @*<div class="col-md-3">
+                        <label>Branch Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Model.branchId), new { @class = "form-control" })
+                        </div>
+                    </div>*@
+
+                    <div class="col-md-3">
+                        <label>
+                            Date
+                        </label>
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.FromDate)
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    @*<input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-interestToCapitalizeAccount-export-to-excel" />*@
+
+                    <button type="button" name="btn-balance-certificate" id="btn-balance-certificate" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                        @*<i class="fa fa-search"></i>*@ GENERATE
+                    </button>
+                </div>
+
+
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border balance-certificate-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $('#btn-balance-certificate').on('click', function () {
+        debugger
+        //var branchId = $('#branchId').val();
+        var fromDate = $('#FromDate').val();
+        var accountNo = $('.account-id').val(); //khai k ho id iAccno xa
+        //if (option == 2) {
+        //    if (accountNo == 0) {
+        //        ErrorAlert("Please select Account Number", 5000);
+        //        document.getElementById('alert-error').scrollIntoView();
+        //        return;
+        //    }
+        //}
+        window.open("/Report/_BalanceCertificate?fromDate=" + fromDate +" &accountNo=" + accountNo)
+    });
+ 
+</script>
+
+

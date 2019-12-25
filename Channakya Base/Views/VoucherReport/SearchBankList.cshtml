@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.Models.FinAcc>
+@{
+    var count = 0;
+    Layout = null;
+    var test = Model;
+}
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="table-responsive">
+
+            <table id="mytable" class="table table-bordred" style="max-width:85%;">
+
+                <thead>
+                    <tr>
+                        <th>
+                            S.N
+                        </th>
+                        <th>
+                            Bank Name
+                        </th>
+                        <th>
+                            Code
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+            {
+                        <tr class="ledger-details" cursor:pointer;">
+
+                            <td>@(count += 1)</td>
+
+                            @*<td class="fname1" data-dismiss="modal">*@
+                            <td class="ledgername-voucher" id="@item.Fid" ledgername="@item.Fname" style="cursor:pointer;">
+                                @item.Fname @Html.HiddenFor(modelItem => item.Fid, new { @id = item.Fid })
+                            </td>
+                            @if (item.Code == null)
+                            {
+                                <td class="">
+                                    ------
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Code)
+                                </td>
+                            }
+
+
+                            @*<button class="btn btn-default ledgerload" , onclick="location.href='@Url.Action("GetLedger", "Helper", new { ledgername = item.Fname })';return true;">Select</button>*@
+
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $('td.ledgername-voucher').click(function () {
+        debugger;
+        var ledgerId = $(this).attr("id");
+        var ledgername = $(this).attr("ledgername");
+        var checkfordrop = $("#checkfordropdown").val();
+
+        var container = $(this).closest('#createLedgerReport').find('#getVoucherDetails');
+        $(this).closest('#createLedgerReport').find("#finaccId").val(ledgerId);
+        $(this).closest('#createLedgerReport').find(".LedgerName").val(ledgername);
+        $('#getVoucherDetails').modal('hide');
+        if (checkfordrop == "True") {
+            $.ajax({
+                url: "/VoucherReport/GetSubsiType",
+                type: "get",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { FID: ledgerId },
+                success: function (data) {
+                    debugger;
+                    var optionlist = '<option value=""> Select Subsi</option>';
+                    $.each(data, function (i, individualdata) {
+                        optionlist = optionlist + "<option value='" + individualdata.Value + "'>" + individualdata.Text + "</option>"
+                    });
+                    $("#Subsi").html(optionlist);
+                }
+            })
+        }
+
+
+    });
+</script>
+

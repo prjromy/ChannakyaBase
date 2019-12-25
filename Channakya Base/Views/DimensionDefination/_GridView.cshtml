@@ -1,0 +1,54 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.DimensionDefinationListViewModel
+
+
+@{
+    var test = Model;
+    var DimensionDefinationTypeClass = "background-color:#00c0ef !important";
+  
+    
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<div class="info-box bg-aqua" style="@DimensionDefinationTypeClass">
+    <div class="info-box-icon icon">
+        <img class="DimensionDefinationImage" id="@Model.DDId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        
+    </div>
+
+
+    @* <div class="inner" DimensionDefination-caption="@Model.DimensionDefinationName">
+            <p id="DimensionDefinationCaption" data-toggle="tooltip" data-placement="top" title="@Model.DimensionDefinationName" style="cursor:pointer;"> @Model.DimensionDefinationName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" DimensionDefination-caption="@Model.DefName">
+        <span class="deleteNode" id="@Model.DDId" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="DimensionDefinationCaption" data-toggle="tooltip" data-placement="top" title="@Model.DefName" style="cursor:pointer;"> @Model.DefName</span>
+        <span class="info-box-number">@Model.DDId</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @*<span class="progress-description">
+            @empService.GetStatusName(Model.Status)
+        </span>*@
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #DimensionDefinationCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

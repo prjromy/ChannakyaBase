@@ -1,0 +1,273 @@
+﻿@model IEnumerable<Loader.Models.Param>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Parameter Setup";
+    var test = Model;
+}
+
+@{
+
+    var paramTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="parameter-explore">
+            @Html.Hidden("viewType", 1)
+            <div class="col-md-3 parameter-treeview section-treeview">
+                @Html.Partial("~/Views/Shared/_TreeView.cshtml", paramTreeview,
+                                new ViewDataDictionary { { "param", param } })
+            </div>
+            <div id="explore-details" class="col-md-9 explore-details">
+                <div class="panel-create" id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+
+    $('.parameter-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.parameter-explore').find('#viewType')
+        if(viewId.val()==1)
+        {
+            viewId.val(2)
+        }
+        else
+        {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#parentParamId').val();
+        if (nodeId =="")
+        {
+            nodeId = 0;
+        }
+
+        $('.parameter-treeview').SelectNode(nodeId);
+
+    });
+
+    $('.parameter-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.parameter-explore').find('.panel-list');
+        var listType = $(this).closest('.parameter-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Parameter")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.parameter-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.parameter-explore').find('.parameter-treeview').moveUp();
+        //$(this).closest('.parameter-explore').find('.parameter-treeview').updateTreeview("Menu", "_UpdateMenuTree", 1009,-1)
+    });
+
+    $('.parameter-explore').on('click', ".btndrill , .listDrill", function (e) {
+        debugger;
+        var id = $(this).attr("id");
+        $(this).closest('.parameter-explore').find('.parameter-treeview').SelectNode(id);
+    });
+
+        
+
+
+
+
+    $('.parameter-explore').on('click', '.parameterImage, .editList, .btn-create-menu', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.parameter-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.parameter-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.parameter-explore').find('.treeview-selected').attr('nodeid');
+        var paramId = 0;
+        if ($(this).attr('class') == 'parameterImage'||'editList') {
+            paramId = $(this).attr('id');
+        }
+        var parentParamId = $('#parentParamId').val()
+        if (parentParamId == "") {
+            parentParamId = 0;
+        }
+        if (paramId != 1 && paramId != 2)
+        {
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("Create", "Parameter")',
+                data: { activeText: activeElement, activeId: parentParamId, ParamId: paramId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (html) {
+                    $(container).html(html);
+                    $(container).removeData("validator");
+                    $(container).removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse($(container));
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+        //-------------------------------------------------------------------------------------//
+        
+    });
+    $('.parameter-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var paramId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#parentParamId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "Parameter")',
+            data: { id: paramId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+                    
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteMenu(paramId,nodeId);
+                    }
+                    else
+                    {
+                        ErrorAlert("Please Delete Child Nodes First", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteMenu(paramId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "Parameter")',
+            data: { ParamId: paramId },
+            success: function () {
+                SuccessAlert("Parameter Sucessfully Deleted",5000)
+                $.fn.updateTreeview('Parameter', '_UpdateParamTree', nodeId, -1)
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.parameter-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Parameter/_GetParamTree"
+        var container = $(this).closest('.parameter-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        //var checkMenu = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true)
+                {
+                    $(item).css('display', 'table-row');
+                }
+                else
+                {
+                    $(item).css('display', 'table-row');
+                }
+
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('menu-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else
+                {
+                    var text = $(item).find('.inner').attr('menu-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                }
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+        }
+
+
+
+    });
+
+
+</script>

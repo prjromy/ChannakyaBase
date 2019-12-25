@@ -1,0 +1,100 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.TaskViewModel
+
+
+
+@using ChannakyaAccounting.Service.TaskVerificationAcc
+
+@{
+    var aba = Model;
+    ViewBag.Title = "EmployeeList";
+    int eventvalue = Convert.ToInt32(Model.EventValue);
+}
+
+<div class="modal-dialog modal-lg verifier-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">
+
+                <span>@TaskAccUtilityService.GetTaskNameByEventId(Model.EventId)</span>
+
+            </h4>
+        </div>
+
+        <div class="modal-body verify-voucher">
+            <div class="content-box">
+                <fieldset>
+                    <legend style="font-size:large;font-weight:bold">Task Related Details</legend>
+                    @{Html.RenderAction("DisplayVoucherVerifyDetails", "Voucher1", new { V1Id = Convert.ToInt32(Model.EventValue) });}
+                    @Html.Partial("_EventRaisedDetails", Model)
+                </fieldset>
+            </div>
+        </div>
+
+ 
+
+     
+       
+
+        <div class="btn-groups modal-footer" style="padding:5px">
+            @if (Model.IsVerified == true)
+            {
+                <span>Verified By:@TaskAccUtilityService.VerifiedBy(Model.Task1Id)</span>
+            }
+           
+            else
+            {
+                <button type="button" class="btn btn-success btn-sm btn-account-verifier-confirm" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id>Verify <i class="fa fa-check" aria-hidden="true"></i></button>
+               
+            }
+           
+
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+ 
+    $(".verifier-modal").on("click", ".btn-account-verifier-confirm", function () {
+
+    
+        var eventValue = $(this).data("valofevent");
+        var eventId = $(this).data("eventid");
+        var task1Id = '@Model.Task1Id'
+        //$(this).data("taskId");
+        var url = "/TaskVerificationAcc/VerificationConfirm";
+        $.ajax(
+        {
+            type: "Post",
+            url: url,
+            data: { eventValue: eventValue, eventId: eventId, task1Id: task1Id },
+            success: function (returnMessage) {
+               
+                SuccessAlert("Voucher Sucessfully Verified", 5000);
+                $('div#getTaskVerficationLists').modal('hide');
+
+                var urlToDirect = "/TaskVerificationAcc/_ViewAllPendingTaskIndex";
+                $.ajax({
+                    type: "GET",
+                    url: urlToDirect,
+                    success: function (result) {
+                        debugger;
+                        $('.content').html("");
+                        $('.content').html(result);
+
+                    },
+                    error: function () {
+
+                    }
+                });
+                
+                
+            },
+          
+        })
+    })
+
+</script>

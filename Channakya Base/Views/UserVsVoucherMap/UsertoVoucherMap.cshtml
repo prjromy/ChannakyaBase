@@ -1,0 +1,211 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.uservsvoucherViewModel
+@using ChannakyaAccounting.Helper
+@using ChannakyaAccounting.Service.Voucher1
+@{
+    //ChannakyaAccounting.Service.Subsi_Setup.SubsiSetupService subService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiSetupService();
+    ChannakyaAccounting.Service.VoucherMap.VoucherMapService subService = new ChannakyaAccounting.Service.VoucherMap.VoucherMapService();
+    var cssStyle = "";
+    if (Model.userid != 0)
+    {
+        cssStyle = "pointer-events:none;";
+    }
+    Voucher1Service getname = new Voucher1Service();
+    var name = "";
+    var VtypeEdit = "";
+    if (Model.Vtype != 0)
+    {
+        name = getname.GetUserNameforDescription(Model.userid);
+        VtypeEdit = getname.GetVoucherTypeNameforDescription(Model.Vtype);
+    }
+}
+@Html.HiddenFor(model => Model.Vtype, new { @id = "VtypeEdit" })
+<div class="box box-warning SubsiDetail-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">User To Voucher Mapping </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="modal fade" id="getUserDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetUserDetails", "VoucherReport")'></div>
+    @using (Html.BeginForm("CreateUsertoVoucherMap", "UserVsVoucherMap", FormMethod.Post, new { @id = "createuserDetail" }))
+    {
+        <div class="modal fade" id="getcustomerDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetCustomerDetails", "MapSubsi")'></div>
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+            @*@Html.HiddenFor(model=>Model.FYID,new {@id= "FYID" })*@
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger"})
+                <div class="form-group col-md-12">
+                    @Html.HiddenFor(x => x.userid, new { @id = "userid" })
+                    @Html.Label("User Name", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9 input-group add-on " style="@cssStyle">
+                        @Html.TextBox("User", name, new { @class = "form-control col-md-8", @placeholder = "Search", @id = "userName" })
+                        <div class="input-group-btn">
+
+                        @*    <button class="btn" style="background-color:#2aabd2!important;" type="button"><i class="glyphicon glyphicon-search" id="btnUserSearch" style="color:white;"></i></button>*@
+                            <button type="button" name="search" class="btn" id="btnUserSearch" style="background-color:#2aabd2!important;"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12 append-subsiledger-list">
+                    @Html.Label("Voucher Type", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9" style=" position: relative; min-height: 1px;padding-right: 3px;padding-left: 0px;" id="hello">
+                        @Html.DropDownListFor(model => model.Vtype, subService.GetAllVoucher().OrderBy(x => x.Text), "Select Voucher", new { @class = "form-control subsi-ledger", @id = "Vtype1", @style = cssStyle })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Batch List", htmlAttributes: new { @class = "control-label col-md-3" })
+                    @if (Model.Vtype != 0)
+                    {
+                        <div class="col-md-9 batch-list">
+                            @Html.Partial("SelectBatchFromVtype", Model)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-9 batch-list">
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="col-md-offset-11">
+                @if (Model.userid > 0)
+                {
+                    <div>
+                        <button type="submit" style="float:right" id="btnBatchMapSave" class="btn btn-default btn-save-cust btn-sm btn-save glyphicon">Update</button>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <button type="submit" style="float:right" id="btnBatchMapSave" class="btn btn-success btn-save-cust btn-sm btn-save glyphicon">Save</button>
+                    </div>
+                }
+            </div>
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+</div>
+<script>
+    $("#createuserDetail").submit(function (ev) {
+        debugger;
+        ev.preventDefault();
+        var formData = new FormData($(this)[0]);
+        var container = $(this).closest('.uservsvoucher-explore').find('.panel-list');
+       
+        var vtype = $('#Vtype1').val();
+        var username = $('#userName').val();
+        if (vtype !== "" && username !== ""){
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $.ajax({
+                    url: '@Url.Action("CreateUsertoVoucherMap", "UserVsVoucherMap")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                       
+                        $(container).html(data);
+                       
+                        SuccessAlert("Data Saved Sucessfully", 5000)
+                        $('#create').find('.SubsiDetail-create').hide();
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText,5000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        }
+        else
+        {
+            if (username == "")
+                ErrorAlert("Enter User Name",5000);
+            else
+                ErrorAlert("Enter Voucher Type",5000);
+
+        }
+
+    });
+
+    $('#createuserDetail').on('click', '.btn-user-popup', function (e, data) {
+        debugger;
+        var query = $(this).closest('.section-customer').find('input#userid').val();
+        var url = $('#getcustomerDetails').data('url');
+        var data = { "query": query };
+        $.get(url, data, function (data) {
+
+            $('#getcustomerDetails').html(data);
+            debugger;
+
+            $('#getcustomerDetails').modal('show');
+        });
+    });
+    $('#createuserDetail').on('click', '#btnUserSearch', function (e, data) {
+        debugger;
+        var query = $('input#userName').val();
+        var url = $('#getUserDetails').data('url');
+        var data = { "query": query };
+        $.get(url, data, function (data) {
+            $('#getUserDetails').html(data);
+            debugger;
+            $('#getUserDetails').modal('show');
+            $('#getUserDetails').find('input#userName').val(query);
+        });
+    });
+    $("#Vtype1").on("change", function () {
+        debugger;
+        var Vtype = $("select#Vtype1 option:selected").val();
+        //var con = $(this).parent().attr("id");
+        //alert(con);
+        var container = $('.batch-list').val();
+        var ledgerId = $(this).val();
+        var userID = $('#userid').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/UserVsVoucherMap/SelectBatchFromVtype/",
+            data: {
+                Vtype: Vtype,
+                userID: userID
+            },
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                //   if (data.message)
+                if (data.indexOf("message") ===2 )
+                {
+                    $('.batch-list').html('<span style="color:red;margin-top:7px;display:inline-block;">There is no batch list found for the selected voucher</span>');
+                    $("#btnBatchMapSave").text("Save");
+                }
+               
+                else {
+                    $('.batch-list').html(data);
+                }
+            }
+        })
+    });
+</script>

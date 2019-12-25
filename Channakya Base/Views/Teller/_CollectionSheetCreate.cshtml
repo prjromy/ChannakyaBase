@@ -1,0 +1,539 @@
+﻿@model ChannakyaBase.Model.ViewModel.CollectionSheetViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@using Loader.Helper
+@{
+    Layout = null;
+    var collectorSearch = new Loader.ViewModel.SearchViewModel(0, "", "", ViewBag.CollectorText, "Select Collector", "", "", "Dept","Collector");
+}
+@using (Html.BeginForm("_CollectionSheetCreate", "Teller", FormMethod.Post, new { id = "CollectionSheetCreate-form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal collection-sheet-create">
+        <div class="form-group">
+                @Html.LabelFor(model => model.SheetNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SheetNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.SheetNo, "", new { @class = "text-danger" })
+                </div>
+        </div>
+        @Html.HiddenFor(x => x.RetId)
+        @Html.HiddenFor(x => x.TaskId, new { @class = "TaskId" })
+        @Html.HiddenFor(x => x.SheetNo)
+        <fieldset>
+            <legend>Collection Sheet Details</legend>
+            @if (Model.RejectedRemarks != "" && Model.RejectedRemarks != null)
+            {
+                <div>
+                    @Html.Label("Rejected Message: ")
+                    <span style="color:red"> @Model.RejectedRemarks</span>
+                </div>
+            }
+            <div class="form-group">
+                @Html.Label("Collector", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                 @*@Html.DropDownListFor(model => model.CollectorId, TellerUtilityService.GetCollectorList(), htmlAttributes: new { @class = "form-control" })*@
+                    @Html.EditorForEmployeeSearch(model => model.CollectorId, collectorSearch)
+                    @Html.ValidationMessageFor(model => model.CollectorId, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.TotalAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", @style = "text-align: right;" } })
+                    @Html.ValidationMessageFor(model => model.TotalAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Value Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.DatePicker(x => x.VDate, false)
+                    @Html.ValidationMessageFor(model => model.VDate, "", new { @class = "text-danger" })
+                </div>
+                @Html.Label("Transaction Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.DatePicker(x => x.TDate, true)
+                    @Html.ValidationMessageFor(model => model.TDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <button type="button" class="btn btn-info btn-collection-sheet-Log" style="float:right">View Logs</button>
+        </fieldset>
+        <div class="accounts-table-div">
+            <fieldset>
+                <legend>Accounts Details</legend>
+                <div class="account">
+                    <div id='account-details-show-div' class="account-details-div" style="max-height: 350px; overflow: auto;"></div>
+                    <div class="form-group account-number-div">
+
+                        @Html.Label("Account", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-10">
+                            @Html.AccountNumberSearch(x => x.IAccNo, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.WithoutFixedDeposit.GetDescription(), EAccountType.Normal.GetDescription())
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4">
+                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @style = "text-align: right;" } })
+                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                    </div>
+
+                    @Html.Label("Particular Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-4" style="font-family: 'Quicksand', sans-serif;">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = "Particular Description" })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <br />
+                <button type="button" id="btn-account-add" class="btn btn-success btn-account-add" style="float:right">Add</button>
+            </fieldset>
+        </div>
+
+        <div class="accountCollected-table-div table-responsive">
+
+            @if (Model.RetId != 0)
+            {
+
+                Html.RenderAction("_CollectedSheetList", new { retId = Model.RetId });
+
+            }
+
+        </div>
+        <div class="accountCollectedSummary-table-div table-responsive">
+
+            @if (Model.RetId != 0)
+            {
+
+                Html.RenderAction("_CollectedSheetAccountProductSummary", new { retId = Model.RetId });
+
+            }
+
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Overall Description", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9" style="font-family: 'Quicksand', sans-serif;">
+                @Html.TextAreaFor(model => model.note, new { @class = "form-control", placeholder = "OverAll Description" })
+                @Html.ValidationMessageFor(model => model.note, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <div class="form-group">
+
+                <input type="button" value="Save" class="btn btn-success btn-collection-sheet-save " style="float:right;margin-left: 5px" />
+
+                @if (Model.RetId != 0)
+                {
+                    <input type="button" value="Delete" class="btn btn-danger btn-collection-sheet-delete" style="float:right" />
+
+                }
+            </div><!-- box-footer -->
+        </div>
+
+    </div>
+}
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+    $(document).ready(function () {
+        debugger
+        $('.employee-display').val("@ViewBag.CollectorSearchName");
+
+    });
+    $('#btn-account-add').on('click', function () {
+        debugger
+        var tr = $('table#accountCollected-table-div').find("tr").find(".IndAmount");
+        var TotalAmount = $(".collection-sheet-create").find("#TotalAmount").val();
+        var total = 0;
+
+        //amount validation here
+
+        $("#Amount").validate({
+            rules: {
+                field: {
+                    required: true,
+                    number: true
+                }
+            },
+            messages: {
+                "name": {
+                    required:"Please enter an amount"
+                }
+            },
+            submitHandler: function (amount) {
+                alert('valid amount submitted');
+                return false;
+            }
+
+        });
+      
+        $.each(tr, function (index, item) {
+            total += parseFloat($(item).val())
+        })
+     
+
+        total = total + parseFloat($("#Amount").val())
+        if (total > TotalAmount) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Individual amount is greater than total Amount"
+            }).done(function () {
+                //$("#AccountNominee_Share").val(0);
+                //$("#AccountNominee_Share").focus();
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return;
+
+        }
+
+        var CollectorId = $(".collection-sheet-create").find(".internal-value").val();
+        var TDate = $(".collection-sheet-create").find("#TDate").val();
+        var VDate = $(".collection-sheet-create").find("#VDate").val();
+        var note = $("#note").val();
+        var IAccNo = $(".collection-sheet-create").find(".account-id").val();
+        var Amount = $(".collection-sheet-create").find("#Amount").val();
+        var Description = $(".collection-sheet-create").find("#Description").val();
+        var RetId = $(".collection-sheet-create").find("#RetId").val();
+        var SheetNo = $(".collection-sheet-create").find("#SheetNo").val();
+        var TaskId = $(".collection-sheet-create").find(".TaskId").val();
+        if (Amount == 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Please Insert Amount"
+            }).done(function () {
+
+                return false;
+            }).fail(function () {
+
+            })
+            return;
+        }
+
+
+        if (!$.isNumeric(Amount)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Please Insert Numeric Amount"
+            }).done(function () {
+
+                return false;
+            }).fail(function () {
+
+            })
+            return;
+        }
+
+      
+        var CollectionIndSheet = {
+            CollectorId: CollectorId,
+            TDate: TDate,
+            VDate: VDate,
+            TotalAmount: TotalAmount,
+            note: note,
+            IAccNo: IAccNo,
+            Amount: Amount,
+            Description: Description,
+            TempTotal: total,
+            RetId: RetId,
+            SheetNo: SheetNo,
+            TaskId: TaskId
+        }
+      
+        $.ajax({
+            url: "/Teller/_TempCollectionSheet",
+            data: JSON.stringify({ CollectionIndSheet: CollectionIndSheet }),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                if (total == TotalAmount) {
+                    $("accounts-table-div").hide();
+                }
+              
+                $("#collectionSheetCreate").html(result);
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+
+    });
+    $('.btn-collection-sheet-Log').on('click', function () {
+        debugger
+        $.ajax({
+            type: 'GET',
+            url: "/Teller/_CollectionLogList",
+            //data: { eventid: eventid, ismultiVerify: ismultiVerify },
+            success: function (result) {
+                $('.collectorLog-list').html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+                });
+            },
+            error: function () {
+
+            }
+        });
+
+    })
+    function logDetails(retId) {
+
+      
+        $(".content").find("#collection-log-up-div").modal('toggle');
+        $.ajax({
+            url: "/Teller/_CollectionSheetCreate",
+            data: { retId: retId },
+            type: "Get",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                $(this).parents().find("#collection-log-up-div").modal('toggle');
+                $("#collectionSheetCreate").html(result);
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+    }
+    function DeleteRowCollection(e, TempCollId, retId) {
+      
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+
+            $(e).closest('tr').remove();
+            $.ajax({
+                url: "/Teller/DeleteSingleLogHistory",
+                data: { retId: retId, TempCollId: TempCollId },
+                type: "Get",
+                contentType: "application/json;charset=utf-8",
+                datatype: "json",
+                success: function (result) {
+                    $(this).parents().find("#collection-log-up-div").modal('toggle');
+                    $("#collectionSheetCreate").html(result);
+                },
+                error: function () {
+                    alert('error in calling ajax !!')
+                }
+            });
+        }).fail(function () {
+        })
+    }
+    $(".collection-sheet-create").on("click",".btn-collection-sheet-delete", function() {
+      
+        var retId=$(".collection-sheet-create").find("#RetId").val();
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () { 
+            $.ajax({
+                url: "/Teller/DeleteMainLogHistory",
+                data: { retId: retId},
+                type: "Get",
+                contentType: "application/json;charset=utf-8",
+                datatype: "json",
+                success: function (result) {
+                    $("#collectionSheetCreate").html(result);
+                },
+                error: function () {
+                    alert('error in calling ajax !!')
+                }
+            });
+        }).fail(function () {
+        })
+    })
+    $(".btn-collection-sheet-save").on("click", function (e) {
+        var TotalAmount = parseFloat($(".collection-sheet-create").find("#TotalAmount").val());
+        var tempTotal = parseFloat($(".collection-sheet-create").find("#TempTotal").val());
+        if (TotalAmount != tempTotal) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Individual total is not equal to Collected Amount"
+            }).done(function () {
+                return false;
+            }).fail(function () {
+            })
+            return;
+        }
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#CollectionSheetCreate-form').ajaxSubmit({
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Teller/_CollectionSheetCreate",
+                            type: 'get',
+                            async: false,
+                            success: function (result) {
+                                $('#collectionSheetCreate').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+                    } else {
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    })
+    $(".collection-sheet-create").on('change', '#txtAccountNumber', function (e) {
+        debugger
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = parentContainer.find("#search-Account-Number").find("#txtAccountNumber").val();
+        var retId = parentContainer.find('.collection-sheet-create').find("#RetId").val();
+
+        $.ajax({
+            contentType: "html",
+            type: "Get",
+            url: "/teller/_CollectedSheetList",
+            data: { retId: retId, accountNumber: accountNumber },
+            success: function (data) {
+                $(".collection-sheet-create").find(".accountCollected-table-div").html("");
+                $(".collection-sheet-create").find(".accountCollected-table-div").html(data);
+            }
+        })
+    });
+    $(document).on('click', '.btn-search-popup', function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        debugger;
+        var windowwidth = $(window).width();
+        var windowheight = $(window).height();
+
+        var pos = $(this).offset();
+
+        var searchParam = {
+            Id: $(this).attr("id"),
+            Phonenumber: $(this).attr("phonenumber"),
+            Name: $(this).attr("name"),
+            Address: $(this).attr("address"),
+            Title: $(this).attr("title"),
+            DeptName: $(this).attr("DeptName"),
+            DesginationName: $(this).attr("DesignationName"),
+            Filter: "",
+            searchFor: $(this).attr("searchFor")
+        }
+
+
+        var left = 0;
+        var top = 0;
+        selectedObject = $(this);
+
+        //if (windowwidth - pos.left < 420) { //320
+        //    left = windowwidth - 420;
+        //}
+        //else {
+        //    left = pos.left - 17;
+        //}
+        //if (windowheight - pos.top < 280) { //150
+        //    top = pos.top - 280;
+        //}
+        //else {
+        //    top = pos.top + 45;
+        //}
+        $dlg_dpicker = $('<div></div>')
+        .dialog({
+            dialogClass: 'cl-dpicker',
+            autoopen: false,
+            close: function () {
+                $(this).removeClass("cl-dpicker");
+                $(this).dialog("destroy");
+                $(this).remove();
+                $dlg_dpicker = null;
+                selectedObject = null;
+            },
+            open: function (event, ui) {
+                $(event.target).parent().css('position', 'fixed'); //absolute
+                $(event.target).parent().css('top', (windowheight / 2 - 200));
+                $(event.target).parent().css('width', '400px');
+                $(event.target).parent().css('left', windowwidth - 500);
+                $(event.target).parent().css("border", "2px");
+                $(event.target).parent().css("background-color", "transparent");
+                $(event.target).parent().css("z-index", "101");
+                $(event.target).siblings('div.ui-dialog-titlebar').remove();
+            },
+            overlay: {
+                backgroundColor: 'black',
+                opacity: 0.5
+            },
+            modal: true,
+            resizable: false
+            //position: {
+            //    my: "center" ,
+            //    at: "center"
+            //}
+        });
+        var query = $(this).closest('.section-search').find(".display-txt").val();
+        if (query != null) {
+            var wrapperClass = $(selectedObject).closest('.section-search');
+            $(wrapperClass).trigger('filterSearch', [{ fromPopUp: 'false', param: searchParam }]);
+        }
+    });
+    $('.collection-create').on('filterSearch', '.section-search', function (e, data) {
+        debugger;
+        e.stopPropagation();
+
+        if (data.fromPopUp == 'false') {
+            data.param.Title = "Select Employee";
+
+            $dlg_dpicker.load("/Users/_GetEmployeeSearchPopup", { param: data.param })
+        }
+        else {
+            $dlg_dpicker.find('.treeview-area').load("/Users/_GetEmployeeTree", { param: data.param })
+
+        }
+
+
+    });
+    $('.ch-search').on('click', ".filter-btn", function (e) {
+        e.stopImmediatePropagation()
+        debugger;
+        var searchFor = $(".btn-search-popup").attr("searchFor");
+
+        var query = $(this).closest('.input-group').find("#text-filter-tree").val();
+        if (query != null) {
+            var wrapperClass = $(this).closest('.ch-search').find('.search-area');
+
+            var treeViewParam = {
+                Title: "Select Employee",
+                Filter: query,
+                searchFor: searchFor
+            }
+
+            $(wrapperClass).load("/Users/_GetEmployeeSearchTree", { param: treeViewParam, query: query })
+        }
+    });
+</script>
+
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

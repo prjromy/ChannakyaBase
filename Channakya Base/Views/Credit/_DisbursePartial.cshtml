@@ -1,0 +1,27 @@
+﻿@model ChannakyaBase.Model.ViewModel.DisburseShareViewModel
+
+@using HtmlHelpers.BeginCollectionItem
+@{ 
+    var ed = Model;
+}
+
+@using (Html.BeginCollectionItem("ShareList"))
+{
+<tr>
+    @Html.HiddenFor(model => model.RegNo)
+    <td>
+        @Html.DisplayFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+    </td>
+
+    <td>
+        @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control share-rate", @readonly = "readonly" } })
+    </td>
+    <td>
+        @Html.EditorFor(model => model.SQty, new { htmlAttributes = new { @class = "form-control share-quantity", @id = "SQty" } })
+    </td>
+    <td>
+        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control share-amount", @readonly = "readonly" } })
+    </td>
+
+</tr>
+}

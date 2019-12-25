@@ -1,0 +1,77 @@
+﻿@model Tuple<ChannakyaBase.DAL.DatabaseModel.Location, ChannakyaBase.DAL.DatabaseModel.LocationMaster>
+@{
+    int maxLevel = ViewBag.maxLevel;
+    int newMaxLevel = ViewBag.newMaxLevel;
+    int loopLess = maxLevel - 2;
+    int loopMore = maxLevel - 1;
+    int i = 1;
+    int j = 2;
+
+}
+
+<style>
+    .display-none {
+        display: none;
+    }
+
+    .display-inline {
+        display: inline;
+    }
+</style>
+
+<div class="select-level-div">
+
+    @if (newMaxLevel < maxLevel)
+    {
+        <label><b>Which level do you want to remove?</b></label><br />
+        while (i <= loopLess)
+        {
+            @Html.RadioButton("Level", j, new { @class = "level-select" })
+            @Html.Label(" Level " + j)<br />
+            i = i + 1;
+            j = j + 1;
+        }<br />
+
+        <button type="button" class="btn btn-default btnRemoveLevelDiv" style="float:right;">Cancel</button>
+        <button type="button" class="btn btn-default btnDeleteLevel" level="" style="float:right;margin-right:7px;" disabled>Delete</button>
+    }
+
+    else if (newMaxLevel > maxLevel)
+    {
+        <label><b>Where do you want to add a new level?</b></label><br />
+        while (i <= loopMore)
+        {
+            @Html.RadioButton("Level", j, new { @class = "level-select" })
+            @Html.Label(" Level " + j)<br />
+            i = i + 1;
+            j = j + 1;
+        }<br />
+
+        <button type="button" class="btn btn-default btnRemoveLevelDiv" style="float:right;">Cancel</button>
+        <button type="button" class="btn btn-default btnCreateLevel" level="" style="float:right;margin-right:7px;" disabled>Create</button>
+    }
+
+    else
+    {
+
+    }
+    <br />
+    <br />
+
+    <div class="delete-selected-level display-none">
+        <label>Are you sure you want to delete the selected level?</label><br />
+        <button type="button" class="btn btn-default btnNo" style="float:right;margin-top:7px;">Cancel</button>
+        <button type="button" class="btn btn-default btnYes" style="float:right;margin:7px 7px 0 0;" selectedLevel="" selectedRoot="">Confirm</button>
+    </div>
+
+    <div class="create-new-level display-none">
+        <label>Please enter the name of the level you want to create:</label><br />
+        <input type="text" class="form-control new-level-name" />
+        <button type="button" class="btn btn-default btnCancelCreate" style="float:right;margin-top:7px;">Cancel</button>
+        <button type="button" class="btn btn-default btnCreateLocation" style="float:right;margin:7px 7px 0 0;" selectedLevel="">Create</button>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,12 @@
+﻿@model ChannakyaAccounting.Models.Models.FinAcc
+@using ChannakyaAccounting.Helper
+@{ 
+
+    var modelinfo = Model;
+
+}
+
+
+
+@*@Html.EditorForList(model => model.ListOfBank, x => x.Bid.ToString())*@
+@Html.EditorFor(x=>x.BankInfoes)

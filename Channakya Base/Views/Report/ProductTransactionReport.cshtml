@@ -1,0 +1,129 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.ProductTransactionReport
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Product Transaction Report";
+}
+<div class="box box-success product-transaction-index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Product Transaction Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12" id="filter-report-parameters">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>  
+                        <div class="form-group">
+                            <div class="col-md-4">
+                                <label> Deposit/Withdraw</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.DepositFlag, ReportUtilityService.DepositWithdraw(), new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label> Verified/Unverified</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.VerifyFlag, ReportUtilityService.VerifyStatus(), new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cash/Non-Cash</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.SearchParamFlag, ReportUtilityService.SearchParams(), new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                            <div class="form-group">
+                                @Html.Label("From Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(model => model.FromDate)
+                                    @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.Label("To Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(model => model.ToDate)
+                                    @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success product-transaction-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-product-transaction-export-to-excel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="product-transaction-details" id="product-transaction-list">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+    
+    $(".product-transaction-index").on("click", '.product-transaction-generate', function () {
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var searchType = $("#SearchParamFlag option:selected").val();
+        var iSDep = $("#DepositFlag option:selected").val();
+        var isVerify = $("#VerifyFlag option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ProductTransactionReportList",
+            data: { FDate: FromDate, TDate: ToDate, searchType: searchType, iSDep: iSDep, isVerify: isVerify },
+            success: function (result) {
+
+                $(".product-transaction-details").html("");
+                $(".product-transaction-details").html(result)
+            }
+        });
+    });
+
+    $('.product-transaction-index').on('click', '.btn-product-export-to-excel', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ProductTransactionExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate)
+
+    })
+
+
+    $('.btn-product-transaction-export-to-excel').on('click', function () {
+        debugger;
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var searchType = $("#SearchParamFlag option:selected").val();
+        var searchTypeText = $("#SearchParamFlag option:selected").text();
+        var iSDep = $("#DepositFlag option:selected").val();
+        var iSDepText = $("#DepositFlag option:selected").text();
+        var isVerify = $("#VerifyFlag option:selected").val();
+        var isVerifyText = $("#VerifyFlag option:selected").text();
+        window.open("/Report/ProductTransactionExportToExcel?FromDate=" + FromDate + "&ToDate=" + ToDate + "&searchType=" + searchType + "&searchTypeText=" + searchTypeText + "&iSDep=" + iSDep + "&iSDepText=" + iSDepText + "&isVerify=" + isVerify + "&isVerifyText=" + isVerifyText);
+
+    });
+
+
+</script>

@@ -1,0 +1,23 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ADetail
+
+<div class="form-group">
+    @Html.LabelFor(model => model.PostedBy, new { @class = "control-label col-md-2" })
+    <div class="col-md-4">
+        @Html.TextBoxFor(model => model.PostedBy, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.PostedBy, "", new { @class = "text-danger" })
+    </div>
+    @Html.LabelFor(model => model.ApprovedBy, new { @class = "control-label col-md-2" })
+    <div class="col-md-4">
+        @Html.TextBoxFor(model => model.ApprovedBy, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ApprovedBy, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+
+    @Html.LabelFor(model => model.AccState, new { @class = "control-label col-md-2" })
+    <div class="col-md-4">
+        @Html.TextBoxFor(model => model.AccState, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.AccState, "", new { @class = "text-danger" })
+    </div>
+</div>

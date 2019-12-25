@@ -1,0 +1,22 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+<div class="box box-success">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">User Activ status</h3>
+        <div class="box-tools pull-right">
+           
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <h2 class="text-danger">@Model.Exception.Message</h2>
+        
+    </div>
+
+
+</div>
+

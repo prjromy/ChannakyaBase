@@ -1,0 +1,438 @@
+﻿@model IEnumerable<Loader.Models.Employee>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Employee Setup";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="Employee-explore section-treeview ">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create " id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+
+
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var test = $("input.btn.btn-box-tool.txtSearch");
+        $("input.btn.btn-box-tool.txtSearch").focus();
+
+    });
+
+    $('.Employee-explore').on('change', '.employeeStatusList', function (event) {
+
+       //var value=$('.Employee-explore .employeeStatusList :selected').val();
+       // alert($('.Employee-explore .employeeStatusList :selected').val());
+       // $('.Employee-explore .employeeStatusList').val(value);
+        debugger;
+        var status = $(this).val();
+
+        $('.txtSearch').val("");
+        var Search = $('.txtSearch').val();
+
+        var container = $(this).closest('.Employee-explore').find('.panel-list').find('.bodycontent-and-paging');
+        var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+        //alert(listType);
+            $.ajax({
+                url: "/Employee/_DetailPartial",
+                type: "GET",
+                data: {
+                    ViewType: listType,
+                    query: Search,
+                    page: 1,
+                    status:status
+                },
+                success: function (result) {
+                    debugger;
+                    $(container).html("");
+                    $(container).html(result);
+                    $(container).focus();
+
+                    var checkActive = $('ul.pagination.Employeepagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Employeepagination').find('.active').removeClass('active');
+                    }
+                    // after changing next status ,pagenumber is 1
+                    $('ul.pagination.Employeepagination').find('li#' + 1).addClass('active');
+                }
+
+            });
+
+    });
+
+    $('.Employee-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.Employee-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pEmployeeId').val();
+        if (nodeId == "") {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null) {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.Employee-explore').find('.panel-list');
+        var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Employee")',
+            contentType: "application/json; charset=utf-8",
+            data: { allowSelectGroup: data.allowSelectGroupNode, ViewType: listType, empId: data.nodeId },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+    $('.Employee-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.Employee-explore').find('.Employee-treeview').moveUp();
+        //$(this).closest('.Employee-explore').find('.Employee-treeview').updateTreeview("Employee", "_UpdateEmployeeTree", 1009,-1)
+    });
+
+    $('.Employee-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.Employee-explore').find('.Employee-treeview').SelectNode(id);
+    });
+
+
+    $('.Employee-explore').on('click', '.EmployeeImage, .editList, .btn-create-Employees', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Employee-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        //var activeElement = $(this).closest('.Employee-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.Employee-explore').find('.treeview-selected').attr('nodeid');
+        var EmployeeId = 0;
+        if ($(this).attr('class') == 'EmployeeImage' || 'editList') {
+            EmployeeId = $(this).attr('id');
+            //$('#BranchId').prop('readonly', true)
+        }
+        //var pEmployeeId = $('#pEmployeeId').val()
+        //if (pEmployeeId == "") {
+        //    pEmployeeId = 0;
+        //}
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("CheckResignedEmployee", "Employee")',
+            data: { id: EmployeeId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (isResigned) {
+                debugger;
+                if (isResigned == 'false') {
+                    $.ajax({
+                        type: "get",
+                        url: '@Url.Action("Create", "Employee")',
+                        data: { EmployeeId: EmployeeId },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "html",
+                        success: function (html) {
+                            $(container).html(html);
+                            $(container).removeData("validator");
+                            $(container).removeData("unobtrusiveValidation");
+                            $.validator.unobtrusive.parse($(container));
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
+
+                }
+                else {
+                    ErrorAlert("Resigned Employees Can't Be Edited", 5000);
+                }
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //-------------------------------------------------------------------------------------//
+    });
+
+    $('.Employee-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+
+        var EmployeeId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#pEmployeeId').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "Employee")',
+            data: { id: EmployeeId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                debugger;
+                if (deleteConfirm == 'true') {
+                    debugger;
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "Are you sure you want to Delete?"
+                    }).done(function () {
+                        deleteEmployee(EmployeeId, nodeId);
+                    })
+                }
+                else {
+                    ErrorAlert("Please Delete Child Nodes or Employee Is Already Mapped ", 5000);
+                }
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteEmployee(EmployeeId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "Employee")',
+            data: { EmployeeId: EmployeeId },
+            success: function () {
+                SuccessAlert("Employee Sucessfully Deleted", 5000)
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+
+    $('.ch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: data.Title,
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Employee/_GetEmployeeTree"
+        var container = $(this).closest('.Employee-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+    function delay(callback, ms) {
+        var timer = 0;
+        return function () {
+            var context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                callback.apply(context, args);
+            }, ms || 0);
+        };
+    }
+
+    @*$('.panel-list').on('keyup', ".txtSearch", delay(function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var status = $('.employeeStatusList').val();
+        //var status = $(this).val();
+        //alert(query);
+        var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+        var container = $(this).closest('.Employee-explore').find('.panel-list');
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("_Details", "Employee")',
+            data: {
+                ViewType: listType,
+                query: query,
+                page: 1,
+                status: status
+            },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }, 5000));*@
+
+
+
+    var i = 0;
+    $('.panel-list').on('keypress', ".txtSearch", delay(function (e) {
+
+        var keycode = (e.keyCode ? e.keyCode : e.which);
+        if (keycode == 13)
+        {
+            debugger;  
+            var query = $('input.txtSearch').val();
+            var status = $('.Employee-explore .employeeStatusList').val();
+        //var status = $(this).val();
+        //alert(query);
+        var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+        var container = $(this).closest('.Employee-explore').find('.panel-list');
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("_Details", "Employee")',
+            data: {
+                ViewType: listType,
+                query: query,
+                page: 1,
+                status: status
+            },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+                $(".employeeStatusList").val(status);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        }
+    }, 500));
+
+
+
+    //$(document).ready(function () {
+    //    $.fn.pagination(1, 0, 0)
+
+    //    $('.pagination').on('click', '.pagerClass', function () {
+    //        debugger;
+    //        var pagingData = $(this).attr('id');
+    //        $.fn.pagination(pagingData, 0, 0);
+
+    //    });
+
+    //    $('.pagination').on('click', 'li.next , li.previous', function () {
+    //        debugger;
+    //        var cls = $(this).attr('class');
+    //        if ($(this).attr('class') == 'next') {
+    //            var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+    //            var finalId = parseInt(pager) + 1;
+    //            var hasNext = $('ul.pagination.pager-list').find('li#' + finalId)
+    //            if ($(hasNext).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+    //        else {
+    //            var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+    //            var finalId = parseInt(pager) - 1;
+    //            var hasPrev = $('ul.pagination.pager-list').find('li#' + finalId)
+    //            if ($(hasPrev).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+
+    //    });
+    //});
+
+    //$.fn.pagination = function (pagerId, next, previous) {
+    //    debugger;
+    //    var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+    //    if (checkActive == true) {
+    //        $('ul.pagination.pager-list').find('.active').removeClass('active');
+    //    }
+    //    else {
+    //        var listcount = 0;
+    //        $('.detailsList').each(function (index, item) {
+    //            listcount++;
+    //        });
+    //        var i;
+    //        var mod = listcount / 10;
+    //        for (i = 1; i <= mod + 1; i++) {
+    //            debugger;
+    //            $('ul.pagination.pager-list').append('<li id=' + i + ' class="pagerClass"><a>' + i + '</a> </li>')
+    //        }
+    //    }
+    //    $('ul.pagination.pager-list').find('li#' + pagerId).addClass('active');
+    //    var pagerRange = 10;
+    //    var paginatonData = pagerId * pagerRange;
+    //    $('.detailsList').each(function (index, item) {
+    //        debugger;
+    //        if (paginatonData > pagerRange) {
+    //            var checkPagination = paginatonData - pagerRange;
+    //            if (index <= paginatonData && index > checkPagination) {
+    //                var text = $(item).find('.inner').attr('Employee-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('Employee-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+    //        else {
+    //            if (index <= paginatonData) {
+    //                var text = $(item).find('.inner').attr('Employee-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('Employee-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+
+    //    });
+    //};
+
+
+
+
+
+</script>

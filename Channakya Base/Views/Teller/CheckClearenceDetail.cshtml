@@ -1,0 +1,159 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChequeClearenceViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{ 
+    CommonService commonService = new CommonService();
+}
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Cheque Clearence Detail</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="content-box">
+        <fieldset>
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                  
+                    <div class="form-group">
+                        @Html.Label("Account no:", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4 margin-adjust"style="margin-top:7px;">
+                            @{ 
+                                var accno = @commonService.GetAccountFullNameByIaccno(Model.IAccno);
+                            }
+                           <span>@accno</span>
+                            @Html.ValidationMessageFor(model => model.accno, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Bank Name:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust"style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.Bankname, new { htmlAttributes = new { @class = "form-control cust-id" } })
+                            @Html.ValidationMessageFor(model => model.Bankname, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.Label("Branch Name:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.Brnhname, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Brnhname, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Cheque No:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.chqno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.chqno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Payee Name:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.payee, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.payee, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Cheque Amount:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.camount, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.camount, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Posted By:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.Label(commonService.PosterNamebyID(Model.postedby), new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.postedby, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Transaction Date:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                          
+                            @{
+                                var customerservice = commonService.GetDate(Model.tdate);
+                                @Html.Label(customerservice)
+                            }
+                           
+                            @Html.ValidationMessageFor(model => model.tdate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.Label("Payee A/c No:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.accno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.accno, "", new { @class = "text-danger" })
+                        </div>
+
+
+                        @Html.Label("Valid Date:", htmlAttributes: new { @class = "control-label col-md-2 valid-date" })
+                        <div class="col-md-4 margin-adjust" style="margin-top:7px;">
+                           
+                            @{
+                                 customerservice = commonService.GetDate(Model.VDate);
+                                @Html.Label(customerservice)
+                            }
+                            @Html.ValidationMessageFor(model => model.VDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Remarks:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10 margin-adjust" style="margin-top:7px;">
+                            @Html.DisplayFor(model => model.remarks, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.remarks, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            @if (Model.calledFromVerify == 1)
+            {
+                <div class="form-group">
+                    <label class="control-label  col-md-2">Clearence Date:</label>
+                    <div class="col-md-10">
+                        @Html.DatePicker(x => x.VDate)
+                    </div>
+                </div>
+            }
+            @if (Model.calledFromVerify == 0)
+            {
+                <div class="form-group">
+                    <button type="submit" style="float:right" id="BackTolist" class="btn btn-success btn-save-cust btn-sm btn-save glyphicon"><i class="fa fa-chevron-square-left"></i>Back</button>
+                  
+                </div>
+            }
+        </fieldset>
+    </div>
+</div>
+
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+<script>
+
+    $(document).ready(function () {
+        $("#Brnhname").prop('disabled', true);
+    })
+    $('#BackTolist').on('click', function () {
+        debugger;
+        $.ajax({
+            url: "/Teller/ChequeClearenceUnVerificationList",
+            type: "GET",
+            success: function (data)
+            {
+                $('section.content').html(data);
+            }
+
+        })
+    });
+</script>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>

@@ -1,0 +1,347 @@
+﻿@model Loader.Models.Menu
+@using Loader.Helper
+@{
+    Layout = null;
+    var test = Model;
+
+    //var treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, "", "Select Menu", ""); ;
+    //if (Model.MenuId != 0)
+    //{
+    var treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, 0,Model.PMenuId, ViewBag.ActiveText, "Select Menu", "");
+    //}
+    Loader.ViewModel.TreeViewParam paramData = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Menu";
+    if (Model.MenuId != 0)
+    {
+        title = "Edit Menu";
+    }
+    var valueSubmit = "Create";
+    if (Model.MenuId != 0)
+    {
+        valueSubmit = "Save";
+    }
+}
+<div class="box box-warning menu-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "Menu", FormMethod.Post, new { @id = "createMenu" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.MenuId)
+
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.PMenuId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+
+                        @Html.EditorForTree(model => model.PMenuId, treeobj)
+                        @Html.ValidationMessageFor(model => model.PMenuId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.IsGroup, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.IsGroup, new { htmlAttributes = new { @class = "is-group" } })
+                        @Html.ValidationMessageFor(model => model.IsGroup, "", new { @class = "text-danger" })
+                    </div>
+
+                    @Html.LabelFor(model => model.IsEnable, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.IsEnable)
+                        @Html.ValidationMessageFor(model => model.IsEnable, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.MenuCaption, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.MenuCaption, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MenuCaption, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+                    </div>
+
+                    @Html.LabelFor(model => model.IsContextMenu, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+
+                        @Html.CheckBoxFor(model => model.IsContextMenu, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsContextMenu, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+
+                <div class="form-group col-md-12 action-controller">
+                    @if (Model.IsGroup != true && Model.IsContextMenu != true)
+                    {
+                        @Html.Partial("_CreateAction", Model)
+                    }
+
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Image, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        <input type="file" id="fileid1" name="file" class="file-picker-input exm" style="display:none;" />
+                        <i class="glyphicon glyphicon-upload uploadicon upldimge"></i>
+                        @if (Model.MenuId != 0 && ViewBag.Image != null)
+                        {
+                            <div id="loadimage"><img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,@ViewBag.Image" alt=""></div>
+
+                        }
+                        @if (Model.MenuId != 0 && ViewBag.Image == null)
+                        {
+                            <div id="loadimage"><img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png"  alt=""></div>
+
+                        }
+                        else
+                        {
+                            <div id="loadimage"></div>
+                        }
+                        @*@Html.EditorFor(model => model.MenuCaption, new { htmlAttributes = new { @class = "form-control" } })*@
+                        @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>*@
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PMenuId").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            if(imagecontent!=null)
+            {
+                Imageform.append('imagefile', imagecontent);
+                var img = $('input#fileid1').val();
+                $.ajax({
+                    type: 'POST',
+                    url: "/Menu/DisplayImage",
+                    data: Imageform,
+                    cache:false,
+                    processData: false,
+                    contentType: false,
+                    success: function (ImageContent) {
+                        debugger;
+                        $('#loadimage').empty();
+                        $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                        // $('#loadimage').attr("content", imagecontent);
+                    }
+                });
+            }
+
+        });
+
+
+        $("#createMenu").submit(function () {
+            debugger;
+            var pid = $(this).closest('.box-body').find('.section-treeview').find('input.internal-value').val();
+            if(pid=="")
+            {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).find('.section-treeview#PMenuId').find('.internal-value').val()
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Menu")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        $(container).html(data);
+                        $.fn.updateTreeview('Menu', '_UpdateMenuTree', nodeId, -1)
+                        $.fn.GetLayoutMenu();
+                        if (@Model.MenuId == 0)
+                        {
+                            SuccessAlert("Menu Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Menu Edited Succesfully.",1500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+
+
+        $('.menu-create').on('change', '#IsGroup', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".menu-create").find(".action-controller")
+            var contextCheck = $(this).closest(".menu-create").find("input#IsContextMenu").prop("checked")
+            if (!this.checked && contextCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Menu")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: @Model.MenuId },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.menu-create').on('change', '#IsContextMenu', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".menu-create").find(".action-controller")
+            var groupCheck = $(this).closest(".menu-create").find("input#IsGroup").prop("checked")
+            if (!this.checked && groupCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Menu")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: @Model.MenuId },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.menu-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            //es
+            e.stopPropagation();
+
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/Menu/_GetMenuTreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Menu/_GetMenuTree", { param: data.param })
+
+            }
+
+
+        });
+
+    });
+    $.fn.GetLayoutMenu = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/Menu/GetLayoutMenu/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+</style>

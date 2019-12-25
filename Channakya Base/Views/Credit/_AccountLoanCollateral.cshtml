@@ -1,0 +1,71 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALCollModel
+@using ChannakyaCustomeDatePicker.Helper;
+@{ 
+    var mod = Model;
+}
+<fieldset>
+    <legend style="font-size:14px;font-weight:bold">Basic Info</legend>
+    <div class="form-group">
+        @Html.HiddenFor(x=>x.Sno)
+        @Html.LabelFor(model => model.OName, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.OName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OName, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.OAdd, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.OAdd, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.OAdd, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.contactNo, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.contactNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.contactNo, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.citizenshipNo, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.citizenshipNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.citizenshipNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.RegNo, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.RegNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.RegNo, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.RegDate, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.DatePicker(x => x.RegDate)
+            @Html.ValidationMessageFor(model => model.RegDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(model => model.Remarks, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+        </div>
+        @if (Model.NCID != 5 && Model.NCID != 6 && Model.NCID!=17 && Model.NCID != 14)
+        {
+            <div class="account-loan-cvalue">
+                @Html.LabelFor(model => model.CValue, new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.CValue, new { @class = "form-control text-right" , @Value = (@Model.CValue == 0) ? "" : @Model.CValue.ToString() })
+                    @Html.ValidationMessageFor(model => model.CValue, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+      
+    </div>
+    </fieldset>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+

@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.MessageInfoViewModel>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    int i = 1;
+}
+
+@if (Model.Count() != 0)
+{
+        <fieldset style="border-color:red !important;margin-top:15px;">
+            <legend style="font-size:large;font-weight:bold; color:blue !important;">Event Message List</legend>
+            <div style="max-height:200px;overflow:scroll;width:auto;">
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-responsive table-striped table-bordered" style="margin:auto">
+                        <tr>
+
+                            <th>
+                                @Html.Label("SN")
+                            </th>
+                            <th>
+                                @*@Html.DisplayNameFor(model => model.Eventid)*@
+                                @Html.Label("Event Name")
+                            </th>
+                            <th>
+                                @*@Html.DisplayNameFor(model => model.Fdate)*@
+                                @Html.Label("Form Date")
+                            </th>
+                            <th>
+                                @* @Html.DisplayNameFor(model => model.Tdate)*@
+                                @Html.Label("Till Date")
+                            </th>
+                            <th>
+                                @*   @Html.DisplayNameFor(model => model.Mdesc)*@
+                                @Html.Label("Message Description")
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @i
+                            
+                        </td>
+                        <td>
+                            <span>@BaseTaskUtilityService.GetTaskNameByEventId(item.Eventid)</span>
+                        </td>
+                        <td>
+
+                            @Html.DisplayFor(modelItem => item.Fdate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Tdate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Mdesc)
+                        </td>
+
+                    </tr>
+                            i++;
+                        }
+
+                    </table>
+                </div>
+                </div>
+</fieldset>
+ }
+

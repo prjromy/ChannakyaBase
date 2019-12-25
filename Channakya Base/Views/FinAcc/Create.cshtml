@@ -1,0 +1,605 @@
+﻿
+@model ChannakyaAccounting.Models.Models.FinAcc
+
+<script src="~/Scripts/finacc-create.js"></script>
+
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = ViewBag.F2Type;
+    var treeobj = new ChannakyaAccounting.Models.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.ActiveText, "Select FinAcc", "");
+    ChannakyaAccounting.Models.ViewModel.TreeViewParam paramData = (ChannakyaAccounting.Models.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Ledger";
+    var activeId = Model;
+    if (Model.Fid != 0)
+    {
+        title = "Edit Ledger";
+    }
+
+
+}
+<div class="box box-warning FinAcc-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "FinAcc", FormMethod.Post, new { @id = "createFinAcc" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.Fid)
+
+                <div class="form-group col-md-12 parent-FinAcc">
+                    @Html.LabelFor(model => model.Pid, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @*@if (Model.Fid != 0)
+                        {*@
+                        @if (Model.Fid != 0)
+                        {
+                            <div style="pointer-events:none;cursor:not-allowed;opacity:0.6;"> @Html.EditorForTree(model => model.Pid, treeobj)</div>
+                        }
+                        else
+                        {
+                            @Html.EditorForTree(model => model.Pid, treeobj)
+                        }
+
+                        @*else
+                        {
+                            @Html.EditorForTree(model => model.Pid, treeobj)
+                        }*@
+                        @Html.ValidationMessageFor(model => model.Pid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Fname, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Fname, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Fname, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Alias, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Alias, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Alias, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="type-container">
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.F2Type, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.DropDownListFor(model => model.F2Type, (IEnumerable<SelectListItem>)ViewBag.F2Type, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.F2Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                @if (ViewBag.IsGroup == false)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.DebitRestriction, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @if (Model.DebitRestriction == null)
+                            {
+                                Model.DebitRestriction = false;
+                            }
+
+                            @Html.CheckBox("DebitRestriction",Model.DebitRestriction.Value)
+                            @Html.ValidationMessageFor(model => model.DebitRestriction, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.CreditRestriction, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @if (Model.CreditRestriction == null)
+                            {
+                                Model.CreditRestriction = false;
+                            }
+
+                            @Html.CheckBox("CreditRestriction",Model.CreditRestriction.Value)
+                            @Html.ValidationMessageFor(model => model.CreditRestriction, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                <div class="form-group col-md-12">
+
+                </div>
+                <div class="form-group col-md-12">
+                    @if (ViewBag.IsGroup == false)
+                {
+                        @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    @Html.LabelFor(model => model.Content, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        <input type="file" id="fileid1" name="file" class="file-picker-input exm" style="display:none;" />
+                        <i class="glyphicon glyphicon-upload uploadicon upldimge"></i>
+                        @if (Model.Fid != 0 && ViewBag.Image != null)
+                        {
+                            <div id="loadimage"><img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,@ViewBag.Image" alt=""></div>
+                        }
+                        else
+                        {
+                            <div id="loadimage"></div>
+                        }
+                        @Html.ValidationMessageFor(model => model.Content, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+
+                    <div class="form-horizontal col-md-12 bank-info-container " style="display:none;">
+                        @if (Model.BankInfoes.Count() > 0)
+                        {
+                            Response.Write("<script language=javascript>$('.bank-info-container').show();</script>");
+                            @Html.EditorFor(x => x.BankInfoes)
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="subsititle-details-container" style="display:none;">
+                        @if (Model.SubsiVSFIds.Count() > 0)
+                        {
+                            Response.Write("<script language=javascript>$('.subsititle-details-container').show();</script>");
+                            @Html.EditorFor(x => x.SubsiVSFIds);
+                        }
+
+                    </div>
+                </div>
+                @*<div class="form-group col-md-12 dimension-group" style="display:none;">
+      
+                    @if (Model.DimensionVSLedgers != null)
+                    {
+                        <div class="dimension-defination-controller col-md-12">
+
+                            @if (Model.DimensionVSLedgers.Count() > 0)
+                            {
+
+                                Response.Write("<script language=javascript>$('.dimension-group').show();</script>");
+                                <br />
+                                <label class="col-md-12 myHeader">Select Dimensions</label>
+                                <br />
+                                <div class="main-dimension-container col-md-12"style="left:10%;max-height: 180px;overflow:auto;">
+
+                                    <div class="dimension-container-original col-md-6">
+                                        <b>Dimension Lists</b>
+                                        @for (int index = 0; index < Model.DimensionDefinationList.Count(); index++)
+                                        {
+                                            if (Model.DimensionDefinationList[index].isSelected == false)
+                                            {
+                                            <div class="tr-class"style="line-height: 36px;">
+                                                <div class="tr-data-content">
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DLId)
+
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DDId, new { @id = "dimensionDefnId" + Model.DimensionDefinationList[index].DDId, @class = "dimensiondefn-class" })
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].Order, new { @class = "dimension-order-value" })
+
+                                                    @Html.CheckBoxFor(x => x.DimensionDefinationList[index].isSelected, new { @id = "dimensionCheckbox" })
+
+
+                                                    @Html.DisplayFor(x => x.DimensionDefinationList[index].DefName)
+
+                                                    <br />
+
+                                                </div>
+                                            </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="dimension-order-container col-md-6">
+                                        <b>Selected Dimensions</b>
+                                        @for (int index = 0; index < Model.DimensionDefinationList.Count(); index++)
+                                        {
+                                            if (Model.DimensionDefinationList[index].isSelected == true)
+                                            {
+                                            <div class="tr-class"style="line-height: 36px;">
+                                                <div class="tr-data-content">
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DLId)
+
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DDId, new { @id = "dimensionDefnId" + Model.DimensionDefinationList[index].DDId, @class = "dimensiondefn-class" })
+                                                    @Html.HiddenFor(x => x.DimensionDefinationList[index].Order, new { @class = "dimension-order-value" })
+
+                                                    @Html.CheckBoxFor(x => x.DimensionDefinationList[index].isSelected, new { @id = "dimensionCheckbox" })
+
+
+                                                    @Html.DisplayFor(x => x.DimensionDefinationList[index].DefName)
+
+                                                    <br />
+
+                                                </div>
+                                            </div>
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                            }
+
+
+                        </div>
+                    }
+                </div>*@
+
+                <div class="form-group deposit-product-container" style="display:none;">
+
+                    @if (Model.ProductDetails.Count() > 0)
+                    {
+                        Response.Write("<script language=javascript>$('.deposit-product-container').show();</script>");
+
+                        @Html.EditorFor(x => x.ProductDetails)
+
+                    }
+
+
+                </div>
+                <div class="form-group schm-detail">
+
+                    @if (Model.SchmDetails.Count() > 0)
+                    {
+                        Response.Write("<script language=javascript>$('.schm-detail').show();</script>");
+                        <div class="deposit-scheme-container">
+                            @Html.EditorFor(x => x.SchmDetails)
+                        </div>
+                    }
+
+                    else
+                    {
+                        //Response.Write("<script language=javascript>$('.schm-detail').show();</script>");
+                        <div class="deposit-scheme-container" style="display:none;">
+                        </div>
+                    }
+
+
+                </div>
+                <div class="form-group loan-account-container"style="display:none;">
+                    
+                </div>
+
+
+                
+
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="Save" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PF2id").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            Imageform.append('imagefile', imagecontent);
+            var img = $('input#fileid1').val();
+            $.ajax({
+                type: 'POST',
+                url: "/FinAcc/DisplayImage",
+                data: Imageform,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (ImageContent) {
+                    debugger;
+                    $('#loadimage').empty();
+                    $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                    // $('#loadimage').attr("content", imagecontent);
+                }
+            });
+
+        });
+
+        $('div#Pid').on('getType', function (e, data) {
+
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".FinAcc-create").find(".type-container");
+
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("_GetType", "FinAcc")',
+                contentType: "application/json; charset=utf-8",
+                data: { Pid: data.pid },
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $(container).html("");
+                    $(container).html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+
+        });
+
+        $("#createFinAcc").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty");
+                return false;
+            }
+          
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createFinAcc').find('.parent-FinAcc').find('div#Pid').find('input.internal-value').val();
+
+            
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "FinAcc")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $.fn.updateTreeview('FinAcc', '_UpdateFinAccTree', nodeId, -1)
+                        if(@Model.Fid==0)
+                        {
+                            SuccessAlert("Ledger Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Ledger Edited Succesfully.",1500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+        $('.FinAcc-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/FinAcc/_GetFinAccTreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/FinAcc/_GetFinAccTree", { param: data.param })
+
+            }
+
+
+        });
+
+    });
+    $.fn.GetLayoutFinAcc = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/FinAcc/GetLayoutFinAcc/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+    if (@Model.Fid == 0)
+    {
+        $(document).ready(function() {
+            debugger;
+            var F2Id = $("select#F2Type option:selected").val();
+            var F2type = $("select#F2Type option:selected").text();
+            $.GetTypeFinAcc(F2Id,@Model.Pid)
+
+
+        });
+    }
+
+
+    $('select#F2Type').change(function () {
+        debugger;
+        var F2Id = $(this).val();
+        var F2type = $("select#F2Type option:selected").text();
+
+        $.GetTypeFinAcc(F2Id,@Model.Pid)
+
+
+    });
+    $('.dimension-container-original').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+
+        var dimensionDefnId = $(this).closest('.tr-data-content').find(".dimensiondefn-class").val();
+        debugger;
+        if (this.checked) {
+            var allContent = $(this).closest('.tr-data-content').html();
+
+            //$(allContent).find('.dimension-order-value').val(index);
+            $(this).closest('.main-dimension-container').find('.dimension-order-container').append("<div class='tr-data-content'>" + allContent + '</div>');
+            $(this).closest('.tr-class').remove();
+            var arrayList = $('.dimension-order-container').find('.tr-data-content');
+            $('.dimension-order-container').find('input#dimensionCheckbox').prop('checked', true);
+            $(arrayList).each(function (index, item) {
+                $(item).find('.dimension-order-value').val(index);
+            });
+
+        }
+    });
+    $('.dimension-order-container').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+        var allContent = $(this).closest('.tr-data-content').html();
+        $(this).closest('.main-dimension-container').find('.dimension-container-original').append("<div class='tr-class'><div class='tr-data-content'>" + allContent + '</div></div>')
+        $('.dimension-container-original').find('input#dimensionCheckbox').prop('checked', false);
+        $(this).closest('.tr-data-content').remove();
+
+    });
+
+  
+</script>
+<style>
+    .myHeader {
+        padding-left: 89px;
+        
+        margin-bottom: 18px;
+        width: 93%;
+        
+        height: 28px;
+        padding-top: 4px;
+        border-bottom: 1px solid grey;
+        padding-left: 7px;
+        background-color: #3c8dbc;
+        color: white;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+    }
+</style>
+<style>
+
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+
+
+<script type="text/javascript">
+
+
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product")
+        {
+            $('.deposit-product-container').show();
+        }
+        if (F2type == "Deposit Scheme")
+        {
+            $('.deposit-scheme-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.deposit-product-container').hide();
+        $('.deposit-scheme-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+
+
+    }
+
+</script>
+@*@if (Model.FinSys2 != null)
+{
+    if (Model.FinSys2.FinSys1.IsGroup == false)
+    {
+        <script type="text/javascript">
+            $('.dimension-group').show();
+
+        </script>
+        if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+        {
+            var nodeId = Model.Fid;
+            <script type="text/javascript">
+                $('.dimension-group').show();
+                $("#nextbtn").show();
+
+            </script>
+        }
+
+    }
+}*@
+
+
+
+
+
+<style>
+    .dimension-defination-controller {
+        
+        position: relative;
+    }
+
+    .add-dialog-finacc {
+        left: 296px;
+        top: -67px;
+    }
+</style>

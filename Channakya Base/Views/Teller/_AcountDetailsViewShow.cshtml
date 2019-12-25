@@ -1,0 +1,297 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountDetailsShowViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper;
+
+@{
+    // var accountBalance = Model.AccountBalance.ToList();
+    CommonService commonService = new CommonService();
+}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h4>Account-Details</h4>
+    </div>
+    <div class="panel-body">
+        <div class="box-body table-responsive no-padding">
+
+            @*<div class="box-header">
+
+                    <a class="btn-show" data-toggle="collapse" href="#data-account-show" aria-expanded="true" aria-controls="data-account-show">
+
+                        <i class="fa fa-plus btn-plus" style="display: none"></i>
+                        <i class="fa fa-minus btn-minus"></i>
+                    </a>
+                </div>*@
+
+
+            <div class="collapse in" id="data-account-show">
+
+                <div class="col-md-4">
+                    <label class="control-label">Registered Date:- @commonService.GetDate(Model.RDate)</label>
+
+                </div>
+                <div class="col-md-6">
+                    <label class="control-label">Account Number:- @Model.AccounNumber</label>
+
+                </div>
+                <table class="table table-striped table-bordered table-responsive">
+                    <tr>
+                        <th colspan="4"><label class="control-label">Personal Info</label></th>
+                    </tr>
+                    <tr>
+                        <td><label class="control-label">Customer Name</label></td>
+                        <td><label class="control-label">Contact</label></td>
+                        <td colspan="2"><label class="control-label">Location</label> </td>
+
+
+                    </tr>
+                    <tbody class="account-show-list-view">
+                        @foreach (var item in Model.customerAddress)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <label class="control-label">@item.Name</label>
+                                </td>
+                                <td>
+                                    <label class="control-label">@item.Contact</label>
+
+
+                                </td>
+                                <td colspan="2">
+                                    <label class="control-label">@item.location</label>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+                        <tr>
+                            <td colspan="4"><label class="control-label">Account Info</label></td>
+                        </tr>
+                        <tr>
+                            <td> Account Title </td>
+                            <td><span class="control-label">@Model.AccountTitle</span></td>
+                            <td> Account State </td>
+                            <td><span class="control-label">@Model.AccountState</span></td>
+
+                        </tr>
+                        <tr>
+                            <td>Scheme Name </td>
+                            <td>
+                                <span class="control-label"> @Model.SchemeName</span>
+                            </td>
+                            <td>Product Name </td>
+                            <td> <span class="control-label">@Model.ProductName </span></td>
+
+                        </tr>
+                        <tr>
+                            <td>Product Code </td>
+                            <td>
+                                <span class="control-label">@Model.Prefix</span>
+                            </td>
+                            <td>Inter Branch Transaction</td>
+                            @{
+                                string allowAbbs = "";
+                                if (Model.AllowABBS == true)
+                                {
+                                    allowAbbs = "Available";
+                                }
+                                else
+                                {
+                                    allowAbbs = "Not Available";
+                                }
+                            }
+                            <td> <span class="control-label">@allowAbbs </span></td>
+                        </tr>
+                        @if (EAccountDetailsShow.WithAccount.GetDescription() == Model.ShowType ||
+                             EAccountDetailsShow.WithdrawWithIntPay.GetDescription() == Model.ShowType ||
+                             EAccountDetailsShow.LoanDetails.GetDescription() == Model.ShowType ||
+                             EAccountDetailsShow.LoanPayment.GetDescription() == Model.ShowType ||
+                             EAccountDetailsShow.Deposit.GetDescription() == Model.ShowType || EAccountDetailsShow.AccountClose.GetDescription() == Model.ShowType)
+                        {
+
+                            if (EAccountDetailsShow.LoanDetails.GetDescription() != Model.ShowType || EAccountDetailsShow.LoanPayment.GetDescription() != Model.ShowType)
+                            {
+                                //bool IsRevolving = TellerUtilityService.IsRevolving(Model.IAccno);
+                                //if (!IsRevolving)
+                                //{
+                                <tr>
+                                    <td>Min Balance</td>
+                                    <td> <span class="control-label">@Convert.ToDecimal(Model.BalToMan).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture) </span></td>
+                                    <td>Interest Rate</td>
+                                    <td>
+                                        <span class="control-label">@Model.IRate</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Interest Capitalize Rule</td>
+                                    <td>
+                                        <span class="control-label">@Model.IntCalSchm</span>
+                                    </td>
+
+
+                                    <td>Interest Calc Rule</td>
+                                    <td>
+                                        <span class="control-label">@Model.IntCalschmDr</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Overdraft Facility </td>
+                                    @{
+                                        string overdraft = "";
+                                        if (Model.IsOD == true)
+                                        {
+                                            overdraft = "Available";
+                                        }
+                                        else
+                                        {
+                                            overdraft = "Not Available";
+                                        }
+                                    }
+                                    <td>
+                                        <span class="control-label">@overdraft</span>
+                                    </td>
+                                    <td>Branch Name</td>
+                                    <td> <span class="control-label">@Model.BranchName </span></td>
+
+                                </tr>
+                                            //}
+                                            //else
+                                            //{
+                                            //    Model.ShowType = "LoanDetails";
+                                            //}
+                                        }
+
+                                        foreach (var item in Model.AccountBalance)
+                                        {
+                                            if (item.Amount > 0)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @item.FlagName
+                                                    </td>
+                                                    <td>
+                                                        <span class="control-label">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        }
+                                        <tr>
+
+                                            <td>Available Balance</td>
+                                            <td>@TellerUtilityService.AvailableBalance(Model.IAccno).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                        </tr>
+
+                                        }
+
+                        @if (EAccountDetailsShow.LoanDetails.GetDescription() == Model.ShowType || EAccountDetailsShow.LoanPayment.GetDescription() == Model.ShowType)
+                        {
+                            <tr>
+                                <td>Interest Rate</td>
+                                <td>
+                                    <span class="control-label">@Model.IRate</span>
+                                </td>
+                                <td>Duration</td>
+                                @if (Model.LoanAccountDetails != null)
+                                {
+                                    if (Model.LoanAccountDetails.DurType == 0)
+                                    {
+                                        <td>
+                                            <span class="control-label">@Model.LoanAccountDetails.Days Day(s)</span>
+                                        </td>
+                                    }
+                                    else if (Model.LoanAccountDetails.DurType == 1)
+                                    {
+                                        <td>
+                                            <span class="control-label">@Model.LoanAccountDetails.Month Month(s)</span>
+                                        </td>
+                                    }
+                                }
+
+                            </tr>
+                            <tr>
+                                @if (Model.LoanAccountDetails != null)
+                                {
+                                    <td>Pay Scheme</td>
+                                    <td>
+                                        <span class="control-label">@Model.LoanAccountDetails.PayScheme</span>
+                                    </td>
+                                    <td>Pay Mode</td>
+                                    <td>
+                                        <span class="control-label">@Model.LoanAccountDetails.PayRule</span>
+                                    </td>
+                                }
+
+                            </tr>
+                            <tr>
+                                <td>Branch Name </td>
+
+                                <td> <span class="control-label">@Model.BranchName </span></td>
+                                @if (Model.LoanAccountDetails != null)
+                                {
+                                    <td>Maturity Date</td>
+                                    <td> <span class="control-label">@commonService.GetDate(Convert.ToDateTime(Model.LoanAccountDetails.MaturityDate)) </span></td>
+                                }
+
+
+                            </tr>
+                            <tr>
+                                <td>No. of Principle Inst. </td>
+                                <td>
+                                    <span class="control-label">-</span>
+                                </td>
+                                <td>No. of Interest Inst.</td>
+                                <td> <span class="control-label">-</span></td>
+
+                            </tr>
+                            <tr>
+                                @if (Model.LoanAccountDetails != null)
+                                {
+                                    <td>Sanction Amount </td>
+                                    <td>
+                                        <span class="control-label">@Model.LoanAccountDetails.SancationAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                    </td>
+                                    <td>Principle Out</td>
+                                    <td> <span class="control-label">@Model.LoanAccountDetails.PrincipleLoanOut.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                                }
+                            </tr>
+                            <tr>
+                                @if (Model.LoanAccountDetails != null)
+                                {
+                                    <td>Is Revolving </td>
+                                    <td>
+
+                                        @if (Model.LoanAccountDetails.Revolving == true)
+                                        {
+                                            <span class="control-label">True</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="control-label">False</span>
+                                        }
+
+                                    </td>
+                                    <td>Interest/Principle Freq.</td>
+                                    <td> <span class="control-label">@Model.LoanAccountDetails.InterestFrequency / @Model.LoanAccountDetails.PrincipalFrequency @@ a Month </span></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+

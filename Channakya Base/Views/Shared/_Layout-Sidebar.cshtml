@@ -1,0 +1,211 @@
+﻿@model Loader.ViewModel.LayoutTreeView
+@{
+
+    var test = Model;
+    //Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box-body" id="treeview-menu-area">
+    <section class="sidebar" style="height:initial !important;">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="pull-left image">
+
+                <img src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" />
+            </div>
+            <div class="pull-left info">
+                <p>@Loader.Models.Global.UserName</p>
+                <a href="#"><i class="fa fa-circle text-success" style="font-size: inherit !important;"></i> Online</a>
+            </div>
+        </div>
+        <!-- search form -->
+
+        <div class="input-group sidebar-form" style="margin: 15px 1px 16px 7px;">
+            <input type="text" name="q" class="form-control" placeholder="Search..." id="search-box">
+            <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                    <i class="fa fa-search"></i>
+                </button>
+            </span>
+        </div>
+     
+       
+
+            <li class="sidebar-menu header" style="margin-left: 14px;">MAIN NAVIGATION</li>
+            <div class="main-side-tree" >
+                @Html.EditorFor(x => x.LayoutTreedata)
+            </div>
+
+</section>
+</div><!-- /.box-body -->
+
+
+
+
+<style>
+    aside.main-sidebar {
+        background-color: whitesmoke !important;
+    }
+
+    .slimScrollDiv {
+        position: relative !important;
+        overflow: inherit !important;
+        width: auto !important;
+        height: 614px !important;
+        padding-bottom: 30px !important;
+    }
+
+    .popover.fade.left.in {
+        display: none !important;
+    }
+
+    .loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        border: 2px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 2px solid #3498db;
+        width: 50px;
+        height: 50px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+
+    section.sidebar {
+        height: initial !important;
+    }
+</style> 
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('.sidebar').find('.main-side-tree').find('.master').nextAll('li').slideToggle();
+
+        $('.pull-right-container').click(function () {
+            debugger;
+            var parent = $(this).closest('li.active.treeview');    
+            var id = $(this).attr('id');
+            var isMaster = parent.hasClass('master');
+            if (isMaster == true) {
+                $(parent).nextAll('li').slideToggle();
+            }
+            else {
+                $(parent).nextAll('li[pid=' + id + ']').slideToggle();
+            }
+            $(this).toggleClass('rotatefa')
+
+
+
+        });
+        
+        $('.treeview-menu-item').click(function (e) {
+            debugger;
+            //jQuery.noConflict(e)
+            var controller = $(this).attr("controller");
+            var isConflict = $("#ConflictScript").val();
+            if (isConflict)
+            {
+                jQuery.noConflict();
+            }
+            var action = $(this).attr("acton");
+            var url = '/' + controller + '/' + action ;
+            //window.location = url;
+            //if (e.ctrlKey) {
+            //    $.ajax({
+            //        type: "get",
+            //        url: url,
+            //        contentType: "application/json; charset=utf-8",
+            //        dataType: "html",
+            //        success: function (html) {
+            //            debugger;
+            //           window.open( $('section.content').html(html));
+            //            window.scrollTo(0, 0);
+            //            debugger;
+            //            //$('section.content').find('div:first').animate({ scrollTop: 0 }, 'slow');
+
+            //        },
+            //        error: function () {
+            //            alert("error");
+            //        }
+            //    });
+                
+               
+            //}
+            //else {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        debugger;
+                        $('section.content').html(html);
+                        window.scrollTo(0, 0);
+                        debugger;
+                        //$('section.content').find('div:first').animate({ scrollTop: 0 }, 'slow');
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            //}
+    
+
+        });
+        $('#treeview-menu-area').on('click', "button#search-btn", function (e) {
+            debugger;
+            var query = $(this).closest('.input-group').find("input.form-control").val();
+
+            if (query != null) {
+                var wrapperClass = $(this).closest('.section-treeview').find('.ch-treeview');
+
+                var div = $(wrapperClass).find('.treeview-area');
+
+                var TreeViewParam = {
+                    WithCheckBox: "false",
+                    AllowSelectGroup: "true",
+                    WithImageIcon: "true",
+                    WithOutMe: "false",
+                    Title: "",
+                    SelectedNodeId: "1",
+                    Filter: query
+                }
+
+
+
+                var url = "/Menu/_GetLayoutSideBarTree"
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data:{param:TreeViewParam},
+                    dataType: "html",
+                    success: function (html) {
+                        debugger;
+                        $('.main-side-tree').html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+                //$(".main-side-tree").load(url, { param: TreeViewParam });
+                //debugger;
+            }
+
+
+        });
+
+
+       // $('.sidebar').show();
+
+    });
+
+
+
+    $('#search-box').on('change', function () {
+        debugger;
+        $('#search-btn').trigger('click');
+    });
+</script>

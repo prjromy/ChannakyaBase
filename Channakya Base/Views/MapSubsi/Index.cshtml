@@ -1,0 +1,355 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.SubsiDetailViewModel>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Map Subsi";
+    var test = Model;
+}
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="SubsiDetail-explore">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create" id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{ Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+
+    $('.SubsiDetail-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $('.SubsiDetail-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pSDID').val();
+        if (nodeId == "") {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.SubsiDetail-explore').find('.panel-list').find('.bodycontent-and-paging');
+        var listType = $(this).closest('.SubsiDetail-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_DetailPartial", "MapSubsi")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $(container).val("");
+                $(container).html("");
+                $(container).html(html);
+                $(".subsi-ledger-search").val("");
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.SubsiDetail-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.SubsiDetail-explore').find('.SubsiDetail-treeview').moveUp();
+        //$(this).closest('.SubsiDetail-explore').find('.SubsiDetail-treeview').updateTreeview("SubsiDetail", "_UpdateSubsiDetailTree", 1009,-1)
+    });
+
+    $('.SubsiDetail-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.SubsiDetail-explore').find('.SubsiDetail-treeview').SelectNode(id);
+    });
+
+    $('.SubsiDetail-explore').on('click', '.SubsiDetailImage1,.VoucherMapImage1, .editList1, .btn-create-SubsiDetail', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.SubsiDetail-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.SubsiDetail-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.SubsiDetail-explore').find('.treeview-selected').attr('nodeid');
+        var SubsiDetailId = 0;
+        if ($(this).hasClass('btn-create-SubsiDetail') == true) {
+            SubsiDetailId = 0;
+        }
+        else {
+            //if ($(this).attr('class') == 'SubsiDetailImage1'||'editList1') {
+            SubsiDetailId = $(this).attr('id');
+        }
+        var pSDID = $('p#SubsiDetailCaption').val()
+        if (pSDID == "") {
+            pSDID = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "MapSubsi")',
+            data: { SubsiDetailId: SubsiDetailId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.VoucherMapImage1').on('click', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.SubsiDetail-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.SubsiDetail-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.SubsiDetail-explore').find('.treeview-selected').attr('nodeid');
+        var SubsiDetailId = 0;
+        if ($(this).hasClass('btn-create-SubsiDetail') == true) {
+            SubsiDetailId = 0;
+        }
+        else {
+            //if ($(this).attr('class') == 'SubsiDetailImage1'||'editList1') {
+            SubsiDetailId = $(this).attr('id');
+        }
+        var pSDID = $('p#SubsiDetailCaption').val()
+        if (pSDID == "") {
+            pSDID = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "MapSubsi")',
+            data: { SubsiDetailId: SubsiDetailId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.SubsiDetail-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var SubsiDetailId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#pSDID').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "MapSubsi")',
+            data: { id: SubsiDetailId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                debugger;
+                if (deleteConfirm == 'true') {
+                    debugger;
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "Are you sure you want to Delete?"
+                    }).done(function () {
+                        deleteSubsiDetail(SubsiDetailId, nodeId);
+                    })
+                }
+                else {
+                    ErrorAlert("Please Delete Child Nodes First Or Subsi Is Already Mapped In Voucher", 5000);
+                }
+
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteSubsiDetail(SubsiDetailId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "MapSubsi")',
+            data: { SubsiDetailId: SubsiDetailId },
+            success: function () {
+                debugger;
+                SuccessAlert("SubsiDetail Sucessfully Deleted", 5000)
+                //$.fn.updateTreeview('SubsiDetail', '_UpdateSubsiDetailTree', nodeId, -1);
+                //$.fn.GetLayoutSubsiDetail();
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.SubsiDetail-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/SubsiDetail/_GetSubsiDetailTree"
+        var container = $(this).closest('.SubsiDetail-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var FId = $(this).closest('.box-tools').find('.subsi-ledger-search').val();
+        var listType = $(this).closest('.SubsiDetail-explore').find('#viewType').val();
+        var container = $(this).closest('.SubsiDetail-explore').find('.panel-list').find('.bodycontent-and-paging');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "MapSubsi")',
+            data: { ViewType: listType, query: query, FId: FId },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+        //var filter = query.toUpperCase();
+        //var checkSubsiDetail = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        //if (filter == "") {
+        //    $('.detailsList').each(function (index, item) {
+        //        debugger;
+        //        var findList = $(item).find('.inner').hasClass('listDrill');
+        //        if (findList == true)
+        //        {
+        //            $(item).css('display', 'table-row');
+        //        }
+        //        else
+        //        {
+        //            $(item).css('display', 'block');
+        //        }
+
+        //    });
+        //}
+        //else {
+        //    $('.detailsList').each(function (index, item) {
+        //        debugger;
+        //        var findList = $(item).find('.inner').hasClass('listDrill');
+        //        if (findList == false) {
+        //            var text = $(item).find('.inner').attr('SubsiDetail-caption').toUpperCase();
+        //            $(item).css('display', 'block');
+        //        } else
+        //        {
+        //            var text = $(item).find('.inner').attr('SubsiDetail-caption').toUpperCase();
+        //            $(item).css('display', 'table-row');
+        //        }
+        //        if (text.search(filter) == -1) {
+        //            debugger;
+        //            $(item).css('display', 'none');
+        //        }
+        //        //$(text+':not(:contains(' + filter + '))').hide();
+        //    });
+        //}
+
+
+
+    });
+    $.fn.GetLayoutSubsiDetail = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/SubsiDetail/GetLayoutSubsiDetail/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+    $('.subsi-ledger-search').on('change', function () {
+        debugger
+        var Fid = $(this).val();
+        var query = $(this).closest('.box-tools').find('.txtSearch').val();
+        var listType = $(this).closest('.SubsiDetail-explore').find('#viewType').val();
+        var container = $(this).closest('.SubsiDetail-explore').find('.panel-list').find('.bodycontent-and-paging');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "MapSubsi")',
+            data: { ViewType: listType, query: query, FId: Fid },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                //$("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+</script>
+

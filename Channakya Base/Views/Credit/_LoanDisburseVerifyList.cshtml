@@ -1,0 +1,144 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.LoanDisbursement
+@using ChannakyaBase.BLL
+@{CommonService cs = new CommonService();}
+@using ChannakyaBase.BLL.CustomHelper
+
+<div class="box-body table-responsive no-padding table-click-disburse-List">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+
+            <th>
+                @Html.DisplayName("AccountNumber")
+            </th>
+            <th>
+                @Html.DisplayName("Mode")
+            </th>
+            <th>
+                @Html.DisplayName("Disburse Amount")
+            </th>
+            <th>
+                @Html.DisplayName("Disburse Type ")
+            </th>
+            <th>
+                @Html.DisplayName("Charges")
+            </th>
+            <th>
+                @Html.DisplayName("AddtionalCharge")
+            </th>
+            
+            <th>
+                @Html.DisplayName("Action")
+            </th>
+        </tr>
+
+        @foreach (var item in Model.LoanDisbursementList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                </td>
+                @if (item.Mode == 1)
+                {
+                    <td>
+                        <span>Deposit</span>
+                    </td>
+                }
+                @if (item.Mode == 2)
+                {
+                    <td>
+                        <span>Bank</span>
+                    </td>
+                }
+                @if (item.Mode == 3)
+                {
+                    <td>
+                        <span>Cash</span>
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegularLoan)
+
+                <td>
+                    @if (item.IsOtherLoan == false)
+                {
+                        <span>Regular</span>
+                    }
+                    else if (item.IsOtherLoan == true)
+                {
+                        <span>Other</span>
+                    }
+                    @*@Html.DisplayFor(modelItem => item.Charges)*@
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Charges)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AddtionalCharge)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.Duration)
+                    </td>*@
+
+                <td>
+                    <button type="button" class="btn btn-success btn-sm btn-collection-verify" onclick="DisburseDetails(@item.DisburseId)">Verify<i class="fa fa-check" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_LoanDisburseVerifyList", "credit", Model.LoanDisbursementList.PageCount, Model.LoanDisbursementList.PageNumber, Model.LoanDisbursementList.PageSize)
+</div>
+
+<script>
+    function DisburseDetails(DisburseId) {
+        debugger
+        $.ajax({
+            url: "/credit/DisburseVerifyIndex",
+            data: { disburseId: DisburseId },
+            type: "Get",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                $("section.content").html(result);
+
+
+
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+    }
+    $("div.table-click-disburse-List").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-disburse-List")
+
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.table-click-disburse-List").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-disburse-List")
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.table-click-disburse-List").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-disburse-List")
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>

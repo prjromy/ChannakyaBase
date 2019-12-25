@@ -1,0 +1,42 @@
+﻿@model ChannakyaBase.Model.ViewModel.CollectedAccountSheet
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "CollectionLogList";
+}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">Collector Log List</h4>
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-click-CollectionLog">
+                            <table class="table table-bordered table-striped table-click-CollectionLog-list table-hover">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th>Log Id</th>
+                                        <th>Collector</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.CollectedAccountSheetList)
+                                    {
+                                        @Html.Partial("_CollectionLogDetails", item)
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-default btn-collection-Log-List-close" data-dismiss="modal" style="float:right"> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+</div>
+
+

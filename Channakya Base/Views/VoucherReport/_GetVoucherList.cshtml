@@ -1,0 +1,80 @@
+﻿@model  ChannakyaAccounting.Models.ViewModel.VoucherReportMainViewModel
+
+@{ var count = 0;
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service _voucher1Service = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    Loader.Service.UsersService _usersService = new Loader.Service.UsersService();
+}
+@foreach (var item in Model.VoucherReport)
+{
+    <tr onclick="directToRead(@item.V1Id)" class="verified-voucher">
+        
+        <td>@(count += 1)</td>
+        
+        <td>
+           @*@item.VNo*@
+            <div style="text-align: center;">
+                @item.VNo
+            </div>
+        </td>
+        <td>
+            <div style="text-align: center;">
+               @Convert.ToDateTime(item.TDate).ToShortDateString()
+                @*@item.TDate*@
+            </div>
+            
+        </td>
+        <td>
+            <div style="text-align: center;">
+               @item.Narration
+            </div>
+            
+        </td>
+
+        <td>
+           @* @item.Amount*@
+            <div style="float:right;">
+                @Convert.ToDecimal(item.Amount).ToString("#,##0.00")
+            </div>
+        </td>
+        <td>
+           
+            <div style="text-align: center;">
+                @item.UserName
+            </div>
+        </td>
+        <td>
+           
+            <div style="text-align: center;">
+                @item.PostedOn
+                @*@{
+                    var date =Convert.ToDateTime(item.PostedOn).ToShortDateString();
+                }
+                @date*@
+            </div>
+        </td>
+        <td>
+            @{ 
+                Loader.Repository.GenericUnitOfWork loaderUOW = new Loader.Repository.GenericUnitOfWork();
+                var userObj = loaderUOW.Repository<Loader.Models.ApplicationUser>().GetSingle(x => x.Id == item.ApprovedBy);
+                if(userObj!=null)
+                {
+                    <div style="text-align: center;">
+                        @userObj.UserName
+                    </div>
+                }
+            }
+            @*@item.ApprovedBy*@
+        </td>
+        <td>
+            @*@item.ApprovedOn*@
+            <div style="text-align: center;">
+              @*  @Convert.ToDateTime(item.ApprovedOn).ToShortDateString()*@
+                @item.ApprovedOn
+            </div>
+        </td>
+       
+       
+    </tr>
+
+}
+

@@ -1,0 +1,137 @@
+﻿
+@using ChannakyaAccounting.Service.TaskVerificationAcc
+ @model ChannakyaAccounting.Models.ViewModel.TaskViewModel
+
+@{
+    TaskVerificationService tvs = new TaskVerificationService();
+    var abc = Model;
+}
+<!-- Notifications: style can be found in dropdown.less -->
+<div class="modal fade" id="getTaskVerficationLists" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true"></div>
+<li class="dropdown notifications-menu">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-bell-o"></i>
+        <span class="label label-warning" id="notification-count"> @tvs.CountOfNofication().ToString()</span>
+    </a>
+    <ul class="dropdown-menu"style="cursor:pointer;">
+        <li class="header">You have @Model.TaskDetailList.Count() notifications</li>
+        <li>
+            <!-- inner menu: contains the actual data -->
+            <ul class="menu">
+                <li>
+                    @foreach (var item in Model.TaskDetailList)
+                    {
+
+                    <li>
+
+                        <a onclick="directToRead(@item.Task1Id)">
+                            @*href="/message/Index#loadFilter"*@
+                            <div class="pull-left">
+                                @*<img src="~/Content/img/avatar.png" class="img-circle" alt="User Image" />*@
+                            </div>
+                            <h5>
+                                <span>From:@item.EmployeeName,</span>
+                                @if (item.Message != null)
+                                {
+                                    if (item.Message.Length > 15)
+                                    {
+                                        <span>@item.Message.Substring(0, 15)......</span>
+                                    }
+                                    else
+                                    {
+                                        <span> @item.Message</span>
+                                    }
+                                }
+
+
+
+                                @*<small><i class="fa fa-clock-o"><time class="agoTime" datetime="@item.RaisedOn"></time> </i> </small>*@
+                            </h5>
+                            <p>
+
+
+                            </p>
+                        </a>
+                    </li>
+                    }
+                </ul>
+            </li>
+            <li class="footer"><a onclick="ViewAll()"style="cursor:pointer;">View all</a></li>
+
+        </ul>
+    </li>
+
+    <script>
+    @*timerId = setInterval(function () {
+        $("#refresh").load("@Request.Url #notificationContainer");
+    },  10 * 1000);*@
+       
+    </script>
+    <script>
+        function ViewAll() { 
+            urlToDirect = "/TaskVerificationAcc/_ViewAllPendingTaskIndex";
+            $.ajax({
+                type: "GET",
+                url: urlToDirect,
+                success: function (result) {
+                    debugger;
+                    $('.content').html("");
+                    $('.content').html(result);
+                        
+                },
+                error: function () {
+
+                }
+            });
+        }
+        function directToRead(task1id) {
+           
+            var urlToDirect;
+            urlToDirect = "/TaskVerificationAcc/_VerificationModal";
+            $.ajax({
+                type: "GET",
+                url: urlToDirect,
+                data: { task1id: task1id },
+                success: function (result) {
+                 
+                    $('#getTaskVerficationLists').html(result).modal({
+                        'show': true,
+                        'backdrop':false
+                        
+                    });
+                    //$()
+                    //$('.modal-backdrop.in').css('opacity', '0');
+                    
+                    //$('.modal-backdrop').remove();
+                },
+                error: function () {
+
+                }
+            });
+        }
+        function directToReadReject(task1id) {
+
+            var urlToDirect;
+            urlToDirect = "/TaskVerificationAcc/_RejectModel";
+            $.ajax({
+                type: "GET",
+                url: urlToDirect,
+                data: { task1id: task1id },
+                success: function (result) {
+
+                    $('#getTaskVerficationLists').html(result).modal({
+                        'show': true,
+                        'backdrop': false
+
+                    });
+                    //$()
+                    //$('.modal-backdrop.in').css('opacity', '0');
+
+                    //$('.modal-backdrop').remove();
+                },
+                error: function () {
+
+                }
+            });
+        }
+    </script>

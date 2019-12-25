@@ -1,0 +1,230 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.PolicyIntCalc
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "InterestPolicyIndex";
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Interest Policy Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="InterestPolicy">
+        @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+        <div id="InterestPolicy-create" class="InterestPolicyCreate">
+            @{Html.RenderAction("_InterestPolicyCreate", "TransactionSetup");}
+        </div>
+        <div id="InterestPolicy-list" class="InterestPolicyList">
+            @{Html.RenderAction("_InterestPolicyList", "TransactionSetup");}
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+            $(document).ready(function () {
+
+                $.validator.unobtrusive.parse($("#InterestPolicyFormCreate"));
+
+                $('.InterestPolicy').on('click', '#btn-saveInterestPolicy-submit', function () {
+                    debugger;
+                    //$.validator.unobtrusive.parse('#InterestPolicyFormCreate');
+                    //$('#InterestPolicyFormCreate').removeData("validator").removeData("unobtrusiveValidation");
+                    //$.validator.unobtrusive.parse($('#InterestPolicyFormCreate'));
+                    ////var formInterestPolicy = $('#InterestPolicyFormCreate');
+                    ////formInterestPolicy.validate();
+                    //if ($('#InterestPolicyFormCreate').valid() == false) {
+                    //    InfoAlert("Please fill out the form!!", 6000)
+                    //    return false;
+                    //}
+
+                    $('#InterestPolicyFormCreate').removeData("validator").removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse($("#InterestPolicyFormCreate"));
+                    debugger;
+                    if ($('#InterestPolicyFormCreate').valid() == false) {
+                        InfoAlert('Please Fill out the form correctly', 6000);
+                        return false;
+                    }
+
+                    var PSName = $('#PSName').val();
+                    var PSID = $('#PSID').val();
+
+                    $.ajax({
+                        url: "/TransactionSetup/CheckPolicyName",
+                        type: 'GET',
+                        async: false,
+                        data: { PSID: PSID, PSName: PSName },
+                        success: function (result) {
+                            var message = $(this).closest("form").find(".field-validation-error").text();
+                            if (result == false) {
+                                debugger;
+
+                                InfoAlert("Please fill the form correctly", 5000);
+                                return false;
+
+                            }
+                            else {
+
+                                $.MessageBox({
+                                    buttonDone: "Yes",
+                                    buttonFail: "No",
+                                    message: "Are you sure?"
+                                }).done(function () {
+                                    debugger
+                                    $("#InterestPolicyFormCreate").ajaxSubmit({
+                                        beforeSubmit: function () {
+                                        },
+                                        success: function (result) {
+                                            debugger
+                                            if (result.Success) {
+                                                $.ajax({
+                                                    url: "/TransactionSetup/InterestPolicyIndex",
+                                                    type: 'GET',
+                                                    async: false,
+                                                    success: function (data) {
+                                                        debugger;
+                                                        $('section.content').html(data);
+
+                                                    }
+                                                })
+                                                SuccessAlert(result.Msg, 5000);
+                                                document.getElementById('alert-success').scrollIntoView();
+                                            }
+                                            else {
+                                                ErrorAlert(result.Msg, 5000);
+                                                document.getElementById('alert-error').scrollIntoView();
+                                            }
+                                        },
+                                        error: function () {
+                                            ErrorAlert(data.responseText, 15000)
+                                        }
+                                    });
+
+                                }).fail(function () {
+                                    //return false;
+                                })
+                            }
+                        }
+                    })
+                });
+
+
+              
+                $('.InterestPolicy').on('click', '.btn-edit-policy-interest', function () {
+                    debugger
+
+                    var PSID = $(this).data('id');
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/TransactionSetup/_InterestPolicyCreate/",
+                        data: { PSID: PSID },
+                        success: function (data) {
+                            // $(".section-create").show();
+                            //  $('.InterestPolicyCreate').html(data);
+                            $('.InterestPolicyCreate').html(data).find('.focusdiv').focus()
+                        }
+                    })
+
+                });
+                $('.InterestPolicy').on('click', '#btn-cancel-saveInterestPolicy', function () {
+
+                    var container = $(this).closest('.InterestPolicy').find(".InterestPolicyCreate");
+                    $(this).closest('.InterestPolicy').find(".InterestPolicyCreate").find('#btn-cancel-saveInterestPolicy').hide();
+                    $(container).html("");
+                    $.ajax({
+                        type: "GET",
+                        url: "/TransactionSetup/_InterestPolicyCreate/",
+                        success: function (data) {
+                            $(container).html(data);
+                        }
+                    })
+                });
+
+                $('.InterestPolicy').on('click', '.btn-delete-policy-interest', function () {
+                    debugger;
+
+                    PSID = $(this).attr("data-id");
+                    $.ajax({
+                        type: "get",
+                        url: '@Url.Action("InterestPolicyDelete", "TransactionSetup")',
+                        data: { PSID: PSID },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "html",
+                        success: function (result) {
+                            if (result == "false") {
+                                ErrorAlert("Cannot Be deleted Interest Policy is in use. ",5000);
+
+                            }
+                            else {
+                                $.MessageBox({
+                                    buttonDone: "Yes",
+                                    buttonFail: "No",
+                                    message: "Are you sure you  want to Delete ?"
+                                }).done(function () {
+                                    debugger
+                                    //alert(result)
+                                    deleteMenuTempRateVal(PSID);
+                                })
+                            }
+                        }, error: function () {
+                            alert("error");
+                        }
+                    });
+                });
+                function deleteMenuTempRateVal(PSID) {
+                    debugger;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("InterestPolicyDeleteConfirm", "TransactionSetup")',
+                        data: { PSID: PSID },
+                        success: function (result) {
+
+                            SuccessAlert(" Sucessfully Deleted", 5000);
+                            $("#InterestPolicy-list").html(result);
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
+                }
+
+            function InterestPolicySuccess() {
+                debugger;
+                SuccessAlert("Succesfully Saved. ", 5000);
+                $.ajax({
+                    url: '@Url.Action("_InterestPolicyList", "TransactionSetup")',
+                    type: 'GET',
+                    processData: false,
+                    success: function (data) {
+                        $(".InterestPolicyList").html(data);
+                        console.log(data)
+                        $.ajax({
+                            url: '@Url.Action("_InterestPolicyCreate", "TransactionSetup")',
+                            type: 'GET',
+                            processData: false,
+                            success: function (data) {
+                                $(".InterestPolicyCreate").html(data);
+                                console.log(data)
+                            },
+                            error: function () {
+                                alert('error');
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            }
+            });
+</script>

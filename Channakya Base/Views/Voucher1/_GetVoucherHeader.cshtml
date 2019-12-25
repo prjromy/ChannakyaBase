@@ -1,0 +1,81 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1T
+
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var getVType = voucherService.GetVoucherType();
+    var getCurrency = voucherService.GetCurrencyType();
+    var getFiscalYr = voucherService.GetFiscalYear();
+}
+
+@Html.HiddenFor(x => x.V1TId)
+
+<div class="col-md-12">
+    <div class="col-md-4">
+        <label class="control-label col-md-4"> Type</label>
+        <div class="col-md-8">
+            @Html.DropDownListFor(model => model.VTypeId, getVType, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <label class="control-label col-md-4"> Currency</label>
+        <div class="col-md-8">
+            @Html.DropDownListFor(model => model.CTId, getCurrency, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(x => x.BatchNo, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8 batch-number">
+
+        </div>
+
+    </div>
+    <div class="col-md-2">
+
+        <button type="button" id="recentLog" class="btn btn-info btn-sm" data-toggle="modal" data-target="#logModal">
+            <span class="glyphicon glyphicon-file"></span> Log
+        </button>
+    </div>
+
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var voucherType = $("select#VTypeId option:selected").val();
+        var container = $('.Voucher1-create').find('.batch-number');
+
+        var form = $(container).closest("form");
+
+        $.ajax({
+            url: '/Voucher1/GetBatch/',
+            data: { type: voucherType },
+            dataType: "html",
+            success: function (data) {
+                $(container).show();
+                $(container).html(data);
+                $(form).removeData("validator");
+                $(form).removeData("unobtrusiveValidation");
+
+            }
+        });
+    })
+    $('button#recentLog').click(function () {
+
+        debugger;
+        var url = $('#getVoucherLogs').data('url');
+        //var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+        //var data = { "type": type };
+
+
+
+        $.get(url, function (data) {
+
+            $('#getVoucherLogs').html(data);
+            debugger;
+
+            $('#getVoucherLogs').modal('show');
+        });
+
+    });
+</script>

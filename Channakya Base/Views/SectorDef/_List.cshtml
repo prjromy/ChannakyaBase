@@ -1,0 +1,44 @@
+﻿@using PagedList.Mvc
+@using PagedList
+@using ChannakyaBase.BLL.CustomHelper
+@model List<ChannakyaBase.DAL.DatabaseModel.SectorDef>
+<div>
+    <h2>Sector List</h2>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().CDepSectorNam)
+            </th>
+            <th></th>
+        </tr>
+
+        @if (Model.Count() == 0)
+        {
+            <tr>
+
+                <td>
+                    No Record Found
+                </td>
+                <td></td>
+            </tr>
+        }
+        else {
+
+            foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CDepSectorNam)
+
+                </td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.CDepSector" data-toggle="tooltip" title="Edit"></button>
+                    <button type="button" class="btn btn-info btn-sm btn-sm btn-delete glyphicon glyphicon-trash danger" data-id="@item.CDepSector" data-val="@item.CDepSectorNam" data-toggle="tooltip" title="Delete"></button>
+                </td>
+            </tr>
+        }}
+   
+
+    </table>
+ 
+</div>

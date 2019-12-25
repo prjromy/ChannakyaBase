@@ -1,0 +1,346 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.TransactionReportUserViewModel>
+@{
+    var count = 0;
+    Loader.Service.EmployeeService _empService = new Loader.Service.EmployeeService();
+}
+
+
+<div class="modal-dialog  add-user">
+    <div class="modal-content">
+        <div class="modal-header">
+
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">User Details</h4>
+
+        </div>
+        <div class="modal-body" style="padding:40px 50px; ">
+            <div class="col-md-11">
+                <input type="text" name="Search" placeholder="Search By User name ..." class="user-search-text form-control">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-default" name='btnsearch' id='btnsearch-user' type="button"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+
+            <div class="container bodycontent-and-paging">
+                <div class="container user-list-model">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+
+                                <table id="userTable" class="table table-bordred" style="max-width:45%;">
+
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                S.N
+                                            </th>
+                                            <th>
+                                                User Name
+                                            </th>
+                                            <th>
+                                                Employee Name
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr class="user-details" id="@item.UserId" user-name="@item.UserName" style="cursor:pointer;">
+                                                @Html.HiddenFor(x => item.UserId)
+
+                                                <td>@(count += 1)</td>
+                                                <td class="user-name" style="cursor:pointer;">
+                                                    @item.UserName
+                                                </td>
+                                                <td>
+                                                    @{
+                                                        var hasEmp = _empService.GetSingle((int)item.EmployeeId);
+                                                        if (hasEmp != null)
+                                                        {
+                                                            <p>
+                                                                @hasEmp.EmployeeName
+                                                            </p>
+                                                        }
+                                                    }
+
+
+                                                </td>
+                                            </tr>
+                                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer col-md-12" style="max-width:45%">
+                    @*  *@
+                    @*<input type="submit" class="btn btn-success" value="Save" />
+                        <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>*@
+
+                    <ul class="pagination userpagination" style="float:left;margin-right: 10px;margin-left: -13px;max-width: 90%;">
+                        <li class="previous"><a href="#">Previous</a></li>
+                        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                        {
+                            if (i > 4)
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+
+                                        if (i > ViewBag.ActivePager)
+                                        {
+                                            if (i - ViewBag.ActivePager <= 2)
+                                            {
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                            else
+                                            {
+                                                if (i == ViewBag.CountPager)
+                                                {
+                                                    if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                    {
+                                                        <li class=""><a>.......</a> </li>
+                                                    }
+                                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                }
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                        }
+                        <li class="next"><a href="#">Next</a></li>
+
+                    </ul>
+                    <div style="margin-top:20px;margin-left:20px" class="search-container">
+                        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        var query = $('#getUserDetails').find('.user-search-text').val();
+        debugger;
+        @*var batchlist=[];
+        batchlist=@ViewBag.BatchList;*@
+        var bList="@ViewBag.BatchList";
+        $('button#btnsearch-user').click(function () {
+            debugger;
+            var text = $(this).closest("div").find(".user-search-text").val();
+            $.ajax({
+                url: '/VoucherReport/_GetUserDetailsForTrans/',
+                type: "POST",
+                data: {
+                    query: text,
+                    VoucherType:@ViewBag.VoucherType,
+                    BatchList:JSON.stringify( @ViewBag.BatchList)
+                },
+
+                async: false,
+                dataType: "html",
+                success: function (data) {
+                    debugger;
+                    $("div.bodycontent-and-paging").html(data);
+                    //     $('.loaderContainer').hide();
+
+
+                }
+            });
+        });
+
+        $('.userpagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var query = $('#getUserDetails').find('.user-search-text').val();
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.userpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.explore-details').find('.modal-content').find('.bodycontent-and-paging');
+                    $('.bodycontent-and-paging').load("/VoucherReport/_GetUserDetailsForTrans", {query:query, fId: 1, page: finalId, VoucherType:@ViewBag.VoucherType,  BatchList:bList });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.userpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.userpagination').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.explore-details').find('.modal-content').find('.bodycontent-and-paging');
+                    $('.bodycontent-and-paging').load("/VoucherReport/_GetUserDetailsForTrans", { query: query, fId: 1, page: finalId, VoucherType:@ViewBag.VoucherType,  BatchList:bList});
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.userpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var query = $('#getUserDetails').find('.user-search-text').val();
+            var finalId = $(this).val();
+            //var container = $(this).closest('.Voucher1-explore').find('#getUserDetails').find('.modal-body');
+            var container = $(this).closest('.explore-details').find('.modal-content').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/VoucherReport/_GetUserDetailsForTrans",
+                    type: "POST",
+                    data: {
+                        query: query,
+                        fId: 1,
+                        page: finalId,
+                        VoucherType:@ViewBag.VoucherType,
+                        BatchList:JSON.stringify( @ViewBag.BatchList)
+                    },
+                    traditional:true,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.userpagination').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.userpagination').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.userpagination').find('li#' + finalId).addClass('active');
+
+
+                    }
+
+                });
+            }
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+            var checkActive = $('ul.pagination.userpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.userpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.userpagination').find('li#' + finalId).addClass('active');
+
+        });
+        $('.userpagination').on('click', '.pagerClass', function () {
+            debugger;
+            var query = $('#getUserDetails').find('.user-search-text').val();
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.explore-details').find('.modal-content').find('.bodycontent-and-paging');
+            $('.bodycontent-and-paging').load("/VoucherReport/_GetUserDetailsForTrans", { query: query, fId: 1, page: pagingData, VoucherType:@ViewBag.VoucherType,  BatchList:bList });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.userpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.userpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.userpagination').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+
+
+
+    $('tr.user-details').click(function () {
+        debugger;
+        var id = $(this).attr('id');
+        var userName = $(this).attr('user-name');
+
+        $("#userName").val(userName);
+        $("#userid").val(id);
+        $('#PostedBy').val(id);
+
+        $('#getUserDetails').modal('hide');
+    });
+
+
+
+</script>
+<script>
+    $('.modal-body').on('keydown', '.user-search-text', function (event) {
+        debugger;
+        if (event.keyCode == 13 || event.keyCode == 9) {
+            $('#btnsearch-user').trigger('click');
+        }
+
+    });
+
+</script>
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .user-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>
+
+

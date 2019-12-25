@@ -1,0 +1,368 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.CertificateDef>
+@{
+    ViewBag.Title = "Index";
+    var abc = @ViewBag.key;
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="certificate-list">
+    <input type="button" value="New Certificate" id="btn-create" class="btn btn-md btn-success btn-create" />
+
+    <div class="section-create">
+    </div>
+    <div id="certificate-list" class="details">
+        @{Html.RenderAction("_List", "CertificateDef"); }
+    </div>
+</div>
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script type="text/javascript">
+
+
+        //window.onbeforeunload = null;
+        function onfailure(errormesg) {
+            debugger;
+            erroralert(errormesg);
+        }
+
+
+        function createSuccess() {
+            SuccessAlert("Certificate Succesfully created. ", 5000);
+            $.ajax({
+                url: '@Url.Action("_Create", "CertificateDef")',
+                type: 'GET',
+                processData: false,
+                success: function (data) {
+                    $(".section-create").html(data);
+                    console.log(data)
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+        };
+
+
+        function editSuccess() {
+            SuccessAlert("Certificate Succesfully Edited. ", 5000);
+            debugger;
+            $('.certificate-list').find('.edit-section').hide();
+            $('.certificate-list').find(".btn-create").val('New Certificate');
+        }
+        // create get
+        $(function () {
+
+
+
+         
+            $('.btn-create').on('click',  function () {
+                debugger;
+           
+                var thisVal = $(this).val();
+                if (thisVal == "Hide Section") {
+                    $(this).val("New Certificate")
+                    $(".section-create").hide();
+                }
+                else {
+                    $(this).val("Hide Section")
+                    $.ajax({
+                        type: "GET",
+                        url: "/CertificateDef/_Create",
+                        success: function (data) {
+                            $(".section-create").show();
+                            $('.section-create').html(data).find('.focusdiv').focus()
+                        }
+                    })
+                }
+            });
+            //create post
+
+            $.validator.unobtrusive.parse('#createSubmitForm');
+            $('.section-create').on('click ', '#btn-save-submit', function (e) {
+                debugger;
+
+                $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($("#createSubmitForm"));
+                if ($("#createSubmitForm").valid() === false) {
+                    //$(".field-validation-error").each(function (index) {
+
+                    //    var message = $(this).closest("form").find(".field-validation-error").text();
+                    //    if (index > 1) {
+                    //        var messageDisplay = (message.split('\n'))
+
+                    //    }
+                    //    //if(message)
+                    //    InfoAlert(messageDisplay, 3000);
+                    //});
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    InfoAlert(message, 3000);
+
+                    return false;
+
+                }
+
+
+                @*var CCCertID=@Model.CCCertID;
+
+                $.ajax({
+                    url: "/CertificateDef/CheckCertificateAfterSave",
+                    type: 'GET',
+                    async: false,
+                    data: { CCCertID: CCCertID, CCCert: CCCert },
+                    success: function (result) {
+                        if (result == false) {
+                            debugger;
+                            ErrorAlert("Certificate Already Exists", 5000);
+                            return false;
+                        } else {*@
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    debugger
+                    $("#createSubmitForm").ajaxSubmit({
+                        beforeSubmit: function () {
+
+
+                        },
+
+                        success: function (result) {
+                            if (result.Success) {
+                                $.ajax({
+                                    url: "/CertificateDef/Index",
+                                    type: 'GET',
+                                    async: false,
+                                    success: function (result) {
+                                        debugger;
+                                        $('section.content').html(result);
+                                    }
+                                })
+                                SuccessAlert(result.Msg, 5000);
+                                document.getElementById('alert-success').scrollIntoView();
+                            }
+                            else {
+                                ErrorAlert(result.Msg, 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                            }
+                        },
+                        error: function () {
+                            ErrorAlert(data.responseText, 15000)
+                        }
+                    })
+
+
+                }).fail(function () {
+
+                })
+                //}
+
+            });
+
+            
+
+
+            // edit get
+            $('.certificate-list').on('click ', '.btn-edit', function () {
+                debugger
+
+
+                var container = $(this).closest('.certificate-list').find('.section-create');
+                var value = $(this).data('id');
+
+                $.ajax({
+                    type: "GET",
+                    url: "/CertificateDef/_Edit/" + value,
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+                    }
+                })
+
+            });
+
+
+
+            $.validator.unobtrusive.parse($("#editSubmitForm"));
+
+            $('.certificate-list').on('click', '#btn-edit-submit', function () {
+                $('#editSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($("#editSubmitForm"));
+                debugger;
+                if ($('#editSubmitForm').valid() == false) {
+                    InfoAlert('Please Fill out the form correctly', 6000);
+                    return false;
+                }
+                var CCCert = $('#CCCert').val();
+                var CCCertID = $('#CCCertID').val();
+                
+                $.ajax({
+                    url: "/CertificateDef/CheckCertificate",
+                    type: 'GET',
+                    async: false,
+                    data: { CCCertID: CCCertID, CCCert: CCCert },
+                    success: function (result) {
+                        var message = $(this).closest("form").find(".field-validation-error").text();
+                        if (result == false) {
+                            debugger;
+
+                            InfoAlert(message, 5000);
+
+                        }
+
+
+                        else {
+
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure?"
+                            }).done(function () {
+                                debugger
+                                $("#editSubmitForm").ajaxSubmit({
+                                    beforeSubmit() {
+
+                                    },
+                                    success: function (result) {
+                                        if (result.Success) {
+                                            $.ajax({
+                                                url: "/CertificateDef/Index",
+                                                async: false,
+                                                success: function (result) {
+                                                    $('section.content').html(result);
+                                                }
+                                            })
+                                            SuccessAlert(result.Msg, 5000);
+                                            document.getElementById('alert-success').scrollIntoView();
+                                        }
+                                        else {
+                                            ErrorAlert(result.Msg, 5000);
+                                            document.getElementById('alert-error').scrollIntoView();
+                                        }
+                                    },
+                                    error: function () {
+                                        ErrorAlert(data.responseText, 15000)
+                                    }
+                                })
+                            }).fail(function () {
+
+                            })
+                        }
+
+                    }
+                    })
+            })
+
+
+
+
+
+
+            // cancel
+            $('.certificate-list').on('click', '.btn-cancel', function () {
+                var container = $(this).closest('.certificate-list').find(".section-create");
+                $(container).empty();
+                $(container).hide();
+                debugger;
+                $('.btn-create').val("New Certificate")
+            });
+
+            var certificateId;
+            var itmName;
+            $('#certificate-list').on('click', '.btn-delete', function () {
+                debugger;
+                itmName = $(this).attr("data-val");
+                certificateId = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("Delete", "CertificateDef")',
+                    data: { id: certificateId },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (result) {
+                        if (result == "false") {
+                            ErrorAlert("Certificate Type is used in Customer type.", 5000);
+                        }
+                        else {
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure you want to Delete " + itmName + " ?"
+                            }).done(function () {
+                                //alert(result)
+                                debugger;
+
+                                deleteMenu(certificateId);
+
+
+                            })
+                        }
+
+                    }, error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+            function deleteMenu(certificateId) {
+                debugger;
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteConfirm", "CertificateDef")',
+                    data: { Id: certificateId },
+                    success: function (result) {
+
+                        //if (result == "true") {
+
+                        SuccessAlert(itmName + '<span>&nbsp;Sucessfully Deleted </span>', 5000);
+                        $("#certificate-list").html(result);
+
+                        //}
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+            }
+
+
+        });
+            $(document).on('click', '#searchsubmit', function (event1) {
+                debugger;
+                var search = $('#txtsearch').val();
+                var url = '@Url.Action("_List", "CertificateDef")';
+                var data = { search: search };
+                $.get(url, data, function (data) {
+
+                    $("#certificate-list").html(data);
+                });
+
+
+            });
+            $(document).on('change', '#txtsearch', function (event1) {
+                debugger;
+                var search = $('#txtsearch').val();
+                var url = '@Url.Action("_List", "CertificateDef")';
+                var data = { search: search };
+                $.get(url, data, function (data) {
+
+                    $("#certificate-list").html(data);
+                });
+
+
+            });
+      
+
+
+
+
+
+</script>

@@ -1,0 +1,297 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustInfo
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    var model = Model;
+    ViewBag.Title = "Customer Create";
+    var m = ViewBag.ModelFrom;
+}
+
+
+
+<script>
+    $(document).ready(function () {
+
+        $(".btn-save-item").on('click', function (e) {
+            debugger;
+            var id = $(this).attr('data-id');
+            var idtype = 1;
+            $.ajax({
+                type: 'GET',
+                url: "/Customer/EventMessage",
+                data: {
+                    id: id,
+                    idtype: idtype
+                },
+                success: function (result) {
+                    debugger;
+                    $('#message-pop-up-div2').html(result).modal({
+                        'show': true,
+                        'backdrop': 'static'
+                    });
+                }
+            })
+        });
+
+    })
+</script>
+
+<div id='message-pop-up-div2' class='modal fade col-md-offset-2' role='dialog'></div>
+<div class="customer-create-main with-border">
+
+    <div class="box box-warning" style="padding:2px">
+        <div class="box-header with-border">
+            <h4 class="page-title">Details Of Customer</h4>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool cancelAccountDetails" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+
+        <div class="btn col-md-12">
+            @*<button type="button" style="float:right" class="btn btn-info btn-save-item btn-sm glyphicon glyphicon-edit" data-id="@Model.CID">EventMessage</button>*@
+        </div>
+
+
+        <div class="customer-event-message box-body col-md-12">
+        </div>
+        <br />
+        <div class="box-body">
+
+            <fieldset>
+                <legend style="font-size:large">Customer Type</legend>
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>Customer Type </th>
+                            <td><span class="control-label"> @Model.CustType.Ctype</span></td>
+
+
+                            <th> Sector </th>
+                            <td><span class="control-label">@Model.SectorDef.CDepSectorNam</span></td>
+                        </tr>
+                        <tr>
+                            <th> Certificate </th>
+                            <td><span class="control-label">@Model.CertificateDef.CCCert</span></td>
+
+                            <th> Certificate No. </th>
+                            <td><span class="control-label">@Model.CCCertno</span></td>
+                        </tr>
+                        <tr>
+                            <th> PAN No. </th>
+                            <td><span class="control-label">@Model.PANNo</span></td>
+
+                            @if (Model.CustType.isind == 1)
+                            {
+                                <th> Date Of Birth </th>
+                            }
+                            else
+                            {
+
+                                <th> Established Date </th>
+                            }
+                            <td><span class="control-label">@Convert.ToDateTime(Model.DoB).ToShortDateString()</span></td>
+                        </tr>
+                        <tr>
+                            <th> Registered date </th>
+                            <td><span class="control-label">@Convert.ToDateTime(Model.CRegdate).ToShortDateString()</span></td>
+                            <th> Branch Name </th>
+                            <td><span></span></td>
+                        </tr>
+                    </table>
+                </div>
+
+
+
+            </fieldset>
+            <br />
+            <br />
+
+
+            <div class="customer-type-create">
+                @if (Model.CtypeID != 0 && ViewBag.cType == 1)
+            {
+                    @Html.Partial("_CustomerIndividualDetails", Model.CustIndividual);
+
+            }
+            else if (Model.CtypeID != 0 && ViewBag.cType == 0)
+            {
+                    @Html.Partial("_CustomerCompanyDetails", Model.CustCompany);
+            }
+            </div>
+            <div class="custAddress-create">
+                <fieldset>
+                    <legend style="font-size:large">Address Details</legend>
+                    <div class="table table-responsive">
+                        <table class="table table-responsive table-hover cust-address-header-table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Address Type</th>
+                                    <th>Address</th>
+                                    <th>Street Name</th>
+                                    <th>Block</th>
+                                    <th>Office Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CustAddresses)
+                                {
+                                    item.CID = Model.CID;
+                                    item.LType = item.LocationTypeDef.LType;
+                                    item.AddressTypeId = item.LocationTypeDef.ATypeId;
+                                    @Html.Partial("_CustAddressDetails", item)
+                                }
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+            <br />
+            <br />
+
+
+            <fieldset>
+                <legend style="font-size:large">Contact Details</legend>
+
+                <div style="min-height:50px;max-height:300px;overflow:auto;">
+
+                    <table class="table table-responsive table-hover table-striped table-bordered cust-contact-table">
+
+                        <tr>
+                            <th class="col-md-4">Contact Type</th>
+                            <th class="col-md-4">Contact</th>
+                            <th class="col-md-2">Is Default</th>
+                        </tr>
+
+                        <tbody class="custList">
+                            @if (Model.CID != 0)
+                            {
+                                foreach (var item in Model.CustContacts)
+                                {
+                                    int count = item.CustIRegContacts.Where(x => x.CCID == item.CCID).Count();
+                                    if (count > 0)
+                                    {
+                                        item.IsDefault = true;
+                                    }
+                                    item.CtypeId = Model.CtypeID;
+                                    @Html.Partial("_CustContactDetails", item)
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+
+            <br />
+            <br />
+            <div class="custContact-person-create">
+                <fieldset>
+                    <legend style="font-size:large">Contact Person Details</legend>
+
+                    <div style="min-height:50px;max-height:300px;overflow:auto;">
+
+                        <table class="table table-responsive table-hover table-striped table-bordered cust-contact-person-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-4">Name</th>
+                                    <th class="col-md-4">Contact Number</th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="cust-Contact-Person-List">
+                                @foreach (var item in Model.CustContactPersons)
+                                {
+                                    @Html.Partial("_CustContactPersonDetails", item)
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+            <br />
+            <br />
+            <div>
+
+                @if (Model.CID != 0)
+            {
+                    <table class="table table-responsive table-hover table-striped table-bordered cust-certificate-table">
+                        <thead>
+                            <tr>
+
+                                <th>Certificate List</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CustTypeCertificate)
+                {
+
+                    item.CCCertID = item.CertificateDef.CCCertID;
+                    var isSubmitted = Model.CustCertificates.Where(x => x.CCCertID == item.CCCertID).FirstOrDefault();
+                    if (isSubmitted != null)
+                    {
+                        item.CCertID = isSubmitted.CCertID;
+                        item.isSubmitted = true;
+                                    @Html.Partial("_AttachedCertificateDetails", item)
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                }
+                <div class="cust-type-certificate">
+                </div>
+            </div>
+            <span id="tabFromData" TabToGo="@ViewBag.ModelFrom"></span>
+            @Html.Partial("_CustomerAccountsDetails", Model.CustomerAccounts, new ViewDataDictionary { { "ModelFrom", ViewBag.ModelFrom } })
+            @if (@ViewBag.ModelFrom != "AccountOpen")
+            {
+                <div class="form-group">
+                    <hr />
+                    <div class="col-md-12">
+                        <span class="pull-right">
+
+                            <input type="button" value="Back To List" id="btn-cancel" class="btn btn-primary btn-cancel" />
+                        </span>
+                    </div>
+                </div>
+
+            }
+               
+        </div>
+
+    </div>
+
+    
+</div>
+<script>
+    $('.btn-cancel').click(function () {
+            Url="/Customer/CustomerListIndex/"
+        $.ajax({
+            type: "GET",
+            url: Url,
+
+            success: function (data) {
+                debugger
+                $('section.content').html(data);
+
+
+            }
+        })
+    });
+
+    $('.customer-create-main').on('click', '.cancelAccountDetails', function () {
+        debugger;
+        var buttonVal = $('.account-details').find('.view-account-details').val();
+        if (buttonVal == "Hide Details") {
+            $('.view-account-details').val("View Details")
+            $('.view-account-details').addClass("btn-success")
+            $('.view-account-details').removeClass("btn-warning")
+        }
+    });
+</script>

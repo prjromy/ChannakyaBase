@@ -1,0 +1,78 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ChequeWithdewModel
+@using ChannakyaBase.BLL
+
+@{
+   decimal Sum = 0;
+
+    CommonService commonService = new CommonService();
+  
+}
+<div class="box-body table-responsive no-padding" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+               
+                <th>
+                    Account Number
+                </th>
+                <th>Transaction Date</th>
+            
+                <th>
+                    Name
+                </th>
+                <th>
+                    Cheque No
+                </th>
+                <th>
+                    Amount
+                </th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+     
+            @foreach (var item in Model.ChequeWithdrawList)
+            {
+
+                <tr>
+
+                    <td>
+                        @item.AccountNumber
+                    </td>
+                    <td>@commonService.GetEnglishDate(item.TransactionDate)</td>
+                    
+                   
+                    <td>
+                        @item.AccountName
+                    </td>
+                    <td style="text-align:right">
+                        @item.ChequeNo
+                    </td>
+                    <td style="text-align:right">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                    <td>@item.Notes</td>
+                </tr>
+                Sum += item.Amount;
+
+            }
+            <tr>
+                <th colspan="4">Total</th>
+                <th style="text-align:right">@Sum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+                <td></td>
+            </tr>
+           
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+

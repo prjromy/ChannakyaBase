@@ -1,0 +1,186 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.CustInformationViewModel
+
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Customer List";
+
+}
+
+<div class="box box-success customer-list-index">
+    <div class="box-header with-border">
+        <h3 class="box-title">Customer List</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+
+        </div><!-- /.box-tools -->
+
+        <div class="col-md-12">
+            <div class="box-tools col-md-3  form-group" id="search-Employee-Name">
+                @Html.TextBox("CustomerSearch", "", htmlAttributes: new { @class = "form-control", @id = "txtCustomerSearch", @placeholder = "Customer Name" })
+            </div>
+            <div class="box-tools col-md-3  form-group" id="search-Address">
+                @Html.TextBox("Address", "", htmlAttributes: new { @class = "form-control", @id = "txtAddress", @placeholder = "Address" })
+            </div>
+            <div class="col-md-2  form-group" id="custtype">
+
+                @Html.DropDownListFor(x => x.CtypeID, CustomerUtilityService.CustTypeList(), "--Select Event--", new { @class = "form-control" })
+            </div>
+            <div class="col-md-3  form-group" id="search-contact">
+
+                @Html.TextBox("Contact", "", htmlAttributes: new { @class = "form-control", @id = "txtContact", @placeholder = "Contact" })
+            </div>
+          
+
+            @*<div class="col-md-4  form-group" id="search-date-range">
+                    @Html.DateRangePicker(x => fromdate, x => todate)
+                </div>*@
+            <div class="input-group-btn form-group col-md-1 pull-left">
+                <button type="button" id="searchCustomer" class="btn btn-searchCustomer btn-default"><i class="fa fa-search"></i></button>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="Customer-List">
+        @*@{Html.RenderAction("_ViewAllPendingTaskList", "TaskVerification");}*@
+        @Html.Partial("_CustomerList", Model)
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+@*<script>
+
+
+        $('.Customer-List').on('click', '.btn-edit', function () {
+
+
+                $(".customer-main").find(".btn-create").val("Customer List")
+
+                var value = $(this).data('id');
+
+                $.ajax({
+                    type: "GET",
+                    url: "/Customer/_CustomerCreate/",
+                    data: { cId: value },
+                    success: function (data) {
+
+                        $('section.content').html(data);
+
+                       $('.customer-create-main').find('.btn-save').val('Save Changes');
+                       $('.customer-create-main').find('#CtypeID').css("pointerEvents","none")
+
+                    }
+                })
+
+            });
+        $('.Customer-List').on('click', '.btn-details', function () {
+                debugger;
+                var container = $(this).closest('.customer-main').find('.customer-create');
+                $(".customer-main").find(".btn-create").val("Customer List")
+                var value = $(this).data('id');
+                modelFrom = $(this).attr("Route")
+                $.ajax({
+                    type: "GET",
+                    url: "/Customer/_CustomerDetails/",
+                    data: { cId: value, modelFrom: modelFrom },
+                    success: function (data) {
+                        $('section.content').html(data);
+                        $.ajax({
+                            type: "GET",
+                            url: "/Customer/GetEventListByCustomerIds",
+                            data: { customerid: value },
+                            traditional: true,
+                            success: function (data)
+                            {
+                                $('.customer-event-message').html(data);
+                            }
+
+                        })
+                    }
+                })
+
+            });
+    </script>*@
+
+
+<script>
+    //$('.Customer-List').on('click', '.btn-edit', function () {
+    //    debugger
+    //    $(".customer-main").find(".btn-create").val("Customer List")
+    //    var value = $(this).data('id');
+    //    var url =
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Customer/_CustomerCreate/",
+    //        data: { cId: value },
+    //            success: function (response) {
+    //                $('#createSubmitForm').html(response);
+    //                $('#createSubmitForm').modal('show');
+
+    //            //$('.section.content').html(data);
+    //            //$('.customer-create-main').find('btn-save').val('Save Changes');
+    //            //$('.customer-create-main').find('#CtypeID').css("pointerEvents", "none");
+
+    //        }
+    //    })
+    //});
+    function EditCustomerList(CID) {
+        debugger
+
+            $.ajax({
+                type: "get",
+                url: "/Customer/_CustomerCreate/",
+                contentType: "application/json; charset=utf-8",
+                data: { cId: CID },
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $('section.content').html(html);
+
+                    window.scrollTo(0,0);
+                    debugger;
+                    //$('section.content').find('div:first').animate({ scrollTop: 0 }, 'slow');
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+    }
+
+    function CustomerDetailPage(CID,Route) {
+        debugger
+        var container = $(this).closest('.customer-main').find('.customer-create');
+        $(".customer-main").find(".btn-create").val("Customer List")
+        //var value = $(this).data('CID');
+       // modelFrom = $(this).attr('Route');
+        $.ajax({
+            type: "GET",
+            url: "/Customer/_CustomerDetails/",
+            contentType: "application/json; charset=utf-8",
+            data: { cId: CID, modelFrom: Route },
+            success: function (data) {
+                debugger;
+                $('section.content').html(data);
+             
+                window.scrollTo(0, 0);
+               
+            },
+            error: function () {
+                alert("error");
+            }
+        })
+    }
+
+
+    //$('.Customer-List').on('click', '.btn-details', function () {
+    //    debugger;
+    //    var container = $(this).closest('.customer-main').find('.customer-create');
+    //    $('customer-main').find(".btn-create").val()
+    //});
+</script>

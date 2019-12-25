@@ -1,0 +1,14 @@
+﻿@model Loader.Models.ParamScript
+
+
+@{ 
+    var test = Model;
+}
+    @Html.HiddenFor(x => x.PId)
+
+    @Html.LabelFor(x => x.PScript, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-3">
+        @Html.TextAreaFor(m => m.PScript, new { @class = "form-control" })  
+
+        @Html.ValidationMessageFor(model => model.PScript, "", new { @class = "text-danger" })
+        </div>

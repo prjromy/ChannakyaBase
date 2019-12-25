@@ -1,0 +1,33 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanLinkedAccounts
+@using HtmlHelpers.BeginCollectionItem
+@{
+
+    var modelFrom = ViewBag.ModelFrom;
+ }
+<tr class="MoveableRow" >
+    @using (Html.BeginCollectionItem("LinkedAccountsList"))
+    {
+        <td>@Html.DisplayFor(x => x.LAccountName)</td>
+        <td>@Html.DisplayFor(x => x.LAccountNumber)</td>
+        <td>
+            @*<a href="#" class="up">Up</a>
+            <a href="#" class="down">Down</a>*@
+            @if (modelFrom != "Report" && modelFrom != "LoanReport")
+            {
+                <button type="button" class="btn btn-success up btn-sm">
+                    <span class="up glyphicon glyphicon-arrow-up"></span>
+                </button>
+                <button type="button" class="btn btn-info down btn-sm">
+                    <span class="down glyphicon glyphicon-arrow-down"></span>
+                </button>
+            }
+          
+</td>
+        @Html.HiddenFor(x => x.LinkIaccno, new { @class = "IndAccounts" })
+        @Html.HiddenFor(x => x.Priority)
+        if (Model.isDetailView == false)
+        {
+            <td><input type="button" value="Remove" class="btn btn-danger btn-remove-link-account" onclick="DeleteRowLinkAccounts(this)" /></td>
+        }
+    }
+</tr>

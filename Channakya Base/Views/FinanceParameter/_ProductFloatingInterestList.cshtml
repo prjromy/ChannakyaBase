@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.ProductTID>
+
+<div class="box box-info">
+    <div class="box-header with-border">
+        <p>
+            <h3>Product Floating Interest List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TempIntRate.Tname)
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.PName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TempIntRate.Tname)
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm btn-edit-floatinginterest glyphicon glyphicon-edit" data-id="@item.PFIID"></button>
+                            @*<button type="button" class="btn btn-info btn-sm btn-sm btn-delete-floatinginterest glyphicon glyphicon-trash danger" data-id="@item.PFIID" data-></button>*@
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>

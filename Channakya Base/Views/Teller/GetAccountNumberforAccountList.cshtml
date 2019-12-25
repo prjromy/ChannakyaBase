@@ -1,0 +1,65 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.AccountDetailsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    CommonService commonService = new CommonService();
+}
+
+
+
+<table class="table table-bordered table-striped table-hover">
+    <tr>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Accno)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Aname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AccState)
+        </th>
+        @*<th>
+                Action
+            </th>*@
+
+    </tr>
+
+    @foreach (var item in Model.AccountOpenList)
+    {
+        <tr>
+            @Html.HiddenFor(modelItem => item.AccState)
+            <td>
+                @{
+                    byte sType = commonService.GetStypeByIaccno(@item.IAccno);
+                }
+                <a href="#" onclick="EditAccountNumber('@item.IAccno')"><i class="fa fa-edit"></i>@item.Accno</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aname)
+            </td>
+            <td>
+
+                @commonService.GetEnglishDate(item.RDate)
+            </td>
+            <td>
+                @if (item.AccState == 6)
+                {
+                    if (commonService.IsAuthotityToVerify(item.IAccno, 1))
+                    {
+                        <input type="button" value="Verify Account" class="btn btn-sm btn-success btn-account-verifier-confirmations" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1, Convert.ToInt64(item.IAccno)))">
+                    }
+                }
+            </td>
+
+        </tr>
+                    }
+
+</table>

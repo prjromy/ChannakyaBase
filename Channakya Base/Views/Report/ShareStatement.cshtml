@@ -1,0 +1,92 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success share-Statementdetails-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Share Statement Details</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'></div>
+                        <div class="form-horizontal">
+                            @Html.AntiForgeryToken()
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                  
+                                    <div class="col-md-10">
+                                        @Html.Label("Share Holder")
+                                        @Html.EmployeeSearch(x => x.IAccno, "", EEmployeeChange.ReturnShare.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                        @Html.ValidationMessageFor(model => model.IAccno, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+          
+            </fieldset>
+
+
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-share-Statementdetails-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-share-Statementdetails-export-to-excel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="share-Statementdetails-details" id="share-StatementDetails-Details">
+
+    </div>
+</div>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<script>
+    $(".share-Statementdetails-main").on("click", '.btn-share-Statementdetails-generate', function () {
+        debugger
+        var RegNo = $('.employeeId').val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ShareStatement",
+            data: { RegNo: RegNo },
+            success: function (result) {
+
+                $(".share-Statementdetails-details").html("");
+                $(".share-Statementdetails-details").html(result)
+            }
+        });
+    });
+    $('.share-Statementdetails-main').on('click', '.btn-share-Statementdetails-export-to-excel', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var regNo = $('.employeeId').val();
+        
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ShareStatementExportToExcel?RegNo=" + regNo);
+
+    })
+</script>
+
+

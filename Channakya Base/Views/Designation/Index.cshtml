@@ -1,0 +1,330 @@
+﻿@model IEnumerable<Loader.Models.Designation>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Designation Setup";
+    var check = Loader.Models.Global.CurrentFYID;
+    var check1 = Loader.Models.Global.CurrentFiscalYear;
+    var check2 = Loader.Models.Global.SelectedFYID;
+    var check3 = Loader.Models.Global.TransactionDate;
+    var check4 = Loader.Models.Global.UserId;
+    Loader.Service.EmployeeService TDate = new Loader.Service.EmployeeService();
+    var Date = TDate.GetTranscationDate(Loader.Models.Global.SelectedFYID);
+
+    var DesignationTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="Designation-explore">
+            @Html.Hidden("viewType", 1)
+            @if (ViewBag.Heirarchy == 1)
+            {
+                <div class="col-md-3 Designation-treeview section-treeview">
+                    @Html.Partial("~/Views/Shared/_TreeView.cshtml", DesignationTreeview,
+                                     new ViewDataDictionary { { "param", param } })
+                </div>
+            }
+            @if (ViewBag.Heirarchy == 0)
+            {
+                <div id="explore-details" class="col-md-12 explore-details">
+                    <div class="panel-create" id="create">
+
+                    </div>
+                    <div class="panel-list" id="list">
+                        @{Html.RenderPartial("_Details", Model);}
+                    </div>
+                </div>
+                            }
+                            else
+                            {
+                                <div id="explore-details" class="col-md-9 explore-details">
+                                    <div class="panel-create" id="create">
+
+                                    </div>
+                                    <div class="panel-list" id="list">
+                                        @{Html.RenderPartial("_Details", Model);}
+                                    </div>
+                                </div>
+                                            }
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+
+    $('.Designation-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.Designation-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pDesignationId').val();
+        if(@ViewBag.Heirarchy==1)
+        {
+            $('.Designation-treeview').SelectNode(nodeId);
+        }
+        else
+        {
+            $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+        }
+
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null)
+        {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.Designation-explore').find('.panel-list');
+        var listType = $(this).closest('.Designation-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Designation")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    //Dorje change nodeId to parentNodeId for designation edit 
+
+    $('.Designation-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Designation-explore').find('.panel-list');
+        var listType = $(this).closest('.Designation-explore').find('#viewType').val();
+        //var fromTreeHere = false;
+        //if(data.fromTree!=null)
+        //{
+        //    fromTreeHere = data.fromTree;
+        //}
+        //if(fromTreeHere == true)
+        //{
+        //    var node =  data.nodeId;
+        //}
+        //else
+        //{
+        //    var node =  data.parentNodeId;
+        //}
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Designation")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId:  data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.Designation-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.Designation-explore').find('.Designation-treeview').moveUp();
+        //$(this).closest('.Designation-explore').find('.Designation-treeview').updateTreeview("Designation", "_UpdateDesignationTree", 1009,-1)
+    });
+
+    $('.Designation-explore').on('click', ".btndrill , .listDrill", function (e) {
+        debugger
+        var id = $(this).attr("id");
+        $(this).closest('.Designation-explore').find('.Designation-treeview').SelectNode(id);
+    });
+
+    $('.Designation-explore').on('click', '.DesignationImage, .editList, .btn-create-Designation', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Designation-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.Designation-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.Designation-explore').find('.treeview-selected').attr('nodeid');
+        var DesignationId = 0;
+        if ($(this).attr('class') == 'DesignationImage' || 'editList') {
+            DesignationId = $(this).attr('id');
+        }
+        var pDesignationId = $('#pDesignationId').val()
+        if (pDesignationId == "") {
+            pDesignationId = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "Designation")',
+            data: { activeText: activeElement, activeId: pDesignationId, DesignationId: DesignationId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.Designation-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var DesignationId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#pDesignationId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "Designation")',
+            data: { id: DesignationId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                debugger;
+                if (deleteConfirm == 'true') {
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "Are you sure you want to Delete?"
+                    }).done(function () {
+                        debugger;
+                        deleteDesignation(DesignationId, nodeId);
+                    })
+                   
+                }
+                else {
+                    ErrorAlert("Please Delete Child Nodes or Data Linked To Other Table First ", 5000);
+                }
+               
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteDesignation(DesignationId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "Designation")',
+            data: { DesignationId: DesignationId },
+            success: function () {
+                SuccessAlert("Designation Sucessfully Deleted", 5000)
+                if(@ViewBag.Heirarchy==0)
+                {
+                    $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                }
+                else
+                {
+                    $.fn.updateTreeview('Designation', '_UpdateDesignationTree', nodeId, -1)
+                }
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.Designation-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Designation/_GetDesignationTree"
+        var container = $(this).closest('.Designation-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        //var checkDesignation = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true) {
+                    $(item).css('display', 'table-row');
+                }
+                else {
+                    $(item).css('display', 'block');
+                }
+
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('Designation-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else {
+                    var text = $(item).find('.inner').attr('Designation-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                }
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+        }
+
+
+
+    });
+
+
+</script>
+

@@ -1,0 +1,48 @@
+﻿
+@model List<ChannakyaBase.Model.ViewModel.CustomerAccountsViewModel>
+
+
+    <table class="table table-bordered table-striped table-hover">
+        <tbody>
+
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Contact
+                </th>
+                <th>
+                    Customer Type
+                </th>
+                <th>
+                    PAN No
+                </th>
+                <th>
+                    Location
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Contact)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ctype)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PANNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.location)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+

@@ -1,0 +1,6 @@
+﻿CREATE TABLE [fin].[Flag] (
+    [FId]      TINYINT       IDENTITY (1, 1) NOT NULL,
+    [FlagName] VARCHAR (250) NOT NULL,
+    CONSTRAINT [PK_Flag] PRIMARY KEY CLUSTERED ([FId] ASC)
+);
+

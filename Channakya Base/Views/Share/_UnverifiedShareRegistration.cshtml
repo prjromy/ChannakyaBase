@@ -1,0 +1,75 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareRegisterViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+@{
+    Layout = null;
+    int eventId = 24;
+}
+<div class="table-responsive unverified-share-list">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Reg No</th>
+                <th>Name</th>                              
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ShareRegistrationList)
+            {
+
+
+                <tr>
+                    <td>@item.Name</td>
+                   
+                    <td>@item.RegistrationCode</td>
+                    <td><a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(eventId, Convert.ToInt64(item.RegNo)))"><i class="fa fa-check" aria-hidden="true"></i>Verify</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_UnverifiedShareRegistration", "Share", Model.ShareRegistrationList.PageCount, Model.ShareRegistrationList.PageNumber, Model.ShareRegistrationList.PageSize)
+</div>
+
+
+<script>
+    $("div.unverified-share-list").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.unverified-share-list").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+       // var url = "?accountNumber=" + accountNumber;
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.unverified-share-list").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>
+
+
+

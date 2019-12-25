@@ -1,0 +1,57 @@
+﻿@model List<ChannakyaBase.Model.ViewModel.AChqModel>
+@using ChannakyaBase.BLL.Service
+@{
+    ChannakyaBase.BLL.Service.InformationService informationService = new ChannakyaBase.BLL.Service.InformationService();
+    ChannakyaBase.DAL.DatabaseModel.ChqAttribute chqattribute = new ChannakyaBase.DAL.DatabaseModel.ChqAttribute();
+    chqattribute = informationService.GetChequeAttribute();
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" media="screen,print" />
+<link href="~/Content/printstylesheet.css" rel="stylesheet" media="print" />
+<style>
+    .fields {
+        height: 3in;
+        width: 8.5in;
+        position: relative;
+    }
+
+    .blocks {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+@if (Model.Count() != 0)
+{
+    foreach (var item in Model)
+    {
+        for (int i = item.cfrom; i < item.cto; i++)
+        {
+            <div class="fields">
+                <div class="chkitems blocks" id="custname" style="@chqattribute.AccountNamePostion">
+                    <label class="">Customer Name</label>
+                </div>
+                <div class="chkitems blocks" id="accno" style="@chqattribute.AccountNumberPosition">
+                    <label class="">Acc. No.</label>
+                </div>
+                <div class="chkitems blocks" id="savingtype" style="@chqattribute.AccountTypePosition">
+                    <label class="">Saving Type</label>
+                </div>
+                <div class="chkitems blocks" id="checkno" style="@chqattribute.ChequeNumberPosition">
+                    <label class="">Cheque</label>
+                </div>
+                <div class="chkitems blocks" id="branch" style="@chqattribute.BranchNamePosition">
+                    <label class="">Branch</label>
+                </div>
+
+            </div>
+        }
+    }
+
+}
+}
+
+
+<div class="row">
+    <br />
+    <a href="javascript:window.print()" class="noprint" style="width:25%; float:left; padding-left:15px">Click to Print This Page</a>
+</div>
+

@@ -1,0 +1,35 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContact
+@using ChannakyaBase.BLL.Service
+@{
+    var abc = Model;
+}
+@using HtmlHelpers.BeginCollectionItem
+<tr>
+
+    @using (Html.BeginCollectionItem("CustContactList"))
+    {
+        @Html.HiddenFor(x => x.CCID)
+        @Html.HiddenFor(x => x.IsDeleted, new { @class = "IsDeleted" })
+
+        <td class="col-md-3">
+            @Html.DropDownListFor(model => model.CNotype, CustomerUtilityService.CustCompulSoryContactType(Model.CNotype,Model.CtypeId), new { @class = "form-control cnoType" })
+            @Html.ValidationMessageFor(model => model.CNotype, "", new { @class = "text-danger" })
+        </td>
+
+        <td class="col-md-3">
+            @Html.EditorFor(model => model.CNo, new { htmlAttributes = new { @class = "form-control contact-value" } })
+            @Html.ValidationMessageFor(model => model.CNo, "", new { @class = "text-danger contact-type-mesg" })
+        </td>
+            <td class="col-md-2">
+                @Html.CheckBoxFor(x => Model.IsDefault, new { @class = "isChecked" })
+                @Html.ValidationMessageFor(model => model.IsDefault, "", new { @class = "text-danger" })
+            </td>
+            <td class="col-md-2">
+
+            </td>
+
+    }
+
+</tr>
+
+

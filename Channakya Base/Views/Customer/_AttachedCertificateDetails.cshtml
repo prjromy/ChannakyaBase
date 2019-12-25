@@ -1,0 +1,39 @@
+﻿@model  ChannakyaBase.DAL.DatabaseModel.CustTypeCertificate
+    @{ 
+        var y = Model;
+      
+        var Disabled = "disable";
+
+    }
+
+<tr>
+    
+      
+        <td>
+            @Model.CertificateDef.CCCert
+            
+        </td>
+        <td>
+            @Html.CheckBoxFor(model => model.isSubmitted, new {  @disabled = "disabled" })
+        </td>
+   @if (Model.CCState == 1)
+    {
+    <td>
+        <span class="label label-success">Optional</span>
+    </td>
+    }
+    else if (Model.CCState == 2)
+    {
+    <td>
+        <span class="label label-danger">Compulsory</span>
+    </td>
+    }
+    else
+    {
+    <td>
+        <span class="label label-danger">ID</span>
+    </td>
+    }
+   
+</tr>
+

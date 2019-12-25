@@ -1,0 +1,69 @@
+﻿ @model List<ChannakyaBase.DAL.DatabaseModel.ContactDef>
+@using ChannakyaBase.BLL.CustomHelper
+@using PagedList.Mvc
+@using PagedList
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        
+        <div class="box-tools col-md-3" style="padding:5px">
+
+            <div class="input-group input-group-sm pull-right" @*style="width: 250px;"*@>
+
+                @Html.TextBox("Contact-search", (string)ViewBag.searchedVal, htmlAttributes: new { @class = "form-control pull-right", @id = "search", @placeholder = "Contact Type Or Abb." })
+                <div class="input-group-btn">
+                    <button type="button" id="searchsubmit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <p>
+            <h3>Contact List</h3>
+        </p>
+        <table class="table">
+            <tr>
+                <th class=col-md-8>
+                    @Html.DisplayNameFor(model => model.First().CNodesc)
+                </th>
+                <th class=col-md-2>
+                    @Html.DisplayNameFor(model => model.First().CNoabb)
+                </th>
+                <th class=col-md-2>
+                    Action
+                </th>
+            </tr>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td>
+                        <b>No Records Found</b>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CNodesc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CNoabb)
+                        </td>
+                        <td>
+
+                            <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.CNotype" data-toggle="tooltip" title="Edit"></button>
+                            <button type="button" class="btn btn-info btn-sm btn-sm btn-delete glyphicon glyphicon-trash danger" data-id="@item.CNotype" data-val="@item.CNodesc" data-toggle="tooltip" title="Delete"></button>
+                        </td>
+                    </tr>
+                }
+
+
+            }
+        </table>
+    </div>
+    @*@Html.Paging("_List", "ContactDef", @Model.PageCount, @Model.PageNumber, @Model.PageSize)*@
+</div>
+

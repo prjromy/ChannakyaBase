@@ -1,0 +1,33 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@{
+}
+<div class="table-responsive table-click-Employee">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th> VerifierName</th>
+                <th>DeptName</th>
+                <th>Designation</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.EmployeeList)
+            {
+
+
+                <tr id="@item.EmployeeId">
+                    <td class="Customername">@item.EmployeeNo</td>
+                    <td>@item.EmployeeName</td>
+                    <td>@item.DeptName</td>
+                    <td>@item.DGName</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_EmployeeDetails", "Customer", Model.EmployeeList.PageCount, Model.EmployeeList.PageNumber, Model.EmployeeList.PageSize)
+</div>
+

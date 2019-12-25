@@ -1,0 +1,52 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.Location
+
+@{
+    ViewBag.Title = "Index";
+    var a = ViewBag.ParentNodeId;
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@*<script src="~/Scripts/jquery.form.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>*@
+
+<div class="location-container">
+    <div id="location-tree" class="col-md-3 location-tree" style="max-height: 490px;
+    overflow: auto;">
+        @{ Html.RenderAction("_GetLocationTree", "Location", new { @withCheckBox = false, @withImageIcon = true, @selectedNode = 0, @allowSelectGroupNode = false, @withOutMe = 0, rootNode = 1 }); }
+    </div>
+    <div id="location-list" class="col-md-9 location-list">
+        @{ Html.RenderAction("_ListChildLocation", "Location"); }
+    </div>
+</div>
+@*<script src="~/Scripts/location.js"></script>*@
+
+
+<script>
+    function success(data) {
+        debugger;
+        alert("success");
+        var container = $('.location-list').find('.location-form-body');
+        var parentNodeId = data.parentId;
+        $(container).html(data.message);
+        $('.location-container').updateTreeview("Location", "_GetLocationTree", ".treeview-area", false, true, parentNodeId, false, 0, 1);
+    }
+</script>
+
+<script>
+    function editSuccess(data) {
+        debugger;
+        var container = $('.location-list').find('.location-form-body');
+        var parentNodeId = data.parentId;
+        $(container).html(data.message);
+        $('.location-container').updateTreeview("Location", "_GetLocationTree", ".treeview-area", false, true, parentNodeId, false, 0, 1);
+        $('.location-tree').selectNode(parentNodeId);
+    }
+</script>
+
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/ch-treeview-visit.js"></script>
+<script src="~/Scripts/location.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>

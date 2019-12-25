@@ -1,0 +1,139 @@
+﻿@model  ChannakyaBase.Model.ViewModel.DepositBalanceTillDateAmountWiseModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Deposit Balance (Amount-wise) Report</h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <div class="row">
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label>Branch Name</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.BranchId, ReportUtilityService.GetBranchWithOutAllList(Model.BranchId), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Short Type</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.SortId, ReportUtilityService.ShortType(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Amount 1</label>
+                            <div class="form-grop_padding">
+                                @Html.TextBoxFor(x => x.FAmount, new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 toamount">
+                            <label>Amount 2</label>
+                            <div class="form-grop_padding">
+                                @Html.TextBoxFor(x => x.ToAmount, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                Date
+                            </label>
+                            <div class="form-grop_padding">
+
+                                @Html.DatePicker(x => x.TDate)
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+                        <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-depositBalanceAmountwise-export-to-excel" />
+
+                        <button type="button" name="btn-account-holder-search" id="btn-report-loan-related" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+     
+
+        <div class="box-header with-border with-loan-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $('#SortId').on('change', function () {
+        var shortId = $(this).val();
+        if (shortId == 1) {
+            $('.toamount').show();
+        } else {
+            $('.toamount').hide();
+        }
+    })
+    $('#btn-report-loan-related').on('click', function () {
+        var branchId = $('#BranchId').val();
+        var tDate = $('#TDate').val();
+        var fAmount = $('#FAmount').val();
+        var tAmount = $('#ToAmount').val();
+        var sortId = $('#SortId').val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_DepositBalanceTillDteAmountWise",
+            datatype: "HTML",
+            data: {
+
+                tDate: tDate,
+                branchId: branchId,
+                sortId: sortId,
+                fAmount:fAmount,
+                tAmount:tAmount
+              
+
+            },
+            success: function (result) {
+                $('.with-loan-Report-View').html("");
+                $('.with-loan-Report-View').html(result);
+            }
+        })
+
+    });
+
+    $('.btn-depositBalanceAmountwise-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var branchId = $("#BranchId").val();
+        var branchName = $('#BranchId option:selected').text();
+        var fAmount = $("#FAmount").val();
+        var toAmount = $("#ToAmount").val();
+        var sortId = $("#SortId").val();   
+        var Date = $('#DateAD').val();
+
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/DepositBalanceAmountWiseExportToExcel?branchId=" + branchId + "&branchName=" + branchName + "&FAmount=" + fAmount + "&ToAmount=" + toAmount + "&SortId=" + sortId + " &Date=" + Date)
+
+    })
+</script>
+

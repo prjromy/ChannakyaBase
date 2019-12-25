@@ -1,0 +1,93 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@{
+
+}
+<div class="box box-success loan-matured-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Mature Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+                        <div class="col-md-3">
+                            <label>Branch Name</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Model.branchId), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+
+
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-loan-matured-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-loanMatured-export-to-excel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="loan-matured-details" id="loan-matured-Details">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+
+    $(".loan-matured-main").on("click", '.btn-loan-matured-generate', function () {
+
+        var branchId = $('#branchId').val();
+        var toDate = $('#ToDate').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_LoanMatured",
+            data: { toDate: toDate, branchId: branchId },
+            success: function (result) {
+
+                $(".loan-matured-details").html("");
+                $(".loan-matured-details").html(result)
+            }
+        })
+    }
+
+     );
+
+    $('.btn-loanMatured-export-to-excel').on('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var branchId = $('#branchId').val();
+        var branchName = $('#branchId option:selected').text();
+        var toDate = $('#ToDate').val();
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/loanmaturedExporttoExcel?branchId=" + branchId + "&branchName=" + branchName + "&toDate=" + toDate);
+    });
+</script>
+

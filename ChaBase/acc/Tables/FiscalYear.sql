@@ -1,0 +1,8 @@
+﻿CREATE TABLE [acc].[FiscalYear] (
+    [FYID]    SMALLINT      IDENTITY (1, 1) NOT NULL,
+    [FyName]  VARCHAR (50)  NOT NULL,
+    [StartDt] SMALLDATETIME NOT NULL,
+    [EndDt]   SMALLDATETIME NOT NULL,
+    CONSTRAINT [PK__FiscalYear] PRIMARY KEY CLUSTERED ([FYID] ASC)
+);
+

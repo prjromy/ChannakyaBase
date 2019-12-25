@@ -1,0 +1,279 @@
+﻿@model Loader.Models.Department
+@using Loader.Helper
+
+<script src="~/Scripts/ch-treeview.js"></script>
+@{
+    Layout = null;
+
+   ViewBag.DepIdForWithOutMe = Model.DeptId;
+    var treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Model.PDeptId, ViewBag.ActiveText, "Select Department", "");
+    Loader.ViewModel.TreeViewParam paramData = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Department";
+    if (Model.DeptId != 0)
+    {
+        title = "Edit Department";
+    }
+    var itemSize = "col-md-12";
+    if (ViewBag.Heirarchy == 0)
+    {
+        itemSize = "col-md-9";
+    }
+    var valueSubmit = "Create";
+    if(Model.DeptId!=0)
+    {
+        valueSubmit = "Save";
+    }
+}
+<div class="box box-warning Department-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*@using (Ajax.BeginForm("GetPatients", "Patient", new AjaxOptions
+        {//GetPatients is name of method in PatientController
+            InsertionMode = InsertionMode.Replace, //target element(#patientList) will be replaced
+            UpdateTargetId = "patientList",
+            LoadingElementId = "loader" // div with .gif loader - that is shown when data are loading
+        }))*@
+    @using (Html.BeginForm("Create", "Department", FormMethod.Post, new { @id = "createDepartment" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.DeptId)
+                @Html.HiddenFor(x=>x.PostedBy)
+                @Html.HiddenFor(x=>x.PostedOn)
+
+                @if (ViewBag.Heirarchy == 1)
+                {
+
+                    <div class="form-group @itemSize">
+                        @Html.LabelFor(model => model.PDeptId, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.PDeptId, treeobj)
+                            @Html.ValidationMessageFor(model => model.PDeptId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                }
+
+                <div class="form-group @itemSize">
+                    @Html.LabelFor(model => model.DeptName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.DeptName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DeptName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                
+                <input type="submit" id="btnSubmit" value="@valueSubmit" data-id="@Model.DeptId" class="btn btn-default submit" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $(".display-txt#PDepartmentId").focus();
+        $("#createDepartment").submit(function () {
+            debugger;
+
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('.Department-create').find('input#DeptId').val();
+            
+            var wrapperClass = $(this).closest("explore-details").find(".panel-list");
+            var tempPnode = $(this).closest('.Department-create').find('input.internal-value').val(); //Dorje
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Department")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        if(@ViewBag.Heirarchy==0)
+                        {
+                            $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        }
+                        else
+                        {
+                            debugger
+                            //$.fn.updateTreeview("Department","_UpdateDepartmentTree",nodeId,-1)
+                            $.fn.updateTreeview2("Department","_UpdateDepartmentTree",nodeId,-1,@ViewBag.isEdit,tempPnode )
+                        }
+                        if(@Model.DeptId==0)
+                        {
+                            SuccessAlert("Department Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Department Edited Succesfully.",1500);
+                        }
+
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+        @*$('form').submit(function () {
+            debugger;
+            var serializedForm = $(this).serialize();
+            var nodeId = $(this).find('.section-treeview#PDepartmentId').find('.internal-value').val()
+            var data = { Department: serializedForm,form1 }
+            $.ajax({
+                url: '@Url.Action("Create", "Department")',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "POST",
+                data:serializedForm,
+                success: function () {
+                    debugger;
+                    $.fn.updateTreeview('Department', '_UpdateDepartmentTree', nodeId, -1)
+                    //function (controller, action, selectedNode, rootNode)
+                    //$('.Department-treeview').find('.treeview-area').load("/Department/_GetDepartmentTree", { param: TreeViewParam })
+                    //debugger;
+                    //$('#explore-details').find('#list').load("/Department/_Details", { parentId: pid, allowSelectGroup: allowselect })
+                },
+                error: function (result) {
+                    alert("Failed");
+                }
+
+            });
+
+            return false;
+        });*@
+
+
+        $('.Department-create').on('change', '#IsGroup', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".Department-create").find(".action-controller")
+            var contextCheck = $(this).closest(".Department-create").find("input#IsContextDepartment").prop("checked")
+            if (!this.checked && contextCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Department")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.Department-create').on('change', '#IsContextDepartment', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".Department-create").find(".action-controller")
+            var groupCheck = $(this).closest(".Department-create").find("input#IsGroup").prop("checked")
+            if (!this.checked && groupCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Department")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.Department-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+           
+
+            data.param.WithOutMe= @ViewBag.DepIdForWithOutMe;
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/Department/_GetDepartmentTreePopup", { param: data.param})
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Department/_GetDepartmentTree", { param: data.param })
+
+            }
+
+
+        });
+
+    });
+
+
+</script>
+
+<style>
+    div#loadimage {
+        zoom: 27%;
+        margin: -89px -3px -29px 81px;
+    }
+</style>
+

@@ -1,0 +1,391 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.ContactDef>
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+<div class="contact-list">
+    <input type="button"  value="New Contact" id="btn-create" class="btn btn-md btn-primary btn-create border-0" />
+    <div class="section-create">
+    </div>
+    <div class="details" id="contact-list">
+        @{ Html.RenderAction("_List", "ContactDef");}
+    </div>
+</div>
+<script>
+       function createSuccess() {
+        SuccessAlert("Occupation Succesfully created. ", 15000);
+        $.ajax({
+            url: '@Url.Action("_Create", "ContactDef")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+
+    function editSuccess() {
+        SuccessAlert("Contact Type Succesfully Edited. ", 15000);
+        debugger;
+        $('.contact-list').find('.edit-section').empty();
+        $('.contact-list').find(".btn-create").val('New Contact');
+    }
+
+   
+
+    $(document).ready(function () {
+
+        $('.contact-list').on('click', '.btn-create', function () {
+            debugger;
+            var thisVal = $(this).val();
+            if (thisVal == "Hide Section") {
+                $(this).val("New Contact")
+                $(".section-create").hide();
+            }
+            else {
+                $(this).val("Hide Section")           
+                $.ajax({
+                    type: "GET",
+                    url: "/ContactDef/_Create",
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+
+                    }
+                })
+            }
+        });
+        //create post
+        $.validator.unobtrusive.parse('#createSubmitForm');
+        $('.contact-list').on('click', '#btn-save-submit', function () {
+            debugger;
+           
+            $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#createSubmitForm"));
+
+
+            if ($("#createSubmitForm").valid() === false) {
+                var message = "";
+                var splitmessage = "";
+                //$(".field-validation-error").each(function (index) {
+                $(".field-validation-error").each(function (index, item) {
+                    message = message + $(item).text();
+                    splitmessage = message.split("</br>");
+                });
+                //var message = $(this).closest("form").find(".field-validation-error").text();                   
+                InfoAlert(splitmessage, 3000)
+                return false;
+            };
+
+            var CNotype = $('#CNotype').val();
+            var CNodesc = $('#CNodesc').val();
+
+            $.ajax({
+                url: "/ContactDef/CheckContactTypeDes",
+                type: 'GET',
+                async: false,
+                data: { CNotype: CNotype, CNodesc: CNodesc },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+
+                        InfoAlert(message, 5000);
+
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#createSubmitForm").ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/ContactDef/Index",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                debugger
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+                            // return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                    }
+                }
+                });
+        });
+                    
+           
+
+        // This will load edit partial view and hide the new contact button, show the hide section button, edit cancel button
+        $('.contact-list').on('click', '.btn-edit', function () {
+            debugger
+            var container = $(this).closest('.contact-list').find('.section-create');
+            var value = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/ContactDef/_Edit/" + value,
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data).find('.focusdiv').focus();
+                }
+            })
+
+        });
+
+
+        $.validator.unobtrusive.parse($("#editSubmitForm"));
+        $('.contact-list').on('click', '#btn-edit-submit', function () {
+
+            $('#editSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#editSubmitForm"));
+            debugger;
+            if ($('#editSubmitForm').valid() == false) {
+                InfoAlert('Please Fill out the form correctly', 6000);
+                return false;
+            }
+
+
+
+            var CNotype = $('#CNotype').val();
+            var CNodesc = $('#CNodesc').val();
+
+            $.ajax({
+                url: "/ContactDef/CheckContactTypeDes",
+                type: 'GET',
+                async: false,
+                data: { CNotype: CNotype, CNodesc: CNodesc },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert(message, 5000);
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#editSubmitForm").ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/ContactDef/Index",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                debugger
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+                        }).fail(function () {
+                        })
+                    }
+                }
+            });
+        });
+
+
+
+
+
+
+
+        //    debugger;
+        //    $.MessageBox({
+        //        buttonDone: "Yes",
+        //        buttonFail: "No",
+        //        message: "Are you sure?"
+        //    }).done(function () {
+        //        debugger
+        //        $("#editSubmitForm").ajaxSubmit({
+        //            beforeSubmit() {
+
+        //            },
+        //            success: function (result) {
+        //                if (result.Success) {
+        //                    $.ajax({
+        //                        url: "/ContactDef/Index",
+        //                        async: false,
+        //                        success: function (result) {
+        //                            $('section.content').html(result);
+        //                        }
+        //                    })
+        //                    SuccessAlert(result.Msg, 5000);
+        //                    document.getElementById('alert-success').scrollIntoView();
+        //                }
+        //                else {
+        //                    ErrorAlert(result.Msg, 5000);
+        //                    document.getElementById('alert-error').scrollIntoView();
+        //                }
+        //            },
+        //            error: function () {
+        //                ErrorAlert(data.responseText, 15000)
+        //            }
+        //        })
+        //    }).fail(function () {
+
+        //    })
+        //})
+
+        $('.contact-list').on('click', '.btn-cancel', function () {
+            var container = $(this).closest('.contact-list').find(".section-create");
+            $(container).empty();
+            $(container).hide();
+
+        }
+
+     );
+        // for modal popup with selected id
+        //var contactId;
+        //$('.contact-list').on('click', '.btn-delete', function () {
+        //    debugger;
+        //    var itmName = $(this).attr("data-val");
+        //    contactId = $(this).data('id');
+        //    var url = "/ContactDef/Delete/";
+        //    $.fn.DeleteConfirm(itmName, contactId, url)
+        //});
+
+        $('.contact-list').on('click', '.btn-cancel', function () {
+            var container = $(this).closest('.contact-list').find(".section-create");
+            $(container).empty();
+            $(container).hide();
+            debugger;
+            $('.btn-create').val("New contact")
+        }
+      );
+
+        var contactId;
+        var itmName
+        $('#contact-list').on('click', '.btn-delete', function () {
+            debugger;
+             itmName = $(this).attr("data-val");
+            contactId = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("Delete", "ContactDef")',
+                data: { id: contactId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    debugger;
+                    if (result == "false") {
+                        ErrorAlert("Contact Type is in use.", 5000);
+                    }
+                    else {
+                       
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure you want to Delete " + itmName + " ?"
+                            }).done(function () {
+                                //alert(result)
+                                debugger;
+                                deleteMenu(contactId);
+                            })
+                       
+                    }
+                
+                   
+                }, error: function () {
+                    alert("error");
+                }
+            });
+
+
+        });
+        function deleteMenu(contactId) {
+            debugger;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteConfirm", "ContactDef")',
+                data: { Id: contactId },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert(itmName + "<span>&nbsp; Sucessfully Deleted </span>", 5000);
+                    $("#contact-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+        $(document).on('click', '#searchsubmit', function (event1) {
+            debugger;
+            var search = $('#search').val();
+            var url = '@Url.Action("_List", "ContactDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+                    $("#contact-list").html(data);
+            });
+        });
+        $(document).on('change', '#search', function (event1) {
+            debugger;
+            var search = $('#search').val();
+            var url = '@Url.Action("_List", "ContactDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+                    $("#contact-list").html(data);
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $(".focusdiv").blur(function () {
+            debugger;
+            $(".focusdiv").val($(".focusdiv").val().trim());
+
+        });
+    });
+</script>

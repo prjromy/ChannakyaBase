@@ -1,0 +1,337 @@
+﻿@model IEnumerable<Loader.Models.ApplicationUser>
+@{
+
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Users Setup";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="Users-explore">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create" id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+
+    $('.Users-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.Users-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pUsersId').val();
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null) {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.Users-explore').find('.panel-list');
+        var listType = $(this).closest('.Users-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Users")',
+            contentType: "application/json; charset=utf-8",
+            data: { allowSelectGroup: data.allowSelectGroupNode, ViewType: listType, empId: data.nodeId },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.Users-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.Users-explore').find('.Users-treeview').moveUp();
+        //$(this).closest('.Users-explore').find('.Users-treeview').updateTreeview("Users", "_UpdateUsersTree", 1009,-1)
+    });
+
+    $('.Users-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.Users-explore').find('.Users-treeview').SelectNode(id);
+    });
+
+
+
+    $('.Users-explore').on('click', '.UsersImage, .editList, .btn-create-Users', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Users-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        //var activeElement = $(this).closest('.Users-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.Users-explore').find('.treeview-selected').attr('nodeid');
+        var UsersId = 0;
+        if ($(this).attr('class') == 'UsersImage' || 'editList') {
+            UsersId = $(this).attr('id');
+
+        }
+        //var pUsersId = $('#pUsersId').val()
+        //if (pUsersId == "") {
+        //    pUsersId = 0;
+        //}
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "Users")',
+            data: { UsersId: UsersId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+              
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.Users-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var UsersId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#pUsersId').val()
+        deleteUsers(UsersId, nodeId);
+
+
+    });
+    function deleteUsers(UsersId, nodeId) {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure you want to Delete?"
+        }).done(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete", "Account")',
+                data: { id: UsersId },
+                success: function () {
+                    debugger;
+                    SuccessAlert("Users Sucessfully Deleted", 5000)
+                    $('.panel-list').trigger('nodeClick', [{ nodeId: 1 }]);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        })
+    }
+
+
+    $('.Employee-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Users/_GetEmployeeTree"
+        var container = $(this).closest('.Users-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+
+    //$('div#EmployeeId.input-group.section-search').on('filterSearch', function (e, data) {
+    //    debugger;
+    //    //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+    //    e.stopPropagation();
+
+    //    var searchParam = {
+    //        Id: data.Id,
+    //        Phonenumber: data.Phonenumber,
+    //        Name:data.Name,
+    //        Address:data.Address,
+    //        Filter: $(this).closest('.section-search').find('.display-txt').val()
+    //    }
+
+    //    var url = "/Users/_GetEmployeeTree"
+    //    var container = $(this).closest('.Users-explore').find('.treeview-area');
+
+    //    $(container).load(url, { param: TreeViewParam });
+
+    //});
+
+    @*$('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var listType = $(this).closest('.Users-explore').find('#viewType').val();
+        var container = $(this).closest('.Users-explore').find('.panel-list');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_Details", "Users")',
+            data: { ViewType: listType, query: query },
+            success: function (data) {
+                debugger;
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });*@
+
+    $('.panel-list').on('keypress', ".txtSearch", function (e) {
+        var keycode = (e.keyCode ? e.keyCode : e.which);
+        if (keycode == 13)
+        {
+            debugger;
+            var query = $('input.txtSearch').val();
+            var status = $('.Users-explore .userStatusList').val();
+            if (status == "")
+            {
+                status = 2;
+            }
+            var listType = $(this).closest('.Users-explore').find('#viewType').val();
+            var container = $(this).closest('.Users-explore').find('.panel-list');
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("_Details", "Users")',
+            data: {
+                ViewType: listType,
+                query: query,
+                page: 1,
+                status: status
+            },
+            success: function (data) {
+                debugger;
+                $(container).html(data);
+                $(".Users-explore .userStatusList").val(status);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        }
+    });
+    $(document).on('click', '.btn-search-popup', function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        debugger;
+        var windowwidth = $(window).width();
+        var windowheight = $(window).height();
+
+        var pos = $(this).offset();
+
+        var searchParam = {
+            Id: $(this).attr("id"),
+            Phonenumber: $(this).attr("phonenumber"),
+            Name: $(this).attr("name"),
+            Address: $(this).attr("address"),
+            Title: $(this).attr("title"),
+            DeptName: $(this).attr("DeptName"),
+            DesginationName: $(this).attr("DesignationName"),
+            Filter: "",
+            searchFor: $(this).attr("searchFor")
+        }
+
+
+        var left = 0;
+        var top = 0;
+        selectedObject = $(this);
+
+        //if (windowwidth - pos.left < 420) { //320
+        //    left = windowwidth - 420;
+        //}
+        //else {
+        //    left = pos.left - 17;
+        //}
+        //if (windowheight - pos.top < 280) { //150
+        //    top = pos.top - 280;
+        //}
+        //else {
+        //    top = pos.top + 45;
+        //}
+        $dlg_dpicker = $('<div></div>')
+        .dialog({
+            dialogClass: 'cl-dpicker',
+            autoopen: false,
+            close: function () {
+                $(this).removeClass("cl-dpicker");
+                $(this).dialog("destroy");
+                $(this).remove();
+                $dlg_dpicker = null;
+                selectedObject = null;
+            },
+            open: function (event, ui) {
+                $(event.target).parent().css('position', 'absolute'); //absolute
+                $(event.target).parent().css('top', (windowheight / 2 - 200));
+                $(event.target).parent().css('width', '400px');
+                $(event.target).parent().css('left', windowwidth - 500);
+                $(event.target).parent().css("border", "2px");
+                $(event.target).parent().css("background-color", "transparent");
+                $(event.target).parent().css("z-index", "101");
+                $(event.target).siblings('div.ui-dialog-titlebar').remove();
+            },
+            overlay: {
+                backgroundColor: 'black',
+                opacity: 0.5
+            },
+            modal: true,
+            resizable: false
+            //position: {
+            //    my: "center" ,
+            //    at: "center"
+            //}
+        });
+        var query = $(this).closest('.section-search').find(".display-txt").val();
+        if (query != null) {
+            var wrapperClass = $(selectedObject).closest('.section-search');
+            $(wrapperClass).trigger('filterSearch', [{ fromPopUp: 'false', param: searchParam }]);
+        }
+    });
+
+
+    //fiter user
+</script>

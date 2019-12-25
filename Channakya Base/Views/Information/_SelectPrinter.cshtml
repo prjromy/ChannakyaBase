@@ -1,0 +1,88 @@
+﻿@using ChannakyaBase.BLL.Service
+<div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Select Printer </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <div class="col-md-2">Select Printer: </div>
+                    <div class="col-md-8"> @Html.DropDownList("Select Printer", InformationUtilityService.GetPrinterList(), "Select Printer")</div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-2">Select Paper Size:</div>
+                    <div class="col-md-8"> @Html.DropDownList("Select Paper Sizes", InformationUtilityService.GetPrinterPaperSize(), "Select Paper Sizes", htmlAttributes: new { @id = "paper-size" })</div>
+                </div>
+                <div class="col-md-11">
+                    <button type="button" name="btn-printer-select" id="btn-printer-select" class="btn btn-primary pull-right" style="margin: 0em 1em 1em 0em;" value="Save">
+                        Save
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-9 cheque-information-div">
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="" id="checkpreview">
+
+    </div>
+</div>
+<script>
+    $('#btn-printer-select').on('click', function () {
+        debugger;
+        var e = document.getElementById("Select_Printer");
+        var printerName = e.options[e.selectedIndex].text;
+
+        var f = document.getElementById("paper-size");
+        var paperSize = f.options[f.selectedIndex].text;
+
+        $.ajax({
+            type: "GET",
+            url: "/Information/_SelectPrinter",
+            datatype: "HTML",
+            data: {
+                printerName: printerName,
+                paperSize: paperSize
+            },
+            success: function (result) {
+                debugger
+                alert("Sucess");
+            }
+        });
+    });
+    $('#Select_Printer').on('change', function () {
+        debugger;
+        var e = document.getElementById("Select_Printer");
+        var printerName = e.options[e.selectedIndex].text;
+
+        $.ajax({
+            url: "/Information/GetPaperSizeByPrinterName",
+            cache: false,
+            type: "get",
+            data: {
+                printerName: printerName
+            },
+
+            success: function (data) {
+                debugger
+                var markup = "<option value='0'>Choose</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                }
+                $("#paper-size").html(markup).show();
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    })
+</script>

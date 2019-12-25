@@ -1,0 +1,48 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.InterestTOCapitalizeAccountModel>
+
+
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>
+                AccountNumber
+            </th>
+            <th>
+                AccountName
+            </th>
+            <th>
+                ProductName
+            </th>
+            <th>
+                IntCalpSchm
+            </th>
+            <th>
+                IRate
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Aname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.intCalpSchm)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IRate)
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    </div>

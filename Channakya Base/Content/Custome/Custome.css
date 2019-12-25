@@ -1,0 +1,76 @@
+﻿body {
+}
+
+.btn-groups {
+    border-top: 1px solid #DADADA;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    text-align: right;
+    width: 100%;
+}
+
+modal-title {
+    font-weight: 600;
+}
+
+.form-grop_padding {
+    /*padding: 5px;
+    background: #FBFBFB;
+    border: 1px solid #EDEDED;*/
+    margin-bottom: 5px;
+}
+.form-grop_paddingTop {
+    margin-top: 5px;
+}
+
+.right-container .modal-dialog {
+    margin-top: 115px;
+}
+
+.right-container .modal-content {
+    border-radius: 4px;
+    border-bottom: 5px solid #005986;
+    padding: 5px;
+}
+
+.modal-header {
+    background: #3c8dbc;
+    color: #fff;
+    text-shadow: 1px 1px 0px #000;
+    padding: 6px 15px;
+    border-radius: 4px 4px 0 0;
+}
+
+    .modal-header .close {
+        margin-top: 0;
+        color: #fff;
+        background: #f90000;
+        height: 22px;
+        width: 22px;
+        border-radius: 22px;
+        opacity: 1;
+        text-align: center;
+        font-weight: 200;
+    }
+
+        .modal-header .close:hover {
+            opacity: 1;
+        }
+
+.modal-footer {
+    padding: 0;
+}
+  .form-control {
+    height: 30px;
+    padding: 4px 5px;
+    box-shadow: none;
+    font-size: 12px;  
+    border-radius: 0;
+     border: 1px solid #989898;
+}
+
+  .input-group-sm > .form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn {  
+    border-radius: 0;
+}

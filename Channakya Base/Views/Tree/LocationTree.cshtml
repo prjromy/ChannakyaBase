@@ -1,0 +1,25 @@
+﻿@model  ChannakyaBase.Model.ViewModel.LocationTreeView
+@{
+    var allowSelectGroup = Convert.ToBoolean(ViewData["AllowSelectGroupNode"]);
+    //var t = this.ViewContext.RouteData.Values[] this.ViewContext.RouteData.Values["id"]
+}
+<style>
+    .treeview-area {
+        height:auto;
+        /*height: 550px;*/
+        overflow:auto;
+    }
+</style>
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<span>
+    <span class="treeview-title">
+        @Model.Title
+    </span>
+</span>
+
+<div id="treeview-area" class="treeview-area" allowselectgroupnode="@Json.Encode(allowSelectGroup)">
+    @Html.EditorFor(x => x.TreeData)
+</div>
+
+

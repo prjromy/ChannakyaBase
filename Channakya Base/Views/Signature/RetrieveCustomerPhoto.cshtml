@@ -1,0 +1,75 @@
+﻿
+
+@using ChannakyaBase.Model.ViewModel
+@model CustomerPhotoViewModel
+
+@{
+
+
+
+    List<CustomerPhotoViewModel> imgPath = ViewData["multipleimage"] as List<CustomerPhotoViewModel>;
+
+}
+
+<h3 class="box-title">Image History</h3>
+<div class="container first-history">
+
+    <div class="col-md-12">
+        <div class="row">
+            @if (imgPath != null)
+            {
+
+                foreach (var item in imgPath)
+                {
+                    <div class="history-image">
+                        <div class="col-md-3">
+                            <div class="thumbnail">
+
+
+                                <img src="@item.Image" alt="No image" style="width:100%" height="250" class="col-md-offset-3 img-responsive  preview-image" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            }
+            else
+            {
+
+                <div class="empty"><img src="~/images/No Image.png" alt="No image" height="250" width="250" class="col-md-offset-4" /></div>
+
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@*Share Image History*@
+
+<style>
+    .preview-image {
+        position: relative;
+        -webkit-transition: all 200ms ease-in;
+        -webkit-transform: scale(1);
+        -ms-transition: all 200ms ease-in;
+        -ms-transform: scale(1);
+        -moz-transition: all 200ms ease-in;
+        -moz-transform: scale(1);
+        transition: all 200ms ease-in;
+        transform: scale(1);
+    }
+
+        .preview-image:hover {
+            z-index: 2;
+            -webkit-transition: all 200ms ease-in;
+            -webkit-transform: scale(1.5);
+            -ms-transition: all 200ms ease-in;
+            -ms-transform: scale(1.5);
+            -moz-transition: all 200ms ease-in;
+            -moz-transform: scale(1.5);
+            transition: all 200ms ease-in;
+            transform: scale(1.5);
+        }
+</style>

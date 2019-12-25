@@ -1,0 +1,140 @@
+﻿@model IEnumerable<Loader.Models.Param>
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var test = Model;
+    var title = ViewBag.Title;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="customize-parameter-explore">
+
+            <div id="customize-explore-details" class="col-md-12 customize-parameter-explore-details">
+                <div class="panel-list" id="list">
+                    @Html.Partial("_Customize", Model)
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // _EditParameters
+
+        $('.customize-parameter-explore').on('click', ".paramCheckbox", function (e) {
+            debugger;
+            if (!this.checked) {
+                $(this).val("false")
+            }
+            else {
+                $(this).val("true")
+            }
+        });
+
+        $('.customize-parameter-explore').on('click', ".editBtn", function (e) {
+            debugger;
+            var paramId = $(this).attr('id');
+            var selectedDropDown = $(this).attr('selected-id');
+            $.ajax({
+                url: '@Url.Action("_EditParameterValue", "Parameter")',
+                type: 'GET',
+                data: { id: paramId,selectedId : selectedDropDown },
+                success: function (html) {
+                    if (paramId == 8) {
+                        $(".edit-param-" + paramId).html(html);
+                        $(".edit-" + paramId).hide();
+                        $(".saveBtn-" + paramId).hide();
+                        $(".saveBtnImage-" +paramId).show();
+                    }
+                    else {
+                        $(".edit-param-" + paramId).html(html);
+                        $(".edit-" + paramId).hide();
+                        $(".saveBtnImage"+paramId).hide();
+                        $(".saveBtn-" + paramId).show();
+
+                    }
+
+
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+        });
+        $('.customize-parameter-explore').on('click', '.saveBtn', function (e) {
+            debugger;
+            var paramId = $(this).attr('id');
+            var paramValue = $(this).parent().prev().find('.edit-param-' + paramId + ">.editparamValue").val();
+            var paramContainer = $(this).parent().prev().find('.edit-param-' + paramId);
+            
+            $.ajax({
+                url: '@Url.Action("_EditParametersValue", "Parameter")',
+                type: 'POST',
+                data: { id: paramId, value: paramValue },
+                success: function (html) {
+                    debugger;
+                    $(paramContainer).empty();
+                    $(paramContainer).html(paramValue);
+                    $(".saveBtn-" + paramId).hide();
+                    $(".edit-" + paramId).show();
+                    
+
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+        });
+
+        $('.customize-parameter-explore').on('click', '.saveDropDown', function (e) {
+            debugger;
+            var paramId = $(this).attr('id');
+            var paramValue = $(this).parent().prev().find('.edit-param-' + paramId + ">.editparamValue").val();
+            var paramText = $(".paramDropdown option:selected").text();
+            var paramContainer = $(this).parent().prev().find('.edit-param-' + paramId);
+            var paramValueContainer = $(this).closest('tr.detailsList').find('.editBtn');
+
+            $.ajax({
+                url: '@Url.Action("_EditParametersValue", "Parameter")',
+                type: 'POST',
+                data: { id: paramId, value: paramValue },
+                success: function (html) {
+                    debugger;
+                    $(paramContainer).empty();
+                    $(paramContainer).html(paramText + " ["+paramValue+"]");
+                    $(".saveBtn-" + paramId).hide();
+                    $(".edit-" + paramId).show();
+                    $(paramValueContainer).attr('selected-id', paramValue);
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+        });
+    });
+</script>
+
+
+
+
+
+<style>
+    .item-info {
+        cursor: pointer;
+    }
+
+    .param-panel-edit {
+    }
+</style>

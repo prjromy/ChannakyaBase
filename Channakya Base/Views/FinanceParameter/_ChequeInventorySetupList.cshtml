@@ -1,0 +1,99 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.ChequeInventorySetupModel
+@using ChannakyaBase.BLL
+@{
+    CommonService commonService = new CommonService();
+
+
+}
+
+<div class="box-body table-responsive no-padding table-ChequeInventorySetupList">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                Branch Name
+            </th>
+
+            <th>
+                From Cheque No
+            </th>
+            <th>
+                To Cheque No
+            </th>
+
+            <th>
+                Current No
+            </th>
+            <th>
+                Balance
+            </th>
+            <th>
+                Is Finished
+            </th>
+            <th>
+                Posted By
+            </th>
+            <th>
+                Posted On
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model.ChequeInventorySetupList)
+        {
+            <tr>
+
+
+                @Html.HiddenFor(modelItem => item.ChequeInventorySetupId)
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.BranchName)
+                </td>
+
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.fromCheckNo)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.toCheckNo)
+
+                </td>
+
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.Lastindx)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Balance)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ISfinish)
+                </td>
+                <td>
+                    @{
+
+                        var PName = commonService.PosterNamebyID(Convert.ToInt32(item.PostedBy));
+
+                    }
+                    @Html.DisplayFor(modelItem => PName)
+
+                </td>
+                <td>
+                    @{
+
+
+                        var PDate = commonService.GetDate(Convert.ToDateTime(item.PostedOn));
+                    }
+                    @Html.DisplayFor(modelItem => PDate)
+
+                </td>
+            </tr>
+                        }
+
+    </table>
+
+</div>

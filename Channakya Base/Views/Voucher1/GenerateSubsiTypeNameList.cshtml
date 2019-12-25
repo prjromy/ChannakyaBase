@@ -1,0 +1,347 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.SubsiViewModel>
+@{
+    Layout = null;
+    var count = 0;
+    var test = Model;
+}
+<div class="modal-dialog  add-voucher-subsi">
+    <div class="modal-content addSubsiDetails">
+        <div class="modal-header">
+            <button type="button" class="close subsi-modal" @*data-dismiss="modal"*@ aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModal-label">Subsi Details</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px; ">
+            <div class="col-md-11">
+                <input type="text" name="Search" placeholder="@ViewBag.Placeholder" class="Search form-control" value="@ViewBag.Query">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-default" name='btnsearch' id='btnsearch-subsi-popup' subsiid="@ViewBag.SubsiTableId" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+            <div class="bodycontent-and-paging">
+                <div class="container subsi-list-model">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table id="mytable" class="table table-bordred" style="max-width:40%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                S.N
+                                            </th>
+                                            <th>
+                                                Name
+                                            </th>
+                                            @*<th>
+                                                Account Number
+                                            </th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                    {
+                                            <tr class="subsi-popup-details" id="@item.Id" subsiText="@item.Name" cursor:pointer;">
+
+                                                <td>@(count += 1)</td>
+
+                                                @*<td class="fname1" data-dismiss="modal">*@
+
+                                                @if (item.Name == null)
+                                            {
+                                                    <td class="">
+                                                        ------
+                                                    </td>
+                                            }
+                                            else
+                                            {
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                    </td>
+                                            }
+                                                @*<td class="subsiname-voucher" id="@item.Id" style="cursor:pointer;">
+                                                    @item.Accno @Html.HiddenFor(modelItem => item.Id, new { @id = item.Id })
+                                                </td>*@
+
+
+
+                                            </tr>
+                                    }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <ul class="pagination employeepaginatoin" style="float:left;margin-right:20px;">
+                        <li class="previous"><a href="#">Previous</a></li>
+                        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                    {
+                        if (i > 4)
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i >= (ViewBag.ActivePager - 2))
+                                {
+
+                                    if (i > ViewBag.ActivePager)
+                                    {
+                                        if (i - ViewBag.ActivePager <= 2)
+                                        {
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+                                        else
+                                        {
+                                            if (i == ViewBag.CountPager)
+                                            {
+                                                if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                {
+                                                        <li class=""><a>.......</a> </li>
+                                                }
+                                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+
+                                }
+                                else
+                                {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i >= (ViewBag.ActivePager - 2))
+                                {
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                        }
+                    }
+                        <li class="next"><a href="#">Next</a></li>
+
+                    </ul>
+                    <div style="margin-top:20px;margin-left:20px" class="search-container">
+                        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var SID=@ViewBag.SubsiTableId;
+            var LedgerId=@ViewBag.ledgerId;
+            var cls = $(this).attr('class');
+            var Search = $('.Search').val();
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.addSubsiDetails').find('.bodycontent-and-paging');
+                    $(container).val("");
+                    $(container).load("/Voucher1/SearchSubsiTypeNameList", {SId:SID,ledgerId:LedgerId,query:Search, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.addSubsiDetails').find('.bodycontent-and-paging');
+                    $(container).val("");
+                    $(container).load("/Voucher1/SearchSubsiTypeNameList", {SId:SID,ledgerId:LedgerId,query:Search, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var LedgerId=@ViewBag.ledgerId;
+            var SID=@ViewBag.SubsiTableId;
+            var Search = $('.Search').val();
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.addSubsiDetails').find('.bodycontent-and-paging');
+            $(container).val("");
+            $(container).load("/Voucher1/SearchSubsiTypeNameList", {SId:SID,ledgerId:LedgerId, query:Search, page: pagingData });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.employeepaginatoin').find('li#' + pagingData).addClass('active');
+
+        });
+        $('.search-container').on('blur', '.searchPager', function () {
+            debugger;
+            var LedgerId=@ViewBag.ledgerId;
+            var SID=@ViewBag.SubsiTableId;
+            var query = $('#getVoucherDetails').find('.Search').val();
+            var finalId = $(this).val();
+            var container = $(this).closest('.addSubsiDetails').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/Voucher1/SearchSubsiTypeNameList",
+                    type: "POST",
+                    data: {SId:SID,ledgerId:LedgerId, query: query, page: finalId },
+                    success: function (data) {
+                        debugger;
+                        $('.bodycontent-and-paging').val("");
+                        $('.bodycontent-and-paging').html(data);
+                        $('.bodycontent-and-paging').focus();
+
+                    }
+
+                });
+            }
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+            var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+
+        });
+    });
+
+
+
+    $('tr.subsi-popup-details').click(function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        debugger;
+        var subsiId = $(this).attr("id");
+        var subsiText = $(this).attr('subsitext');
+
+        var doesSameIdExists = $(subsiEvent).closest('.add-more-subsi-container').find('tr');
+        var count = 0;
+        $(doesSameIdExists).each(function (index, item) {
+
+            var hassameElement = $(item).find('input.internal-value').val();
+            if (subsiId == hassameElement) {
+                count++;
+            }
+
+
+        });
+        if (count > 0) {
+            ErrorAlert("Subsi Already Selected", 5000);
+
+        }
+        else {
+            $(subsiEvent).closest('.section-subsi').find('input.display-txt-subsi').val(subsiText);
+            $(subsiEvent).closest('.section-subsi').find('input.internal-value').val(subsiId)
+            $('#getSubsiDetailsList').modal('hide');
+        }
+
+
+
+
+    });
+
+
+
+    $('button#btnsearch-subsi-popup').click(function () {
+        debugger;
+        var LedgerId=@ViewBag.ledgerId;
+        var text = $(this).closest('.add-voucher-subsi').find("input.Search.form-control").val();
+        var sId = $(this).attr('subsiid');
+        $.ajax({
+            url: '/Voucher1/SearchSubsiTypeNameList/',
+            type: "POST",
+            data: { query: text,ledgerId:LedgerId, sId: sId },
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $(".bodycontent-and-paging").val("");
+                $(".bodycontent-and-paging").html(data);
+                $('.bodycontent-and-paging').focus();
+
+            }
+        });
+    });
+
+
+    $('#getSubsiDetailsList').on('click', '.subsi-modal', function (e) {
+        e.stopImmediatePropagation()
+        debugger;
+        $('#getSubsiDetailsList').modal('hide');
+    });
+
+</script>
+<script>
+    $('.addSubsiDetails').on('keydown', '.Search', function (event) {
+        debugger;
+        if (event.keyCode == 13 || event.keyCode == 9) {
+            $('#btnsearch-subsi-popup').trigger('click');
+        }
+
+    });
+
+</script>
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .subsi-popup-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>
+

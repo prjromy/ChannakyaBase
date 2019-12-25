@@ -1,0 +1,45 @@
+﻿@model Loader.ViewModel.LayoutTreeDTO
+@{
+    var test = Model;
+}
+
+
+<div>
+    <ul class="sidebar-menu">
+        @Html.Partial("LayoutTreeDesign", Model)
+    </ul>
+
+</div>
+
+<style>
+    .slimScrollDiv {
+        padding-left: -27px;
+        left: -50px;
+        margin-right: -56px;
+    }
+
+    /*.sidebar > ul {
+        margin-left: -34px;
+    }*/
+
+    /*div#treeview-menu-area {
+        margin-left: 34px;
+    }*/
+    .main-side-tree > ul
+    {
+        list-style: none !important;
+         padding: 0 !important;
+
+    }
+
+    .rotatefa {
+        transform: rotate(+86deg);
+    }
+
+    /*div#treeview-menu-area {
+        margin-left: -13px;
+    }*/
+</style>
+
+
+

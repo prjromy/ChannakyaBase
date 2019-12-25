@@ -1,0 +1,22 @@
+﻿@model ChannakyaAccounting.Models.Models.BatchDescription
+@{
+    var test = Model;
+}
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.BId" style="vertical-align:top;">
+        @*<a class="inner listDrill" BatchDescription-caption="@Model.BatchName" style="cursor:pointer;"> @Model.BatchName</a>*@
+        @Model.BatchName
+    </td>
+    <td>
+        @Model.Prefix
+    </td>
+    <td>
+        <p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs VoucherNameImage" id="@Model.BId" data-title="Edit"><span class="glyphicon glyphicon-pencil"></span></button></p>
+    </td>
+    <td>
+        <p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.BId" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p>
+    </td>
+</tr>
+
+
+

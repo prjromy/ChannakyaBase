@@ -1,0 +1,84 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ProductWiseCollectionSheet
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService cmService = new CommonService();
+}
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Product Wise Collection Report";
+}
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<div class="box box-success product-wise-collection-index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Product Wise Collection Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12" id="filter-report-parameters">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.Label("From Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.FromDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("To Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.ToDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success product-wise-collection-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info product-wise-collection-export-to-excel" />
+            </div>
+        </div>
+    </div>
+    <div class="product-wise-collection-details" id="product-wise-collection-list">
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+
+    $(".product-wise-collection-index").on("click", '.product-wise-collection-generate', function () {
+        debugger
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ProductWiseCollectionSheet",
+            data: { fDate: FromDate, tDate: ToDate },
+            success: function (result) {
+
+                $(".product-wise-collection-details").html("");
+                $(".product-wise-collection-details").html(result)
+            }
+        });
+    });
+
+    $(".product-wise-collection-index").on("click", '.product-wise-collection-export-to-excel', function (e) {
+       
+
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ProductWiseReportCollectionSheetExporttoExcel?fromDate=" + fromDate + "&toDate=" + toDate)
+    });
+</script>

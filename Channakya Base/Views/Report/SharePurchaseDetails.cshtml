@@ -1,0 +1,94 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success share-purchasedetails-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Share Purchase Details</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+                        <div class="col-md-3">
+                            <label>
+                                From Date
+                            </label>
+                            <div class="form-grop_padding">
+
+                                @Html.DatePicker(x => x.FromDate)
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+
+
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-share-purchasedetails-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-share-purchasedetails-export-to-excel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="share-purchasedetails-details" id="share-purchasedetails-Details">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+    $(".share-purchasedetails-main").on("click", '.btn-share-purchasedetails-generate', function () {
+
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_SharePurchaseDetails",
+            data: { fromDate: fromDate, toDate: toDate },
+            success: function (result) {
+
+                $(".share-purchasedetails-details").html("");
+                $(".share-purchasedetails-details").html(result)
+            }
+        })
+    });
+
+    $('.btn-share-purchasedetails-export-to-excel').on('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/SharePurchaseDetailExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate)
+
+    })
+
+</script>

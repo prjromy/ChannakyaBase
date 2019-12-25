@@ -1,0 +1,61 @@
+@model List<ChannakyaBase.Model.ViewModel.AccOpenByCollectorViewModel>
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper
+@{ 
+    decimal ProductCount = 0;
+}
+<fieldset>
+     <table class="table">
+            <tr>
+                <th>
+                    @Html.Label("Collector Name")
+                </th>
+                <th>
+                    @Html.Label("Product Name")
+                </th>
+                <th>No.</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @*<span>@Html.DisplayFor(model=>item.Name)</span>*@
+                        <a onclick="DetailProductName(@item.BroughtBy)"><i class="fa fa-edit"></i>@item.Name</a>
+                    </td>
+                    <td>
+                       @item.PName
+                    </td>
+                    <td>
+                        @*<a onclick="DetailProductName(@item.PName)">@*<i class="fa fa-edit"></i>@item.NoOfCustomers</a>*@
+                        @item.NoOfCustomers
+                   </td>
+                </tr>
+                 ProductCount += item.NoOfCustomers;
+                foreach (var childitem in item.AccOpenByCollectorViewModelList)
+                {
+                    <tr>
+                        <td>
+                            @*<span>@Html.DisplayFor(model=>item.Name)</span>*@
+                           @* <a onclick="Detail(@childitem.BroughtBy)"><i class="fa fa-edit"></i>@childitem.Name</a>*@
+                        </td>
+                        <td>
+                            @childitem.PName
+                        </td>
+                        <td>
+                            <a onclick="DetailProductName(@item.BroughtBy,'@childitem.PName')"><i class="fa fa-edit"></i>@childitem.PCount</a>
+                        </td>
+                    </tr>
+                }
+            }
+         <tr>
+             <th colspan="2">
+                 Total
+             </th>
+             <th>
+                 @ProductCount@*.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)*@
+             </th>
+         </tr>
+        </table>    
+</fieldset>

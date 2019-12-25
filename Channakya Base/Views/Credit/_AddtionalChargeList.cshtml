@@ -1,0 +1,38 @@
+﻿@model ChannakyaBase.Model.ViewModel.DisburseChargeDepositViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using HtmlHelpers.BeginCollectionItem
+@using (Html.BeginCollectionItem("AddtionalChargeList"))
+{
+
+    <div class="form-group added-charge-list">
+    @Html.Label("Charge", htmlAttributes: new { @class = "control-label col-md-1" })
+    <div class="col-md-6">
+        @Html.DropDownListFor(model => model.FID, FinanceParameterUtilityService.ChargeLedger(), htmlAttributes: new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.FID, "", new { @class = "text-danger" })
+    </div>
+    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-1" })
+    <div class="col-md-4">
+        <div class="input-group">
+            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control total-amount" } })
+            <div class="input-group-btn">
+                @*<button type="button" style="left:4px" class="btn btn-success addCharge"><i class="fa fa-plus" aria-hidden="true"></i></button>*@
+                <button type="button" style="left:4px" class="btn btn-danger remove-charge-type"><i class="fa addtional-charge-minus  fa-close" aria-hidden="true"></i></button>
+            </div>
+        </div>
+
+        @*@Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control total-amount" } })
+        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })*@
+    </div>
+
+    @*@Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-1" })
+    <div class="col-md-3">
+        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+    </div>*@
+    @*<div class="col-md-1" style="float:right">
+            <button type="button"class="btn btn-danger btn-sm remove-charge-type"><i class="fa addtional-charge-minus  fa-close" aria-hidden="true"></i></button>
+        </div>*@
+</div>
+}

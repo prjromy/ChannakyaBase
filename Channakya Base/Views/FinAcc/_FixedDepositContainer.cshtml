@@ -1,0 +1,58 @@
+﻿@model ChannakyaAccounting.Models.Models.FixedDepositList
+
+@using ChannakyaAccounting.Helper
+@{
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    var capruleList = depositProduct.GetCapitalizationRule();
+    var test = Model;
+
+}
+
+
+<div class="tab-content">
+    
+  
+
+        <div id="depositBasisId" class="">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>
+                            Duration
+                        </th>
+                        <th>
+                            Capitalization Rule 
+                        </th>
+                       <th>
+                           Interest Rate
+                       </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (int j = 0; j < Model.DurationList.Count(); j++)
+                    {
+                        @Html.HiddenFor(x=>Model.DurationList[j].Id)
+                        
+                        <tr class="DurationList">
+                            <th scope="row" class="Duration" id="@Model.DurationList[j].Id">@Model.DurationList[j].Duration1</th>
+                            <td>@Html.DropDownListFor(x => Model.DurationList[j].ProductDurationInt.ICBId, capruleList, "Select Rule", new { @class = "form-control" })</td>
+                            <td> @Html.TextBoxFor(x => Model.DurationList[j].ProductDurationInt.InterestRate, new { @class = "form-control", @placeholder = "Enter Interest Rate", @max = "20" })</td>
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+    
+
+
+
+</div>
+

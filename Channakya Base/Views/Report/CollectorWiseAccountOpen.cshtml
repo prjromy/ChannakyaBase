@@ -1,0 +1,139 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccOpenByCollectorViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper
+@{
+//ReportUtilityService. StatusList = new ReportUtilityService();
+}
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Collector Wise Account Open Report</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    
+    <div class="content-box">
+        <fieldset>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.DatePicker(model => model.FromDate)
+                    @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4">
+                    @Html.DatePicker(model => model.ToDate)
+                    @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.Status, ReportUtilityService.AccountStateList(), new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-12">
+
+                    <input type="button" value="Generate" class="btn btn-info btn-save-cust btn-sm btn-save glyphicon glyphicon-save" onclick="GenerateReport()" />
+                    <input type="button" value="ExportToExcel" class="btn btn-info btn-save-cust btn-sm btn-save btn-collectorwiseaccountopen-export-to-excel" onclick="collectorWiseExport()" />
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="display-list">
+    </div>
+    <div class='display-list-pop-up modal fade col-md-offset-2' role='dialog'>
+    </div>
+</div>
+
+<script>
+    function GenerateReport() {
+        debugger;
+        var tdate = $('#FromDate').val();
+        var fdate = $('#ToDate').val();
+        var status = $('#Status').val();
+        $.ajax({
+            url: "/Report/_CollectorWiseAccountOpen",
+            type: 'GET',
+            data: {
+                fdate: fdate,
+                tdate: tdate,
+                status: status
+            },
+            success: function (result) {
+                debugger;
+                $(".display-list").html(result);
+                $(".textarea").val("");
+            }
+        })
+
+
+    }
+    //function Detail(BroughtBy)
+    //{
+    //    debugger;
+    //    var tdate = $('#FromDate').val();
+    //    var fdate = $('#ToDate').val();
+    //    var status = $('#Status').val();
+    //    $.ajax({
+    //        type: "GET",
+    //        data: {
+    //            collectorId: BroughtBy,
+    //            tdate: tdate,
+    //            fdate: fdate,
+    //            status: status
+    //        },
+    //        url: "/Report/CollectorWiseAccountOpenDetail",
+    //        success: function (result) {
+    //            debugger;
+    //            $(".display-list-pop-up").html(result).modal({
+    //                'show': true,
+    //                'backdrop': 'static'
+    //            });
+    //            $('.modal.backdrop').remove();
+    //        }
+    //    });
+    //}
+    function DetailProductName(BroughtBy, PName) {
+        debugger;
+        var tdate = $('#FromDate').val();
+        var fdate = $('#ToDate').val();
+        var status = $('#Status').val();
+        $.ajax({
+            type: "GET",
+            data: {
+                collectorId: BroughtBy,
+                tdate: tdate,
+                fdate: fdate,
+                status: status,
+                Pname: PName
+            },
+            url: "/Report/CollectorWiseAccountOpenDetail",
+            success: function (result) {
+                debugger;
+                $(".display-list-pop-up").html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+                });
+                $('.modal.backdrop').remove();
+            }
+        });
+    }
+
+    function collectorWiseExport() {
+        debugger;
+
+        var tdate = $('#FromDate').val();
+        var fdate = $('#ToDate').val();
+        var status = $('#Status').val();
+        window.open("/Report/CollectorWiseAccountOpenExportToExcel?tdate=" + tdate + "&fdate=" + fdate + "&status=" + status);
+    }
+</script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+

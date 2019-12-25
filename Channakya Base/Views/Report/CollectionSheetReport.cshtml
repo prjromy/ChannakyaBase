@@ -1,0 +1,96 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.CollectionSheetTransReportViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Collection Report";
+}
+<div class="box box-success collection-transaction-index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Collection Sheet Wise Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12" id="filter-report-parameters">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                       
+                        <div class="form-group">
+                            @Html.Label("From Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.FromDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("To Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.ToDate)
+                                @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success collection-transaction-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-transaction-export-to-excel" />
+
+            </div>
+        </div>
+    </div>
+
+    <div class="collection-transaction-details" id="collection-transaction-list">
+
+    </div>
+</div>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+<script>
+
+    $(".collection-transaction-index").on("click", '.collection-transaction-generate', function () {
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_CollectionSheetReport",
+            data: { FDate: FromDate, TDate: ToDate },
+            success: function (result) {
+
+                $(".collection-transaction-details").html("");
+                $(".collection-transaction-details").html(result)
+            }
+        });
+    });
+
+    $('.collection-transaction-index').on('click', '.btn-transaction-export-to-excel', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/CollectionSheetReportExporttoExcel?fromDate=" + fromDate + "&toDate=" + toDate)
+
+    });
+
+
+</script>
+

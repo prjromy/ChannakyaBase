@@ -1,0 +1,264 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChequeClearenceViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    bool withDetails = true;
+}
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Cheque Clearance</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("ChequeClearenceInsert", "Teller", FormMethod.Post, new { id = "cheque-clearence" }))
+    {
+
+        <div class="content-box">
+            <fieldset>
+
+                <div class="form-horizontal">
+                    <div>
+                        @* verifier section start *@
+                        @{
+                            bool isverified = new CommonService().isStrictlyVerifiable();
+
+                        }
+                        <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                        </div>
+                        @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+
+
+                        @*end *@
+                    </div>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    @Html.Label("Account no", new { @class = "control-label  col-md-2" })
+                    <div class="col-md-4">
+                        @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.WithdrawWithIntPay.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription(), "", withDetails)
+                        @Html.HiddenFor(x=>x.IAccno)
+                        @Html.Hidden("MessageEventID", 27)
+                        @Html.ValidationMessageFor(model => model.IAccno, "", new { @class = "text-danger account-number" })
+
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                    </div>
+                   
+
+                    <div class="form-group">
+                        @Html.Label("Bank Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.Bankname, new { htmlAttributes = new { @class = "form-control cust-id" } })
+                            @Html.ValidationMessageFor(model => model.Bankname, "", new { @class = "text-danger " })
+                        </div>
+                    </div>
+                    <div class="customer-event-message">
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Branch Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.Brnhname, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Brnhname, "", new { @class = "text-danger " })
+                        </div>
+
+                        @Html.Label("Cheque No", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.chqno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.chqno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.Label("Payee Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.payee, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.payee, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Cheque Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.camount, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.camount, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Payee A/c No", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.accno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.accno, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.Label("Valid Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DatePicker(model => model.VDate)
+                            @Html.ValidationMessageFor(model => model.VDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Remarks", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.remarks, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.remarks, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div>
+                        <input type="button" style="float:right;" value="Save" class="btn btn-info btn-save-cust btn-sm btn-save glyphicon glyphicon-save btn-cheque-clearence-save" data-eventid="27" data-isMultiVerifier="false" />
+
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+    }
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+
+
+
+<script>
+
+    $('#camount').on('keyup', function () {
+        var accountId = $(".account-id").val();
+        if (accountId == "") {
+            ErrorAlert("Account number is required!!", 3000);
+            document.getElementById('alert-error').scrollIntoView();
+            return false
+        }
+        var Amount = $('#camount').val();
+        debugger;
+        $.ajax({
+            url: '/Teller/CheckFixedDepositValidAmount',
+            type: 'GET',
+            data: { accountId: accountId, Amount: Amount },
+            success: function (result) {
+                if (result == false) {
+                    debugger;
+                    ErrorAlert('Amount Inserted is greater than contribution amount', 3000);
+                    document.getElementById('alert-error').scrollIntoView();
+
+                }
+                else {
+                    $('#camount').focus();
+                }
+            }
+
+        });
+    });
+
+    $('#camount').on('change', function () {
+        var accountId = $(".account-id").val();
+        if (accountId == "") {
+            ErrorAlert("Account number is required!!", 5000);
+            document.getElementById('alert-error').scrollIntoView();
+            return false
+        }
+        var Amount = $('#camount').val();
+        debugger;
+        $.ajax({
+            url: '/Teller/CheckFixedDepositValidAmount',
+            type: 'GET',
+            data: { accountId: accountId, Amount: Amount },
+            success: function (result) {
+                if (result == false) {
+                    debugger;
+                    ErrorAlert('Amount Inserted is greater than contribution amount');
+                    document.getElementById('alert-error').scrollIntoView();
+
+                }
+                else {
+                    $('#camount').focus();
+                }
+            }
+
+        });
+    });
+    $(".btn-cheque-clearence-save").on("click", function (e) {
+        debugger;
+        var accountId = $("#IAccno").val();
+        var Amount = $('#camount').val();
+        if (accountId == "") {
+            ErrorAlert("Account number is required!!", 5000);
+            document.getElementById('alert-error').scrollIntoView();
+            return false
+        }
+        var strictVerifiable = $('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        ismultiVerify = $(this).attr('isMultiVerifier');
+
+        if ($("#cheque-clearence").valid()) {
+            
+                   
+                        if (strictVerifiable == true) {
+                            debugger;
+                            taskVerifierList(eventid, ismultiVerify);
+                        }
+                        else {
+                         
+                            CreateChechClearence();
+                        }
+                        
+                    }
+            
+      
+
+      
+    })
+
+    function CreateChechClearence() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure ?"
+        }).done(function () {
+            $('#cheque-clearence').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Teller/ChequeClearenceInsert",
+                            type: 'get',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                                $('.modal-backdrop').remove();
+
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+                    }
+                    else {
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                }
+            });
+            }).fail(function(){
+
+            })
+    }
+</script>

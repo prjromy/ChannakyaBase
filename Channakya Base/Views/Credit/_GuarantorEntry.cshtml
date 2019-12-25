@@ -1,0 +1,310 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.GuarantorModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService commonServices = new CommonService();
+    var a = (string)ViewData["id"];
+}
+
+<div class="form-group">
+    @Html.LabelFor(x => x.GIaccno, new { @class = "control-label  col-md-2" })
+    <div class="col-md-4 guaranty-account">
+        @if (a == "From Gurantor")
+        {
+            @Html.AccountNumberSearch(x => x.GIaccno,EAccountDetailsShow.GuarantorDetail.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription())
+        }
+        else
+        {
+            @Html.AccountNumberSearch(x => x.GIaccno, EAccountDetailsShow.GuarantorDetail.GetDescription(), EAccountFilter.WithGuarantor.GetDescription(), EAccountType.Normal.GetDescription())
+        }
+
+    </div>
+    @Html.LabelFor(model => model.IsPercent, new { @class = "control-label  col-md-2" })
+    <div class="col-md-4">
+        @Html.CheckBoxFor(model => model.IsPercent)
+        @Html.ValidationMessageFor(model => model.IsPercent, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(x => x.BlockedAmt, new { @class = "control-label  col-md-2" })
+    <div class="col-md-4">
+        @Html.TextBoxFor(model => model.BlockedAmt, new { @class = "form-control BlockedAmt" })
+        @Html.ValidationMessageFor(model => model.BlockedAmt, "", new { @class = "text-danger" })
+    </div>
+    @*@Html.LabelFor(model => model.DisplayMsg, new { @class = "control-label  col-md-2" })
+    <div class="col-md-4">
+        @Html.CheckBoxFor(model => model.DisplayMsg)
+        @Html.ValidationMessageFor(model => model.DisplayMsg, "", new { @class = "text-danger" })
+    </div>*@
+</div>
+<div class="box-footer">
+    <div class="form-group">
+        <div class="col-md-offset-10 col-md-12">
+            <input type="button" value="Add" class="btn btn-add btn-Loan-add-Guarantor" />
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function DeleteRow(e) {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+
+            $(e).closest('tr').remove();
+
+        }).fail(function () {
+        })
+
+    }
+    $('.btn-Loan-add-Guarantor').on('click', function () {
+        debugger;
+        isper = $('#IsPercent').prop('checked');
+        var GIaccno = $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-id').val()
+        var FDIaccno = $('.account-id').val();
+        var Pid = $('#PID').val();
+        $.ajax({
+            async:false,
+            type: 'GET',
+            url: '/Credit/GetFDLoanDetails',
+            
+            data: {
+                accountId: GIaccno,
+                Pid: Pid,
+                Modelfrom:"FromGurantor",
+                FDIaccno: FDIaccno
+            },
+            success: function (fdloan) {
+                if (fdloan.IsGurantor == true && fdloan!=null) {
+                    debugger
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "<span style='color:red;'><center>This FD Account is already a guarantor!!</center></span> <br/> <span style='padding:4px;'><center>Are you sure?</center></span>"
+                    }).done(function () {
+                        var AccountNumber = $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-aumber').val()
+                        var IsPercent = $('#IsPercent').prop('checked');
+                        var BlockedAmt = $("#BlockedAmt").val();
+                        var tr = $('table#guarantor-Entry-table-div').find("tr").find(".GuarantorIaccno");
+                        var total = 0;
+                        $.each(tr, function (index, item) {
+                            if ($(item).val() == GIaccno) {
+                                total = total + 1;
+                            }
+                        })
+                        if (total > 0) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "account number already added!!"
+                            }).done(function () {
+
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+                        if (IsPercent == true) {
+                            var per = parseFloat(BlockedAmt);
+                            if (per > 100) {
+                                $.MessageBox({
+                                    buttonDone: "OK",
+                                    message: "percent not more than 100%!!"
+                                }).done(function () {
+
+                                    return false;
+                                }).fail(function () {
+                                    //return false;
+                                })
+                                return;
+                            }
+                        }
+
+                        if (GIaccno == "0" || GIaccno == 0) {
+                            if (total < 1) {
+                                $.MessageBox({
+                                    buttonDone: "OK",
+                                    message: "Account Number Is Required!!"
+                                }).done(function () {
+
+                                    return false;
+                                }).fail(function () {
+                                    //return false;
+                                })
+
+                                return;
+                            }
+
+                        }
+
+                        else if (BlockedAmt == "" || BlockedAmt == 0) {
+                            if (total < 1) {
+                                $.MessageBox({
+                                    buttonDone: "OK",
+                                    message: "Amount or per Is Required!!"
+                                }).done(function () {
+
+                                    return false;
+                                }).fail(function () {
+                                    //return false;
+                                })
+                            }
+
+                            return;
+                        }
+
+                        else {
+                            var GuarantorModel = {
+                                GIaccno: GIaccno,
+                                IsPercent: IsPercent,
+                                BlockedAmt: BlockedAmt,
+                                AccountNumber: AccountNumber
+                            };
+                            $.ajax({
+                                url: "/Credit/AddGuarantor",
+                                data: JSON.stringify({ guarantorModel: GuarantorModel }),
+                                type: "POST",
+                                contentType: "application/json;charset=utf-8",
+                                datatype: "json",
+                                success: function (result) {
+                                    debugger;
+                                    if (result.Status) {
+                                        $('#guarantor-Entry-table-div >tbody').append(result.htmlToShow);
+                                        $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-id').val("")
+                                        $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-aumber').val("")
+
+                                        $("#BlockedAmt").val("");
+                                    } else {
+                                        ErrorAlert(result.Message, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+
+
+                                },
+                                error: function () {
+                                    alert('error in calling ajax !!')
+                                }
+                            });
+                        }
+                      
+                    });
+                }
+                else {
+                    var AccountNumber = $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-aumber').val()
+                    var IsPercent = $('#IsPercent').prop('checked');
+                    var BlockedAmt = $("#BlockedAmt").val();
+                    var tr = $('table#guarantor-Entry-table-div').find("tr").find(".GuarantorIaccno");
+                    var total = 0;
+                    $.each(tr, function (index, item) {
+                        if ($(item).val() == GIaccno) {
+                            total = total + 1;
+                        }
+                    })
+                    if (total > 0) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "account number already added!!"
+                        }).done(function () {
+
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+                    if (IsPercent == true) {
+                        var per = parseFloat(BlockedAmt);
+                        if (per > 100) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "percent not more than 100%!!"
+                            }).done(function () {
+
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+                    }
+
+                    if (GIaccno == "0" || GIaccno == 0) {
+                        if (total < 1) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "Account Number Is Required!!"
+                            }).done(function () {
+
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+
+                            return;
+                        }
+
+                    }
+
+                    else if (BlockedAmt == "" || BlockedAmt == 0) {
+                        if (total < 1) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "Amount or per Is Required!!"
+                            }).done(function () {
+
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                        }
+
+                        return;
+                    }
+
+                    else {
+                        var GuarantorModel = {
+                            GIaccno: GIaccno,
+                            IsPercent: IsPercent,
+                            BlockedAmt: BlockedAmt,
+                            AccountNumber: AccountNumber
+                        };
+                        $.ajax({
+                            url: "/Credit/AddGuarantor",
+                            data: JSON.stringify({ guarantorModel: GuarantorModel }),
+                            type: "POST",
+                            contentType: "application/json;charset=utf-8",
+                            datatype: "json",
+                            success: function (result) {
+                                debugger;
+                                if (result.Status) {
+                                    $('#guarantor-Entry-table-div >tbody').append(result.htmlToShow);
+                                    $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-id').val("")
+                                    $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-aumber').val("")
+
+                                    $("#BlockedAmt").val("");
+                                } else {
+                                    ErrorAlert(result.Message, 5000);
+                                    document.getElementById('alert-error').scrollIntoView();
+                                }
+
+
+                            },
+                            error: function () {
+                                alert('error in calling ajax !!')
+                            }
+                        });
+                    }
+                }
+            },
+
+        });
+       
+    });
+</script>

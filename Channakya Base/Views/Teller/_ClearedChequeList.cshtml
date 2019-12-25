@@ -1,0 +1,91 @@
+﻿@model ChannakyaBase.Model.ViewModel.AMClearenceViewModel
+@using ChannakyaCustomeDatePicker.Service
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    CommonService commonService = new CommonService();
+ 
+}
+<div class="table-responsive responsive-data table-click-event-message">
+
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>@Html.Label("Account Number")</td>
+                <td>@Html.Label("Account Name")</td>
+                <td>@Html.Label("Payee Name")</td>
+                <td>@Html.Label("Amount")</td>
+                <td>@Html.Label("Bank Name")</td>
+                <td>@Html.Label("Cleared Date")</td>
+            </tr>
+        </thead>
+        @foreach (var item in Model.AmclearenceWithIPageList)
+            {
+            <tbody>
+                <tr>
+
+                    <td>@Html.DisplayFor(model => item.AccountNumber)</td>
+                    <td>@Html.DisplayFor(model => item.AccountName)</td>
+                    <td>@Html.DisplayFor(model => item.payee)</td>
+                    <td>@Html.DisplayFor(model => item.camount)</td>
+                    <td>@Html.DisplayFor(model => item.bankname)</td>
+                    <td>
+                        @{
+                            var customerservice = commonService.GetDate(item.cdate);
+                            @Html.Label(customerservice)
+                        }
+                    </td>
+                </tr>
+            </tbody>
+  }
+
+    </table>
+
+    @Html.Paging("_ClearedChequeList", "Teller", Model.AmclearenceWithIPageList.PageCount, Model.AmclearenceWithIPageList.PageNumber, Model.AmclearenceWithIPageList.PageSize)
+</div>
+<script>
+     $("div.table-click-event-message").on('click', 'input.btnPaging', function (e) {
+         debugger;
+         e.stopImmediatePropagation();
+         var parentContainer = $(this).parents()
+         var me = $(this);
+         var IAccno = $('#IAccno').val();
+         var bankname = $('#Name').val();
+         var cdate = $('#toDate').val();
+         var fromdate = $('#fromDate').val();
+         var container = parentContainer.find(".table-click-event-message")
+         var url = "?IAccno=" + IAccno + "&bankname=" + bankname + "&toDate=" + cdate + "&fromdate=" + fromdate;
+         getPageNumberBtnAction(url, container, me)
+     });
+     $("div.table-click-event-message").on('change', 'input#pageNo', function (e) {
+         debugger;
+         e.stopImmediatePropagation();
+         var parentContainer = $(this).parents()
+         var me = $(this);
+         var IAccno = $('#IAccno').val();
+         var bankname = $('#Name').val();
+         var cdate = $('#toDate').val();
+         var fromdate = $('#fromDate').val();
+         var container = parentContainer.find(".table-click-event-message")
+         var url = "?IAccno=" + IAccno + "&bankname=" + bankname + "&toDate=" + cdate + "&fromdate=" + fromdate;
+         getPageNumberChangeData(url, container, me)
+     });
+     $("div.table-click-event-message").on('change', 'input#pageSize', function (e) {
+         debugger;
+         e.stopImmediatePropagation();
+         var parentContainer = $(this).parents()
+         var me = $(this);
+         var me = $(this);
+         var IAccno = $('#IAccno').val();
+         var bankname = $('#Name').val();
+         var cdate = $('#toDate').val();
+         var fromdate = $('#fromDate').val();
+         var container = parentContainer.find(".table-click-event-message")
+         var url = "?IAccno=" + IAccno + "&bankname=" + bankname + "&toDate=" + cdate + "&fromdate=" + fromdate;
+         getPageSizeChangeData(url, container, me)
+     });
+
+
+</script>

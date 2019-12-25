@@ -1,0 +1,463 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var schemeList = finaccService.GetSchmDetails();
+    var sectorlist = finaccService.GetSector();
+    var accountType = Model.SchemeofProduct.SType;//Deposit Account
+
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    List<SelectListItem> durationType = new List<SelectListItem> { new SelectListItem { Text = "Days", Value = "0" }, new SelectListItem { Text = "Months", Value = "1" } };
+}
+
+@Html.HiddenFor(m => m.PID, new { @class = "form-control" })
+@Html.HiddenFor(x => x.FID)
+@Html.HiddenFor(x => x.SDID)
+
+@Html.TextBoxFor(x => x.MID, new { @value=Model.SchemeofProduct.MID,@style="display:none;"})
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Rate
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            @if (Model.PID == 0)
+            {
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.PIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PIRate, new { @class = "form-control", @max = "20" })
+                                @Html.ValidationMessageFor(model => model.PIRate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(m => m.IRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.IRate, new { @class = "form-control", @max = "20" })
+                                @Html.ValidationMessageFor(model => model.IRate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.PPRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PPRate, new { @class = "form-control", @max = "20" })
+                                @Html.ValidationMessageFor(model => model.PPRate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(m => m.OIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.OIRate, new { @class = "form-control", @max = "20" })
+                                @Html.ValidationMessageFor(model => model.OIRate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.PIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PIRate, new { @class = "form-control", @max = "20",@readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.PIRate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(m => m.IRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.IRate, new { @class = "form-control", @max = "20", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.IRate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.PPRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PPRate, new { @class = "form-control", @max = "20", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.PPRate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(m => m.OIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.OIRate, new { @class = "form-control", @max = "20", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.OIRate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Select Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+
+                <div class="form-group col-md-12">
+
+
+
+                    @if (Model.SchemeofProduct.HasIndivRate == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.HasIndivRate, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.HasIndivRate.HasValue)
+                            </div>
+                        </div>
+                        }
+
+                    @*<div class="form-group col-md-6">
+                        @Html.LabelFor(m => m.HasOverdraw, new { @class = "col-md-6  control-label col-form-label" })
+                        <div class="col-md-6 ">
+                            @Html.CheckBoxFor(m => m.HasOverdraw)
+                        </div>
+                    </div>*@
+
+                    @if (Model.SchemeofProduct.HasCheque == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.HasCheque, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.HasCheque)
+                            </div>
+                        </div>
+
+
+                        }
+                    @if (Model.SchemeofProduct.HasCard == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.HasCard, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.HasCard)
+                            </div>
+                        </div>
+                        }
+
+                    @if (Model.SchemeofProduct.Revolving == true)
+                    {
+                        <div class="form-group col-md-6">
+                            @if (Model.Revolving == null)
+                            {
+                                Model.Revolving = false;
+                            }
+                            @Html.LabelFor(m => m.Revolving, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBox("Revolving", Model.Revolving.Value, new { @class = "multiple-deposit" })
+                            </div>
+                        </div>
+                    }
+
+
+                    @if (Model.SchemeofProduct.HasIndivLimit == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.HasIndivLimit, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.HasIndivLimit.HasValue)
+                            </div>
+                        </div>
+                        }
+                    @if (Model.PID != 0)
+                        {
+
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.enabled, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.enabled)
+                            </div>
+                        </div>
+
+                        }
+
+
+                    @if (Model.SchemeofProduct.MultiDeposit == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @if (Model.MultiDep == null)
+                                {
+                                    Model.MultiDep = false;
+                                }
+                            @Html.LabelFor(m => m.MultiDep, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBox("MultiDep", Model.MultiDep.Value, new { @class = "multiple-deposit" })
+                            </div>
+                        </div>
+                        }
+
+                    @if (Model.SchemeofProduct.HASSMS == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @if (Model.HASSMS == null)
+                                {
+                                    Model.HASSMS = false;
+                                }
+                            @Html.LabelFor(m => m.HASSMS, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBox("HASSMS", Model.HASSMS.Value)
+                            </div>
+                        </div>
+                        }
+
+
+
+                    @if (Model.SchemeofProduct.Withdrawal == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @if (Model.Withdrawal == null)
+                                {
+                                    Model.Withdrawal = false;
+                                }
+                            @Html.LabelFor(m => m.Withdrawal, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBox("Withdrawal", Model.Withdrawal.Value, new { @class = "multiple-withdrawl" })
+                            </div>
+                        </div>
+                        }
+                    <div class="form-group col-md-6">
+                        @if (Model.IntraBrnhTrnx == null)
+                            {
+                                Model.IntraBrnhTrnx = false;
+                            }
+                        @Html.LabelFor(m => m.IntraBrnhTrnx, new { @class = "col-md-6  control-label col-form-label" })
+                        <div class="col-md-6 ">
+                            @Html.CheckBox("IntraBrnhTrnx", Model.IntraBrnhTrnx.Value)
+                        </div>
+                    </div>
+
+                    @if (Model.SchemeofProduct.Nomianable == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.Label("Nominable", new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.Nomianable)
+                            </div>
+                        </div>
+                        }
+
+                    @if (Model.SchemeofProduct.IsInsured == true)
+                        {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.IsInsured, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBoxFor(m => m.IsInsured)
+                            </div>
+                        </div>
+                        }
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Enter Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+
+                <div class="form-group col-md-12">
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.NSId, new { @class = "col-md-3  control-label col-form-label" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.NSId, sectorlist,"Select", new { @class = "form-control", @required = "required" })
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        @if (Model.SchemeofProduct.IsRenewable == true)
+                        {
+                            @Html.LabelFor(m => m.RuleRenew, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-md-9">
+                                @Html.DropDownListFor(m => m.RuleRenew, new SelectList(depositProduct.AllRuleRenew(), "RNWID", "RenewRule", Model.RNWID),"Select", new { @class = "form-control", @required = "required" })
+                            </div>
+                        }
+
+                    </div>
+                    @if (Model.SchemeofProduct.HasDormancy == true)
+                    {
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.DormantPeriod, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.DormantPeriod, new { @class = "form-control", @placeholder = "In Month", @required = "required" })
+
+                            </div>
+                        </div>
+
+                    }
+
+                    @if (Model.SchemeofProduct.HasDuration == true)
+                    {
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.Duration, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.Duration, new { @class = "form-control", @required = "required" })
+                            </div>
+                            @Html.Label("Duration Type", new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.DropDownListFor(m => m.durState, durationType, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+
+                    }
+
+             
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(m => m.ODuration, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(m => m.ODuration, new { @class = "form-control", @required = "required" })
+                        </div>
+
+                        @Html.LabelFor(m => m.PGRACE, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(m => m.PGRACE, new { @class = "form-control", @placeholder = "In Days", @required = "required" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.penGDys, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(m => m.penGDys, new { @class = "form-control", @required = "required" })
+                        </div>
+                        @Html.LabelFor(m => m.StartAcNo, new { @class = "col-sm-3 control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(m => m.StartAcNo, new { @class = "form-control", @required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        @if (Model.SchemeofProduct.HasIndivLimit == true)
+                        {
+                            @Html.LabelFor(m => m.LAmt, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.LAmt, new { @class = "form-control", @required = "required" })
+                            </div>
+                        }
+                        @*<div class="form-group col-md-6">
+
+                            @Html.LabelFor(m => m.StartAcNo, new { @class = "col-md-6 control-label col-form-label" })
+                            <div class="col-md-6">
+                                @Html.TextBoxFor(m => m.StartAcNo, new { @class = "form-control" })
+                            </div>
+
+                        </div>*@
+                      
+                    </div>
+                   
+              
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@*<div class="interest-value-main-container">
+
+</div>*@
+
+<div class="box box-warning col-md-12 interest-main-container" style="display:none;">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Interest Calculation Setup
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12 ">
+            <div class="interest-list-container">
+                @if (Model.LoanInterestList != null)
+                {
+                if (Model.LoanInterestList.PolicyCalculationList != null)
+                {
+                    Response.Write("<script language=javascript>$('.interest-main-container').show(); </script>");
+                    @Html.Partial("_GetLoanInterestContainer", Model)
+                }
+                }
+
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="box box-warning col-md-12 penalty-interest-main-container"style="display:none;">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Penalty Interest Setup
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12 policy-penalty-list ">
+         
+           @if (Model.LoanInterestList != null)
+           {
+            if (Model.LoanInterestList.PolicyPenaltyList != null)
+            {
+                Response.Write("<script language=javascript>$('.interest-main-container').show();$('.penalty-interest-main-container').show(); </script>");
+                @Html.Partial("_GetPolicyPenaltyList", Model)
+            }
+           }
+           
+
+        </div>
+
+    </div>
+</div>
+
+<div class="box box-warning col-md-12 payment-mode-main-container"style="display:none;">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Payment Mode Setup
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12 payment-mode-list">
+            @if (Model.LoanInterestList != null)
+            {
+                if (Model.LoanInterestList.RulePayList != null)
+                {
+                    Response.Write("<script language=javascript>$('.payment-mode-main-container').show(); </script>");
+                @Html.Partial("_GetPaymentRuleList", Model)
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+

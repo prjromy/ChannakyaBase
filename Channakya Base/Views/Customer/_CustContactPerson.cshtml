@@ -1,0 +1,40 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContactPerson
+@using ChannakyaBase.BLL.Service
+ @using HtmlHelpers.BeginCollectionItem
+ 
+<tr>
+
+    @using (Html.BeginCollectionItem("CustContactPerson"))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(x => x.CPId, new { @class = "CPId" })
+        @Html.HiddenFor(x => x.CPDeleted, new { @class = "CPDeleted" })
+
+        <td>
+            @Html.EditorFor(model => model.CPName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.CPName, "", new { @class = "text-danger" })
+        </td>
+
+        <td>
+            @Html.EditorFor(model => model.CPCNo, new { htmlAttributes = new { @class = "form-control" , @type = "number"} })
+            @Html.ValidationMessageFor(model => model.CPCNo, "", new { @class = "text-danger" })
+        </td>
+
+        if (Model.CID != 0)
+        {
+            <td>
+                <input type="button" class="btn btn-default delete-cust-contact-person" id="delete-cust-contact-person" value="Delete" />
+            </td>
+        }
+        else
+        {
+            <td class="col-md-2">
+                <input type="button" class="btn btn-default delete-cust-contact-person hidden" id="delete-cust-contact-person" value="Delete" />
+            </td>
+
+        }
+
+    }
+
+</tr>

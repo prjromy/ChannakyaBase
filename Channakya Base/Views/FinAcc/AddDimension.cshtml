@@ -1,0 +1,109 @@
+﻿@model ChannakyaAccounting.Models.Models.FinAcc
+@using ChannakyaAccounting.Helper
+@{
+    var dimcheck = Model;
+}
+
+@*<div id="dim-container" style="max-height:300px;overflow:inherit">*@
+@*@Html.EditorFor(model => model.DimensionDefinationList)*@
+@*</div>*@
+
+<br/>
+<label class="col-md-12 myHeader">Select Dimensions</label>
+<br/>
+<div class="main-dimension-container col-md-12"style="max-height: 180px;overflow:auto;">
+
+    <div class="dimension-container-original col-md-6">
+        <b>Dimension Lists</b>
+        @for (int index = 0; index < Model.DimensionDefinationList.Count(); index++)
+        {
+            <div class="tr-class">
+                <div class="tr-data-content">
+                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DLId)
+
+                    @Html.HiddenFor(x => x.DimensionDefinationList[index].DDId, new { @id = "dimensionDefnId" + Model.DimensionDefinationList[index].DDId, @class = "dimensiondefn-class" })
+                    @Html.HiddenFor(x => x.DimensionDefinationList[index].Order, new { @class = "dimension-order-value" })
+
+                    @Html.CheckBoxFor(x => x.DimensionDefinationList[index].isSelected, new { @id = "dimensionCheckbox" })
+
+
+                    @Html.DisplayFor(x => x.DimensionDefinationList[index].DefName)
+
+                    <br />
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="dimension-order-container col-md-6">
+        <b>Selected Dimensions</b>
+
+    </div>
+</div>
+
+<style>
+    .myHeader {
+        padding-left: 89px;
+        margin-left: 104px;
+        margin-bottom:18px;
+        width: 93%;
+        left: -46px;
+        height: 28px;
+        padding-top: 4px;
+        border-bottom: 1px solid grey;
+        padding-left: 7px;
+        background-color: #3c8dbc;
+        color: white;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $('.dimension-container-original').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+
+        var dimensionDefnId = $(this).closest('.tr-data-content').find(".dimensiondefn-class").val();
+        debugger;
+        if (this.checked) {
+            var allContent = $(this).closest('.tr-data-content').html();
+
+            //$(allContent).find('.dimension-order-value').val(index);
+            $(this).closest('.main-dimension-container').find('.dimension-order-container').append("<div class='tr-data-content'>" + allContent + '</div>');
+            $(this).closest('.tr-class').remove();
+            var arrayList = $('.dimension-order-container').find('.tr-data-content');
+            $('.dimension-order-container').find('input#dimensionCheckbox').prop('checked', true);
+            $(arrayList).each(function (index, item) {
+                $(item).find('.dimension-order-value').val(index);
+            });
+
+        }
+    });
+    $('.dimension-order-container').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+        var allContent = $(this).closest('.tr-data-content').html();
+        $(this).closest('.main-dimension-container').find('.dimension-container-original').append("<div class='tr-class'><div class='tr-data-content'>" + allContent + '</div></div>')
+        $('.dimension-container-original').find('input#dimensionCheckbox').prop('checked', false);
+        $(this).closest('.tr-data-content').remove();
+
+    });
+
+
+</script>
+<style>
+    .main-dimension-container.col-md-12 {
+        margin-left: 94px;
+    }
+
+    .tr-data-content {
+        line-height: 36px;
+    }
+
+    .main-dimension-container.col-md-12 {
+        max-height: 150px;
+        /*overflow: auto;*/
+        max-width: 724px;
+    }
+</style>

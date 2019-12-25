@@ -1,0 +1,331 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareReturnViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+
+@{
+    CommonService commonServices = new CommonService();
+
+}
+
+<div class="box box-warning share-return-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Share return</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*<div class="verfier-list">
+        table-click-share-return table tbody tr
+        </div>*@
+    @using (Html.BeginForm("ShareReturn", "Share", FormMethod.Post, new { id = "Share-Return" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+
+                    bool isTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.CheckBox("TransactionWithDeno", isTransactionWithDeno, new { @class = "hidden" })
+                @Html.HiddenFor(model => model.SType)
+                @Html.HiddenFor(model => model.Sid)
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Return-Details</legend>
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.RegNo, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EmployeeSearch(x => x.RegNo, "", EEmployeeChange.ReturnShare.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                        @Html.ValidationMessageFor(model => model.RegNo, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+
+                                <div class="share-return-customer-list form-group col-md-12" style="padding-left:5px">
+
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.Label("Certificate No", new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(model => model.Scrtno, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Scrtno, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.HiddenFor(x => x.Rdate)
+                                    @Html.Label("Return date", new { @class = "control-label col-md-2" })
+                                    <div class="col-md-5">
+                                        @Html.DatePicker(x => x.Rdate, false)
+
+                                        @Html.ValidationMessageFor(model => model.Rdate, "", new { @class = "text-danger" })
+                                    </div>
+                                    @Html.Label("Rate", new { @class = "control-label col-md-2" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.Rate, new { @class = "form-control text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.From, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.From, new { @class = "form-control text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                                    </div>
+
+
+                                    @Html.LabelFor(model => model.To, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.To, new { @class = "form-control  text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+
+
+                                    @Html.LabelFor(model => model.Qty, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(model => model.Qty, new { @class = "form-control share-quantity text-right" })
+                                        @Html.ValidationMessageFor(model => model.Qty, "", new { @class = "text-danger" })
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2" })
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(model => model.Amount, new { @class = "form-control  share-amount text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Note, new { @class = "control-label col-md-2" })
+                                    <div class="col-sm-10">
+                                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+                                @if (commonServices.IsTransactionWithDeno())
+                                {
+                                    <div class="form-group">
+                                        <div class="transaction-with-deno">
+
+                                            @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription() });}
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-9 col-md-12">
+
+                    <input type="button" value="Save" class="btn btn-default btn-share-return-save" data-eventid="26" data-isMultiVerifier="false" />
+
+                </div>
+            </div>
+        </div><!-- box-footer -->
+    }
+
+
+</div>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<script>
+
+    $(".share-return-create").on("click", ".table-click-share-return table tbody tr", function () {
+        debugger;
+        var myTr = $(this).closest("tr");
+        var isChecked = $(myTr).find('#item_IsChecked').prop("checked");
+        var valll = myTr.find("#item_FSno").val();
+        $(".share-return-create").find("#From").val(myTr.find("#item_FSno").val())
+        $(".share-return-create").find("#To").val(myTr.find("#item_TSno").val())
+        $(".share-return-create").find("#Scrtno").val(myTr.find("#item_Scrtno").val())
+        $(".share-return-create").find("#SType").val(myTr.find("#item_Stype").val())
+        $(".share-return-create").find("#Sid").val(myTr.find("#item_Sid").val())
+        $(".share-return-create").find("#SQty").val(0)
+        $(".table-click-share-return table tbody tr").each(function (trCounttotal, obj) {
+            debugger;
+            if ($(obj).find('#item_IsChecked').prop("checked") == true) {
+                $(obj).find('#item_IsChecked').prop("checked", false)
+                $(obj).removeAttr('style');
+                $(myTr).find('#item_IsChecked').prop("checked", true);
+                $(myTr).css('background-color', '#bab3ad');
+            }
+            $(myTr).find('#item_IsChecked').prop("checked", true);
+            $(myTr).css('background-color', '#bab3ad');
+
+        });
+    })
+    $(".share-return-create").on("change", "#Qty", function () {
+        debugger;
+        var qty = $(this).val();
+       var from= parseInt($(".share-return-create").find("#From").val())
+       var to ; 
+       var rate = parseInt($(".share-return-create").find("#Rate").val())
+        $(".table-click-share-return table tbody tr").each(function (trCounttotal, obj) {
+            
+           if ($(obj).find('#item_IsChecked').prop("checked") == true) { 
+               to = $(obj).find('#item_TSno').val()
+               $(".share-return-create").find("#To").val(to)
+           }
+       });
+
+       total = (parseInt(from) + parseInt(qty)-1)
+       if (total <= parseInt(to)) {
+           $(".share-return-create").find("#To").val(total)
+           $(".share-return-create").find("#Amount").val(qty * rate)
+       }
+       if (total >to || parseInt(qty) == 0) {
+           $.MessageBox({
+               buttonDone: "OK",
+               message: "Cannot Be Added "
+           }).done(function () {
+               $("#Qty").val(parseInt(to) - parseInt(from)+1);
+               $(".share-return-create").find("#Amount").val((parseInt(to) - parseInt(from)+1) * rate)
+               if (parseInt(qty) == 0)
+               {
+                   $("#To").val(to)
+               }
+               //$("#To").val(parseInt(to));
+               return false;
+           }).fail(function () {
+           })
+           return false;
+       }
+    })
+
+    $(".btn-share-return-save").on("click", function (e) {
+        debugger;
+        var strictVerifiable = $('.share-return-create').find('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        ismultiVerify = $(this).attr('isMultiVerifier');
+        var qty = parseInt($(".share-return-create").find("#Qty").val())
+        if (parseInt(qty) == 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Qty Cannot Be 0 !!!"
+            }).done(function () {
+                $("#Qty").val(parseInt(to) - parseInt(from));
+                $(".share-return-create").find("#Amount").val((parseInt(to) - parseInt(from)) * rate)
+                //$("#To").val(parseInt(to));
+                return false;
+            }).fail(function () {
+            })
+            return false;
+        }
+
+        debugger;
+        $('#Share-Return').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#Share-Return'));
+        if ($("#Share-Return").valid()) {
+
+            var IsDenoTransaction = $('.share-return-create').find('#TransactionWithDeno').prop('checked');
+            if (IsDenoTransaction == true) {
+
+                var depositAmount = $(".share-amount").val();
+                var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                if (parseFloat(depositAmount) != parseFloat(balanceInDeno)) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "Amount is not match with deno balance!!"
+                    }).done(function () {
+                       $("#Balance").focus();
+                        return false;
+                    }).fail(function () {
+                        //return false;
+                    })
+                    return;
+                }
+
+            }
+            if (strictVerifiable == true) {
+                taskVerifierList(eventid, ismultiVerify);
+            }
+            else {
+                ShareReturn();
+            }
+        }
+    })
+    function ShareReturn() {
+        //estopImmediatePropagation();
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger
+            $('#Share-Return').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Share/ShareReturn",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+ 

@@ -1,0 +1,182 @@
+﻿@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ChannakyaBase.BLL.Service.InformationService informationService = new ChannakyaBase.BLL.Service.InformationService();
+
+    ChannakyaBase.DAL.DatabaseModel.ChqAttribute chqattribute = new ChannakyaBase.DAL.DatabaseModel.ChqAttribute();
+    chqattribute = informationService.GetChequeAttribute();
+
+    ChannakyaBase.DAL.DatabaseModel.ChqSize chqSize = new ChannakyaBase.DAL.DatabaseModel.ChqSize();
+    chqSize = informationService.GetChequeSize();
+
+    if (chqSize == null)
+    {
+        chqSize = new ChannakyaBase.DAL.DatabaseModel.ChqSize();
+        chqSize.Height = "336px";
+        chqSize.Width = "720px";
+    }
+}
+<style>
+    .fields {
+        position: relative;
+        /*height: 336px;
+        width: 720px;*/
+    }
+
+    .blocks {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <h3>Drag the label for position </h3>
+    </div>
+    <div id="element" class="col-md-offset-2 col-md-12 fields" style="background-image:url(/images/chequeSample.jpg); background-size:contain; padding-top:10px; height: @chqSize.Height; width: @chqSize.Width;">
+        @if (chqattribute == null)
+        {
+            <div class="chkitems blocks" id="custname" style="top:20px;left:10px;">
+                <label class="">Account Name</label>
+            </div>
+            <div class="chkitems blocks" id="accno" style="top:40px;left:10px;">
+                <label class="">Account No.</label>
+            </div>
+            <div class="chkitems blocks" id="savingtype" style="top:60px;left:10px;">
+                <label class="">Account Type</label>
+            </div>
+            <div class="chkitems blocks" id="checkno" style="top:80px;left:10px;">
+                <label class="">Cheque Number</label>
+            </div>
+            <div class="chkitems blocks" id="check2no" style="top:100px;left:10px;">
+                <label class="">Cheque Number</label>
+            </div>
+            <div class="chkitems blocks" id="branch" style="top:120px;left:10px;">
+                <label class="">Branch Name</label>
+            </div>
+            <div class="chkitems blocks" id="branch" style="top:140px;left:10px;">
+                <label class="">Branch Address</label>
+            </div>
+            <div class="chkitems blocks" id="branch" style="top:160px;left:10px;">
+                <label class="">Branch Phone Number</label>
+            </div>
+        }
+        else
+        {
+            <div class="chkitems blocks" id="custname" style="@chqattribute.AccountNamePostion">
+                <label class="">Account Name</label>
+            </div>
+            <div class="chkitems blocks" id="accno" style="@chqattribute.AccountNumberPosition">
+                <label class="">Account No.</label>
+            </div>
+            <div class="chkitems blocks" id="savingtype" style="@chqattribute.AccountTypePosition">
+                <label class="">Account Type</label>
+            </div>
+            <div class="chkitems blocks" id="checkno" style="@chqattribute.ChequeNumberPosition">
+                <label class="">Cheque Number</label>
+            </div>
+            <div class="chkitems blocks" id="check2no" style="@chqattribute.Cheque2NumberPosition">
+                <label class="">Cheque Number</label>
+            </div>
+            <div class="chkitems blocks" id="branch-name" style="@chqattribute.BranchNamePosition">
+                <label class="">Branch Name</label>
+            </div>
+            <div class="chkitems blocks" id="branch-address" style="@chqattribute.BranchAddressPosition">
+                <label class="">Branch Address</label>
+            </div>
+            <div class="chkitems blocks" id="branch-phone-number" style="@chqattribute.BranchPhoneNumberPosition">
+                <label class="">Branch Phone Number</label>
+            </div>
+        }
+    </div>
+    <div class="col-md-12" style="padding-top:10px">
+        <div class="col-md-5">
+            <div class="col-md-12">
+                <h5>Enter Height And Width Of Cheque (Inches)</h5>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    Height: @Html.TextBox("Height")
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    Width: @Html.TextBox("Width")
+                </div>
+            </div>
+            <div class="col-md-12" style="padding-top:10px">
+                <div class="col-md-6">
+                    <button id="btnSaveChequesSizes" class="btn-success">Save Cheque Sizes</button>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="btnSaveAttributes" class="btn-success">Save Label Positions</button>
+    </div>
+</div>
+
+<script>
+    $(".chkitems").draggable({
+        containment: ".fields"
+    });
+
+    $("#btnSaveAttributes").on('click', function () {
+        debugger;
+        var custstyle = $("#custname").attr("style");
+        var accnostyle = $("#accno").attr("style");
+        var savingtypestyle = $("#savingtype").attr("style");
+        var chknostyle = $("#checkno").attr("style");
+        var chk2nostyle = $("#check2no").attr("style");
+        var branchnamestyle = $("#branch-name").attr("style");
+        var branchaddressstyle = $("#branch-address").attr("style");
+        var branchphonenumberstyle = $("#branch-phone-number").attr("style");
+        var param = JSON.stringify({
+            custstyle: custstyle,
+            accnostyle: accnostyle,
+            savingtypestyle: savingtypestyle,
+            chknostyle: chknostyle,
+            chk2nostyle: chk2nostyle,
+            branchnamestyle: branchnamestyle,
+            branchaddressstyle: branchaddressstyle,
+            branchphonenumberstyle: branchphonenumberstyle
+        });
+
+        $.ajax({
+            data: param,
+            datatype: "json",
+            contentType: "application/json;charset=utf-8",
+            url: "/Information/AddChequeAttributes",
+            type: "POST",
+            success: function (data) {
+                alert("Label Positions Saved");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $("#btnSaveChequesSizes").on('click', function () {
+        var height = $("#Height").val();
+        var width = $("#Width").val();
+
+        var param = JSON.stringify({
+            height: height,
+            width: width
+        });
+
+        $.ajax({
+            data: param,
+            datatype: "json",
+            contentType: "application/json;charset=utf-8",
+            url: "/Information/AddChequeSize",
+            type: "POST",
+            success: function (data) {
+                window.location.href = window.location.href;
+                alert("Cheque Sizes Saved");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+</script>

@@ -1,0 +1,183 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+@using ChannakyaAccounting.Helper
+@{
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    var capruleList = depositProduct.GetCapitalizationRule();
+    var calcRuleList = depositProduct.GetCalculationRule();
+    var test = Model;
+    object displayMode = (Model.PID == 0) ? null : new { disabled = "disabled" };
+}
+<div class="tab-content">
+    <h4>Capitalization Rule Setup</h4>
+    <div id="depositCapitalizationRule" class="">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-sm-1">
+                        Select
+                    </th>
+                    <th>
+                        Capitalization Rules
+                    </th>
+                    <th>
+                        IsDefault
+                    </th>
+                    <th>
+                        Interest Rate
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @*@for (int j = 0, k = 0; j < Model.NormalDepositList.CapitalizationRuleList.Count() && k < Model.NormalDepositList.CalculationRuleList.Count(); j++, k++)*@
+                @for (int i = 0; i < Model.NormalDepositList.CapitalizationRuleList.Count(); i++)
+                {
+
+                    if (Model.NormalDepositList.CapitalizationRuleList[i].ICBDurID != 5)
+                    {
+                        if (Model.PID == 0)
+                        {
+                            <tr class="normalDepositContainer">
+                                @Html.HiddenFor(x => x.NormalDepositList.CapitalizationRuleList[i].ICBDurID)
+                                <td>@Html.CheckBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].IsChecked, new { @id = "checkbox-ischecked" })</td>
+                                <td>
+                                    @Html.Label(Model.NormalDepositList.CapitalizationRuleList[i].ICBDurNam, new { @class = "control-label" })
+                                </td>
+                                <td class="capRuleData">
+                                    @Html.MyCheckBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].IsDefault, new { @id = "checkbox-capt" }, Model.NormalDepositList.CapitalizationRuleList[i].IsChecked)
+                                </td>
+                                <td>
+                                    @Html.MyTextBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].InterestRateICB, new { @class = "form-control interest-rate-ICB" }, Model.NormalDepositList.CapitalizationRuleList[i].IsChecked)
+                                </td>
+
+                            </tr>
+
+                        }
+                        else
+                        {
+                            <tr class="normalDepositContainer">
+                                @Html.HiddenFor(x => x.NormalDepositList.CapitalizationRuleList[i].ICBDurID)
+                                <td>@Html.CheckBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].IsChecked, new { @id = "checkbox-ischecked", onclick = "return false" })</td>
+                                <td>
+                                    @Html.Label(Model.NormalDepositList.CapitalizationRuleList[i].ICBDurNam, new { @class = "control-label" })
+                                </td>
+                                <td class="capRuleData">
+                                    @Html.MyCheckBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].IsDefault, new { @id = "checkbox-capt", onclick = "return false" }, Model.NormalDepositList.CapitalizationRuleList[i].IsChecked)
+                                </td>
+                                <td>
+                                    @Html.MyTextBoxFor(x => x.NormalDepositList.CapitalizationRuleList[i].InterestRateICB, new { @class = "form-control interest-rate-ICB", @readonly = "readonly" }, Model.NormalDepositList.CapitalizationRuleList[i].IsChecked)
+                                </td>
+
+                            </tr>
+
+                        }
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <h4>Calculation Rule Setup</h4>
+    <div id="depositCalculationRule" class="">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-sm-1">
+                        Select
+                    </th>
+                    <th>
+                        Calculation Rules
+                    </th>
+                    <th>
+                        IsDefault
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PID == 0)
+                {
+                    for (int i = 0; i < Model.NormalDepositList.CalculationRuleList.Count(); i++)
+                    {
+                        <tr class="normalDepositContainer">
+                            @Html.HiddenFor(x => x.NormalDepositList.CalculationRuleList[i].PSID)
+                            <td>@Html.CheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsChecked, new { @id = "checkbox-ischecked" })</td>
+                            <td>
+                                @Html.Label(Model.NormalDepositList.CalculationRuleList[i].PSName, new { @class = "control-label" })
+                            </td>
+                            @*<td class="calcRuleData">
+
+                                    @Html.CheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsChecked, new { @class = "calcRuleIsDefault" })
+                                </td>*@
+                            <td class="calcboxcontainer">@Html.MyCheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsDefault, new { @id = "checkbox-capt" }, Model.NormalDepositList.CalculationRuleList[i].IsChecked)</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < Model.NormalDepositList.CalculationRuleList.Count(); i++)
+                    {
+                        <tr class="normalDepositContainer">
+                            @Html.HiddenFor(x => x.NormalDepositList.CalculationRuleList[i].PSID)
+                            <td>@Html.CheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsChecked, new { @id = "checkbox-ischecked", onclick = "return false" })</td>
+                            <td>
+                                @Html.Label(Model.NormalDepositList.CalculationRuleList[i].PSName, new { @class = "control-label" })
+                            </td>
+                            @*<td class="calcRuleData">
+
+                                    @Html.CheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsChecked, new { @class = "calcRuleIsDefault" })
+                                </td>*@
+                            <td class="calcboxcontainer">@Html.MyCheckBoxFor(x => x.NormalDepositList.CalculationRuleList[i].IsDefault, new { @id = "checkbox-capt", onclick = "return false" }, Model.NormalDepositList.CalculationRuleList[i].IsChecked)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#depositCapitalizationRule , #depositCalculationRule').on('change', 'input#checkbox-ischecked', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest('.normalDepositContainer');
+            if ($(this).prop("checked") == true) {
+                $(container).find('.interest-rate-ICB').prop('disabled', false);
+
+                $(container).find('#checkbox-capt').prop('disabled', false);
+            }
+            else {
+                $(container).find('#checkbox-capt').prop('checked', false);
+                $(container).find('.interest-rate-ICB').prop('disabled', true);
+                $(container).find('#checkbox-capt').prop('disabled', true);
+            }
+        });
+
+        $('#depositCapitalizationRule').on('change', 'input#checkbox-capt', function (e) {
+            debugger;
+            var currentevent = $(this);
+            e.stopPropagation();
+            var container = $(this).closest('#depositCapitalizationRule');
+            var alldepositLists = $(container).find('td.capRuleData');
+
+            $(alldepositLists).each(function (index, item) {
+                $(item).find('input[type="checkbox"]').prop('checked', false);
+
+            });
+            $(currentevent).prop('checked', true);
+        });
+        $('#depositCalculationRule').on('change', 'input#checkbox-capt', function (e) {
+            debugger;
+            var currentevent = $(this);
+            e.stopPropagation();
+            var container = $(this).closest('#depositCalculationRule');
+            var alldepositLists = $(container).find('td.calcboxcontainer');
+
+            $(alldepositLists).each(function (index, item) {
+                $(item).find('input[type="checkbox"]').prop('checked', false);
+
+            });
+            $(currentevent).prop('checked', true);
+        });
+    });
+</script>

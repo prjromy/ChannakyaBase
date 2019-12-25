@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.ProductWiseInterestLogModel>
+@{
+    decimal inteerestSum = 0;
+    decimal penOnPrinSum = 0;
+    decimal penOnIntSum = 0;
+    decimal intOnIntSum = 0;
+    decimal intOnOther = 0;
+}
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+        <tr>
+
+            <th>
+                ProductName
+            </th>
+            <th>
+                Interest
+            </th>
+            <th>
+                Penalty on Prin
+            </th>
+            <th>
+                Penalty on Int
+            </th>
+            <th>
+                Int  on Int
+            </th>
+            <th>
+                Int On Other
+            </th>
+
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.PName)
+                </td>
+                <td style="text-align:right!important">
+                    @Convert.ToDecimal(item.LnInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @Convert.ToDecimal(item.PenOnPrin).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @Convert.ToDecimal(item.PenOnInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @Convert.ToDecimal(item.IntOnInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @Convert.ToDecimal(item.IntOnOther).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+
+
+            </tr>
+            inteerestSum += Convert.ToDecimal(item.LnInt);
+            penOnPrinSum += Convert.ToDecimal(item.PenOnPrin);
+            penOnIntSum += Convert.ToDecimal(item.PenOnInt);
+            intOnIntSum += Convert.ToDecimal(item.IntOnInt);
+            intOnOther += Convert.ToDecimal(item.IntOnOther);
+        }
+        <tr>
+            <td>Total</td>
+            <td style="text-align:right!important">@inteerestSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            <td style="text-align:right!important">@penOnPrinSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            <td style="text-align:right!important">@penOnIntSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            <td style="text-align:right!important">@intOnIntSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            <td style="text-align:right!important">@intOnOther.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+        </tr>
+
+    </table>
+</div>

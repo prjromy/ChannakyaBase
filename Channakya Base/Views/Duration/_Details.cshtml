@@ -1,0 +1,245 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.DurationAccViewModel>
+@using Loader.Helper
+
+
+
+@{
+    var test = Model;
+    var id = ViewBag.ViewType;
+    // string address = ViewBag.Address.ToString();
+    var pDurationId = ViewBag.ParentDurationId;
+}
+
+
+
+<div class="box box-success">
+    <div class="box-header" style="background-color:cornflowerblue; color:white;">
+
+        <div class="col-md-9" style="margin:-5px; padding-left:0px;">
+            @*@if (ViewBag.ParentDurationId != 0)
+                {
+                    <button type="button" id="btn-back" class="glyphicon glyphicon-backward" style="background-color:cornflowerblue;border:none;" value="Back"></button>
+                }*@
+            @*@Html.Label("address", @address)*@
+
+            <b>Durations</b>
+        </div>
+
+        @*<input type="button" class="btn-default" value="Back" id="btnBack" />*@
+
+        <div class="box-tools" style="margin: -6px 0 0 0;">
+            @*<div class="listSearch"style="color:black;">
+
+
+                </div>*@
+            @*<input type="button" value="Create" id="btnCreateDuration" class="btn-default" />*@
+            <div class="pDurationId">@Html.HiddenFor(x => pDurationId)</div>
+            @if (ViewBag.Query != null)
+            {
+                <input type="text" name="text-filter-tree" class="btn btn-box-tool txtSearch" value="@ViewBag.Query" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+            }
+            else
+            {
+                <input type="text" name="text-filter-tree" class="btn btn-box-tool txtSearch" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+            }
+
+            @*<button type="button" name="search" class="btn btn-box-tool btnSearch" style="color:white;">
+                    <i class="fa fa-search"></i>
+                </button>*@
+
+            @* <button class="btn btn-box-tool"> <i class="glyphicon glyphicon-pencil btn-create-Durations" style="color:white;"></i></button>*@
+            <button class="btn btn-box-tool glyphicon glyphicon-pencil btn-create-Durations" style="color:white;"> </button>
+
+            <button class="btn btn-box-tool listView" style="color:white;"> <i class="fa fa-list-ul"></i></button>
+
+            <button class="btn btn-box-tool" style="color:white;" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+
+
+        </div>
+    </div><!-- /.box-header -->
+    <div class="bodycontent-and-paging">
+        <div class="box-body">
+
+            @if (ViewBag.ViewType == 1)
+            {
+                var hasChild = Model.Count();
+                if (hasChild == 0)
+                {
+                    <b> No Childs found to Display</b>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+
+                        <div class="col-md-3 col-xs-6 detailsList">
+                            <!-- small box -->
+                            @Html.Partial("_GridView", item)
+                        </div><!-- ./col -->
+                    }
+                }
+            }
+            else
+            {
+
+                var hasChild = Model.Count();
+                if (hasChild == 0)
+                {
+                    <b> No Childs found to Display</b>
+                }
+                else
+                {
+                    <div class="listTable" style="max-height:400px;overflow:auto;">
+                        @Html.Partial("_ListViewMain", Model)
+                    </div>
+                }
+            }
+
+        </div><!-- /.box-body -->
+        <ul class="pagination Durationpaginatoin" style="float:left;margin-right:20px;">
+            <li class="previous"><a href="#">Previous</a></li>
+            @for (int i = 1; i <= ViewBag.CountPager; i++)
+            {
+                if (i > 4)
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        if (i == ViewBag.CountPager)
+                        {
+                            <li class=""><a>.......</a> </li>
+                            <li id=@ViewBag.CountPager class="pagerClass"><a>@ViewBag.CountPager</a> </li>
+
+                        }
+                        else
+                        {
+
+                            <li id=@i class="pagerClass" style="display:none;"><a>i</a> </li>
+                        }
+
+                    }
+                }
+                else
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+                }
+            }
+            <li class="next"><a href="#">Next</a></li>
+
+        </ul>
+        <div style="margin-top:20px;margin-left:20px" class="search-container">
+            @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.Durationpaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Durationpaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.Duration-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+
+                    $(container).load("/Duration/_DetailPartial", { page: finalId, ViewType: listType });
+
+                    var checkActive = $('ul.pagination.Durationpaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Durationpaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Durationpaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.Durationpaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Durationpaginatoin').find('li#' + finalId)
+                var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.Duration-explore').find('.panel-list').find('.bodycontent-and-paging');
+
+                    $(container).load("/Duration/_DetailPartial", { page: finalId, ViewType: listType });
+
+                    var checkActive = $('ul.pagination.Durationpaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Durationpaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Durationpaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var pagingData = $(this).val();
+            var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+            var container = $(this).closest('.Duration-explore').find('.panel-list').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/Duration/_DetailPartial",
+                    type: "POST",
+                    data: {
+                        page: finalId,
+                        ViewType: listType
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.Durationpaginatoin').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.Durationpaginatoin').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.Durationpaginatoin').find('li#' + pagingData).addClass('active');
+
+
+                    }
+
+                });
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.Duration-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+            $(container).load("/Duration/_DetailPartial", { page: pagingData, ViewType: listType });
+            var checkActive = $('ul.pagination.Durationpaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Durationpaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Durationpaginatoin').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+</script>
+
+<style>
+    .details {
+        width: 30%;
+        max-height: 129px;
+    }
+
+    input.btn.btn-box-tool.txtSearch {
+        cursor: text;
+    }
+</style>
+

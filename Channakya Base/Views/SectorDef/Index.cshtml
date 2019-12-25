@@ -1,0 +1,305 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.SectorDef>
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Sector";
+    var abc = @ViewBag.key;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <div class="sector-list">
+            <input type="button" value="New Sector" id="btn-create" class="btn btn-md btn-info btn-create" />
+
+            <div class="section-create">
+            </div>
+            <div id="sector-list" class="details">
+                @{ Html.RenderAction("_List", "SectorDef");}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script type="text/javascript">
+
+
+    function OnFailure(errormesg) {
+        debugger;
+        erroralert(errormesg);
+    }
+
+
+    function createSuccess() {
+        debugger
+        SuccessAlert("Sector Succesfully created. ", 5000);
+        $.ajax({
+            url: '@Url.Action("_Create", "SectorDef")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+
+
+    function editSuccess() {
+        SuccessAlert("Sector Succesfully Edited. ", 5000);
+        debugger;
+        $('.sector-list').find('.edit-section').hide();
+        $('.sector-list').find(".btn-create").val('New Sector');
+    }
+    // create get
+    $(function () {
+        $('.sector-list').on('click', '.btn-create', function () {
+            debugger;
+            var thisVal = $(this).val();
+            if (thisVal == "Hide Section") {
+                $(this).val("New sector")
+                $(".section-create").hide();
+            }
+            else {
+                $(this).val("Hide Section")
+                $.ajax({
+                    type: "GET",
+                    url: "/SectorDef/_Create",
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+                    }
+                })
+            }
+        });
+        //create post
+        $.validator.unobtrusive.parse('#createSubmitForm');
+        $('.sector-list').on('click', '#btn-save-submit', function () {
+            debugger;
+          
+            $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#createSubmitForm"));
+            if ($("#createSubmitForm").valid() === false) {
+
+                InfoAlert("Please fill out the form", 6000);
+                return false;
+
+            }
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+                $("#createSubmitForm").ajaxSubmit({
+                    beforeSubmit: function () {
+
+                    },
+                    success: function (result) {
+                        if (result.Success) {
+                            $.ajax({
+                                url: "/SectorDef/Index",
+                                type: 'GET',
+                                async: false,
+                                success: function (result) {
+                                    debugger
+                                    $('section.content').html(result);
+                                }
+                            })
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+                        }
+                        else {
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                })
+                // return false;
+            }).fail(function () {
+                //return false;
+            })
+        });
+
+        // edit get
+        $('#sector-list').on('click', '.btn-edit', function () {
+            debugger
+            var container = $(this).closest('.sector-list').find('.section-create');
+            var value = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/SectorDef/_Edit/" + value,
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data).find('.focusdiv').focus()
+                }
+            })
+
+        });
+
+
+        $.validator.unobtrusive.parse($("#editSubmitForm"));
+        $('.sector-list').on('click', '#btn-edit-submit', function () {
+
+            $('#editSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#editSubmitForm"));
+            debugger;
+            if ($('#editSubmitForm').valid() == false) {
+                InfoAlert('Please Fill out the form correctly', 6000);
+                return false;
+            }
+            var CDepSectorNam = $('#CDepSectorNam').val();
+            var CDepSector = $('#CDepSector').val();
+
+            $.ajax({
+                url: "/SectorDef/CheckSector",
+                type: 'GET',
+                async: false,
+                data: { CDepSector: CDepSector, CDepSectorNam: CDepSectorNam },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+
+                        InfoAlert(message, 5000);
+
+                    }
+                    else {
+                        debugger;
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+
+                            $("#editSubmitForm").ajaxSubmit({
+                                beforeSubmit() {
+
+                                },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/SectorDef/Index",
+                                            async: false,
+                                            success: function (result) {
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+                        }).fail(function () {
+
+
+                            })
+
+                            }
+                }
+
+        })
+        })
+
+
+
+        // cancel
+        $('.sector-list').on('click', '.btn-cancel', function () {
+            var container = $(this).closest('.sector-list').find(".section-create");
+            $(container).empty();
+            $(container).hide();
+            debugger;
+            $('.btn-create').val("New sector")
+        });
+
+
+
+
+
+        var sectorId;
+        var itmName;
+        $('#sector-list').on('click', '.btn-delete', function () {
+            debugger;
+            itmName = $(this).attr("data-val");
+            sectorId = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("Delete", "SectorDef")',
+                data: { id: sectorId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    if (result == "false") {
+                        ErrorAlert(" Sector type in use.", 5000);
+                    }
+                    else {
+
+
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure  want to Delete " + itmName + " ?"
+                        }).done(function () {
+                            //alert(result)
+                            debugger;
+                                deleteMenu(sectorId);
+                        })
+                    }
+                }, error: function () {
+                    alert("error");
+                }
+            });
+        });
+        function deleteMenu(sectorId) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteConfirm", "SectorDef")',
+                data: { Id: sectorId },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert(itmName + " Sucessfully Deleted ", 5000);
+                    $("#sector-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+        @*$(document).on('click', '#searchsubmit', function (event1) {
+            debugger;
+            var search = $('#txtsearch').val();
+            var url = '@Url.Action("_List", "CertificateDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+
+                $("#certificate-list").html(data);
+            });
+
+
+        });*@
+
+    });
+</script>

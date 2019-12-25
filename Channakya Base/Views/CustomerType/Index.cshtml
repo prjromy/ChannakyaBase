@@ -1,0 +1,351 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustSectCertContViewModel
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Customer Type</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="customertype-list">
+        <input type="button" value="New CustomerType" id="btn-create" class="btn btn-md btn-primary btn-create border-0" />
+
+
+
+        <div id="customertype-list" class="details">
+        </div>
+        <div class="custtype-list">
+            @{Html.RenderAction("_List", "CustomerType");}
+        </div>
+        <div class="section-create">
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+
+    //function CreateEditSuccess() {
+    //    //debugger;
+    //    //if (data.status == false) {
+    //    //    SuccessAlert(data.message, 5000);
+    //    //}
+    //    //else {
+    //        SuccessAlert("Customer Type Succesfully Saved. ", 5000);
+    //        $('.customertype-list').find('.section-create').hide();
+    //        //$('.customertype-list').find('.custtype-list').hide();
+    //        $('.customertype-list').find(".btn-create").val('New Customer Type');
+
+
+    //}
+    function OnFailure(errorMesg) {
+        debugger;
+        ErrorAlert(errorMesg,5000);
+        document.getElementById('alert-error').scrollIntoView();
+
+    }
+    function OnSuccess(message) {
+        debugger;
+
+           SuccessAlert(message, 5000);
+
+        $('.customertype-list').find('.section-create').hide();
+        $('.customertype-list').find('.custtype-list').hide();
+        $('.customertype-list').find(".btn-create").val('New Customer Type');
+        $('.customertype-list').find('.custtype-list').show();
+        $.ajax({
+            url: '@Url.Action("_List", "CustomerType")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".custtype-list").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+
+    }
+
+
+
+    $(document).ready(function () {
+        $('.customertype-list').on('click', '.btn-create', function () {
+            debugger
+            var thisVal = $(this).val();
+
+            if (thisVal == "Hide Section") {
+                $(this).val("New CustomerType")
+                $(".section-create").hide();
+            }
+
+            else {
+                $(this).val("Hide Section")
+                $.ajax({
+                    type: "GET",
+                    url: "/CustomerType/_CustomerTypeCreate",
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+                    }
+                })
+            }
+        });
+
+        $('.customertype-list').on('click', '.btn-edit', function () {
+            debugger;
+            var container = $(this).closest('.customertype-list').find('.section-create');
+            var value = $(this).data('id');
+            var data = { CTypeID: value };
+
+            $.ajax({
+                type: "GET",
+                data: data,
+                url: "/CustomerType/_CustomerTypeCreate/",
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data).find('.focusdiv').focus()
+                }
+            })
+        })
+        $('.customertype-list').on('click', '.btn-details', function () {
+            debugger;
+            var container = $(this).closest('.customertype-list').find('.section-create');
+            var value = $(this).data('id');
+            var data = { CTypeID: value };
+
+            $.ajax({
+                type: "GET",
+                data: data,
+                url: "/CustomerType/_CustomerTypeCreate/",
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data);
+                    $(".customertype-list").find("#Ctype").prop("disabled", true);
+                    $(".customertype-list").find("#TaxID").prop("disabled", true);
+                    $(".customertype-list").find("#isind").prop("disabled", true);
+                    //$('.section-create').html(data).find('.focusdiv').focus()
+
+                    $(".customertype-list").find('.contacttype-list').attr("disabled", true);
+                    $(".customertype-list").find('.certificatetype-list').attr("disabled", true);
+                    $(".customertype-list").find('.sectortype-list').attr("disabled", true);
+                    $('.customertype-list').find('.btn-cancel').val('Close')
+                    $('.customertype-list').find('#btn-save-submit').hide()
+                }
+            })
+
+        })
+        //  create post
+
+        $.validator.unobtrusive.parse($("#createEditSubmitForm"));
+
+        $('.customertype-list').on('click', '#btn-save-submit', function () {
+
+            $('#createEditSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#createEditSubmitForm"));
+            debugger;
+            if ($('#CreateEditSubmitForm').valid() == false) {
+                InfoAlert('Please Fill out the form', 6000);
+                return false;
+            }
+
+            var checkedCount = $('input[id="isind"]:checked').length;
+            var taxID = $('#TaxID').val();
+            if (taxID == "") {
+                InfoAlert("Please select Tax type", 5000);
+                return false;
+            }
+            if (checkedCount == 0) {
+                InfoAlert("Please select  Is individual", 5000);
+                return false;
+            }
+            if (taxID == "" && checkedCount == 0) {
+                InfoAlert("Please select  Is individual and Tax type", 5000);
+                return false;
+            }
+
+            var Ctype = $('#Ctype').val();
+            var myId = $('#myId').val();
+
+            //$.ajax({
+            //    url: "/CustomerType/CheckCustType",
+            //    type: 'GET',
+            //    async: false,
+            //    data: { myId: myId, Ctype: Ctype },
+            //    success: function (result) {
+            //        var message = $(this).closest("form").find(".field-validation-error").text();
+            //        if (result == false) {
+            //            debugger;
+            //            InfoAlert(message, 5000);
+            //        }
+
+            //        else
+            //        {
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+                //$('.customertype-list').find("#CreateEditSubmitForm").ajaxSubmit({
+                $("#CreateEditSubmitForm").ajaxSubmit({
+                    beforeSubmit: function () {
+
+                    },
+                    success: function (result) {
+
+                        debugger;
+                        if (result.Success) {
+                            $.ajax({
+                                url: "/CustomerType/Index",
+                                type: 'Get',
+                                async: false,
+                                success: function (result) {
+                                    $('section.content').html(result);
+
+                                }
+
+                            });
+                            SuccessAlert(result.Msg, 5000);
+                            //document.getElementById('alert-success').scrollIntoView();
+                        }
+                        else {
+                            ErrorAlert(result.Msg, 5000);
+                            //document.getElementById('alert-success').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 1500);
+                    }
+                });
+            }).fail(function (data) {
+                debugger;
+                return false;
+
+                })
+        });
+            //        }
+            //    }
+            //})
+            //})
+        @*$("#CreateEditSubmitForm").submit(function () {
+                debugger;
+                var form = $(this);
+                form.validate();
+                if (form.valid() == false) {
+                    InfoAlert("Reuired fields")
+                    return false;
+                }
+                var container = $(this).closest('.customertype-list').find('.create-section');
+                var formData = new FormData($(this)[0])
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    $.ajax({
+                        url: '@Url.Action("_CustomerTypeCreate", "CustomerType")',
+                        type: 'POST',
+                        data: formData,
+                        async: false,
+                        success: function (data) {
+                            $(container).html(data);
+
+                            SuccessAlert("custtype Added Succesfully.");
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+
+                    }).fail(function () {
+                        //$.MessageBox("you clicked no");
+                    });
+
+                    return false;
+                });
+            })*@
+
+            var custId;
+            var itmName
+            $('.customertype-list').on('click', '.btn-delete', function () {
+                debugger;
+                itmName = $(this).attr("data-val");
+                custId = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("Delete", "CustomerType")',
+                    data: { id: custId },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (result) {
+                        if (result == "false") {
+                            ErrorAlert("Please Delete Child Nodes First", 5000);
+                        }
+                        else {
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure you want to Delete " + itmName + " ?"
+                            }).done(function () {
+                                //alert(result)
+                                debugger;
+
+
+                                deleteMenu(custId);
+
+
+                            })
+                        }
+
+                    }, error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+            function deleteMenu(custId) {
+                debugger;
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteConfirm", "CustomerType")',
+                    data: { Id: custId },
+                    success: function (result) {
+
+
+
+                        //     $("#customertype-list").html(result);
+
+
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+            }
+
+
+
+            // cancel
+            $('.customertype-list').on('click', '#btn-cancel', function () {
+
+                var container = $(this).closest('.customertype-list').find(".section-create");
+                $(container).empty();
+                $(container).hide();
+                debugger;
+                $('.btn-create').val("New Customer Type")
+            });
+
+
+       
+    });
+
+</script>

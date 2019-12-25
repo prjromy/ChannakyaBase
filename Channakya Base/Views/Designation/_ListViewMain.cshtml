@@ -1,0 +1,51 @@
+﻿@model  List<Loader.Models.Designation>
+@{
+    var test = Model;
+ }
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+                        <tr>
+                            <th class="col-md-4">
+                                Designation Name
+                            </th>
+                            <th class="col-md-2">
+                                Posted By
+                            </th>
+                            <th class="col-md-4">
+                                Posted On
+                            </th>
+                            <th class="col-md-2">
+
+                            </th>
+                        </tr>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            if (item.DGId == 1)
+                            {
+                                if (Loader.Models.Global.IsSuperAdmin)
+                                {
+                                    @Html.Partial("_ListView", item)
+                                }
+
+                            }
+                            else
+                            {
+                                @Html.Partial("_ListView", item)
+                            }
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

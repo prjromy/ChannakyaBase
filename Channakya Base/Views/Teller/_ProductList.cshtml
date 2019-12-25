@@ -1,0 +1,61 @@
+﻿@model ChannakyaBase.Model.ViewModel.ProductViewModel
+@using ChannakyaBase.BLL.CustomHelper
+
+<div class="table-responsive table-click-product">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Product Code</th>
+                <th>Product Name</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ProductList)
+            {
+                <tr id="@item.ProductId">
+                    <td class="Product-code">@item.ProductCode</td>
+                    <td>@item.ProductName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+   @Html.Paging("_ProductList", "Teller", Model.ProductList.PageCount, Model.ProductList.PageNumber, Model.ProductList.PageSize)
+</div>
+<script>
+    $("div.table-click-product").on('click', 'input.btnPaging', function (e) {
+        e.stopImmediatePropagation();
+        
+        var parentContainer = $(this).parents()
+        var me = $(this);      
+        var procuctName = parentContainer.find('#ProductName').val();
+        var container = parentContainer.find(".table-click-product")
+        var url = "?procuctName=" + procuctName;
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-click-product").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var procuctName = parentContainer.find('#ProductName').val();
+        var container = parentContainer.find(".table-click-product")
+        var url = "?procuctName=" + procuctName;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-product").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var procuctName = parentContainer.find('#ProductName').val();
+        var container = parentContainer.find(".table-click-product")
+        var url = "?procuctName=" + procuctName;
+        getPageSizeChangeData(url, container, me)
+    });
+
+
+   
+</script>
+
+
+

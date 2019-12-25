@@ -1,0 +1,79 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.SchemeDetailViewModel
+
+
+@{
+    var test = Model;
+    var schemeTypeClass = "background-color:#00c0ef !important";
+    if (Model.SType == 1)
+    {
+         schemeTypeClass = "background-color:lightslategray !important";
+    }
+
+    //if (Model.Status == 2)
+    //{
+    //    schemeTypeClass = "background-color:mediumseagreen  !important";
+    //}
+    //if (Model.Status == 3)
+    //{
+    //    schemeTypeClass = "background-color:indianred !important";
+    //}
+    ChannakyaAccounting.Service.DepositScheme.DepositSchemeService schmService = new ChannakyaAccounting.Service.DepositScheme.DepositSchemeService();
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+@*<span class="icon">
+
+
+    </span>*@
+<div class="info-box bg-aqua" style="@schemeTypeClass">
+    <div class="info-box-icon icon">
+            <img class="SchemeImage" id="@Model.SDID" data-toggle="tooltip" title="Edit" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+    </div>
+
+
+    @* <div class="inner" Scheme-caption="@Model.SchemeName">
+            <p id="SchemeCaption" data-toggle="tooltip" data-placement="top" title="@Model.SchemeName" style="cursor:pointer;"> @Model.SchemeName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" Scheme-caption="@Model.SDName">
+        <span class="deleteNode" id="@Model.SDID" data-toggle="tooltip" title="Delete" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="SchemeCaption" data-toggle="tooltip" data-placement="top" title="@Model.SDName" style="cursor:pointer;"> @Model.SDName</span>
+        <span class="info-box-number">@Model.SDID</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @if (Model.SType == 0)
+        {
+            <span class="progress-description">
+                Deposit
+            </span>
+        }
+        else
+        {
+            <span class="progress-description">
+                Loan
+            </span>
+        }
+
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #SchemeCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>
+

@@ -1,0 +1,88 @@
+﻿@model  ChannakyaBase.Model.ViewModel.WithdrawViewModel
+@using ChannakyaBase.BLL
+
+@{
+    decimal Sum = 0;
+
+    CommonService commonService = new CommonService();
+
+}
+<div class="box-body table-responsive no-padding" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tno</th>
+                <th>
+                    Account Number
+                </th>
+                <th>Account Name</th>
+                <th>Eng. Date</th>
+                <th>Nep. Date</th>
+              
+                <th>
+                    Cheque No
+                </th>
+                <th>
+                    Amount
+                </th>
+                <th>Payee</th>
+                <th>Notes</th>
+                
+            </tr>
+        </thead>
+
+        @foreach (var item in Model.WithdrawNoPageList)
+            {
+
+            <tr>
+                <td>
+                    @item.Tno
+                </td>
+                <td>
+                    @item.AccountNumber
+                </td>
+                <td>
+                    @item.AccountName
+                </td>
+                <td>@commonService.GetEnglishDate(item.TransDate)</td>
+                <td>
+                    @commonService.GetNepaliDate(item.TransDate)
+                </td>
+                <td style="text-align:right">
+                    @item.ChequeNumber
+                </td>
+
+                <td style="text-align:right">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>Payment made by @item.Payee</td>
+                <td>@item.Remarks</td>
+
+            </tr>
+            Sum += item.Amount;
+
+        }
+        <tr>
+            <th colspan="6">Total</th>
+            <th style="text-align:right">@Sum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <td></td>
+            <td></td>
+        </tr>
+
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

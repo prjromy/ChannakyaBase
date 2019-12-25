@@ -1,0 +1,94 @@
+﻿
+@model ChannakyaAccounting.Models.Models.DimensionDefination
+
+@{
+    var dimcheck = Model;
+    var totalDimension = ViewBag.DimensionCount;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    //var getDropDown = finaccService.GetDimensionOrder((int)totalDimension);
+}
+<div class="main-dimension-container col-md-12">
+    <table class="col-md-6">
+        <thead>
+            <tr>
+                <th>IsSelected</th>
+                <th> Dimension Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @Html.HiddenFor(x => x.DLId)
+
+                @Html.HiddenFor(x => x.DDId, new { @id = "dimensionDefnId" + Model.DDId, @class = "dimensiondefn-class" })
+
+                <td>
+                    @Html.CheckBoxFor(x => x.isSelected, new { @id = "dimensionCheckbox" })
+                </td>
+                <td>
+                    @Html.DisplayFor(x => x.DefName)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+@*<div class="dim-container">
+   @Html.HiddenFor(x=>x.DLId)
+    
+    @Html.CheckBoxFor(x => x.isSelected,new { @id="dimensionCheckbox"})
+
+    @Html.HiddenFor(x => x.DDId,new { @id="dimensionDefnId"+Model.DDId, @class="dimensiondefn-class"})
+    @Html.DisplayFor(x => x.DefName)
+
+
+    @*<span id="dimensionOrder" style="display:none;margin: -26px -38px -23px 121px;"> @Html.TextBoxFor(x => x.Order, new { @Value = "", @placeholder = "Input Order",@class="form-control",@style="width:235px"})</span>*@
+
+    @*@<br />
+    <br />*@
+@*</div>*@
+    <div class="dimension-order-container col-md-6">
+        <table class="col-md-12">
+            <thead>
+                <tr>
+                    <th>
+                        Selected Dimensions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+    
+<script type="text/javascript">
+    $('.dimension-container-original').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+
+        var dimensionDefnId = $(this).closest('.tr-data-content').find(".dimensiondefn-class").val();
+        debugger;
+        if (this.checked) {
+            var allContent = $(this).closest('.tr-data-content').html();
+
+            //$(allContent).find('.dimension-order-value').val(index);
+            $(this).closest('.main-dimension-container').find('.dimension-order-container').append("<div class='tr-data-content'>" + allContent + '</div>');
+            $(this).closest('.tr-class').remove();
+            var arrayList = $('.dimension-order-container').find('.tr-data-content');
+            $('.dimension-order-container').find('input#dimensionCheckbox').prop('checked', true);
+            $(arrayList).each(function (index, item) {
+                $(item).find('.dimension-order-value').val(index);
+            });
+
+        }
+    });
+    $('.dimension-order-container').on('click', 'input#dimensionCheckbox', function () {
+        debugger;
+        var allContent = $(this).closest('.tr-data-content').html();
+        $(this).closest('.main-dimension-container').find('.dimension-container-original').append("<div class='tr-class'><div class='tr-data-content'>" + allContent + '</div></div>')
+        $('.dimension-container-original').find('input#dimensionCheckbox').prop('checked', false);
+        $(this).closest('.tr-data-content').remove();
+
+    });
+
+   </script>
+

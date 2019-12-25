@@ -1,0 +1,65 @@
+﻿
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script>
+        $(document).ready(function(){
+            //jQuery.noConflict();
+            debugger;
+
+            var charDepLoan = new CanvasJS.Chart("dLoanContainer", {
+                animationEnabled: true,
+                exportEnabled: true,
+                title:{
+                    text: "Comparision Chart of Deposit and Loan"
+                },
+
+                axisY: {
+                    title: "Amounts in Rs",
+                    titleFontColor: "#4F81BC",
+                    lineColor: "#4F81BC",
+                    labelFontColor: "#4F81BC",
+                    tickColor: "#4F81BC"
+                },
+
+                toolTip: {
+                    shared: true
+                },
+                legend: {
+                    cursor: "pointer",
+                    itemclick: toggleDataSeries
+                },
+                data: [{
+                    type: "column",
+                    name: "Deposit",
+                    showInLegend: true,
+
+                    dataPoints: @Html.Raw(ViewBag.Points1),
+                },
+                    {
+                        type: "column",
+                        name: "Loan",
+                        showInLegend: true,
+
+                        dataPoints:@Html.Raw(ViewBag.Points2),
+                    }]
+            });
+            charDepLoan.render();
+
+            function toggleDataSeries(e) {
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+                e.chart.render();
+            }
+
+        });
+    </script>
+</head>
+<body>
+    <div id="dLoanContainer" style="height: 300px; width: 100%;"></div>
+    <script src="~/Scripts/canvasjs.min.js"></script>
+</body>
+</html>

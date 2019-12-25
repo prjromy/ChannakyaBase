@@ -1,0 +1,31 @@
+﻿@model ChannakyaBase.Model.ViewModel.DisburseChequeDepositViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+<fieldset>
+    <legend>Bank Details</legend>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.BankName, new { @class = "control-label  col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(model => model.BankId, CreditUtilityService.GetAllBankList(), new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+        </div>
+
+        
+            @Html.LabelFor(model => model.ChequeNo, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.EditorFor(model => model.ChequeNo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ChequeNo, "", new { @class = "text-danger" })
+            </div>
+     
+ 
+            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control total-amount" } })
+                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+            </div>
+    
+    </div>
+</fieldset>

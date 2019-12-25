@@ -1,0 +1,62 @@
+﻿@model ChannakyaCustomeDatePicker.Models.CalendarViewModel
+@{
+    ViewBag.Title = "DatePickerIndex";
+    Layout = null;
+
+}
+
+
+<div class="clearfix"></div>
+@Html.Hidden("curDay", Model.Calendar.CurrentDay)
+@Html.Hidden("dateType", Convert.ToInt16(Model.Calendar.DateType))
+
+
+<div class="row">
+    <!-- End Column -->
+    <div id="calendar" class="col-sm-8 col-md-12 animated animated-sm bounceInUp">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="calendar fc fc-ltr">
+                    <table class="fc-header" style="width:100%">
+                        <tbody>
+                            <tr>
+                                <td class="fc-header-left">
+                                    <div class="btn-group">
+                                        <button type="button" class="fc-button-prev fc-corner-left btn btn-default btn-ch button-prev">
+                                            <i class="fa fa-chevron-left"></i>
+                                        </button>
+                                        
+                                    </div>
+                                </td>
+                                <td class="fc-header-center">
+                                    <div class="btn-group">
+                                        <span class="fc-header-title">
+                                            @Html.DropDownList("Years", Model.YearList, null, new { @class = "form-control form-controll dpYMFontSize" })
+                                        </span>
+                                        <span class="fc-header-title">
+                                            @Html.DropDownList("Months", Model.MonthList, null, new { @class = "form-control form-controll dpYMFontSize" })
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="fc-header-left">
+                                    <div class="btn-group">
+                                      
+                                        <button type="button" class="btn btn-default btn-ch fc-button-next button-next">
+                                            <i class="fa fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="dpCalDetails" class="dpCalDetails">
+                        @Html.Partial("_DatePickerDetails", Model.Calendar)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

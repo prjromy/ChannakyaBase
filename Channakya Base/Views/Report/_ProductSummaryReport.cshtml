@@ -1,0 +1,64 @@
+﻿@model ChannakyaBase.Model.ViewModel.CashFlowViewModel
+@using ChannakyaBase.BLL
+
+@{
+    decimal sumDr = 0;
+    decimal sumCr = 0;
+    decimal totalBal = 0;
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+
+                <th>
+                    Product Name
+                </th>
+
+                <th>
+                    Debit Amount
+                </th>
+                <th>
+                    Credit Amount
+                </th>
+                <th>
+                    Balance
+                </th>
+
+            </tr>
+        </thead>
+        @foreach (var item in Model.CashFlowList)
+        {
+            decimal balance = item.Dramt - item.Cramt;
+            <tr>
+
+                <td>
+                    @item.ProductName
+                </td>
+
+                <td style="text-align:right">
+                    @item.Dramt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.Cramt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+
+                <td style="text-align:right">@balance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            </tr>
+            sumDr = sumDr + item.Dramt;
+            sumCr = sumCr + item.Cramt;
+            totalBal = totalBal + balance;
+        }
+
+        <tr>
+            <th colspan="1">Total</th>
+            <th style="text-align:right">@sumDr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumCr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@totalBal.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+
+    </table>
+
+</div>
+

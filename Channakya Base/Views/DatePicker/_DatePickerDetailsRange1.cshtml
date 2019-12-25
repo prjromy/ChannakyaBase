@@ -1,0 +1,164 @@
+﻿@model ChannakyaCustomeDatePicker.Models.CalendarModel
+@{
+    var calanderDay = 1;
+    Layout = null;
+}
+<div class="fc-content" style="position: relative; min-height: 1px;">
+    <div class="fc-view fc-view-month fc-grid" style="position: relative; min-height: 1px;" unselectable="on">
+        <table class="fc-border-separate" style="width:100%" cellspacing="0">
+            <thead>
+                <tr class="fc-first fc-last">
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 1; i <= Model.NoOfWeeks; i++)
+                {
+
+                    <tr class="fc-week">
+                        @for (var j = 1; j <= 7; j++)
+                        {
+
+                            var maxDaysCount = Model.MinDays.Where(x => x.days == calanderDay).Count();
+                            var holiday = Model.Holidays.Where(x => x.Holiday == calanderDay).Count();
+                            if (j < Model.FirstDayOfWeek)
+                            {
+                                <td class="fc-day fc-mon fc-widget-content">
+                                    <div>
+                                        <div class="fc-day-number">&nbsp;</div>
+
+                                    </div>
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                if (Model.CurrentDay == calanderDay)
+                                {
+                                    if (j == 7 || holiday == 1)
+                                    {
+                                        if (maxDaysCount != 1)
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content calanderDayRange1" id='@calanderDay' style="background-color: #dddddd">
+                                                <div>
+                                                    <div class="fc-day-number"><a href="#" style="text-decoration:none;color:red">@calanderDay</a></div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content" id='@calanderDay' style="background-color:#7c7a7a">
+                                                <div>
+                                                    <div class="fc-day-number" style="text-decoration:none;color:red">@calanderDay</div>
+                                                </div>
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (maxDaysCount != 1)
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content calanderDayRange1" id='@calanderDay' style="background-color:#dddddd ">
+                                                <div>
+                                                    <div class="fc-day-number"><a href="#" style="text-decoration:none">@calanderDay</a></div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content" id='@calanderDay' style="background-color:#7c7a7a">
+                                                <div>
+                                                    <div class="fc-day-number" style="text-decoration:none;">@calanderDay</div>
+                                                </div>
+                                            </td>
+                                        }
+                                    }
+
+                                    @*<td class="calanderDay" id='@calanderDay' style="background-color: #d3cbf3"><a href="#" style="text-decoration:none">@calanderDay</a></td>*@
+                                }
+                                else
+                                {
+                                    if (j == 7 || holiday == 1)
+                                    {
+                                        if (maxDaysCount == 1)
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content" id='@calanderDay' style="background-color:#7c7a7a">
+                                                <div>
+                                                    <div class="fc-day-number" style="text-decoration:none;color:red">@calanderDay</div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content calanderDayRange1" id='@calanderDay'>
+                                                <div>
+                                                    <div class="fc-day-number"><a href="#" style="text-decoration:none;color:red">@calanderDay</a></div>
+                                                </div>
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (maxDaysCount == 1)
+                                        {
+                                            <td class="fc-day fc-mon fc-widget-content" id='@calanderDay' style="background-color: #7c7a7a">
+                                                <div>
+                                                    <div class="fc-day-number">@calanderDay</div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else {
+                                            <td class="fc-day fc-mon fc-widget-content calanderDayRange1" id='@calanderDay'>
+                                                <div>
+                                                    <div class="fc-day-number"><a href="#" style="text-decoration:none">@calanderDay</a></div>
+
+                                                </div>
+                                            </td>
+                                        }
+                                    }
+
+                                    @*<td class="calanderDay" id='@calanderDay'> <a href="#" style="text-decoration:none">@calanderDay</a></td>*@
+                                }
+                                calanderDay++;
+                                if (calanderDay > Model.NoOfDays)
+                                {
+                                    Model.FirstDayOfWeek = 8;
+                                }
+                                else
+                                {
+                                    Model.FirstDayOfWeek = 0;
+                                }
+                            }
+                        }
+
+                    </tr>
+                }
+                <tr>
+                    @if (Model.NoOfWeeks != 6)
+                    {
+                        for (var j = 1; j <= 7; j++)
+                        {
+                            if (j < Model.FirstDayOfWeek)
+                            {
+                                <td class="fc-day fc-mon fc-widget-content">
+                                    <div>
+                                        <div class="fc-day-number">&nbsp;</div>
+
+                                    </div>
+                                </td>
+
+                            }
+                        }
+                    }
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

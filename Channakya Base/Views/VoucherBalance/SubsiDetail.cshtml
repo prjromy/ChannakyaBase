@@ -1,0 +1,623 @@
+﻿@Html.Hidden("status", false)
+@Html.Hidden("TotalBalance")
+@Html.Hidden("amtype")
+
+@using PagedList.Mvc
+@using ChannakyaAccounting.Helper
+@model PagedList.IPagedList<ChannakyaAccounting.Models.ViewModel.SubsiViewModel>
+@{
+    Nullable<int> ledgerId = ViewData["ledgerId"] as Nullable<int>;
+    Nullable<decimal> totalOpBal = ViewData["openingBal"] as Nullable<decimal>;
+    int totalItem = Convert.ToInt32(ViewData["totalCount"] as Nullable<int>);
+    int CurrentPage =Convert.ToInt32( ViewData["page"] as Nullable<int>);
+    int Status = Convert.ToInt32(ViewData["Status"] as Nullable<int>);
+    var countPager = (int)Math.Ceiling(totalItem / (double)Model.PageSize);
+
+    var test = Model;
+    //   Nullable<int> pagecount = 
+}
+<div class="table-responsive scroll-bar">
+    <table class="table table-bordred">
+        <thead>
+            <tr>
+                <th>
+                    Account Name
+                </th>
+                <th>
+                    Account No.
+                </th>
+
+                <th>
+                    Opening Balance
+                </th>
+                <th>
+               
+                </th>
+
+            </tr>
+
+        </thead>
+
+        @* @Html.HiddenFor(x => Model[i].FId)*@
+
+        <tbody class="load-paged-list-here">
+            @Html.EditorFor(x => x, new ViewDataDictionary { { "ledgerId", ledgerId } })
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <input type="button" id="submitSubsi" value="Save" class="btn btn-default" />
+                </td>
+            </tr>
+        </tfoot>
+
+    </table>
+
+
+</div>
+<div class="scroll-bar">
+    @{
+        List<SelectListItem> amountType = null;
+        decimal sum = 0;
+        foreach (var item in Model)
+        {
+            if (item.AmountType == 1)
+            {
+                sum = sum + item.OpeningBalance;
+            }
+            else
+            {
+                sum = sum + item.OpeningBalance * (-1);
+            }
+        }
+        if (sum < 0)
+        {
+            amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2", Selected = true } };
+            //  sum *= (-1);
+        }
+        else
+        {
+            amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1", Selected = true }, new SelectListItem { Text = "Cr", Value = "2" } };
+
+        }
+    }
+    <table class="table table-bordered total-balance ">
+        <tr>
+
+            <td colspan="2">Total Opening Balance</td>
+            <td>
+                @Html.TextBoxFor(x => sum, new { @class = "form-control opening-total-balance", @readonly = "readonly", @style = "text-align:right;" })
+            </td>
+            <td>
+                @Html.DropDownListFor(x => Model[0].AmountType, amountType, new { @class = "form-control amntType", @readonly = "readonly", @style = "pointer-events:none;" })
+            </td>
+        </tr>
+    </table>
+
+
+
+</div>
+<div id="contentPager" class="row">
+
+    <ul class="pagination subsibalpaginatoin" style="float:left;margin-right:50px;">
+        <li class="previous"><a href="#">Previous</a></li>
+        @for (int i = 1; i <= countPager; i++)
+        {
+            if (i > 4)
+            {
+                if (i == CurrentPage)
+                {
+                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                }
+                else
+                {
+                    if (i >= (CurrentPage - 2))
+                    {
+
+                        if (i > CurrentPage)
+                        {
+                            if (i - CurrentPage <= 2)
+                            {
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i == countPager)
+                                {
+                                    if (countPager - CurrentPage > 3)
+                                    {
+                                        <li class=""><a>.......</a> </li>
+                                    }
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                            }
+                        }
+                        else
+                        {
+
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+
+                    }
+                    else
+                    {
+                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                    }
+                }
+            }
+            else
+            {
+                if (i == CurrentPage)
+                {
+                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                }
+                else
+                {
+                    if (i >= (CurrentPage - 2))
+                    {
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                    }
+                }
+            }
+        }
+        <li class="next"><a href="#">Next</a></li>
+
+
+    </ul>
+
+    <div style="margin-top:20px;margin-left:20px" class="search-container">
+        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:80px;", @placeholder = "PageNo" })
+    </div>
+
+</div>
+@Html.Hidden("status", false)
+@Html.Hidden("TotalBalance")
+@Html.Hidden("CurrentPageTotal")
+@Html.Hidden("amtype")
+<script>
+    $(document).ready(function () {
+        debugger;
+        var Edit=@Status;
+        var totalsubsi = parseFloat('@totalOpBal');
+        if (totalsubsi < 0) {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', false);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', true);
+            totalsubsi = totalsubsi * (-1);
+            $('.total-balance').find('.opening-total-balance').val(totalsubsi);
+            $('#TotalBalance').val(totalsubsi);
+            $('#amtype').val("2");
+        }
+        else {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', true);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', false);
+            $('.total-balance').find('.opening-total-balance').val(totalsubsi);
+            $('#TotalBalance').val(totalsubsi);
+            $('#amtype').val("1");
+        }
+
+        $('td.load-subsi-to-me').on('click', '#submitSubsi', function (e) {
+            debugger;
+            $('#status').val(false);
+            var currentEvent = $(this);
+            e.stopImmediatePropagation();
+            var subsiDataList = [
+            ];
+            var allContainer = $(this).closest('td.load-subsi-to-me').find('.load-paged-list-here').find('tr');
+            //  var ledgerId = $(currentEvent).closest('.load-subsi-to-me').attr('ledgerId');
+            var ledgerId = $('.subsitype option:selected').val();
+            var isdepositOrLoan = $(currentEvent).closest('.load-subsi-to-me').attr('isDepositOrLoan');
+            $(allContainer).each(function (index, item) {
+                var subsiDetail = {};
+                var subsiId = $(item).find('.subsiIdMain').val();
+                var thisLedgerId = $(item).find('input.ledgerId').val();
+                var openingBalance = $(item).find('.subsiOpeningBalance').val();
+                var amountType = $(item).find('.amntsType').val();
+                subsiDetail['SubsiId'] = subsiId;
+                subsiDetail['OpeningBalance'] = openingBalance;
+                subsiDetail['FId'] = thisLedgerId;
+                subsiDetail['AmountType'] = amountType;
+                subsiDataList.push(subsiDetail);
+            });
+
+            debugger;
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify({ subsiDataList: subsiDataList }),
+                url: '/VoucherBalance/AddSubsiUpdate',
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    //if (isdepositOrLoan == "false") {
+                    debugger;
+                    if (data == "FY") {
+                        ErrorAlert("Please Select Initial Fiscal Year", 5000);
+                    }
+                    else {
+                        $.ajax({
+                            type: 'POST',
+                            data: { ledgerId: ledgerId },
+                            url: '/VoucherBalance/GetTotalBalanceOfSubsi',
+                            dataType: 'html',
+                            success: function (totalOpeningBal) {
+                                debugger;
+                                if (totalOpeningBal > 0) {
+                                    $('.total-balance').find('.amntType option[value=1]').prop('selected', true);
+                                    $('.total-balance').find('.amntType option[value=2]').prop('selected', false);
+                                    $('.total-balance').find('.opening-total-balance').val(totalOpeningBal);
+
+                                }
+                                else {
+                                    $('.total-balance').find('.amntType option[value=1]').prop('selected', false);
+                                    $('.total-balance').find('.amntType option[value=2]').prop('selected', true);
+                                    totalOpeningBal = totalOpeningBal * (-1);
+                                    $('.total-balance').find('.opening-total-balance').val(totalOpeningBal);
+                                }
+
+                                SuccessAlert("Opening Balance Saved Sucessfully", 5000);
+                            },
+                            error: function () {
+                                debugger;
+                                ErrorAlert("Opening Balance Is Not Saved", 5000);
+                            }
+                        });
+                    }
+                },
+
+
+            });
+
+
+
+
+
+
+
+        });
+
+
+
+        $('.search-container').on('blur', '.searchPager', function () {
+            debugger;
+            if ($('#status').val() == 'true') {
+                $('#submitSubsi').trigger('click');
+            }
+            $('#status').val(false);
+            var finalId = $(this).val();
+            var container = $(this).closest('td.load-subsi-to-me');
+            var ledgerId = $('.subsitype option:selected').val();
+            var subsiContainer = $(this).closest('.load-subsi-to-me').find('.subsi-container-body');
+            var mainContainer = $(this).closest('.load-subsi-to-me');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/VoucherBalance/AddSubsiBalance",
+                    type: "POST",
+                    data: { ledgerId: ledgerId, page: finalId, Status:@Status },
+                    success: function (data) {
+                        debugger;
+                        $(subsiContainer).html(data);
+                        if(Edit==0)
+                        {
+                            $(subsiContainer).find("#submitSubsi").hide();
+                        }
+                        $(subsiContainer).focus();
+
+                    }
+
+                });
+            }
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+            var checkActive = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+            }
+            $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+
+        });
+
+        $('.pagination').on('click', 'li.next , li.previous', function (e) {
+            e.stopImmediatePropagation();
+            debugger;
+            if ($('#status').val() == 'true') {
+                $('#submitSubsi').trigger('click');
+            }
+            $('#status').val(false);
+            var mainContainer = $(this).closest('.load-subsi-to-me');
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+
+                var pager = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('td.load-subsi-to-me');
+                    var subsiContainer = $(this).closest('.load-subsi-to-me').find('.subsi-container-body');
+                    var ledgerId = $('.subsitype option:selected').val();
+
+                    $.ajax({
+                        url: "/VoucherBalance/AddSubsiBalance",
+                        type: "POST",
+                        data: { ledgerId: ledgerId, page: finalId,Status:@Status },
+                        success: function (data) {
+                            debugger;
+                            $(subsiContainer).html(data);
+                            if(Edit==0)
+                            {
+                                $(subsiContainer).find("#submitSubsi").hide();
+                            }
+                            $(subsiContainer).focus();
+                            $(subsiContainer).prop("tabIndex", "-1");
+                        }
+
+                    });
+                    // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+                    var checkActive = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+                    }
+                    $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId)
+                var listType = $(this).closest('.subsibal-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('td.load-subsi-to-me');
+                    var subsiContainer = $(this).closest('.load-subsi-to-me').find('.subsi-container-body');
+                    var ledgerId = $('.subsitype option:selected').val();
+                    $.ajax({
+                        url: "/VoucherBalance/AddSubsiBalance",
+                        type: "POST",
+                        data: { ledgerId: ledgerId, page: finalId,Status:@Status },
+                        success: function (data) {
+                            debugger;
+                            $(subsiContainer).html(data);
+                            if(Edit==0)
+                            {
+                                $(subsiContainer).find("#submitSubsi").hide();
+                            }
+                            $(subsiContainer).focus();
+                            $(subsiContainer).prop("tabIndex", "-1");
+                            $(this).closest('.load-subsi-to-me').find('.load-paged-list-here').prop("tabIndex", "-1");
+                        }
+
+                    });
+
+                    var checkActive = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+                    }
+                    $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+
+            //$(this).closest('.load-subsi-to-me').find('.load-paged-list-here').focus();
+
+        });
+        $('.pagination').on('click', '.pagerClass', function (e) {
+            e.stopImmediatePropagation();
+            debugger;
+            if ($('#status').val() == 'true') {
+                $('#submitSubsi').trigger('click');
+            }
+            $('#status').val(false);
+            var mainContainer = $(this).closest('.load-subsi-to-me');
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('td.load-subsi-to-me');
+            var subsiContainer = $(this).closest('.load-subsi-to-me').find('.subsi-container-body');
+            var ledgerId = $('.subsitype option:selected').val();
+            $.ajax({
+                url: "/VoucherBalance/AddSubsiBalance",
+                type: "POST",
+                data: { ledgerId: ledgerId, page: pagingData,Status:@Status },
+                success:function(data) {
+                    debugger;
+                    $('.subsi-container-body').html(data);
+                    if(Edit==0)
+                    {
+                        $('.subsi-container-body').find("#submitSubsi").hide();
+                    }
+                    $('.subsi-container-body').focus();
+                    $('.subsi-container-body').prop("tabIndex", "-1");
+                }
+
+            });
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+            //$(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: pagingData });
+            var subsiContainer = $(this).closest('.load-subsi-to-me').find('.load-paged-list-here');
+            var checkActive = $(subsiContainer).find('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+            }
+            $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + pagingData).addClass('active');
+
+            $(this).closest('.load-subsi-to-me').find('.load-paged-list-here').prop("tabIndex", "-1");
+        });
+
+    });
+</script>
+<script>
+    $('.subsiOpeningBalance').on('change', function () {
+        debugger;
+        $('#status').val(true);
+      var container = $('.load-paged-list-here').find('tr');
+      //  var container = $(this).closest('tr');
+        var amttype = $('.amntsType').val();
+        var subsiId = $(this).find('.subsiIdMain').val();
+        var openingBalance = $('.total-balance').find('.opening-total-balance');
+        var sumOfOpeningBal = 0;
+        var elementClass = $('.subsiOpeningBalance');
+       // var allTotabBalance = $('#TotalBalance').val();
+        var allTotabBalance = $(".opening-total-balance").val()
+        var subclassid = $(this).closest('tr').find('.subsiIdMain').val();
+        var antype = $('.amntType').val();
+
+        if (allTotabBalance == "")
+        {
+            allTotabBalance = 0;
+        }
+
+        if (antype =="2") {
+            allTotabBalance = (-1) * allTotabBalance;
+        }
+        $(container).each(function (index, item) {
+            debugger;
+            var amttype = $(item).find('.amntsType').val();
+            var subsiId = $(item).find('.subsiIdMain').val();
+            if (subclassid == subsiId) {
+
+                if (amttype == 1) {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+
+                    sumOfOpeningBal = sumOfOpeningBal + remaining
+                }
+
+                else {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+                    sumOfOpeningBal = sumOfOpeningBal - remaining
+                }
+                $(item).find('.subsiOpeningBalanceHidden').val(changeAmount);
+            }
+            //allTotabBalance=
+            // element == this
+
+        });
+     //   var remainingAmount = sumOfOpeningBal - parseFloat(allTotabBalance)
+        sumOfOpeningBal = sumOfOpeningBal + parseFloat(allTotabBalance)
+        if (sumOfOpeningBal < 0) {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', false);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', true);
+            sumOfOpeningBal = sumOfOpeningBal * (-1);
+            $('.total-balance').find('.opening-total-balance').val(sumOfOpeningBal);
+        }
+        else {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', true);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', false);
+            $('.total-balance').find('.opening-total-balance').val(sumOfOpeningBal);
+
+        }
+       // $('#TotalBalance').val(sumOfOpeningBal);
+    });
+    $('.amntsType').on('change', function () {
+        debugger;
+        $('#status').val(true);      
+      var container = $('.load-paged-list-here').find('tr');    
+        var amttype = $('.amntsType').val();
+        var subsiId = $(this).find('.subsiIdMain').val();
+        var openingBalance = $('.total-balance').find('.opening-total-balance');
+        var sumOfOpeningBal = 0;
+        var elementClass = $('.subsiOpeningBalance');
+       // var allTotabBalance = $('#TotalBalance').val();
+        var allTotabBalance = $(".opening-total-balance").val()
+        var subclassid = $(this).closest('tr').find('.subsiIdMain').val();
+        var antype = $('.amntType').val();
+        if (allTotabBalance == "")
+        {
+            allTotabBalance = 0;
+        }
+        if (antype =="2") {
+            allTotabBalance = (-1) * allTotabBalance;
+        }
+        $(container).each(function (index, item) {
+            debugger;
+            var amttype = $(item).find('.amntsType').val();
+            var subsiId = $(item).find('.subsiIdMain').val();
+            if (subclassid == subsiId)
+            {
+                if (amttype == 1) {
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                   // var lastType = $(item).find('.amntsTypehidden').val()
+                    var remaining = changeAmount - firstAmount
+                    if (remaining == 0) {
+                            remaining = 2 * changeAmount;
+                    }
+                    sumOfOpeningBal = sumOfOpeningBal + 2 * changeAmount
+                }
+                else {
+                    var lastType = $(item).find('.amntsTypehidden').val()
+                    var changeAmount = parseFloat($(item).find('.subsiOpeningBalance').val())
+                    var firstAmount = parseFloat($(item).find('.subsiOpeningBalanceHidden').val())
+                    var remaining = changeAmount - firstAmount
+                    var lastType = $(item).find('.amntsTypehidden').val()
+                    if (remaining == 0) {
+                            remaining = (-2) * changeAmount;
+                    }
+                    // sumOfOpeningBal = sumOfOpeningBal + remaining
+                    sumOfOpeningBal = sumOfOpeningBal + (-2) * changeAmount;
+                }
+                $(item).find('.subsiOpeningBalanceHidden').val(changeAmount);
+            }
+
+            //allTotabBalance=
+            // element == this
+        });
+     //   var remainingAmount = sumOfOpeningBal - parseFloat(allTotabBalance)
+        sumOfOpeningBal = sumOfOpeningBal + parseFloat(allTotabBalance)
+        if (sumOfOpeningBal < 0) {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', false);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', true);
+            sumOfOpeningBal = sumOfOpeningBal * (-1);
+            $('.total-balance').find('.opening-total-balance').val(sumOfOpeningBal);
+        }
+        else {
+            $('.total-balance').find('.amntType option[value=1]').prop('selected', true);
+            $('.total-balance').find('.amntType option[value=2]').prop('selected', false);
+            $('.total-balance').find('.opening-total-balance').val(sumOfOpeningBal);
+        }
+    });
+    
+    
+</script>
+<style>
+    .scroll-bar table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        .scroll-bar table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+    .scroll-bar thead tr {
+    width:100%;
+    }
+        .scroll-bar table tbody {
+            /* body takes all the remaining available space */
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+            .scroll-bar table tbody tr {
+                width: 100%;
+            }
+
+        .scroll-bar table thead, table tbody tr {
+            display: table;
+            table-layout: fixed;
+        }
+
+        .scroll-bar table tfoot tr {
+            width: 100%;
+            display: table;
+            table-layout: fixed;
+        }
+</style>

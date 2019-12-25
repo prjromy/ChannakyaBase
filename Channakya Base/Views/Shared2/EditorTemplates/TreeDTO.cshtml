@@ -1,0 +1,48 @@
+﻿@model ChannakyaBase.Model.ViewModel.LocationTreeDTO
+@{
+    //var t = ViewData["withImageIcon"].ToString();
+
+    bool withImageIcon = Convert.ToBoolean(ViewData["WithImageIcon"]);
+    bool withCheckBox = Convert.ToBoolean(ViewData["WithCheckBox"]);
+    string selectedNode = Convert.ToString(ViewData["SelectedNode"]);
+
+
+    var nodeTextClass = "treeview-text";
+    if (Model.Id.ToString() == selectedNode)
+    {
+        nodeTextClass = "treeview-text treeview-selected";
+    }
+}
+<li>
+    <span class="collapse treeview-icon treeview-expand">
+</span>
+    @if (withImageIcon == true)
+    {
+        //if (Model.Image != null)
+        //{
+        <span class="treeview-image">
+            <img src="~/images/ui-icons_454545_256x240.png" class="img-circle"/>
+            @*<img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" width="20" height="20" class="image" />*@
+        </span>
+        //}
+    }
+    @if (withCheckBox == true)
+    {
+        <span class="treeview-checkbox-container">
+            @Html.CheckBoxFor(x => x.IsChecked, new { @class = "treeview-checkbox" })
+        </span>
+    }
+    <span class="@nodeTextClass" nodeid="@Model.Id" nodetext="@Model.Text" nodepid="@Model.PId" nodeisgroup="@Json.Encode(Model.IsGroup)">
+        @Html.DisplayFor(x => x.Text)
+    </span>
+
+    @if (Model.Children.Any())
+    {
+        <ul>
+            @*@Html.EditorFor(x => x.Children)*@
+            @Html.EditorFor(x => x.Children)
+            
+        </ul>
+    }
+</li>
+

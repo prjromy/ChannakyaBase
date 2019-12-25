@@ -1,0 +1,58 @@
+﻿@model Loader.Models.Department
+@{
+    var test = Model;
+    var DepartmentTypeClass = "background-color:#f9a825 !important";
+    var Hierarchy = @ViewBag.Heirarchy;
+}
+
+
+<div class="small-box bg-aqua"style="@DepartmentTypeClass">
+    <span class="deleteNode" id="@Model.DeptId" style="right:0px;position:absolute;cursor:pointer;" title="Delete" data-toggle="tooltip"> <i class="glyphicon glyphicon-remove"></i></span>
+    <div id="@Model.DeptId" class="icon DepartmentImage" style="top: -31px;">
+@if (Hierarchy == 1)
+{
+    <img class="DepartmentImage" id="@Model.DeptId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" title="Edit" data-toggle="tooltip" />
+
+}
+else
+{
+
+}
+    </div>
+    <div class="inner" Department-caption="@Model.DeptName">
+        <p id="DepartmentCaption" data-toggle="tooltip" data-placement="top" title="@Model.DeptName" style="cursor:pointer;" > @Model.DeptName</p>
+       
+        @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>*@
+    </div>
+
+    <a class="small-box-footer">
+        @*<input type="button" value="drill" class="btndrill" id="" />*@
+        @if (Hierarchy==1)
+        {        <span class="btndrill" id="@Model.DeptId"data-toggle="tooltip" data-placement="top" title="Drill" style="cursor:pointer;" data-id="scroll"><i class="glyphicon glyphicon-screenshot drill"></i></span>
+        }
+        else
+        {
+            <span class="btndrill editList" id="@Model.DeptId" data-toggle="tooltip" data-placement="top" title="Edit" style="cursor:pointer;" data-id="scroll"><i id="@Model.DeptId" class="glyphicon glyphicon-list-alt editList "></i></span>
+        }
+
+        @*<span id="btndetails"><i class="glyphicon glyphicon-list-alt details" fid="@Model.Fid" did="@Model.Fname" pid="@Model.Pid"></i></span>*@
+    </a>
+</div>
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #DepartmentCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+    $(document).tooltip();
+});
+</script>
+

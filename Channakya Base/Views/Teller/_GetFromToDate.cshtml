@@ -1,0 +1,18 @@
+﻿@model Loader.Models.RegisterViewModel
+@using ChannakyaCustomeDatePicker.Helper
+
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+
+
+@Html.Label("From Date - To Date", htmlAttributes: new { @class = "control-label col-md-3" })
+<div class="col-md-3">
+    @Html.DateRangePicker(x => x.From, x => x.To)
+    @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+    @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+</div>
+
+

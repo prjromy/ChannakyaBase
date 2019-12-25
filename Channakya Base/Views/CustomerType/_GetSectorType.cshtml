@@ -1,0 +1,41 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustSectCertContViewModel
+
+
+@{ 
+    var uhs = Model;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            <h3>Sector List</h3>
+        </p>
+
+        <div class="box-body table-responsive no-padding">
+            <div class="pre-scrollable">
+                <table class="table">
+                    <tr>
+                        <th>
+                            Sector
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @for (int item = 0; item < Model.SectorDefList.Count(); item++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(x => Model.SectorDefList[item].CTSID)
+                                @Html.HiddenFor(x => Model.SectorDefList[item].CDepSector)
+                                @Html.CheckBoxFor(x => Model.SectorDefList[item].SectorChecked, new { @class ="sectortype-list " })  @Model.SectorDefList[item].CDepSectorNam 
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

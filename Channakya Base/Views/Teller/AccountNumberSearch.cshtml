@@ -1,0 +1,108 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountSearchViewModel
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "Account";
+}
+<div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">Account Number</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label>
+                                Product Code
+                            </label>
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm pull-right appount-search-product-code">
+                                    @Html.TextBoxFor(x => x.ProductCode, new { @class = "form-control" })
+                                    @Html.HiddenFor(x => x.ProductId)
+                                    <div class="input-group-btn">
+                                        <button type="button" id="btn-product-search" class="btn btn-default" style="margin-left: 0px;">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4 ">
+                            <label>
+                                Branch
+                            </label>
+                            <div class="form-grop_padding appount-search-branch">
+                                @Html.DropDownListFor(x => x.BranchId, TellerUtilityService.CurrentBranch(Model.BranchId), new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.FilterAction)
+                                @Html.HiddenFor(x => x.AccountType)
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label> Currency</label>
+                            <div class="form-grop_padding appount-search-currency">
+                                @Html.DropDownListFor(x => x.CurrencyId, TellerUtilityService.GetAccountOpenCurrency(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="control-label">Customer  Name/Account Number </label>
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm pull-right form-grop_padding">
+                                    @Html.TextBoxFor(x => x.AccountHolder, new { @class = "form-control", placeholder = "Customer Name or Account Number" })
+                                    <div class="input-group-btn">
+                                        <button type="button" name="btn-account-holder-search" id="btn-account-holder-search" class="btn btn-default" style="margin-left: 0px;">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        @*<div class="col-md-12">
+
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm pull-right">
+
+                                    <div class="input-group-btn">
+                                        <button type="button" name="btn-refresh" id="btn-refresh" class="btn btn-default" style="margin-left: 0px;">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+            <div id="account-number-search">
+                @Html.Partial("_AccountNumberSearch", Model)
+
+            </div>
+            <div class="btn-groups modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/CurrencyProductWiseSearch.js"></script>
+<script>
+    $('#common-pop-up-div').on('hidden.bs.modal', function (e) {
+        e.stopImmediatePropagation();
+        if ($('.modal').hasClass('in')) {
+            $('body').addClass('modal-open');
+        }
+    });
+</script>
+<style>
+    .modal-open .modal {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+</style>

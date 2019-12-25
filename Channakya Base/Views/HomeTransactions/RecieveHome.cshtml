@@ -1,0 +1,103 @@
+﻿@model ChannakyaBase.Model.ViewModel.HomeTransactionsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+<div class="box box-success home-transaction">
+    <div class="box-header with-border">
+        <h3 class="box-title">Internal Cashflow Recieve Confirmation</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+
+        @*@using (Html.BeginForm("RecieveConfirmation", "HomeTransactions", FormMethod.Post, new { id = "RecieveConfirmation-form" }))
+        {
+            @Html.AntiForgeryToken()*@
+
+            <div class="form-horizontal Home-Transactions-ConfirmList">
+                                <table class="table table-bordered table-striped tabble table-responsive">
+                                    <tr>
+                                        <th>
+                                            Received Amount
+                                        </th>
+                                        <th>
+                                            From
+                                        </th>
+                                        <th>
+                                            Designation
+                                        </th>
+                                        <th>
+                                            Type
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                    @foreach (var item in Model.HomeTransactionsList)
+                                    {
+                                        Html.RenderPartial("RecievingAmounts", item);
+
+                                    }
+                                </table>
+                    </div>
+        @*}*@
+    </div>
+</div>
+
+
+<div id='view-teller-receiving-details' class='modal fade verfier-list' role='dialog'>
+</div>
+
+
+<script>
+
+    function Accept(tno, operation) {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+                $('.modal-backdrop').remove();
+            $.ajax({
+
+                url: "/HomeTransactions/CashAcceptRejectConfirm",
+                data: { tno: tno, operation: operation },
+                type: 'post',
+                async: false,
+                success: function (result) {
+
+                    debugger;
+                    if (result.Success) {
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+                        $.ajax({
+                            url: "/HomeTransactions/RecieveHome",
+                            type: 'get',
+                            success: function (abc) {
+                                debugger;
+                                $(".home-transaction").html(abc)
+                            }
+                        })
+                    }
+                    else {
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                }
+            })
+           
+        
+        }).fail(function () {
+            //return false;
+        })
+
+    }
+</script>
+
+
+

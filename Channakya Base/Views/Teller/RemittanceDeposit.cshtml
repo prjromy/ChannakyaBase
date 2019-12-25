@@ -1,0 +1,217 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.RemitDepositModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+    Layout = null;
+}
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Remittance Deposit</h3>
+        <div class="box-tools pull-right">
+
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("RemittanceDeposit", "Teller", FormMethod.Post, new { id = "remittance-form" }))
+    {
+        <div class="box-body">
+            <div class="remittance-transaction">
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                    </div>
+                    @* verifier section start *@
+                    @{
+                        bool isverified = new CommonService().isStrictlyVerifiable();
+                    }
+
+                    @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                    @*end *@
+                </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RemitCompanyId, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.RemitCompanyId, FinanceParameterUtilityService.RemittanceCompany(), "Select Company", new { @class = "form-control focusdiv" })
+                                    @Html.ValidationMessageFor(model => model.RemitCompanyId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SenderName, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.SenderName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SenderName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.SenderContact, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.SenderContact, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SenderContact, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverName, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverContact, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverContact, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverContact, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverAddress, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverAddress, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverAddress, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Amount, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8 remitAmount">
+                                    @Html.TextBoxFor(x => x.Amount, new { @class = "form-control text-right" })
+                                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(x => x.Remarks, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+
+                            @if (commonServices.IsTransactionWithDeno())
+                {
+                                <div class="form-group">
+                                    <div class="transaction-with-deno">
+
+                                        @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription() });}
+                                    </div>
+                                </div>
+                                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="form-group">
+                    <div class="col-md-offset-10 col-md-12">
+                        <input type="button" value="Save" class="btn btn-default btn-remittance-transaction-save" data-eventid="15" data-val="deposit transaction" data-isMultiVerifier="false" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                                            }
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+
+<script>
+    $(function () {
+        $.validator.unobtrusive.parse('#forceCloseAccount-form');
+        $(".btn-remittance-transaction-save").on("click", function (e) {
+          
+          
+            var strictVerifiable = $('.remittance-transaction').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            var depositAmount = 0;
+
+            depositAmount = $('div.remitAmount').find('input#Amount').val();
+
+            $('#remittance-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#remittance-form'));
+            if ($("#remittance-form").valid()) {
+                var IsDenoTransaction = $('.remittance-transaction').find('#transactionDeno').prop('checked');
+                if (IsDenoTransaction == true) {
+
+                    var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                    if (parseFloat(depositAmount) != parseFloat(Math.abs(balanceInDeno))) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Amount doesnot  match with deno balance!!"
+                        }).done(function () {
+                            $('.balance-deno-div').find("#Balance").focus();
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+
+                }
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    remittanceDepositSave();
+                }
+            }
+        })
+
+    });
+
+
+    function remittanceDepositSave() {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#remittance-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Teller/RemittanceDeposit",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>

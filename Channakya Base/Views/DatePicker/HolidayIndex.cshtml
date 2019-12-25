@@ -1,0 +1,114 @@
+﻿@model ChannakyaCustomeDatePicker.Models.HolidaysInYear
+@{
+    ViewBag.Title = "HolidayIndex";
+
+}
+
+
+<div class="title clearfix">
+    <h3>HolidayInYear</h3>
+</div>
+<button id="AddEditButton" class="btn btn-add pull-right"><i class="fa fa-plus"></i>Add New</button>
+<div class="clearfix"></div>
+
+<div id="pop-up-div" class="modal fade" role="dialog">
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <label>Year</label>
+        @Html.DropDownListFor(model => model.YearId, Model.YearList, new { @class = "form-control" })
+
+    </div>
+    <div class="col-md-4">
+        <label>Month</label>
+        @Html.DropDownListFor(model => model.MonthId, Model.MonthList, "--Select--", new { @class = "form-control" })
+
+    </div>
+</div>
+<br />
+<div class="content-table">
+    <div class="table-responsive">
+        @Html.Partial("_HolidayIndex", Model)
+    </div>
+</div>
+
+<script>
+    $('#AddEditButton').on('click', function () {
+        editholiday();
+    });
+    $('#YearId').on('change', function () {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/DatePicker/_HolidayIndex")',
+            data: { yearId: $(this).val() },
+            success: function (result) {
+                $(".table-responsive").html("");
+                $(".table-responsive").html(result);
+               
+            },
+            error: function () {
+                ErrorAlert("error", 5000);
+            }
+        });
+    });
+    $('#MonthId').on('change', function () {
+        var YearId = $('#YearId').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/DatePicker/_HolidayIndex")',
+            data: { yearId: YearId, monthId: $(this).val() },
+            success: function (result) {
+
+                $(".table-responsive").html("");
+                $(".table-responsive").html(result);
+            },
+            error: function () {
+                ErrorAlert("error", 5000);
+            }
+        });
+    });
+    function editholiday(holidayId) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/DatePicker/InsertUpdateHoliday")',
+            data: { holidayId: holidayId },
+            success: function (result) {
+
+                $('#pop-up-div').html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+                });
+            },
+            error: function () {
+                ErrorAlert("error", 5000);
+            }
+        });
+    }
+    $(document).on('click', '#btn-addDays', function () {
+        $.ajax({
+            url: '@Url.Content("~/DatePicker/AddMore")',
+            success: function (result) {
+                debugger;
+                if (result) {
+                    $('.indivisual-row').append(result);
+                }
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+
+    });
+
+    function DeleteRow(e) {
+        var section = $(e).closest('fieldset').find('legend').html();
+        var confirmValue = confirm("Are you sure to delete this " + section + " ?");
+        if (confirmValue) {
+            $(e).closest('div.daysRow').remove();
+        }
+
+    }
+</script>
+
+<script src="~/Scripts/DatePicker/CHDialog.js"></script>
+

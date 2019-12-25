@@ -1,0 +1,332 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanRegAccOpenViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var mod = Model;
+}
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Registration</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        @using (Html.BeginForm("LoanRegistration", "Credit", FormMethod.Post, new { id = "LoanRegistration-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="loanRegistration-transaction">
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                @Html.Hidden("MessageEventID", 17)
+
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Client-Details</legend>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CustomerId, new { @class = "control-label col-md-2" })
+                        <div class="col-md-6">
+                            @Html.CustomerSearch(x => x.CustomerId, ECustomerSearchType.AccountOpen)
+                            @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div id="customer-related-message">
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Aname, new { @class = "control-label col-md-2" })
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.Aname, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                </fieldset>
+                @*<div id="customer-related-message">
+                    </div>*@
+                <div class="loan-registration-details">
+                    @{Html.RenderPartial("LoanRegDetails", Model);}
+                </div>
+                <div class="box-footer">
+                    <div class="form-group">
+                        <input type="button" value="Save" class="btn btn-success btn-registration-sheet-save" data-eventid="17" data-val="deposit transaction" data-isMultiVerifier="false" />
+                    </div><!-- box-footer -->
+                </div>
+
+            </div>
+        }
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+<script>
+    function onfailure(errormesg) {
+        debugger;
+        erroralert(errormesg);
+    }
+
+
+    $(document).ready(function () {
+        //  $("#FDLoanAcc").prop('disabled', true);
+        $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', true);
+    })
+    $(".btn-registration-sheet-save").on("click", function (e) {
+        debugger;
+        var SchId = $("#AccountDetailsViewModel_SchemeId").val();
+
+        var FDLoanVal = $("#FDLoanAcc").val();
+        var check = false;
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetSchemeDetailsBySchemeId",
+            datatype: "Json",
+            async: false,
+            data: { SchId: SchId },
+            success: function (result) {
+                debugger;
+                if (result)
+                {                
+                    if (FDLoanVal == null || FDLoanVal == "")
+                    {
+                        ErrorAlert("FD Loan Account is Required", 5000);
+                        check = true;
+                        return false;
+                    }
+                }
+              
+                
+            },
+            error: function () {
+                debugger;
+                alert('Error occurs!');
+            }
+        })
+
+        if (check == true)
+        {
+            return false;
+        }
+
+        var strictVerifiable = $('.loanRegistration-transaction').find('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        ismultiVerify = $(this).attr('isMultiVerifier');
+        $('#LoanRegistration-form').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#LoanRegistration-form'));
+        if ($("#LoanRegistration-form").valid()) {
+            if (strictVerifiable == true) {
+                taskVerifierList(eventid, ismultiVerify);
+            }
+            else {
+                debugger;
+                LoanRegistrationSave();
+            }
+        }
+    })
+    function LoanRegistrationSave() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+
+            $('#LoanRegistration-form').ajaxSubmit({
+                success: function (result) {
+                    debugger;
+                    var url;
+
+                    if (result.Success) {
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+                        $.ajax({
+                            url: "/Credit/LoanRegistration",
+                            type: 'get',
+                            async: false,
+                            success: function (abc) {
+                                debugger;
+                                $(".content").html(abc)
+                            }
+                        })
+
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+    $('#PID').on('change', function () {
+        debugger;
+        var productId = $("#PID option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetAllLoanProductDetailsByPid",
+            datatype: "Json",
+            data: { productId: productId },
+            success: function (result) {
+                debugger;
+                var durationtype = result.DurationType;
+
+
+                if (durationtype == 1) {
+                    $('.day-month').html("Maximum Granted Duration" + '[Month(s)]').prop("readonly", true);//changed
+                }
+                else {
+                    $('.day-month').html("Maximum Granted Duration" + '[ Day(s)]').prop("readonly", true);//changed
+                }
+
+                $("#Duration").val(result.Duration);
+                if (result.HasIndividualDuration) {
+
+                    $("#Duration").attr('readonly',true);
+                    $("#Duration").removeClass("field-validation-error").addClass("field-validation-valid");
+                }
+                else {
+
+                    $("#Duration").attr('readonly',true);//chnaged to true
+                    
+                }
+
+                if (result.IsFDLoan)
+                {
+                    $("#FDLoanAcId").prop('disabled', false);
+                    $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', false);
+                    $(".fdLoanAccount").find(".account-aumber").prop('disabled', false);
+                  
+                }
+                else
+                {
+                    $("#FDLoanAcId").prop('disabled', true);
+                    $("#FDLoanAcId").val("");
+                    $(".fdLoanAccount").find(".account-aumber").prop('disabled', true);
+                    $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', true);
+                    $('#PAYSID').val(1);
+                    $(".day-month").text("Maximum Granted Duration[Month(s)]").prop("readonly",true)//changed granted to maximum
+                }
+
+                $('#PAYSID').trigger('change');
+            },
+            error: function () {
+                debugger;
+                alert('Error occurs!');
+            }
+        })
+
+    })
+
+
+    $('#PAYSID').on('change', function () {
+        debugger;
+        var productId = $("#PID option:selected").val();
+        var durationtype = $("#PAYSID option:selected").val();
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetAllLoanProductDetailsByPid",
+            datatype: "Json",
+            data: { productId: productId },
+            success: function (result) {
+                debugger;
+                if (durationtype == 10) {
+                    $('.day-month').html("Maximum Duration" + '[ Day(s)]').prop("readonly", true);
+                    $("#Duration").val(Math.round(result.Duration * 30.4166));
+
+                }
+
+                else if (durationtype == 9) {
+                    $('.day-month').html("Maximum Duration" + '[Week(s)]').prop("readonly", true); //changed granted to maximum
+                    $("#Duration").val(Math.round(result.Duration * 4.3333));
+                }
+                else if (durationtype == 8) {
+                    $('.day-month').html("Maximum Duration" + '[Week(s)]').prop("readonly", true);//changed granted to maximum
+                    $("#Duration").val(Math.round(result.Duration * 4.3333));
+                }
+                else {
+                    $('.day-month').html("Maximum Duration" + '[Month(s)]').prop("readonly", true);//changed granted to maximum
+                    $("#Duration").val(result.Duration);
+                }
+
+            }
+
+        });
+    });
+
+
+
+
+
+
+
+
+    //if (durationtype == 10) {
+    //    $('.day-month').html("Duration" + '[ Day(s)]');
+
+    //}
+    //else {
+    //    $('.day-month').html("Duration" + '[Month(s)]');
+    //}
+
+    // $("#Duration").val(result.Duration);
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+
+<link href="~/Content/Custom/Customer.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script>
+
+
+    $(".multiselectCustomer").chosen({
+        single_backstroke_delete: true,
+        placeholder_text_multiple: "Customer"
+    });
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>

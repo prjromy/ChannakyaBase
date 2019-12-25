@@ -1,0 +1,131 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.MessageInfoViewModel>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+
+
+@{
+    var test = Model;
+    int i = 1;
+    CommonService commonService = new CommonService();
+   
+
+
+}
+
+@if (Model.Count() != 0)
+{
+    <div class="box-body table-responsive no-padding table-click-event-message">
+        <fieldset>
+            <legend style="font-size:large;font-weight:bold;">Event Message List</legend>
+         <div style="height:200px;overflow:scroll;width:auto;">
+            <table class="table">
+                <tr>
+
+                    <th>
+                        @Html.Label("SN")
+                    </th>
+                    <th>
+                        @*  @Html.DisplayNameFor(model => model.Eventid)*@
+                        @Html.Label("Event Name")
+                    </th>
+                    <th>
+                        @*  @Html.DisplayNameFor(model => model.Fdate)*@
+                        @Html.Label("From Date")
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Tdate)*@
+                        @Html.Label("Till Date")
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Mdesc)*@
+                        @Html.Label("Message Description")
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr event-value="@item.EventValue">
+                        <td>
+                            @i
+                            @{i++;
+                            }
+                        </td>
+                        <td>
+                            <span>@BaseTaskUtilityService.GetTaskNameByEventId(item.Eventid)</span>
+                        </td>
+                        <td>
+                            @{  
+                                var customerservice = commonService.GetDate(item.Fdate);
+
+                                @*@Html.DisplayFor(modelItem =>commonService.GetDate(item.Fdate))*@
+                                @Html.Label(customerservice)
+                            }
+                        </td>
+                        <td>
+                            @{
+                                var Tdate = commonService.GetDate(item.Tdate);
+                                @Html.Label(Tdate)
+                                @* @Html.DisplayFor(modelItem => commonService.GetDate(item.Tdate))*@
+                            }
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Mdesc)
+                        </td>
+
+                    </tr>
+
+                                }
+
+            </table>
+             </div>
+        </fieldset>
+       @* @Html.Paging("GetEventListByCustomerId", "Customer", Model.MessageWithIPageList.PageCount, Model.MessageWithIPageList.PageNumber, Model.MessageWithIPageList.PageSize)*@
+    </div>
+       
+                                }
+
+
+@*<script type="text/javascript">
+
+    $("div.table-click-event-message").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $('#getVal').val();
+        var container = parentContainer.find(".event-message-list")
+         var url = "?id=" + accountNumber;
+         getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-click-event-message").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $('#getVal').val();
+        var container = parentContainer.find(".table-click-event-message")
+         var url = "?id=" + accountNumber;
+         getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-event-message").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var me = $(this);
+        var accountNumber = $('#getVal').val();
+        var container = parentContainer.find(".table-click-event-message")
+         var url = "?id=" + accountNumber;
+         getPageSizeChangeData(url, container, me)
+    });
+
+</script>*@
+
+
+
+
+
+
+

@@ -1,0 +1,53 @@
+﻿
+@model  List<Loader.Models.Employee>
+    @{ 
+        Loader.Service.EmployeeService emp = new Loader.Service.EmployeeService();
+        bool withDepartment = emp.WithDepartment();
+        bool withDesg = emp.WithDesignation();
+
+    }
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>
+                                Employee Name
+                            </th>
+                            @if (withDepartment == true)
+                            {
+                            <th>
+                                Department
+                            </th>
+                            }
+                            @if (withDesg == true)
+                            {
+                            <th>
+                                Designation
+                            </th>
+                            }
+                            <th>
+                                Date Of Join
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @Html.Partial("_ListView", item)
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

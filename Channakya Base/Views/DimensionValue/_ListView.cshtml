@@ -1,0 +1,23 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.DimensionValueListViewModel
+@{
+    var test = Model;
+}
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.DVId" style="vertical-align:top;">
+        <a class="inner listDrill" Department-caption="@Model.DimensionValue1" style="cursor:pointer;"> @Model.DimensionValue1</a>
+    </td>
+    <td>
+        @Model.CodeNo
+    </td>
+   
+    <td>
+        @*<input type="button" id="@Model.DepartmentId" class="btn btn-link editList" value="Edit" />
+            <input type="button" id="@Model.DepartmentId" class="btn btn-link deleteNode" value="Delete" />*@
+
+    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs editList" id="@Model.DVId" data-title="Edit"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.DVId" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+
+</tr>
+
+
+

@@ -1,0 +1,20 @@
+﻿@{
+    int? parentNode = ViewBag.ParentNodeId;
+}
+
+@Html.HiddenFor(m => @parentNode)
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h3 class="modal-title">Delete Location</h3>
+</div>
+
+<div class="modal-body form-horizontal location-form-body">
+    Do you want to delete this location?<br />
+</div>
+
+<div class="modal-footer delete-location-footer">
+    <button type="button" class="btn btn-default btn-delete">Delete</button>
+    <button type="button" class="btn btn-default btn-cancel">Cancel</button> 
+    <input type="button" value ="Done" class="btn btn-default btnDeleteDone" style="display:none" />
+</div>

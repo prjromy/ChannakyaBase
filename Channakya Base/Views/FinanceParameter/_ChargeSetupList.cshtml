@@ -1,0 +1,125 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.ChargeDetail>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+<div class="box box-info">
+    <div class="box-header with-border">
+        <p>
+            <h3>Charge List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ChgName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Modules)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Event)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Product)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Triggertype)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ChrType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Ratio)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CAmount)
+                    </th>
+                    @*<th>
+                            @Html.DisplayNameFor(model => model.ChrTempID)
+                        </th>*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.Chngble)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.ChrDirect)
+                    </th>*@
+
+                    <th>
+                        @Html.DisplayName("Is Enable")
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+              {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ChgName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Module.ModName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Event.EventName)
+                        </td>
+                        <td>
+                            @FinanceParameterUtilityService.LedgerNameByFid(item.FID)
+             
+                        </td>
+
+                        <td>
+                            @if (item.Module.Modid == 1 || item.Module.Modid == 2)
+                            {
+
+
+                                    <span>
+                                        @Html.DisplayFor(modelItem => item.Product)
+
+                                    </span>
+
+                            }
+                            
+
+                        </td>
+                        <td>
+                            @FinanceParameterUtilityService.TriggerType(item.Triggertype).Where(x => x.Selected == true).Select(x => x.Text).FirstOrDefault()
+
+                        </td>
+                        <td>
+                            @FinanceParameterUtilityService.ChargeMode(item.ChrType).Where(x => x.Selected == true).Select(x => x.Text).FirstOrDefault()
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ratio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CAmount)
+                        </td>
+                        @*<td>
+                                @Html.DisplayFor(modelItem => item.ChrTempID)
+                            </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Chngble)
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.ChrDirect)
+                        </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+
+
+                        <td>
+                            <button type="button" data-toggle="tooltip" title="Edit" class="btn btn-info btn-sm btn-edit-chargeSetup glyphicon glyphicon-edit" data-id="@item.ChgID"></button>
+                            <button type="button" data-toggle="tooltip" title="Delete" class="btn btn-info btn-sm btn-sm btn-delete-chargeSetup glyphicon glyphicon-trash danger" data-id="@item.ChgID" data-></button>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>

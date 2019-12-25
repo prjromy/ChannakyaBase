@@ -1,0 +1,27 @@
+﻿CREATE TABLE [fin].[AMClearanceH] (
+    [rno]         INT            NOT NULL,
+    [IAccno]      INT            NOT NULL,
+    [BrchID]      SMALLINT       NULL,
+    [Bankcode]    SMALLINT       NOT NULL,
+    [Brnhcode]    SMALLINT       NOT NULL,
+    [chqno]       NVARCHAR (15)  NOT NULL,
+    [payee]       NVARCHAR (50)  NULL,
+    [tdate]       SMALLDATETIME  NOT NULL,
+    [camount]     MONEY          NOT NULL,
+    [remarks]     NVARCHAR (500) NULL,
+    [postedby]    SMALLINT       NOT NULL,
+    [verifiedby]  SMALLINT       NOT NULL,
+    [chqstate]    TINYINT        NULL,
+    [passedby]    SMALLINT       NULL,
+    [collectedby] SMALLINT       NULL,
+    [cdate]       SMALLDATETIME  NULL,
+    [clehouseid]  SMALLINT       NULL,
+    [finalizedby] SMALLINT       NULL,
+    [fdate]       SMALLDATETIME  NULL,
+    [Vno]         INT            NULL,
+    [Tno]         NUMERIC (18)   NULL,
+    [Bvno]        INT            NULL,
+    [ACCNO]       NVARCHAR (50)  NULL,
+    CONSTRAINT [FK_AMClearanceH_ADetail] FOREIGN KEY ([IAccno]) REFERENCES [fin].[ADetail] ([IAccno])
+);
+

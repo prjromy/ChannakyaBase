@@ -1,0 +1,265 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.TrialBalanceViewModel
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+
+@{
+    ChannakyaAccounting.Service.VoucherReport.VoucherReportsService voucherReportObj = new ChannakyaAccounting.Service.VoucherReport.VoucherReportsService();
+    Loader.Service.UserVSBranchService usrBranchService = new Loader.Service.UserVSBranchService();
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var fromDate = voucherReportObj.GetFromDate();
+    var toDate = voucherReportObj.GetToDate();
+    Nullable<int> reportType = ViewData["ReportType"] as Nullable<int>;
+    string url = "/VoucherReport/TrialBalance";
+    ViewBag.Title = "Generate Trial Balance";
+    if (reportType == 2)
+    {
+        url = "/VoucherReport/ProfitAndLoss";
+        ViewBag.Title = "Generate Profit And Loss";
+    }
+    if (reportType == 3)
+    {
+        url = "/VoucherReport/BalanceSheet";
+        ViewBag.Title = "Generate Balance Sheet";
+    }
+}
+
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+<div class="box box-success" style="padding-bottom: 360px;">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <form method="post" id="createTBReport">
+        <div class="box-body">
+            <div id="explorer" class="menu-explore">
+                <div id="explore-details" class="col-md-12 explore-details">
+                    <div class="panel-list" id="list">
+                        <div class="row col-xs-6">
+                            <div class="col-xs-12">
+                                @*<h3 class="text-center">Available Branch</h3>*@
+                                <div class="well" style="max-height: 300px;overflow: auto;">
+                                    <ul class="list-group checked-list-box">
+                                        @foreach (var item in usrBranchService.GetCompanyList())
+                                        {
+
+                                            if (Loader.Models.Global.BranchId.ToString() == item.Value)
+                                            {
+                                                <li class="list-group-item list-group-item-primary active" branch-id="@item.Value">@item.Text</li>
+                                            }
+                                            else
+                                            {
+                                                if (item.Value != "1")
+                                                {
+                                                    <li class="list-group-item" branch-id="@item.Value">@item.Text</li>
+                                                }
+                                            }
+                                        }
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-xs-6">
+                            <table align="center">
+                                <tr>
+                                    <td>
+                                        @Html.Label("Is Transaction Report", new { @class = "control-label col-md-2" })
+                                    </td>
+                                    <td>
+                                        <div class="col-md-3 date-to-search" style="top:13px">
+                                            @Html.CheckBox("IsTransactionReport", new { @id = "report-type", @onclick = "validateTransaction(this)" })
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="fromDate" style="display:none;">
+                                    <td>
+                                        @Html.Label("FromDate", new { @class = "control-label col-md-2" })
+                                    </td>
+                                    <td>
+                                        <div class="col-md-3 date-to-search" style="top:13px">
+                                            @Html.DatePicker(x => fromDate)
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.Label("ToDate", new { @class = "control-label col-md-2" })
+                                    </td>
+                                    <td>
+                                        <div class="col-md-3 date-to-search" style="top:13px">
+                                            @Html.DatePicker(x => toDate)
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td align="left">
+                                        @* <button type="button" class="btn btn-lg btn-info submitme" style="margin: 25px 0 0 69px;">Generate</button>*@
+                                        <input value="Generate" class="btn btn-lg btn-info submitme" type="button" style="margin: 25px 0 0 69px;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.box-body -->
+    </form>
+</div><!-- /.box -->
+<style>
+    .state-icon {
+        left: -5px;
+    }
+
+    .list-group-item-primary {
+        color: rgb(255, 255, 255);
+        background-color: rgb(66, 139, 202);
+    }
+</style>
+<script type="text/javascript">
+
+    function validateTransaction(buttonEvent)
+    {
+        if($(buttonEvent).prop('checked')==true)
+        {
+            $("tr#fromDate").show();
+        }
+        else if ($(buttonEvent).prop('checked') == false)
+        {
+            $("tr#fromDate").hide();
+        }
+    }
+    $("#createTBReport").on('click', '.submitme', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+
+        var allBranchList = [
+        ];
+        var allContainer = $('.panel-list').find('ul').find('li');
+        $(allContainer).each(function (index, item) {
+            var branchDetail = {};
+            var isChecked = $(item).hasClass('active');
+            var branchId = $(item).attr('branch-id');
+            branchDetail['BranchId'] = branchId;
+            branchDetail['IsChecked'] = isChecked;
+            allBranchList.push(branchDetail);
+        });
+
+
+       // var formData = new FormData($(this)[0]);
+        var fromDate = $('#createTBReport').find('input#fromDate').val();
+        var toDate = $('#createTBReport').find('input#toDate').val();
+        var reportType = $("form#createTBReport").find('input#report-type').prop('checked');
+        $.ajax({
+            url: '@url',
+            type: 'POST',
+            data: JSON.stringify({ branchList: allBranchList, fromDate: fromDate, toDate: toDate, reportType: reportType }),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                debugger;
+                $('div#explore-details').html(data);
+
+            },
+            error: function (data) {
+                debugger;
+                ErrorAlert(data.responseText, 15000)
+            },
+        });
+
+    });
+
+</script>
+
+<script type="text/javascript">
+    $('#createTBReport').ready(function () {
+        $('.list-group.checked-list-box .list-group-item').each(function () {
+
+            // Settings
+            var $widget = $(this),
+                $checkbox = $('<input type="checkbox" class="hidden" />'),
+                color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                settings = {
+                    on: {
+                        icon: 'glyphicon glyphicon-check'
+                    },
+                    off: {
+                        icon: 'glyphicon glyphicon-unchecked'
+                    }
+                };
+
+            $widget.css('cursor', 'pointer')
+            $widget.append($checkbox);
+
+            // Event Handlers
+            $widget.on('click', function () {
+                $checkbox.prop('checked', !$checkbox.is(':checked'));
+                $checkbox.triggerHandler('change');
+                updateDisplay();
+            });
+            $checkbox.on('change', function () {
+                updateDisplay();
+            });
+
+
+            // Actions
+            function updateDisplay() {
+                var isChecked = $checkbox.is(':checked');
+
+                // Set the button's state
+                $widget.data('state', (isChecked) ? "on" : "off");
+
+                // Set the button's icon
+                $widget.find('.state-icon')
+                    .removeClass()
+                    .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                // Update the button's color
+                if (isChecked) {
+                    $widget.addClass(style + color + ' active');
+                } else {
+                    $widget.removeClass(style + color + ' active');
+                }
+            }
+
+            // Initialization
+            function init() {
+
+                if ($widget.data('checked') == true) {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                }
+
+                updateDisplay();
+
+                // Inject the icon if applicable
+                if ($widget.find('.state-icon').length == 0) {
+                    $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                }
+            }
+            init();
+        });
+
+        $('#get-checked-data').on('click', function (event) {
+            event.preventDefault();
+            var checkedItems = {}, counter = 0;
+            $("#check-list-box li.active").each(function (idx, li) {
+                checkedItems[counter] = $(li).text();
+                counter++;
+            });
+            $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+        });
+    });
+</script>
+<style>
+    img.dpCalBtn {
+        margin-bottom: 9px;
+    }
+</style>

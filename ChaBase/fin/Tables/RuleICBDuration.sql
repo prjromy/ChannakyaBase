@@ -1,0 +1,7 @@
+﻿CREATE TABLE [fin].[RuleICBDuration] (
+    [ICBDurID]  TINYINT      IDENTITY (1, 1) NOT NULL,
+    [ICBDurNam] VARCHAR (15) NOT NULL,
+    [ICBDurVal] REAL         NOT NULL,
+    CONSTRAINT [PK_RuleICBDuration] PRIMARY KEY CLUSTERED ([ICBDurID] ASC)
+);
+

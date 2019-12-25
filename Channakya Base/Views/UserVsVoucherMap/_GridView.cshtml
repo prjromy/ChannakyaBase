@@ -1,0 +1,55 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.usertovoucherreturnViewModel
+@using ChannakyaAccounting.Service.Voucher1
+@{
+    var test = Model;
+    var VoucherNameTypeClass = "background-color:#00c0ef !important";
+    Voucher1Service getname = new Voucher1Service();
+
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+@{ 
+    var username = getname.GetUserNameforDescription(Model.userid);
+    <div class="info-box bg-aqua" style="@VoucherNameTypeClass">
+        <div class="info-box-icon icon">
+            <img class="uservsvoucherImage"  Vtype="@Model.Vtype" id="@Model.userid" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        </div>
+
+        @* <div class="inner" VoucherName-caption="@Model.VoucherNameName">
+                <p id="VoucherNameCaption" data-toggle="tooltip" data-placement="top" title="@Model.VoucherNameName" style="cursor:pointer;"> @Model.VoucherNameName</p>
+                @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+            </div>*@
+
+        <div class="info-box-content inner" VoucherName-caption="@username">
+            <span class="deleteNode" id="@Model.ID" vType="@Model.Vtype" bType ="@Model.Batchtype" userId="@Model.userid" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+            <span class="info-box-text" id="VoucherNameCaption" data-toggle="tooltip" data-placement="top" title="@username" style="cursor:pointer;"> @username</span>
+            <span class="info-box-number">@getname.GetVoucherTypeNameforDescription(Model.Vtype)</span>
+
+            @*<div class="progress">
+                <div class="progress-bar" style="width: 100%"></div>
+            </div>*@
+            @*<span class="progress-description">
+                    @empService.GetStatusName(Model.Status)
+                </span>*@
+        </div>
+    </div>
+    }
+
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #VoucherNameCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

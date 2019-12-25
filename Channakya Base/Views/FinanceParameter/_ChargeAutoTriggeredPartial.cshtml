@@ -1,0 +1,113 @@
+﻿@using HtmlHelpers.BeginCollectionItem
+@model ChannakyaBase.DAL.DatabaseModel.ChargeDetail
+@using ChannakyaBase.BLL.Service
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var mod = Model;
+    CreditService cs = new CreditService();
+    var checkStatus = cs.GetSanctionStatusforRemaingAmountonChange(ViewBag.AccountNumber);
+
+}
+@using (Html.BeginCollectionItem("ChargeDetailsList"))
+{
+<tr class="charge-autotriggered">
+
+    @Html.HiddenFor(x => x.ChgID)
+    @Html.HiddenFor(x => x.Chngble)
+    @Html.HiddenFor(x => x.ChrDirect)
+
+
+
+    @Html.HiddenFor(x => x.ChrType, new { @class = "chargeType" })
+    <td>
+        <span class="control-label">@Model.ChgName</span>
+    </td>
+    <td>
+        <span class="control-label">@FinanceParameterUtilityService.LedgerNameByFid(Model.FID)</span>
+
+    </td>
+    <td>
+        @if (Model.ChrType == 1)
+        {
+            <span class="control-label">in(Amount)</span>
+        }
+        else
+        {
+            <span class="control-label">in(%)</span>
+        }
+
+    </td>
+    
+        @{
+            if (checkStatus == false)
+            {
+                if (Model.Chngble == true)
+                {
+
+                    if (Model.ChrType == 1)
+                    {
+                    <td class="col-md-1">
+
+
+                        @Html.TextBoxFor(model => Model.CAmount, "", new { @class = "form-control IndCharge" })
+                    </td>
+                }
+                else
+                {
+                    <td class="col-md-1">
+                        @Html.TextBoxFor(model => Model.Ratio, new { @class = "form-control Ratio " })
+                    </td>
+                }
+            }
+            else
+            {
+                if (Model.ChrType == 1)
+                {
+                    <td class="col-md-1">
+
+                        @Html.TextBoxFor(model => Model.CAmount, "", new { @class = "form-control IndCharge", @readonly = "readonly" })
+                    </td>
+                }
+                else if (Model.ChrType == 2)
+                {
+                    <td class="col-md-1">
+                        @Html.TextBoxFor(model => Model.Ratio, new { @class = "form-control Ratio", @readonly = "readonly" })
+                    </td>
+                }
+            }
+        }
+        }
+        
+
+        <td>
+            @{
+                if (checkStatus == false)
+                {
+                    if (Model.AmountChargedd == 0)
+                    {
+                        // <span class="control-label">@Model.CAmount</span>
+                        @Html.TextBoxFor(model => Model.CAmount, "", new { @class = "form-control IndCharge", @readonly = "readonly" })
+
+                    }
+                    else
+                    {
+                        //<span class="control-label">@Model.AmountChargedd</span>
+                        @Html.TextBoxFor(model => Model.AmountChargedd, "", new { @class = "form-control IndCharge", @readonly = "readonly" })
+                    }
+                }
+
+
+
+            }
+
+
+        </td>
+
+
+
+        @*<span class="control-label">@Model.AmountChargedd+@Model.CAmount</span>*@
+
+    </tr>
+    
+}

@@ -1,0 +1,74 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALCollLandModel
+
+
+<fieldset>
+    <legend style="font-size:14px;font-weight:bold">Land  Info</legend>
+    @Html.HiddenFor(x => x.AcolLandId)
+    <div class="form-group">
+        @Html.LabelFor(model => model.Fname, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Fname, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Fname, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Gname, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Gname, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Gname, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Location, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Location, new { @class = "form-control Equivalent-Amount" })
+            @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Direction, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Direction, new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.Direction, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Seatno, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Seatno, new { @class = "form-control",@type="number" })
+            @Html.ValidationMessageFor(model => model.Seatno, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Kittano, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Kittano, new { @class = "form-control", @type = "number" })
+            @Html.ValidationMessageFor(model => model.Kittano, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Area, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Area, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Area, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.BArea, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.BArea, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.BArea, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Amount, new { @class = "form-control text-right", @Value = (@Model.Amount == 0) ? "" : @Model.Amount.ToString() })
+            @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    </fieldset>
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+
+
+
+
+
+
+

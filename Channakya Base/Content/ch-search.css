@@ -1,0 +1,87 @@
+﻿.search-icon {
+    width: 10px;
+    height: 15px;
+    background-repeat: no-repeat;
+    background-image: url('../images/ui-icons_454545_256x240.png');
+    background-position: -37px -14px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.search-expand {
+    background-position: -68px -13px;
+}
+
+.search-checkbox-container {
+    height: 20px;
+    top: 3px;
+    position: relative;
+}
+
+.search-image img {
+    position: relative;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+}
+
+.search-text {
+    position: relative;
+    max-width: 250px; 
+    cursor: pointer;
+    margin-left: 0px;
+}
+
+
+.search-child {
+    list-style-type: none;
+}
+
+div.search-area ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px 0px 2px 4px;
+}
+
+.ch-search {
+    list-style-type: none;
+}
+
+
+
+div.search-area li {
+    list-style-type: none;
+    border-left: 1px dotted grey;
+    margin: 0px 0px 2px 0px;
+    padding: 0px 0px 1px 10px;
+}
+
+.search-selected {
+    background-color: #605ca8;
+    color:white;
+}
+
+.content {
+ padding:2px;
+}
+.search-area {
+    list-style-type: none; 
+}
+
+.search-text:hover {
+    background-color: #f0f1cf;
+    color:black;
+} 
+
+.search-button {
+    background-color: black;
+    font-size: 20px;
+    font-weight: 100;
+    width: 8%;
+    text-align: center;
+    display: inline-block;
+    border-color: #468847;
+    border-style: solid;
+    color: white;
+    cursor: pointer;
+}

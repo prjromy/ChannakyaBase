@@ -1,0 +1,71 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanAttributes
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+<fieldset>
+    @Html.HiddenFor(x => x.Durtype)
+    <legend style="font-size:14px;font-weight:bold">Loan-Attributes</legend>
+    <div class="form-group col-md-6">
+        @Html.LabelFor(m => m.AutoPayment, new { @class = "col-md-6  control-label col-form-label" })
+        <div class="col-md-6 ">
+            @Html.CheckBoxFor(m => m.AutoPayment)
+        </div>
+    </div>
+
+    <div class="form-group col-md-6">
+        @Html.Label("Deprived", new { @class = "col-md-6  control-label col-form-label" })
+        <div class="col-md-6 ">
+            @Html.CheckBoxFor(m => m.deprived)
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("Alow-Pre-Payment", new { @class = "col-md-6  control-label col-form-label" })
+        <div class="col-md-6 ">
+            @Html.CheckBoxFor(m => m.overPay)
+        </div>
+    </div>
+    
+</fieldset>
+    <fieldset>
+        <legend style="font-size:14px;font-weight:bold">Product-Attributes</legend>
+        @if (Model.Revolving)
+        {
+            <div class="form-group col-md-6">
+                @Html.LabelFor(m => m.Revolving, new { @class = "col-md-6  control-label col-form-label " })
+                <div class="col-md-6 ">
+                    @Html.CheckBoxFor(m => m.Revolving, new { @class= "isRevolving" })
+                </div>
+            </div>
+        }
+        @if (Model.IsInsured)
+        {
+        <div class="form-group col-md-6">
+            @Html.LabelFor(m => m.IsInsured, new { @class = "col-md-6  control-label col-form-label" })
+            <div class="col-md-6 ">
+                @Html.CheckBoxFor(m => m.IsInsured)
+            </div>
+        </div>
+        }
+        @Html.HiddenFor(x=>x.HasIndRate)
+        @Html.HiddenFor(x=>x.HasIndLimit)
+@*@if (Model.HasIndLimit)
+{
+        <div class="form-group col-md-6">
+            @Html.Label("Has-Ind-Limit", new { @class = "col-md-6  control-label col-form-label" })
+            <div class="col-md-6 ">
+                @Html.CheckBoxFor(m => m.HasIndLimit)
+            </div>
+        </div>
+}
+@if (Model.HasIndLimit)
+{
+        <div class="form-group col-md-6">
+            @Html.Label("Has-Ind-Rate", new { @class = "col-md-6  control-label col-form-label" })
+            <div class="col-md-6 ">
+                @Html.CheckBoxFor(m => m.HasIndRate)
+            </div>
+        </div>
+}*@
+    </fieldset>
+
+

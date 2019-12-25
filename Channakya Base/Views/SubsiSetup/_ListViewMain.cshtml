@@ -1,0 +1,36 @@
+﻿@model  IEnumerable<ChannakyaAccounting.Models.ViewModel.SubsiSetUpViewModal>
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped" style="max-width:100%;">
+
+                    <thead>
+                        <tr>
+                            <td>Title</td>
+                            <td>Prefix</td>
+                        </tr>
+                    @*<th>
+                        Title
+                    </th>
+                    <th>
+                     Prefix
+                    </th>*@
+               
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @Html.Partial("_ListView", item)
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

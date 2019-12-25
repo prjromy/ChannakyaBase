@@ -1,0 +1,47 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountSearchViewModel
+
+<div id="popover-content-@Model.CustomerId-@Model.AccountId" class="table-responsive hide" >
+    <form class="form-inline" role="form">
+        <div class="form-group">
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <td class="text-info">CustomerId</td>
+                    <td class="text-info">@Model.CustomerId</td>
+                </tr>
+                <tr>
+                    <td class="text-info">Account Title</td>
+                    <td class="text-info">@Model.AccountHolder</td>
+                </tr>
+                <tr>
+                    <td class="text-info">Contact </td>
+                    <td class="text-info">@Model.ContactPerson</td>
+                </tr>
+                <tr>
+                    <td class="text-info">A/c Status</td>
+                    <td class="text-info">@Model.AccountStatus</td>
+                </tr>
+                <tr>
+                    <td class="text-info">Mobile</td>
+                    <td class="text-info">@Model.Mobile</td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    //$(function () {
+        $(document).on('mouseenter', 'a#accountPopover-@Model.CustomerId-@Model.AccountId', function (e) {
+
+            e.stopImmediatePropagation();
+        $("[data-toggle=popover-@Model.CustomerId-@Model.AccountId").popover({
+            html: true,
+            content: function () {
+                return $('#popover-content-@Model.CustomerId-@Model.AccountId').html();
+            }
+        });
+        });
+    //})
+
+</script>

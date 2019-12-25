@@ -1,0 +1,13 @@
+﻿
+@{ 
+    var MenuTemplateTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    var menutreeobj = new Loader.ViewModel.TreeViewParam(true, true, false, 0, 0, "", "Assign Menu", "");
+
+    //if (Model.MTId != 0)
+    //{
+    //    menutreeobj = new Loader.ViewModel.TreeViewParam(true, true, false, 0, 1, ViewBag.ActiveText, "Assign Menu", "");
+    //}
+
+}
+
+@Html.Partial("~/Views/Shared/_TreeView.cshtml", MenuTemplateTreeview, new ViewDataDictionary { { "param", menutreeobj } })

@@ -1,0 +1,150 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountReportViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding table-click-account-open-report" style="font-size:12px;">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AccountNumber)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AccountName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RegisterDate)
+                </th>
+
+                <th>
+                    Account Status
+                </th>
+               
+                <th>
+                    Changed On
+                </th>
+                <th>Changed By</th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.AccountReportList)
+        {
+            <tr>
+                @{
+                    byte sType = (commonService.GetStypeByIaccno(Convert.ToInt32(item.AccountId)));
+                }
+                <td>
+                    <a href="#" onclick="ShowDetailsAccount('@item.AccountId')">@item.AccountNumber</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+
+                <td>
+          
+                    @commonService.GetDate(Convert.ToDateTime(item.RegisterDate))
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountState)
+                  
+                </td>
+                   <td>@item.ChangeOn</td>           
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountOpenBy)
+                </td>
+
+            </tr>
+                        }
+       @* @Html.Paging("PaginationAccountopenDetailsReport", "Report", Model.AccountDetailsLists.PageCount, Model.AccountDetailsLists.PageNumber, Model.AccountDetailsLists.PageSize)*@
+    </table>
+    @Html.Paging("PaginationAccountopenDetailsReport", "Report", Model.AccountReportList.PageCount, Model.AccountReportList.PageNumber, Model.AccountReportList.PageSize)
+</div>
+@*<script>
+  
+    $("div.table-click-account-open-report").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents();
+        var me = $(this);
+        var accountStatus = parentContainer.find(".account-status").find("#AccountState").val();
+        var accountType = parentContainer.find(".account-type").find("#AccountType").val()
+        var branch = parentContainer.find(".branch-Id").find("#BranchId").val();
+        var fromDate = parentContainer.find(".FromDate").find("#FromDate").val();
+        var toDate = parentContainer.find(".ToDate").find("#ToDate").val();
+        var product = parentContainer.find(".product-Value").find("#PID").val();
+        //var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+        var container = parentContainer.find("div.cust-page-list")
+        var url = "?name=" + name + "&address=" + address + "&contact=" + contact + "&cType=" + cType;
+        getPageNumberBtnAction(url, container, me)
+    });
+</script>*@
+
+
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+
+<script>
+    $("div.table-click-account-open-report").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var AccountState = parentContainer.find("#AccountState option:selected").val();
+        var AccountType = parentContainer.find("#AccountType option:selected").val();
+        //var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var branchid = parentContainer.find("#BranchId option:selected").val();
+        var PID = parentContainer.find("#PID option:selected").val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var container = parentContainer.find("div.table-click-account-open-report")
+        var url = "?fromDate=" + FromDate + "&toDate=" + ToDate + "&branchid=" + branchid + "&productId=" + PID + "&accountStatus=" + AccountState + "&accountType=" + AccountType;
+        getPageNumberBtnAction(url, container, me)
+
+    });
+
+    $("div.table-click-account-open-report").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var AccountState = parentContainer.find("#AccountState option:selected").val();
+        var AccountType = parentContainer.find("#AccountType option:selected").val();
+        //var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var branchid = parentContainer.find("#BranchId option:selected").val();
+        var PID = parentContainer.find("#PID option:selected").val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var container = parentContainer.find("div.table-click-account-open-report")
+        var url = "?fromDate=" + FromDate + "&toDate=" + ToDate + "&branchid=" + branchid + "&productId=" + PID + "&accountStatus=" + AccountState + "&accountType=" + AccountType;
+        getPageNumberBtnAction(url, container, me)
+    });
+
+    $("div.table-click-account-open-report").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var AccountState = parentContainer.find("#AccountState option:selected").val();
+        var AccountType = parentContainer.find("#AccountType option:selected").val();
+        //var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var branchid = parentContainer.find("#BranchId option:selected").val();
+        var PID = parentContainer.find("#PID option:selected").val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var container = parentContainer.find("div.table-click-account-open-report")
+        var url = "?fromDate=" + FromDate + "&toDate=" + ToDate + "&branchid=" + branchid + "&productId=" + PID + "&accountStatus=" + AccountState + "&accountType=" + AccountType;
+        getPageNumberBtnAction(url, container, me)
+    });
+
+
+</script>

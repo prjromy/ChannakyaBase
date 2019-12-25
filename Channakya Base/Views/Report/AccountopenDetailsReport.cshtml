@@ -1,0 +1,170 @@
+﻿@model  ChannakyaBase.Model.ViewModel.AccountReportViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper
+@{ 
+    var cs = Model;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Account Details Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        @*<input type="button" value="New Account" id="btn-create" class="btn btn-info btn-sm btn-create" />*@
+        <div class="NewAccount-list">
+            <fieldset>
+                <div class="row">
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label> Account Status</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.AccountState, ReportUtilityService.AccountStateList(),new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label> Account Type</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.AccountType, ReportUtilityService.AccountType(), new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>
+                                Branch
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.BranchId, ReportUtilityService.GetBranchList(Convert.ToInt32(Model.BranchId)),new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label>
+                                From Date
+                            </label>
+                            <div class="form-grop_padding">
+
+                                @Html.DatePicker(x => x.FromDate)
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>
+                                Product
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.PID, ReportUtilityService.ProductList(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+
+                        <input type="button" value="ExportToExcel" class="btn btn-info product-wise-collection-export-to-excel pull-right" title="Export to Excel" data-toggle="tooltip" />
+                        <button type="button" name="btn-account-holder-search" id="btn-report-account-related" class="btn btn-primary pull-right" @*style="margin-left: 10px;"*@ title="Search" data-toggle="tooltip">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+
+                </div>
+            </fieldset>
+
+            <div class="box-header with-border with-details-Report-View">
+                @Html.Partial("_AccountopenDetailsReport", Model)
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function ShowDetailsAccount(IAccno) {
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/_AccountDetails",
+            datatype: "HTML",
+            data: {
+                IAccno: IAccno,
+                ModelFrom: "Report"
+
+            },
+            success: function (result) {
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+
+    $('#btn-report-account-related').on('click', function () {
+        debugger;
+        var accountState = $('#AccountState').val();
+        var accountType = $('#AccountType').val();
+        var branchId = $('#BranchId').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var eDate = new Date(toDate);
+        var sDate = new Date(fromDate);
+        if (fromDate != '' && toDate != '' && sDate > eDate) {
+            ErrorAlert("Please ensure that the End Date is greater than or equal to the Start Date.",6000);
+            return false;
+        }
+        var productId = $('#PID').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/Report/_AccountopenDetailsReport",
+            datatype: "Json",
+            data: {
+                fromDate: fromDate,
+                toDate: toDate,
+                branchid: branchId,
+                productId: productId,
+                accountStatus: accountState,
+                accountType: accountType,
+
+            },
+            success: function (result) {
+                $('.with-details-Report-View').html("");
+                $('.with-details-Report-View').html(result);
+            }
+        });
+
+    });
+
+    $('.product-wise-collection-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var accountState = $('#AccountState').val();
+        var accountStateText = $('#AccountState option:selected').text();
+        var accountType = $('#AccountType').val();
+        var accountTypeText = $('#AccountType option:selected').text();
+        var branchId = $('#BranchId').val();
+        var branchIdText = $('#BranchId option:selected').text();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var productId = $('#PID').val();
+        var productIdText = $('#PID option:selected').text();
+        //window.open("/Report/AccountopenDetailsReportExporttoExcel?accountState=" + accountState + "&accountStateText=" + accountStateText + "&accountType=" + accountType + "&accountTypeText" + accountTypeText + "&branchId=" + branchId + "&branchIdText" + branchIdText + "&fromDate=" + fromDate + "&toDate" + toDate + "&productId" + productId + "&productIdText" + productIdText);
+
+        window.open("/Report/AccountOpenDetailsReportExporttoExcel?fromDate=" + fromDate + "&toDate=" + toDate + "&accountState=" + accountState + "&accountStateText=" + accountStateText + "&accountType=" + accountType + "&accountTypeText=" + accountTypeText + "&branchId=" + branchId + "&branchIdText=" + branchIdText + "&productId=" + productId + "&productIdText=" + productIdText);
+
+    });
+
+
+</script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+

@@ -1,0 +1,118 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.SubsiViewModel
+
+@{
+    //var test = Model;
+    //var count = 0;
+    Nullable<int> ledgerId = ViewData["ledgerId"] as Nullable<int>;
+    int id = 0;
+    //if (ledgerId == 382)
+    //{
+    //    var ab = Model;
+    //}
+    List<SelectListItem> amountType = amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2" } }; ;
+    if (Model.OpeningBalance < 0)
+    {
+        Model.AmountType = 2;
+
+        Model.OpeningBalance = Convert.ToDecimal(Model.OpeningBalance * (-1));
+    }
+    else
+    {
+        Model.AmountType = 1;
+
+    }
+
+    //ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService subsiDetailService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService();
+    //ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService voucherBalanceService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+}
+
+
+<tr ledgerId="@ledgerId" parentId="@Model.ParentId">
+    <td style="display:none;">
+        @*@if (voucherBalanceService.IsParentDepositOrLoanProduct((int)ledgerId))
+        {
+            int IAccNo = subsiDetailService.GenerateIAccNoForDepositAndLoan((int)ledgerId);
+            //account number
+            @Html.Hidden("SId", null, new { @class = "subsiIdMain", Value = Model.Id })
+        }
+
+        else
+        {
+            if (voucherBalanceService.HasDepositOrLoanProduct((int)ledgerId))
+            {
+                int IAccNo = subsiDetailService.GenerateIAccNoForDepositAndLoan((int)Model.ParentId);
+                @Html.Hidden("SId", null, new { @class = "subsiIdMain", Value = Model.Id })
+            }
+            else
+            {
+                @Html.Hidden("SId", null, new { @class = "subsiIdMain", Value = Model.Id })
+            }
+        }*@
+        @Html.Hidden("SId", null, new { @class = "subsiIdMain", Value = Model.Id })
+        @Html.Hidden("LedgerId", null, new { @class = "ledgerId", Value = ledgerId })
+
+    </td>
+
+
+    <td>
+        @*@{
+            int? subsitableId = ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId((int)ledgerId) as Nullable<int>;
+            if (voucherBalanceService.IsParentDepositOrLoanProduct((int)ledgerId) == true)
+            {
+                <p> @ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName((int)ledgerId, (int)subsitableId) </p>
+                <p>@Model.Name</p>
+            }
+
+            else
+            {
+                if (voucherBalanceService.HasDepositOrLoanProduct((int)ledgerId))
+                {
+                    <p> @ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName((int)Model.ParentId, (int)subsitableId) </p>
+                    <p>@Model.Name</p>
+                }
+                else
+                {
+                    subsitableId = ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId((int)ledgerId) as Nullable<int>;
+                    if (subsitableId != null)
+                    {
+                        <p>@ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName(Model.Id, (int)subsitableId)</p>
+                        <p>@Model.Name</p>
+                    }
+                }
+            }
+        }*@
+        @Model.Name
+    </td>
+    <td>
+        @*@if (ledgerId != null)
+        {
+            if (voucherBalanceService.IsParentDepositOrLoanProduct((int)ledgerId))
+            {
+                <p>@subsiDetailService.GenerateAccountNumberForDepositAndLoan((int)ledgerId)</p>
+            }
+
+            else
+            {
+                if (voucherBalanceService.HasDepositOrLoanProduct((int)ledgerId))
+                {
+                    <p>@subsiDetailService.GenerateAccountNumberForDepositAndLoan((int)Model.ParentId)</p>
+                }
+                else
+                {
+                    <p>@subsiDetailService.GenerateAccountNumber((int)ledgerId)</p>
+                }
+            }
+        }*@
+          @Model.Accno
+    </td>
+    <td>
+        @Html.HiddenFor(x => Model.OpeningBalance, new { @class = "subsiOpeningBalanceHidden" })
+        @Html.TextBoxFor(x => Model.OpeningBalance, new { @class = "form-control subsiOpeningBalance", @style = "text-align:right" })
+    </td>
+    <td>
+        @Html.HiddenFor(x => Model.AmountType, new { @class = "amntsTypehidden" })
+        @Html.DropDownListFor(x => Model.AmountType, amountType, new { @class = "form-control amntsType" })
+    </td>
+
+
+</tr>

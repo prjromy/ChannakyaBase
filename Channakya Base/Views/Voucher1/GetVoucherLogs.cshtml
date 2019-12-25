@@ -1,0 +1,150 @@
+﻿@model List<ChannakyaAccounting.Models.Models.Voucher1T>
+
+@{
+    var count = 0;
+    Loader.Service.MenuTemplateService menuTemplate = new Loader.Service.MenuTemplateService();
+    var test = Model;
+   
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+}
+<div class="modal-dialog modal-lg add-voucher-finacc">
+    <div class="modal-content addvoucherDetails">
+        <div class="modal-header">
+            <div class="input-group">
+
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">Pending Voucher Logs</h4>
+            
+
+        </div>
+        <div class="modal-body" style="padding:40px 50px; ">
+            <table class="table table-bordered" id="TblTraining" border="1" style="width:100%; border-width: 1px; border-color: Silver;margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        @*<th style="text-align:center">SNo.</th>*@
+
+                        <th style="text-align:center">Voucher No.</th>
+                        <th style="text-align:center">Batch Description</th>
+                        <th style="text-align:center">Voucher Type</th>
+                        <th style="text-align:center">Transaction Date</th>
+                        <th style="text-align:center">Posted By</th>
+                        <th style="text-align:center">Posted On</th>
+                        <th style="text-align:center">Currency</th>
+                    </tr>
+                </thead>
+                <tbody class="voucher2-container">
+                    @{ 
+                        var i = 0;
+                    }
+                    @foreach (var item in Model)
+                    {
+                     ++i;
+                        
+                        <tr class="main-pending-list" id="@item.V1TId"style="cursor: pointer; ">
+                            @*<td>
+                                @i
+                            </td>*@
+                            <td>
+                                @item.V1TId
+                            </td>
+
+                            <td>
+                                @voucherService.GetBatchName(item.VNId)
+                                
+                            </td>
+                            <td>
+                                @voucherService.GetVoucherTypeName(item.VNId)
+                            </td>
+                            <td>
+                                @item.TDate
+                            </td>
+                            <td>
+                                @menuTemplate.GetUserName(Convert.ToInt32(item.PostedBy))
+                            </td>
+                            <td>
+                                @item.PostedOn
+                            </td>
+                            <td>
+                                @item.CurrencyType.CurrencyName
+                            </td>
+                       
+                        </tr>
+                    }
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                     
+
+                        <td class="voucher-ledger-details-container" style="display:none"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+
+        </div>
+
+
+
+        <div class="modal-footer">
+            <input type="button" class="btn btn-success saveDataVoucher" value="OK" />
+            <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+    $('tr.main-pending-list').click(function () {
+        debugger;
+        var modalMain = $(this).closest('div#getVoucherLogs');
+        var v1Id = $(this).attr('id');
+
+        $.ajax({
+            url: '/Voucher1/DisplayTemporaryLogsValue/',
+            data:{v1Id:v1Id},
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                //$('.main-voucher-table-container').html(data);
+                $('.panel-create ').html(data);
+                $(modalMain).modal('hide');
+
+                //$('.subsi-voucher-container').append(data);
+            },
+            error: function (data) {
+                debugger;
+            },
+        });
+
+
+    });
+</script>
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+    .main-pending-list:hover
+    {
+        background-color:#3c8dbc;
+    }
+
+    /*.modal-footer {
+        background-color: #f9f9f9;
+    }*/
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .ledger-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>

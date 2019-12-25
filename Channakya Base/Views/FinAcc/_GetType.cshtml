@@ -1,0 +1,102 @@
+﻿
+
+@model ChannakyaAccounting.Models.Models.FinAcc
+@{
+
+}
+<div class="form-group col-md-12">
+    @Html.LabelFor(model => model.F2Type, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+
+        @Html.DropDownListFor(model => model.F2Type, (IEnumerable<SelectListItem>)ViewBag.F2Type, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.F2Type, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $('select#F2Type').change(function () {
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();;
+        alert(F2type);
+
+        var container = $(this).find('.dimension-defination-controller')
+        var form = $(container).closest("form");
+
+        $.ajax({
+            url: '/FinAcc/IsGroup/',
+            data: { F2type: F2type },
+            success: function (isGroup) {
+                debugger
+                $('.dimension-defination-controller').empty();
+                if (isGroup == false) {
+                    //$.ajax({
+                    //    url: '/FinAcc/AddDimension/',
+                    //    dataType: "html",
+                    //    success: function (data) {
+                    //        debugger
+                    //        $('.dimension-defination-controller').append(data);
+                    //        $('input#nextbtn').show();
+                    //        $(form).removeData("validator");
+                    //        $(form).removeData("unobtrusiveValidation");
+                    //        $.validator.unobtrusive.parse($(form));
+                    //    }
+                    //});
+                }
+            }
+
+        });
+
+
+        if (F2type == "Bank Account") {
+            $('#labelclass').empty();
+            $('#labelclass').append("<b>" + " Bank Name" + "</b>");
+
+            var container = $(this).find('.bank-info-container')
+            var form = $(container).closest("form");
+            $.ajax({
+                url: '/FinAcc/AddBankInfoDetails/',
+                dataType: "html",
+                success: function (data) {
+
+                    $('.bank-info-container').append(data);
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse($(form));
+                }
+            });
+
+        }
+        else {
+            $(".bank-info-container").empty();
+
+        }
+        if (F2type == "Subsi Account") {
+            $('#labelclass').empty();
+            $('#labelclass').append("<b>" + " Subsi Name" + "</b>")
+            var container = $(this).find('.subsititle-details-container')
+            var form = $(container).closest("form");
+            $.ajax({
+                url: '/FinAcc/AddSubsiDetails/',
+                dataType: "html",
+                success: function (data) {
+                    $('.subsititle-details-container').append(data);
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse($(form));
+                }
+            });
+
+        }
+        else {
+            $('.subsititle-details-container').empty();
+        }
+
+
+    });
+
+
+
+
+</script>

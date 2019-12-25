@@ -1,0 +1,268 @@
+﻿@model IEnumerable<Loader.Models.UserVSBranch>
+@using Loader.Helper
+
+
+
+@{
+    var test = Model;
+    var id = ViewBag.ViewType;
+    //string address = ViewBag.Address.ToString();
+    var pUserVSBranchId = ViewBag.ParentUserVSBranchId;
+}
+
+
+
+<div class="box box-success">
+    <div class="box-header" style="background-color:cornflowerblue; color:white;">
+
+        <div class="col-md-9" style="margin:-5px; padding-left:0px;">
+            
+            <b>Users Branch</b>
+            
+
+
+        </div>
+
+        @*<input type="button" class="btn-default" value="Back" id="btnBack" />*@
+
+        <div class="box-tools" style="margin: -6px 0 0 0;">
+            @*<div class="listSearch"style="color:black;">
+
+
+                </div>*@
+            @*<input type="button" value="Create" id="btnCreateUserVSBranch" class="btn-default" />*@
+            <div class="pUserVSBranchId">@Html.HiddenFor(x => pUserVSBranchId)</div>
+            <input type="text" name="text-filter-tree" class="btn btn-box-tool txtSearch" placeholder="Search..." style="background-color:white;height:30px;">
+            @*<button type="button" name="search" class="btn btn-box-tool btnSearch" style="color:white;">
+                    <i class="fa fa-search"></i>
+                </button>*@
+            <button class="btn btn-box-tool btn-create-brnch" style="color:white;"> <i class="fa fa-plus"></i></button>
+     
+            <button class="btn btn-box-tool" style="color:white;" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+
+
+        </div>
+    </div><!-- /.box-header -->
+
+    <div class="box-body bodycontent-and-paging">
+
+
+        @if (ViewBag.ViewType == 1)
+        {
+            var hasChild = Model.Count();
+            if (hasChild == 0)
+            {
+                <b> No Childs found to Display</b>
+            }
+            else
+            {
+                <div class="listTable" style="max-height:400px;">
+                    @Html.Partial("_ListViewMain", Model)
+                </div>
+            }
+        }
+
+
+
+        @if (ViewBag.CountPager > 0)
+        {
+            <ul class="pagination Userpagination" style="float:left;margin-right:20px;">
+                <li class="previous"><a href="#">Previous</a></li>
+                @for (int i = 1; i <= ViewBag.CountPager; i++)
+                {
+                    if (i > 4)
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i >= (ViewBag.ActivePager - 2))
+                            {
+
+                                if (i > ViewBag.ActivePager)
+                                {
+                                    if (i - ViewBag.ActivePager <= 2)
+                                    {
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    else
+                                    {
+                                        if (i == ViewBag.CountPager)
+                                        {
+                                            if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                            {
+                                                <li class=""><a>.......</a> </li>
+                                            }
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+
+                            }
+                            else
+                            {
+                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i >= (ViewBag.ActivePager - 2))
+                            {
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                            }
+                        }
+                    }
+                }
+                <li class="next"><a href="#">Next</a></li>
+
+            </ul>
+        }
+
+            <div style="margin-top:00px;margin-left:20px" class="search-container">
+                @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager SearchPagerForDetail", @style = "width:65px;", @placeholder = "PageNo" })
+            </div>
+
+    </div><!-- /.box-body -->
+  
+</div>
+
+<style>
+    .details {
+        width: 30%;
+        max-height: 129px;
+    }
+
+    input.btn.btn-box-tool.txtSearch {
+        cursor: text;
+    }
+</style>
+
+
+<script>
+    $(document).ready(function () {
+        var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        var strLength = searchInput.val().length * 2;
+        searchInput.focus();
+        searchInput[0].setSelectionRange(strLength, strLength);
+        var Search = $('.txtSearch').val();
+
+
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Userpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.UserVSBranch-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+                    $(container).load("/UserVSBranch/_DetailPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Userpagination').find('li#' + finalId)
+                var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.UserVSBranch-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    $(container).load("/UserVSBranch/_DetailPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+                }
+            }
+        });
+
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var Search = $('.txtSearch').val();
+            var container = $(this).closest('.UserVSBranch-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+            $(container).load("/UserVSBranch/_DetailPartial", { page: pagingData, ViewType: listType, query: Search });
+            var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Userpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Userpagination').find('li#' + pagingData).addClass('active');
+
+        });
+
+
+
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var Search = $('.txtSearch').val();
+            //var pagingData = $(this).val();
+            var container = $(this).closest('.UserVSBranch-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/UserVSBranch/_DetailPartial",
+                    type: "GET",
+                    data: {                        
+                        ViewType: listType,
+                        query: Search,
+                        page: finalId
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                    },
+                    error: function () {
+                        ErrorAlert("Error",5000);
+                    }
+                });
+            }
+        });
+
+    });
+    </script>
+
+<style>
+
+    .SearchPagerForDetail {
+        position: relative;
+        bottom: -21px;
+    }
+
+
+</style>

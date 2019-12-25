@@ -1,0 +1,72 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.SubsiDetailViewModel
+@using ChannakyaAccounting.Helper
+@{
+    var test = Model;
+    var VoucherMapTypeClass = "background-color:#00c0ef !important";
+    //if (Model.IsGroup == false)
+    //{
+    //    VoucherMapTypeClass = "background-color:indianred !important";
+    //}
+    ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService subService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService();
+    var LedgerName = subService.GetSubsiLedgerItem(Model.FId).Text;
+    //var DimensionValue1TypeClass = "background-color:#00c0ef !important";
+    var Name = GenerateSubsiTypeList.GenerateNameForMapSubsi(Model.FId, Model.CId);
+
+}
+
+
+
+@*<div class="small-box bg-aqua" style="@VoucherMapTypeClass">
+
+    <div class="info-box bg-aqua">
+
+        <img class="VoucherMapImage1" id="@Model.SDID" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+
+
+    </div>
+    <div class="info-box-content inner" DimensionValue1-caption="@LedgerName">
+        <span class="deleteNode" id="@Model.SDID" style="right:0px;position:absolute;cursor:pointer;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <div class="inner" VoucherMap-caption="@LedgerName">
+            <p id="VoucherMapCaption" data-toggle="tooltip" data-placement="top" title="@LedgerName" style="cursor:pointer;height:20px;"> @LedgerName</p>
+      </div>
+        </div>
+        <a class="small-box-footer">
+
+            <span class="btndrill editList" id="@Model.SDID" data-toggle="tooltip" data-placement="top" title="Edit" style="cursor:pointer;"><i id="@Model.SDID" class="glyphicon glyphicon-list-alt editList "></i></span>
+        </a>
+    </div>*@
+<div class="info-box bg-aqua" style="@VoucherMapTypeClass">
+    <div class="info-box-icon icon">
+        <img class="VoucherMapImage1" data-toggle="tooltip" title="Edit" id="@Model.SSId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+
+    </div>
+    <div class="info-box-content inner" DimensionValue1-caption="@LedgerName">
+        <span class="deleteNode" id="@Model.SSId" data-toggle="tooltip" title="Delete" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="DimensionValue1Caption" data-toggle="tooltip" data-placement="top" title="@LedgerName" style="cursor:pointer;"> @LedgerName</span>
+        <span class="info-box-number">@Name</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @*<span class="progress-description">
+                @empService.GetStatusName(Model.Status)
+            </span>*@
+    </div>
+</div>
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #VoucherMapCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

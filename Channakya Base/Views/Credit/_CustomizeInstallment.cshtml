@@ -1,0 +1,137 @@
+﻿@model ChannakyaBase.Model.ViewModel.ScheduleTrialModel
+
+@{
+    int count = 1;
+}
+@using (Html.BeginForm("_CustomizeInstallmentAmountCalculation", "Credit", FormMethod.Post, new { id = "customizeForm-form" }))
+{
+    @Html.HiddenFor(x => x.ButtonTap)
+    @Html.HiddenFor(x => x.StartDate)
+    @Html.HiddenFor(x => x.IsFlat)
+    @Html.HiddenFor(x => x.Amount)
+    @Html.HiddenFor(x => x.Rate)
+    @Html.HiddenFor(x=>x.RequestFrom)
+    @Html.HiddenFor(x => x.IAccno)
+    <div class="box-body">
+
+        <div class="box-body table-responsive no-padding">
+            <label><b style="color:red">Customize Installment And Click Next</b></label>
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+
+                    <th width="2px">
+                        S.N
+                    </th>
+
+                    <th>
+                        Date AD
+                    </th>
+                    <th>
+                        Date BS
+                    </th>
+
+
+                    <th>
+                        HasPrin
+                    </th>
+
+                    <th>
+                        HasInt
+                    </th>
+                </tr>
+
+                @for (int item = 0; Model.scheduleList.Count > item; item++)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>
+                            @Model.scheduleList[item].DateAd.ToShortDateString()
+                            @Html.HiddenFor(x => Model.scheduleList[item].DateAd)
+                        </td>
+                        <td>
+                            @Model.scheduleList[item].NepaliDate
+                            @Html.HiddenFor(x => Model.scheduleList[item].NepaliDate)
+                        </td>
+
+                        <td>
+                            @Html.CheckBoxFor(x => Model.scheduleList[item].HasPrincipal, new { @class = "Has-Principal" })
+
+
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(x => Model.scheduleList[item].HasInterest, new { @class = "Has-Interest" })
+
+                        </td>
+
+                    </tr>
+                    count++;
+                }
+
+            </table>
+
+        </div>
+    </div>
+
+    <div class="box-footer">
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Next" class="btn btn-default btn-customize-schedule-save" />
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $('.Has-Interest').on('click', function () {
+        var ischecked = $(this).closest('tr').find('.Has-Interest').prop('checked')
+        if (ischecked == false)
+        {
+            $(this).closest('tr').find('.Has-Principal').prop('checked', false)
+        }else
+        {
+            $(this).closest('tr').find('.Has-Principal').prop('checked', true)
+        }
+       
+    })
+    //$('.Has-Principal').on('click', function () {
+    //    var ischecked = $(this).closest('tr').find('.Has-Principal').prop('checked')
+    //    if (ischecked == true)
+    //    {
+
+    //    }
+    //    $(this).closest('tr').find('.Has-Interest').prop('checked', true)
+    //})
+    $('.btn-customize-schedule-save').on('click', function () {
+        customizeTrial()
+    })
+    function customizeTrial() {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#customizeForm-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Status) {
+                        $('#Preview-trial-list').html("")
+                        $('#Preview-trial-list').html(result.htmlToShow);
+                        $('.disbursement-schedule').html("");
+                    } else {
+
+                        ErrorAlert(result.Message, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>

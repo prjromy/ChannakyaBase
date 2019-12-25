@@ -1,0 +1,169 @@
+﻿@model PagedList.IPagedList<ChannakyaAccounting.Models.ViewModel.SubsiStatementViewModel>
+@using PagedList.Mvc;
+
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @* @item.TrDate*@
+            <div style="text-align: center;">
+                @{
+                    var date = item.TrDate.ToShortDateString();
+                }
+                @date
+            </div>
+        </td>
+        <td>
+            <div style="text-align: center;">
+                @item.VNo
+                </div>
+       </td>
+        <td>
+            <div style="text-align: center;">
+                @item.Description
+            </div>
+        </td>
+        <td>
+            @*@item.DebitAmount*@
+            <div style="float:right;">
+                @Convert.ToDecimal(item.DebitAmount).ToString("#,##0.00")
+            </div>
+        </td>
+        <td>
+          @*  @item.CreditAmount*@
+            <div style="float:right;">
+                @Convert.ToDecimal(item.CreditAmount).ToString("#,##0.00")
+            </div>
+        </td>
+        @*<td>
+            <div style="text-align: center;">
+            @item.SubsiName
+                </div>
+        </td>*@
+
+        <td>
+            @if (item.Balance < 0)
+            {
+                
+                  @*  @Convert.ToDecimal(item.Balance * -1)*@
+                    <div style="float:right;">
+                        @Convert.ToDecimal(Convert.ToDecimal(item.Balance * -1)).ToString("#,##0.00")
+                    </div>
+                
+
+            }
+            else
+            {
+                    <div style="float:right;">
+                        @Convert.ToDecimal(item.Balance).ToString("#,##0.00")
+                    </div>
+            }
+        </td>
+
+        <td>
+            @if (item.Balance < 0)
+            {
+                <p>
+                    Cr
+                </p>
+
+            }
+            else
+            {
+                <p> Db</p>
+            }
+        </td>
+        @*<td>
+            <div style="text-align: center;">
+                @item.Description
+            </div>
+        </td>*@
+    </tr>
+
+}
+@if (Model.Count() > 0)
+{
+    <tr id="footer-header">
+        <th>
+
+        </th>
+        <th>
+            <b>
+                Total Amount
+            </b>
+        </th>
+        <th>
+            <b>
+                Count
+            </b>
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        @*<th>
+
+        </th>*@
+
+
+    </tr>
+        <tr>
+            <td>
+                Dr
+            </td>
+            <td>
+                @if (Model.FirstOrDefault() != null)
+                {
+                    <p>@Model.FirstOrDefault().TotalDbAmt</p>
+                }
+            </td>
+
+            <td>
+                @if (Model.FirstOrDefault() != null)
+                {
+                    <p>@Model.FirstOrDefault().TotalDBCount</p>
+                }
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @*<td></td>*@
+
+
+
+        </tr>
+        <tr>
+            <td>
+                Cr
+            </td>
+            <td>
+                @if (Model.FirstOrDefault() != null)
+                {
+                    <p>@Convert.ToDecimal(Model.FirstOrDefault().TotalCrAmt * -1)</p>
+                }
+            </td>
+            <td>
+                @if (Model.FirstOrDefault() != null)
+                {
+                    <p>@Model.FirstOrDefault().TotalCrCount </p>
+                }
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @*<td></td>*@
+        </tr>
+}
+
+

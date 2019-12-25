@@ -1,0 +1,178 @@
+﻿@using ChannakyaBase.BLL.Service
+@model ChannakyaBase.Model.ViewModel.TaskViewModel
+
+@{
+    BaseTaskVerificationService tvs = new BaseTaskVerificationService();
+    var abc = Model;
+}
+<!-- Notifications: style can be found in dropdown.less -->
+<div class="modal fade" id="getTaskVerficationLists" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true"></div>
+<li class="dropdown notifications-menu">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-bell-o"></i>
+        <span class="label label-warning" id="notification-count"> @tvs.CountOfNofication().ToString()</span>
+    </a>
+    <ul class="dropdown-menu">
+        <li class="header">You have @Model.TaskDetailList.Count() notifications</li>
+        <li>
+            <!-- inner menu: contains the actual data -->
+            <ul class="menu">
+                <li>
+                    @foreach (var item in Model.TaskDetailList)
+                    {
+
+                    <li>
+
+                        <a onclick="directToRead(@item.Task1Id,@item.EventId,'','','viewSingleNotification')">
+                            @*href="/message/Index#loadFilter"*@
+                            <div class="pull-left">
+                                @*<img src="~/Content/img/avatar.png" class="img-circle" alt="User Image" />*@
+                            </div>
+                            <h5>
+
+                                <span>From:@item.EmployeeName,</span>
+                                @if (item.Message != null)
+                                {
+                                    if (item.Message.Length > 15)
+                                    {
+                                        <span>@item.Message.Substring(0, 15)......</span>
+                                    }
+                                    else
+                                    {
+                                        <span> @item.Message</span>
+                                    }
+                                }
+
+                                @*<small><i class="fa fa-clock-o"><time class="agoTime" datetime="@item.RaisedOn"></time> </i> </small>*@
+                            </h5>
+                            <p>
+
+
+                            </p>
+                        </a>
+                    </li>
+                    }
+                </ul>
+            </li>
+            <li class="footer"><a onclick="ViewAll()" style="cursor:pointer;">View all</a></li>
+
+        </ul>
+    </li>
+
+    <script>
+    @*timerId = setInterval(function () {
+        $("#refresh").load("@Request.Url #notificationContainer");
+    },  10 * 1000);*@
+        jQuery(document).ready(function () {
+
+            //jQuery(".agoTime").timeago();
+
+        });
+    </script>
+    <script>
+        function ViewAll() {
+            debugger;
+            urlToDirect = "/TaskVerification/_ViewAllPendingTaskIndex";
+            $.ajax({
+                type: "GET",
+                url: urlToDirect,
+                success: function (result) {
+
+                    $('.content').html("");
+                    $('.content').html(result);
+
+                },
+                error: function () {
+
+                }
+            });
+        }
+        function directToRead(task1id, eventId, eventValue, message, taskMain) {
+            var urlToDirect;
+
+            debugger
+            var eId = eventId;
+            urlToDirect = "/TaskVerification/_VerificationModal";
+            if (eId == 10) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Teller/CollectionSheetIndex",
+                    data: { retId: eventValue, taskId: task1id, message: message },
+                    success: function (result) {
+                        $(".content").html(result)
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
+
+            else if (eId == 17) {
+                $.ajax({
+                    type: "GET",
+                    //url: "/Credit/LoanRegistrationVerifyDetails",
+                    url: urlToDirect,
+                    //data: { regId: eventValue, taskId: task1id },
+                    data: { task1id: task1id },
+                    success: function (result) {
+
+                        $('#getTaskVerficationLists').html(result).modal({
+                            'show': true,
+                            'backdrop': false
+
+                        });
+                    },
+                    error: function () {
+
+                    }
+                });
+
+            }
+            else if (eventId == 30) {
+                urlToDirect = "/TaskVerificationAcc/_VerificationModal";
+                $.ajax({
+                    type: "GET",
+                    url: urlToDirect,
+                    data: { task1id: task1id },
+                    success: function (result) {
+
+                        $('#getTaskVerficationLists').html(result).modal({
+                            'show': true,
+                            'backdrop': false
+
+                        });
+                        //$()
+                        //$('.modal-backdrop.in').css('opacity', '0');
+
+                        //$('.modal-backdrop').remove();
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "GET",
+                    url: urlToDirect,
+                    data: { task1id: task1id, taskMain: taskMain },
+                    success: function (result) {
+                        debugger;
+                        //$('#account-pop-up-div2').html(result).modal({
+                        //    'show': true,
+                        //    'backdrop': 'static'
+                        //});
+                        $('#account-pop-up-div3').html(result);
+                        $('#account-pop-up-div3').modal('show');
+
+                        //  ErrorAlert("Record Not Found may be already verified or deleted!!")
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
+
+
+        }
+    </script>

@@ -1,0 +1,566 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1T
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerificationAcc.js"></script>
+<script src="~/Scripts/voucher-create.js"></script>
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    List<SelectListItem> getVtypedByUID = voucherService.GetVoucherTypeByUserID();
+}
+<div class="modal fade" id="getVerifiedLists" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" style="overflow:auto"></div>
+<div class="box box-warning Voucher1-create">
+    <div class="box-header with-border">
+        <h2 class="box-title"> Create Voucher </h2>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "Voucher1", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data", @id = "mainVoucher" }))
+    {
+        @Html.HiddenFor(x => x.V1TId)
+
+        <div class="col-md-12 voucher-header-container">
+            <div class="col-md-4">
+                <label class="control-label col-md-4"> Type</label>
+                <div class="col-md-8">
+                    @Html.DropDownListFor(model => model.VTypeId, getVtypedByUID, "Select Voucher Type", new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="control-label col-md-4"> Currency</label>
+                <div class="col-md-8">
+                    @Html.DropDownList("CTId", null, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                @*@Html.LabelFor(x => x.BatchNo, htmlAttributes: new { @class = "control-label col-md-4" })*@
+                <label class="control-label col-md-5"> Batch Type</label>
+
+                <div class="col-md-7 batch-number">
+                </div>
+            </div>
+            <div class="col-md-2">
+
+                <button type="button" id="showTempLogs" class="btn btn-info btn-sm" data-toggle="modal">
+                    <span class="glyphicon glyphicon-file"></span> Log
+                </button>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="form-group main-voucher-table-container">
+
+            <table id="voucher2Table" border="1" style="width:99%; border-width: 1px; border-color: Silver;margin-bottom:20px;line-height:30px;">
+                <thead>
+                    <tr style="background-color:#eee;">
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">By/To</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Ledger Name</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Description</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Debit Amount</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Credit Amount</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+
+                <tbody class="voucher2-container">
+
+                    @Html.EditorFor(x => x.Voucher2T)
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="noBorder"></td>
+                        <td class="noBorder"></td>
+                        <td class="noBorder" style="text-align:center">
+                            @*<label class="total">Narration</label>*@
+
+                        </td>
+                        <td style="text-align:right">
+
+                            <label id="debitamount"></label>
+                        </td>
+                        <td style="text-align:right">
+
+                            <label id="creditamount"></label>
+                        </td>
+                        <td colspan="10" style="text-align: right;">
+                            <button type="button" id="AddTableRow" class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-plus-sign"></span>Add
+                            </button>
+                        </td>
+                        <td class="voucher-ledger-details-container" style="display:none"></td>
+                    </tr>
+                    <tr class="total-tr" style="background-color:#eee;">
+                        <td colspan="3" style="text-align: center;font-family: sans-serif;font-size: 18px;">
+                            <b>Total</b>
+                        </td>
+                        <td class="debit-total-amount" style="text-align:right;padding-right:8px;font-weight:700">
+                            <b>0.00</b>
+                        </td>
+                        <td class="credit-total-amount" style="text-align:right;padding-right:8px;font-weight:700">
+                            <b>0.00</b>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="col-md-12">
+                @Html.LabelFor(x => x.Narration, new { @class = "control-label col-md-8" })
+                <div class="col-md-4">
+                    @Html.TextAreaFor(x => x.Narration, new { @class = "form-control" })
+                    @*@Html.TextArea("Narration", new { @class = "form-control",@id= "Narration" })*@
+                </div>
+
+            </div>
+
+        </div>
+        <div id="appendtr">
+
+        </div>
+        <div>
+            <button type="button" id="finalsave" class="btn btn-info btn-sm pull-right">
+                <span class="glyphicon glyphicon-floppy-save"></span> Save
+            </button>
+            @*<button type="button" id="denotest" class="btn btn-info btn-sm pull-right">
+                <span class="glyphicon glyphicon-floppy-save"></span> Deno
+            </button>*@
+        </div>
+
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="button" id="backbtn" class="btn btn-link" onclick="loadPrevContent()" style="display:none;" value="Back" />
+                <input type="button" id="nextbtn" class="btn btn-link" onclick="loadnextContent()" style="display:none;" value="Next" />
+                @*<input type="button" id="btnSubmit" value="Create" class="btn btn-default" />*@
+            </div>
+
+        </div><!-- box-footer -->
+
+
+    }
+
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        $(".dt").datepicker();
+    });
+    $(".main-voucher-table-container").find("ul").each(function () {
+        debugger;
+        var text = $('.main-voucher-table-container li').html();
+        $('.main-voucher-table-container ul').remove();
+        $('.main-voucher-table-container').append(text);
+    });
+</script>
+
+@*<script type="text/javascript">
+        $('.Voucher1-create').on('button#showTempLogs', 'click', function () {
+            debugger;
+            var url = $('#getVoucherLogs').data('url');
+
+            $.get(url, function (data) {
+                $('#getVoucherLogs').html(data);
+                $('#getVoucherLogs').modal('show');
+            });
+
+        });
+    </script>*@
+@*<script type="text/javascript">
+
+        var currentVoucherEvent;
+
+        var voucherType = $("select#VTypeId option:selected").val();
+        var container = $('.Voucher1-create').find('.batch-number');
+
+        var form = $(container).closest("form");
+
+        $.ajax({
+            url: '/Voucher1/GetBatch/',
+            data: { type: voucherType },
+            dataType: "html",
+            success: function (data) {
+                $(container).show();
+                $(container).html(data);
+                $(form).removeData("validator");
+                $(form).removeData("unobtrusiveValidation");
+
+            }
+        });
+
+        $('#AddTableRow').click(function () {
+            debugger;
+            var container = $('.Voucher1-create').find('.voucher2-container')
+            var form = $(container).closest("form");
+            $.ajax({
+                url: '/Voucher1/AddTableRow/',
+                dataType: "html",
+                success: function (data) {
+                    debugger;
+                    $(container).show();
+                    $(container).append(data);
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+                }
+            });
+
+        });
+
+
+
+        //VOUCHER2
+        $('tbody.voucher2-container').on('keydown ', 'input#ledgerSearch', function (event) {
+            debugger;
+            voucherEvent = $(this);
+            var currentEvent = $(this);
+            var text = $(this).val();
+            if (event.type == "keydown") {
+                var checkevent = event.keyCode;
+                if (checkevent == 9) {
+                    $.fn.LoadVoucher(currentEvent, text);
+
+                }
+            }
+            else {
+                $.fn.LoadVoucher(currentEvent, text);
+            }
+
+
+        });
+
+        $.fn.LoadVoucher = function (trapmyEvent, text) {
+            var currentEvent = trapmyEvent;
+
+            $.ajax({
+                type: "POST",
+                url: '/Voucher1/SearchVoucherList/',
+                dataType: "json",
+                data: { text: text }
+            })
+                    .done(function (ledgerName) {
+                        debugger;
+                        var count = ledgerName.length;
+                        if (count == 1) {
+                            var currentText = ledgerName[0].FName;
+                            var currentId = ledgerName[0].Fid;
+
+                            if (ledgerName[0].HasBankInfo == true || ledgerName[0].HasSubsiList == true || ledgerName[0].HasDimension) {
+                                var url = "/Voucher1/EnterLedgerDetails";
+                                var data = { "ledgerId": currentId };
+                                $.get(url, data, function (data) {
+
+                                    $('#getVoucherDetails').html(data);
+                                    debugger;
+
+                                    $('#getVoucherDetails').modal('show');
+                                });
+                            }
+
+                            else {
+                                currentEvent.val(currentText);
+                                currentEvent.closest('.voucher2-container').find('input#VLedger-Id').val(currentId);
+                            }
+                        }
+                        else {
+
+                            //$.each(ledgerName.data, function (key, value) {
+                            debugger;
+                            var url = "/Voucher1/AddSearchedVoucherDetails";
+                            var data = { "query": text };
+                            $.get(url, data, function (data) {
+
+                                $('#getVoucherDetails').html(data);
+                                debugger;
+
+                                $('#getVoucherDetails').modal('show');
+                            });
+
+                            // });
+                        }
+                    })
+                                .fail(function (xhr) {
+                                    alert(xhr.responseText);
+                                });
+
+        };
+
+        //$('div#create').on('click', 'button#finalsave', function () {
+        //    debugger;
+        //    var finalDebitAmount = 0;
+        //    var finalCreditAmount = 0;
+
+        //    var allAmounts = $(this).closest('form#mainVoucher').find('.main-voucher-table-container').find('tr.newrow');
+
+        //    $(allAmounts).each(function (index, item) {
+
+        //        var amountDebit = $(item).find('td.debit').val();
+        //        finalDebitAmount = finalDebitAmount + amountDebit;
+
+        //        var amountCredit = $(item).find('td.credit').val();
+        //        finalCreditAmount = finalCreditAmount + amountCredit;
+
+        //    });
+
+        //    if(finalDebitAmount!=finalCreditAmount)
+        //    {
+
+        //        return false;
+        //    }
+        //    return true;
+
+
+
+
+
+
+        //});
+
+        $('input.btn-search-subsi').change(function () {
+
+
+            var text = $(this).closest('.subsi-voucher-container').find('.display-txt-subsi').val();
+
+
+
+
+        });
+
+
+
+        $('select#VTypeId').change(function () {
+            debugger;
+            var voucherType = $(this).val();
+            var container = $(this).closest('.Voucher1-create').find('.batch-number');
+
+            var form = $(container).closest("form");
+            $.ajax({
+                url: '/Voucher1/GetBatch/',
+                data: { type: voucherType },
+                dataType: "html",
+                success: function (data) {
+                    $(container).show();
+                    $(container).html(data);
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+
+                }
+            });
+
+
+        });
+
+
+        $('.main-voucher-table-container').on('click','i#btnledgersearch',function () {
+
+            debugger;
+            voucherEvent = $(this);
+            var currentEvent = $(this);
+            var url = $('#getVoucherDetails').data('url');
+            var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+            var data = { "type": type };
+
+
+
+            $.get(url, data, function (data) {
+
+                $('#getVoucherDetails').html(data);
+                debugger;
+
+                $('#getVoucherDetails').modal('show');
+            });
+
+        });
+
+
+
+        $('button#recentLog').click(function () {
+
+            debugger;
+            var url = $('#getVoucherLogs').data('url');
+            //var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+            //var data = { "type": type };
+
+
+
+            $.get(url, function (data) {
+
+                $('#getVoucherLogs').html(data);
+                debugger;
+
+                $('#getVoucherLogs').modal('show');
+            });
+
+        });
+
+        $('div#create').on('click', 'button#finalsave', function () {
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger;
+
+                var finalDebitAmount = 0;
+                var finalCreditAmount = 0;
+
+                var allAmounts = $('.voucher2-container').find('tr.newrow');
+
+
+                $(allAmounts).each(function (index, item) {
+
+                    var amountDebit = parseFloat($(item).find('.debit').text()).toFixed(2)
+
+                    if (isNaN(amountDebit)) {
+                        amountDebit = 0;
+                    }
+                    else {
+                        finalDebitAmount = (parseFloat(finalDebitAmount) + parseFloat(amountDebit)).toFixed(2)
+                    }
+
+                    var amountCredit = parseFloat($(item).find('.credit').text()).toFixed(2)
+                    if (isNaN(amountCredit)) {
+                        amountCredit = 0;
+
+                    }
+                    else {
+                        finalCreditAmount = (parseFloat(finalCreditAmount) + parseFloat(amountCredit)).toFixed(2)
+                    }
+
+                });
+
+
+                if (finalDebitAmount != finalCreditAmount) {
+                    ErrorAlert("Please match the Debit and Credit Amounts in Voucher", 10000);
+                    return false;
+                }
+                else {
+                    var V1TId = $("#V1TId").val();
+                    $.ajax({
+                        url: '/TaskVerification/IsStrictlyVerified/',
+                        dataType: "JSON",
+                        success: function (isStrictlyVerified) {
+                            //if(isStrictlyVerified==true)
+                            //{
+                            taskVerifierList(10, true, V1TId)
+                            // }
+                            //else
+                            //{
+                            //    debugger;
+
+                            //    $.ajax({
+                            //        url: '/Voucher1/SaveTablePermanentNotStrictlyVerified/',
+                            //        data:{V1TId:V1TId,eventId:10},
+                            //        dataType: "html",
+                            //        success: function (data) {
+                            //            debugger;
+                            //        }
+                            //    });
+                            //    return true;
+                            //}
+                        }
+                    });
+
+
+                }
+
+
+        }).fail(function () {
+            //$.MessageBox("you clicked no");
+        });
+        });
+
+
+        $('tbody.voucher2-container').on('click', 'i#btnSave', function ()
+        {
+            debugger;
+            //var form = $("#createVoucherRow");
+            var saveMaster = 0;
+            var currentevent = $(this);
+            if ($('select#VTypeId').hasClass('makeDisable') == false) {
+                saveMaster = 1;
+            }
+            var masterId = $('input.voucher-master-Id').val();
+            if (masterId != 0 && masterId != null) {
+                $("#V1TId").val(masterId);
+            }
+            $('select#VTypeId').addClass('makeDisable');
+            $('select#CTId').addClass('makeDisable');
+            $('select#BatchNo').addClass('makeDisable');
+
+
+            //var container = $('.Voucher1-create').find('.voucher2-container')
+            var formData = new FormData($("#mainVoucher")[0]);
+
+            $.ajax({
+                url: '@Url.Action("SaveTableTemporary", "Voucher1")',
+                type: 'POST',
+                data: formData,
+                async: false,
+                success: function (data) {
+                    debugger;
+                    //var masterId = TempData["Voucher1Id"];
+                    //$("input#V1Id").val(masterId);
+                    $(currentevent).closest('tr.newrow').html(data);
+
+                    var finalDebitAmount = 0;
+                    var finalCreditAmount = 0;
+
+                    var allAmounts = $('tbody.voucher2-container').find('tr.newrow');
+
+                    $(allAmounts).each(function (index, item) {
+
+                        var amountDebit = parseFloat($(item).find('.debit').text()).toFixed(2)
+
+                        if (isNaN(amountDebit)) {
+                            amountDebit = 0;
+                        }
+                        else {
+
+                            finalDebitAmount = (parseFloat(finalDebitAmount) + parseFloat(amountDebit)).toFixed(2)
+                        }
+
+                        var amountCredit = parseFloat($(item).find('.credit').text()).toFixed(2)
+                        if (isNaN(amountCredit)) {
+                            amountCredit = 0;
+
+                        }
+                        else {
+                            finalCreditAmount = (parseFloat(finalCreditAmount) + parseFloat(amountCredit)).toFixed(2)
+                        }
+
+                    });
+                    if (isNaN(parseFloat(finalCreditAmount)) == false)
+                    {
+                        $('.main-voucher-table-container').find('td.credit-total-amount').html("<b>" + finalCreditAmount+"<b>");
+                    }
+                    if (isNaN(parseFloat(finalDebitAmount))==false)
+                    {
+                        $('.main-voucher-table-container').find('td.debit-total-amount').html("<b>" + finalDebitAmount + "</b>");
+                    }
+
+
+                },
+                error: function (data) {
+                    debugger;
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+
+
+            return false;
+
+
+        });
+
+    </script>*@
+<style>
+    .makeDisable {
+        pointer-events: none;
+        opacity: 0.699;
+    }
+</style>

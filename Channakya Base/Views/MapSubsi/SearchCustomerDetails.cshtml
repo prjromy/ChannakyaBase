@@ -1,0 +1,258 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.CustomerIndDetailViewModel>
+@{
+    var count = 0;
+}
+
+<div class="container ledger-list-model">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred" style="max-width:85%;display: flex;flex-flow: column;width: 100%;position:relative;">
+
+                    <thead style="flex:0 0 auto;width: calc(100% - 0.9em); display: table;table-layout: fixed;">
+                        <tr>
+                            <th>
+                                S.N
+                            </th>
+                            <th>
+                                Customer Name
+                            </th>
+                            <th>
+                                Occupation Name
+                            </th>
+                        </tr>
+
+                    </thead>
+                    <tbody style="flex: 1 1 auto;display: block;overflow-y: scroll;max-height: 50vh;position:relative;">
+                        @foreach (var item in Model)
+                        {
+                            <tr class="customer-details" id="@item.CID" cust-name="@item.Fname" style="cursor:pointer; width: 100%;display: table;table-layout: fixed;">
+                                @Html.HiddenFor(x => item.CID)
+                                <td>@(count += 1)</td>
+
+                                @*<td class="fname1" data-dismiss="modal">*@
+                                <td class="customer-name" style="cursor:pointer;">
+                                    @{
+                                        var display = item.Fname + " " + item.Mname + " " + item.Lname;
+
+                                    }
+                                    @display
+                                </td>
+                                <td>
+                                    @item.Occupation
+                                    @*@item.Occupation.OccName*@
+                                </td>
+
+                                @*<button class="btn btn-default ledgerload" , onclick="location.href='@Url.Action("GetLedger", "Helper", new { ledgername = item.Fname })';return true;">Select</button>*@
+
+
+
+                            </tr>
+                                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <div class="modal-footer" style="padding-left:6%">
+                    @*  *@
+                    @*<input type="submit" class="btn btn-success" value="Save" />
+                        <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>*@
+
+                    <ul class="pagination customerpagination" style="float:left;margin-right:15px;margin-left: -5%">
+                        <li class="previous"><a href="#">Previous</a></li>
+                        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                        {
+                            if (i > 4)
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+
+                                        if (i > ViewBag.ActivePager)
+                                        {
+                                            if (i - ViewBag.ActivePager <= 2)
+                                            {
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                            else
+                                            {
+                                                if (i == ViewBag.CountPager)
+                                                {
+                                                    if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                    {
+                                                        <li class=""><a>.......</a> </li>
+                                                    }
+                                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                }
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                        }
+                        <li class="next"><a href="#">Next</a></li>
+
+                    </ul>
+                    <div style="margin-top:20px;margin-left:10px" class="search-container">
+                        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                    </div>
+                </div>
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            var search = $('.Search').val();
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.customerpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.customerpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('#getcustomerDetails').find('.modal-body').find('.bodycontent-and-paging');
+                    //change
+                    $(container).load("/MapSubsi/SearchCustomerDetails", { query: search, page: finalId });
+                   // $(container).load("/MapSubsi/_SearchCustomerDetails", { page: finalId });
+
+                    $('#getcustomerDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.customerpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.customerpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.customerpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.customerpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.customerpagination').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('#getcustomerDetails').find('.modal-body').find('.bodycontent-and-paging');
+                    //change
+                    $(container).load("/MapSubsi/SearchCustomerDetails", { query: search, page: finalId });
+                   // $(container).load("/MapSubsi/_SearchCustomerDetails", { page: finalId });
+                    $('#getcustomerDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.customerpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.customerpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.customerpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var search = $('.Search').val();
+            var container = $(this).closest('#getcustomerDetails').find('.modal-body').find('.bodycontent-and-paging');
+            //change
+            $(container).load("/MapSubsi/SearchCustomerDetails", { query: search, page: pagingData });
+           // $(container).load("/MapSubsi/_SearchCustomerDetails", { page: pagingData });
+            $('#getcustomerDetails').modal('show');
+            var checkActive = $('ul.pagination.customerpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.customerpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.customerpagination').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+
+
+
+    $('tr.customer-details').click(function () {
+
+        var id = $(this).attr('id');
+        var custName = $(this).attr('cust-name');
+
+        $('.section-customer').find('input.display-txt').val(custName);
+        $('.section-customer').find('input.internal-value').val(id);
+
+        $('#getcustomerDetails').modal('hide');
+
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/MapSubsi/GenerateLedgerList/",
+        //    data: { custId: id },
+        //    dataType: "html",
+        //    success: function (data) {
+        //        $('.append-subsiledger-list').html(data);
+        //    }
+        //});
+
+
+
+    });
+    $('.search-container').on('blur', '.searchPager', function () {
+        debugger;
+        var query = $('.Search').val();
+        var finalId = $(this).val();
+        var container = $(this).closest('#getcustomerDetails').find('.modal-body').find('.bodycontent-and-paging');
+        if (isNaN(finalId) == false || finalId != 0) {
+            $.ajax({
+                url: "/MapSubsi/SearchCustomerDetails",
+                type: "POST",
+                data: { query: query, page: finalId },
+                success: function (data) {
+                    debugger;
+                    $(this).closest('#getcustomerDetails').find('.modal-body').find('.bodycontent-and-paging').html(data);
+                    $('.bodycontent-and-paging').focus();
+
+                }
+
+            });
+        }
+        var checkActive = $('ul.pagination.customerpagination').find('li').hasClass('active');
+        if (checkActive == true) {
+            $('ul.pagination.customerpagination').find('.active').removeClass('active');
+        }
+        $('ul.pagination.customerpagination').find('li#' + finalId).addClass('active');
+    });
+
+</script>
+
+

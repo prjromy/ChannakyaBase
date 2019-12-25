@@ -1,0 +1,117 @@
+﻿@model ChannakyaAccounting.Models.Models.VoucherCashLedgerModel
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service service = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    var divStyle = "col-md-4";
+
+}
+
+<td style="display:none;">
+    @Html.TextBoxFor(x => x.Fid, new { @style = "display:none", @id = "ledgerID-voucher", @Value = "3" })
+</td>
+<td style="display:none;">
+    @Html.HiddenFor(x => x.V2TId, new { @class = "rowId" })
+</td>
+@if (ViewBag.WithButtons == null)
+{
+    if (Model.VoucherTransType == 0)
+    {
+        <td style="text-align:left">
+            @Html.Label("By", new { @class = "control-label" })
+        </td>
+    }
+    else
+    {
+        <td style="text-align:left">
+            @Html.Label("To", new { @class = "control-label" })
+        </td>
+    }
+}
+<td style="text-align:left" class="ledger-search-container" id="append">
+
+    @Html.DisplayFor(x => x.LedgerName, new { @class = " form-control Particulars", @Value = "Cash" })
+
+</td>
+<td style="text-align:left;" class="ledger-search-container @divStyle" id="append-description">
+    <div class="particulars-desc">@Html.DisplayFor(x => x.Particulars, new { @class = " form-control Particulars", @id = "particularsSearch", @Value = "Cash" })</div>
+
+</td>
+<td style="text-align:right;" class="debit">
+    @Html.DisplayFor(x => x.DebitAmount, new { @class = "dbamnt form-control", @style = "width:100%" })
+</td>
+<td style="text-align:right;" class="credit">
+    @Html.DisplayFor(x => x.CreditAmount, new { @class = "crmamnt form-control", @style = "width:100%" })
+</td>
+<td style="text-align: center">
+    <i class='btn btn-info btn-sm glyphicon glyphicon-trash cash-delete' data-toggle="tooltip" title="Delete" id='cash-delete' />
+</td>
+<script type="text/javascript">
+    if (@Model.V2TId != 0)
+    {
+        $(document).ready(function() {
+            var mainTempId = @Model.V2TId;
+            $('input#V1TId').val(mainTempId);
+        });
+    }
+    @*$(document).ready(function () {
+        debugger
+        if (@Model.VoucherTransType == 1) {
+            $('.main-voucher-table-container table tfoot').find('.total-tr .credit-total-amount b').html(@Model.CreditAmount);
+        }
+        else {
+            $('.main-voucher-table-container table tfoot').find('.total-tr .debit-total-amount b').html(@Model.DebitAmount);
+        }
+    }*@
+
+    $("i#cash-delete").click(function () {
+        debugger;
+        var masterId = $('input.voucher-master-Id').val();
+        //if (masterId != 0 && masterId != null) {
+        //    $("#V1TId").val(masterId);
+        //}
+        var finalDebitAmount =  parseFloat( $('.main-voucher-table-container').find('td.debit-total-amount b').html());
+        var finalCreditAmount = parseFloat( $('.main-voucher-table-container').find('td.credit-total-amount b').html());
+
+        var allAmounts = $('tbody.voucher2-container').find('tr.newrow-cash');
+
+        $(allAmounts).each(function (index, item) {
+            debugger
+
+            var amountDebit = parseFloat($(item).find('.debit').text()).toFixed(2)
+
+            if (isNaN(amountDebit)) {
+                amountDebit = 0;
+            }
+            else {
+                finalDebitAmount = (parseFloat(finalDebitAmount) - parseFloat(amountDebit)).toFixed(2)
+            }
+
+            var amountCredit = parseFloat($(item).find('.credit').text()).toFixed(2)
+            if (isNaN(amountCredit)) {
+                amountCredit = 0;
+
+            }
+            else {
+                finalCreditAmount = (parseFloat(finalCreditAmount) - parseFloat(amountCredit)).toFixed(2)
+            }
+
+        });
+        if (isNaN(parseFloat(finalCreditAmount)) == false) {
+            $('.main-voucher-table-container').find('td.credit-total-amount').html("<b>" + finalCreditAmount + "<b>");
+        }
+        if (isNaN(parseFloat(finalDebitAmount)) == false) {
+            $('.main-voucher-table-container').find('td.debit-total-amount').html("<b>" + finalDebitAmount + "</b>");
+        }
+
+        $(this).closest('tr.newrow-cash').remove();
+    });
+</script>
+<style>
+    .normal {
+        font-weight: normal;
+    }
+</style>
+

@@ -1,0 +1,25 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.TempIntRate>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Template Name")
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Tname)
+        </td>
+        <td>
+            <button type="button" class="btn btn-info btn-sm btn-edit-TempIntRate" data-id="@item.TID" data-toggle="tooltip" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true" ></i></button>
+            <button type="button" class="btn btn-info btn-sm btn-sm btn-delete-TempIntRate" data-id="@item.TID" data-val="@item.Tname" data-toggle="tooltip" title="Delete"><i class="fa fa-trash" aria-hidden="true" ></i></button>       
+        </td>
+        
+    </tr>
+}
+
+</table>

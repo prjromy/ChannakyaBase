@@ -1,0 +1,46 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.TempIntRate
+
+@using (Ajax.BeginForm("_TempInterestRateCreate", "TransationSetup", new AjaxOptions
+{
+    UpdateTargetId = "TempIntRate-create",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createInterestRateSuccess"
+    //OnFailure = "errMessage"
+
+}, new { id = "TempInterestRateFormCreate" }))
+{ 
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <h4>Template Interest Rate</h4>
+        <hr />
+        @Html.HiddenFor(x => x.TID)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(x=>x.Tname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Tname, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control focusdiv" } })
+                @Html.ValidationMessageFor(model => model.Tname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @if (Model.TID == 0)
+        {
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Save" id="btn-saveIntRate-submit" class="btn btn-default btn-save " />
+            </div>
+        </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Save Changes" id="btn-saveIntRate-submit" class="btn btn-default btn-save " />
+                     <input type="button" value="Cancel" id="btn-cancel-saveIntRate" class="btn btn-default btn-cancel" />
+                </div>
+            </div>
+        }
+    </div>
+}
+ <script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

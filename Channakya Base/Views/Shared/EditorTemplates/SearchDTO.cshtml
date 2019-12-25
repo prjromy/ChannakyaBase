@@ -1,0 +1,127 @@
+﻿
+@model Loader.ViewModel.SearchDTO
+@{
+    var test = Model;
+    //Loader.ViewModel.SearchViewModel param = (Loader.ViewModel.SearchViewModel)ViewData["param"];
+
+    //var nodeTextClass = "search-text";
+}
+
+@Html.HiddenFor(x => x.Id)
+<span class="collapse search-icon search-expand"> </span>
+
+
+
+<a href="#"  id="empsearchPopover" class="list-group-item" empID="@Model.Id" empName="@Model.Text">
+
+        <span class="glyphicon"></span> @Model.Text
+        <span data-toggle="popover-@Model.Id" data-placement="top" class="badge">@Model.EmpNo</span>
+        @*<span class="glyphicon glyphicon-search"></span>*@
+    </a>
+<div id="popover-content-@Model.Id" class="hide">
+    @*<form >
+        <div class="form-group">*@
+            <h5 class="text-info">EmployeeNo:@Model.EmpNo</h5>
+            <h5 class="text-info">Employee Name:@Model.Text</h5>
+            @if (Model.Address != "")
+            {
+                <h5 class="text-info">Address:@Model.Address</h5>
+            }
+            
+            @if (Model.PhoneNumber != "")
+            {
+                <h5 class="text-info">Phone Number:@Model.PhoneNumber</h5>
+            }
+            
+            @if (Model.DeptId != "")
+            {
+                <h5 class="text-info">Department Name:@Model.DeptId</h5>
+            }
+            @if (Model.DGId != "")
+            {
+                <h5 class="text-info">Designation Name:@Model.DGId</h5>
+            }
+
+        @*</div>
+    </form>*@
+</div>
+
+
+
+
+
+<script>
+    @*$("[data-toggle=popover]").popover({
+        html: true,
+        content: function () {
+            return $('#popover-content-@Model.Id').html();
+        }
+    });*@
+
+    $('[data-toggle="popover-@Model.Id"]').popover({
+        html:true,
+        placement: 'bottom',
+        //title: 'Employee Details',
+        content: function () {
+        var content =$('#popover-content-@Model.Id').html();
+        return content;
+        },
+    trigger: 'hover'
+    });
+
+
+    $('.ch-search').on('click','a#empsearchPopover', function (e) {
+        debugger;
+        e.stopPropagation();
+        var id = $(this).attr('empId');
+        var Name = $(this).attr('empName');
+        var parent = $(selectedObject).closest(".section-search");
+
+        selectedObject = null;
+        $(parent).find('.display-txt').val(Name);
+        $(parent).find('.internal-value').val(id);
+        $('.popover-content').addClass('hide');
+        if ($dlg_dpicker != null) {
+            $dlg_dpicker.dialog("close");
+        }
+        $(parent).find('.display-txt').focus();
+
+    });
+    $('.ch-search').on('click', ".filter-btn", function (e) {
+        e.stopImmediatePropagation()
+        debugger;
+        var searchFor = $(".btn-search-popup").attr("searchFor");
+
+        var query = $(this).closest('.input-group').find("#text-filter-tree").val();
+        if (query != null) {
+            var wrapperClass = $(this).closest('.ch-search').find('.search-area');
+
+            var treeViewParam = {
+                Title: "Select Employee",
+                Filter: query,
+                searchFor: searchFor
+            }
+
+            $(wrapperClass).load("/Users/_GetEmployeeSearchTree", { param: treeViewParam, query: query })
+        }
+
+
+    });
+</script>
+<style type="text/css">
+    .list-group {
+        width: 200px;
+    }
+
+    .bs-example {
+        margin: 20px;
+    }
+
+    a.list-group-item:hover {
+        background-color: #337ab7;
+        text-shadow: 0 -1px 0 #286090;
+        background-repeat: repeat-x;
+        border-color: #2b669a;
+        color: white;
+    }
+</style>

@@ -1,0 +1,45 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CertificateDef
+
+@{
+    var myId = Model.CCCertID;
+}
+<div class="edit-section">
+
+    @using (Ajax.BeginForm("_Edit", "CertificateDef", FormMethod.Post
+                                            , new AjaxOptions
+                                            {
+                                                UpdateTargetId = "certificate-list",
+                                                InsertionMode = InsertionMode.Replace,
+                                                HttpMethod = "Post",
+                                                OnSuccess = "editSuccess"
+                                            }
+                                            , new { id = "editSubmitForm" }))
+
+    {
+
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <fieldset>
+                <legend> Edit Certificate </legend>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.CCCertID)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCCert, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-5">
+                        @Html.EditorFor(model => model.CCCert, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control focusdiv" } })
+                        @Html.HiddenFor(model => myId)
+                        @Html.ValidationMessageFor(model => model.CCCert, "", new { @class = "text-danger" })
+                        <br />
+                        <input type="button" value="Save" id="btn-edit-submit" class="btn btn-default btnedit" />
+                        <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    }
+</div>
+
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

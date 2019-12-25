@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.LoanAccountWiseSchedule>
+    @using ChannakyaBase.BLL
+    @{ 
+        var commonService = new CommonService();
+    }
+
+<div class="table table-responsive">
+    <table class="table">
+        <tr>
+            
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.Schdate)
+            </th>
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.InstallmentAmount)
+            </th>
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.Principal)
+            </th>
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.Interest)
+            </th>
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+            <th style="text-align:right">
+                @Html.DisplayNameFor(model => model.NepDate)
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                
+                <td style="text-align:right">
+                    @commonService.GetEnglishDate(Convert.ToDateTime(item.Schdate))
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.InstallmentAmount)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.Principal)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.Interest)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.Balance)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.NepDate)
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    </div>

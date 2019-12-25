@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.GuarantorReportModel>
+@{ 
+    decimal sumBlockedAmt = 0;
+    decimal sumLoanApproved = 0;
+    decimal sumLoanBalance = 0;
+    decimal sumAccBalance = 0;
+}
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>
+                LoaneeAccNo
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoaneeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GuarantorAccNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GuarantorName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BlockedAmt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanApproved)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanBalance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccBalance)
+            </th>
+            
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoanNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoaneeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GuarantorAccNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GuarantorName)
+                </td>
+                <td style="text-align:right!important">
+                    @item.BlockedAmt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @item.LoanApproved.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @item.LoanBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right!important">
+                    @item.AccBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+
+            </tr>
+            sumBlockedAmt += item.BlockedAmt;
+            sumLoanApproved += item.LoanApproved;
+            sumLoanBalance += item.LoanBalance;
+            sumAccBalance += item.AccBalance;
+        }
+        <tr>
+        <td colspan="4">Total</td>
+            <td style="text-align:right!important">
+                @sumBlockedAmt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+            </td>
+            <td style="text-align:right!important">
+                @sumLoanApproved.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+            </td>
+            <td style="text-align:right!important">
+                @sumLoanBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+            </td>
+            <td style="text-align:right!important">
+                @sumAccBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+            </td>
+        </tr></table>
+    </div>

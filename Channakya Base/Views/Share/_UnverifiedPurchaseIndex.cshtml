@@ -1,0 +1,87 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShrSPurchaseModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+@{
+    Layout = null;
+    int eventId = 25;
+}
+<div class="table-responsive unverified-share-list">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th>Name</th>
+
+                <th>Purchase Date</th>
+                <th>Share Quantity</th>
+
+                <th>Amount</th>
+                <th>Note</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.SharePurchaseList)
+            {
+
+
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Pdate</td>
+                    <td>@item.SQty </td>
+                    <td>
+                        @item.Amt
+                    </td>
+                    <td>@item.Note</td>
+                    <td><a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(eventId, Convert.ToInt64(item.Tno)))"><i class="fa fa-check" aria-hidden="true"></i>Verify</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_UnverifiedPurchaseIndex", "Share", Model.SharePurchaseList.PageCount, Model.SharePurchaseList.PageNumber, Model.SharePurchaseList.PageSize)
+</div>
+
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+<script>
+    $("div.unverified-share-list").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.unverified-share-list").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+       // var url = "?accountNumber=" + accountNumber;
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.unverified-share-list").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-share-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>
+
+

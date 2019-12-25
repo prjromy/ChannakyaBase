@@ -1,0 +1,57 @@
+﻿
+@model  List<Loader.Models.ApplicationUser>
+  @{  
+      var test = Model;
+      Loader.Service.UserVSBranchService uservsBranchService = new Loader.Service.UserVSBranchService();
+  }
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table id="myGUtable" class="table table-bordred table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                User Name
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Employee Name
+                            </th>
+                            <th>
+                                Current Branch
+                            </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr class="detailsList" id="@item.Id" user-name="@item.UserName">
+                                <td>
+                                    @item.UserName
+                                </td>
+                                <td>
+                                    @item.Email
+                                </td>
+                                <td>
+                                    @uservsBranchService.GetEmployeeName((int)item.EmployeeId)
+                                </td>
+                                <td>
+                                    @uservsBranchService.GetCurrentBranchString(item.Id)
+                                </td>
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,66 @@
+﻿@model ChannakyaBase.Model.ViewModel.ProductViewModel
+
+@{
+    ViewBag.Title = "ProductList";
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" id="productClose" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Product</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box-body">
+                <div class="row">
+
+                    <div class="form-group">
+
+                        <div class="col-md-12">
+                            <div class="form-grop_padding">
+                                <label class="control-label col-md-3">Product Name </label>
+                                <div class='input-group input-group pull-right'>
+                                    
+                                    @Html.TextBoxFor(x => x.ProductName, new { @class = "form-control" })
+
+                                    <div class='input-group-btn'>
+                                        <button type='button'  id='btn-product-search' class='btn btn-default'><i class='fa fa-search'></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="product-search">
+                @Html.Partial("_ProductList", Model)
+
+            </div>
+            <div class="btn-groups modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#btn-product-search").on("click", function () {
+        var productName = $("#ProductName").val();
+        $.ajax({
+            type: 'GET',
+            url: "/Teller/_ProductList",
+            data: { procuctName: productName },
+            success: function (result) {
+                $('#product-search').html(result);
+
+            },
+            error: function () {
+
+            }
+        });
+    })
+    $("#productClose").on("click", function () {
+        $("#common-pop-up-div").modal('toggle');
+    })
+</script>

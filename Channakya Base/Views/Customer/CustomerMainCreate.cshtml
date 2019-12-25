@@ -1,0 +1,514 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustInfo
+@using ChannakyaBase.BLL.Service
+@{
+
+    ViewBag.Title = "Customer Create";
+}
+
+<h2>Customer Information</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="customer-main">
+        <div class="form-horizontal">
+            <fieldset>
+                <legend>Customer Type</legend>
+
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        @Html.HiddenFor(x => x.CID)
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.CID, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.CID, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.CID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CtypeID, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.DropDownListFor(model => model.CtypeID, CustomerUtilityService.CustTypeList(), "Please Select...", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CtypeID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CDepSector, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.DropDownListFor(model => model.CDepSector, CustomerUtilityService.CustTypeSectorList(Model.CtypeID), "Choose Any", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CDepSector, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCCertID, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.DropDownListFor(model => model.CCCertID, CustomerUtilityService.CustTypeCertificateList(Model.CtypeID), "Choose Any", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CCCertID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CRegdate, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.CRegdate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                @Html.ValidationMessageFor(model => model.CRegdate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.IsIncomplete, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.IsIncomplete)
+                                        @Html.ValidationMessageFor(model => model.IsIncomplete, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                    <div class="col-md-6">
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.BrnhID2, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BrnhID2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.BrnhID2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DoB, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.DoB, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                @Html.ValidationMessageFor(model => model.DoB, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.Postedby, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Postedby, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Postedby, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.Appby, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.Appby, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Appby, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCCertno, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.CCCertno, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.CCCertno, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PANNo, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.PANNo, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.PANNo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.LId, "LId", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownList("LId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Street, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Street, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </fieldset>
+
+            <div class="custContact-create">
+                <fieldset>
+                    <legend>Contact Details</legend>
+                    <table class="table table-responsive table-hover cust-contact-table">
+                        <thead>
+                            <tr>
+
+                                <th>Contact Number Type</th>
+                                <th>Contact Number</th>
+                                <th>Is Default</th>
+                                <th>Action</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.CID == 0)
+                            {
+                                { Html.RenderAction("_CustContactCreate", "Customer"); }
+
+
+                            }
+                            else
+                            {
+                                foreach (var item in Model.CustContacts)
+                                {
+                                    int count = item.CustIRegContacts.Where(x => x.CCID == item.CCID).Count();
+                                    if (count > 0)
+                                    {
+                                        item.IsDefault = true;
+                                    }
+                                    item.CtypeId = Model.CtypeID;
+                                    @Html.Partial("_CustContactCreate", item)
+                                }
+
+                            }
+
+
+                            @*@Html.Partial("_CustContactCreate",Model.CustContacts)*@
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    <input type="button" class="btn btn-default pull-left add-cust-contact" id="add-cust-contact" value="Add" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </fieldset>
+            </div>
+            <div class="customer-create">
+                @if (Model.CtypeID != 0 && ViewBag.cType == 1)
+                {
+                    @Html.Partial("_CustomerIndividualCreate", Model.CustIndividual);
+                    // Html.RenderAction("GetCustypeByCTypeId", "Customer",new { ctypeId=Model.CtypeID });
+
+                }
+                else if (Model.CtypeID != 0 && ViewBag.cType == 0)
+                {
+                    @Html.Partial("_CustomerCompanyCreate", Model.CustCompany);
+                }
+            </div>
+            <div>
+                @if (Model.CID != 0)
+                {
+                    <table class="table table-responsive table-hover cust-certificate-table">
+                        <thead>
+                            <tr>
+
+                                <th>Certificate List</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.CustTypeCertificate)
+                            {
+                                item.CCCertID = item.CertificateDef.CCCertID;
+                                var isSubmitted = Model.CustCertificates.Where(x => x.CCCertID == item.CCCertID).FirstOrDefault();
+                                if (isSubmitted != null)
+                                {
+                                    item.isSubmitted = true;
+                                }
+                                @Html.Partial("_AttachedCertificate", item)
+
+                            }
+
+
+                        </tbody>
+                    </table>
+                }
+                <div class="cust-type-certificate"></div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script>
+    $(document).ready(function () {
+        var lastcontactType = 0;
+  
+
+    $("#CtypeID").change(function () {
+
+        var id = $("#CtypeID option:selected").val();
+
+        $.ajax({
+            url: "/Customer/GetCascadeCert",
+            data: { id: id },
+            success: function success(data) {
+                $("#CCCertID").html("----loading-----");
+                var items = " <option>Choose Any</option>";
+
+                $.each(data, function (i, state) {
+                    items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+
+                });
+                $('#CCCertID').html(items);
+            }
+
+        })
+
+    });
+    $("#CtypeID").change(function () {
+
+        var id = $("#CtypeID option:selected").val();
+
+        $.ajax({
+            url: "/Customer/GetCascadeSect",
+            data: { id: id },
+            success: function success(data) {
+                $("#CDepSector").html("----loading-----");
+                var items = " <option>Choose Any</option>";
+
+                $.each(data, function (i, state) {
+                    items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+
+                });
+                $('#CDepSector').html(items);
+            }
+
+        })
+
+    });
+    //$('.customer-main').on('change', '#CtypeID', function () {
+
+    $("#CtypeID").change(function () {
+        
+        var id = $("#CtypeID option:selected").val();
+        var isind = 0;
+        if (id == "") {
+            $('.customer-main').find(".customer-create").html("");
+        }
+        else {
+            $.ajax({
+                type: "GET",
+                url: "/Customer/GetCustypeByCTypeId",
+                data: { ctypeId: id },
+                success: function (data) {
+                    $(".customer-main").find(".customer-create").show();
+                    $('.customer-main').find(".customer-create").html("");
+                    $('.customer-main').find(".customer-create").html(data);
+
+                }
+            })
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Customer/_AttachedCertificate",
+            data: { cTypeId: id },
+            success: function (data) {
+                $(".customer-main").find(".cust-type-certificate").show();
+                $('.customer-main').find(".cust-type-certificate").html("");
+                $('.customer-main').find(".cust-type-certificate").html(data);
+
+            }
+        })
+    });
+
+
+    //$("#CtypeID").change(function () {
+
+    //    var id = $("#CtypeID option:selected").val();
+    //    var isind = 0;
+    //    if (id == "") {
+    //        $('.customer-main').find(".customer-create").html("");
+    //    }
+    //    else {
+    //        $.ajax({
+    //            type: "GET",
+    //            url: "/Customer/GetCustypeByCTypeId",
+    //            data: { ctypeId: id },
+    //            success: function (data) {
+
+    //                isind = data;
+    //                var urlvr = (isind == 1 ? "/Customer/_CustomerIndividualCreate" : "/Customer/_CustomerCompanyCreate")
+    //                $.ajax({
+    //                    type: "GET",
+    //                    url: urlvr,
+    //                    success: function (data) {
+    //                        $(".customer-main").find(".customer-create").show();
+    //                        $('.customer-main').find(".customer-create").html("");
+    //                        $('.customer-main').find(".customer-create").html(data);
+    //                    }
+    //                })
+    //            }
+    //        })
+    //    }
+    //})
+    //$('.customer-main').on('change', '#CtypeID', function () {
+    $("#CtypeID").change(function abc() {       
+        var id = $("#CtypeID option:selected").val();
+        $.ajax({
+            url: "/Customer/GetCascadeContactType",
+            data: { id: id },
+            success: function success(data) {
+                $(".cnoType").html("----loading-----");
+                var items = " <option>Choose Any</option>";
+                $.each(data, function (i, state) {                    
+                    items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+                });
+                $('.cnoType').html(items);
+            }
+        })
+    });
+
+    $('.add-cust-contact').on('click', function (e) {       
+        var id = $("#CtypeID option:selected").val();
+        var container = $('.customer-main').find('.custContact-create').find(".contact_details");
+        var container1 = $(this).closest('tr');
+        $.ajax({
+            type: 'get',
+            url: '/Customer/_CustContactCreate',
+
+            data: { id: id },
+            success: function (data) {
+                $(".cust-contact-table > tbody").append(data);
+                var trCount = $("tbody > tr").length;
+                if (trCount = 1) {
+                    $("tbody > tr").each(function (trCounttotal, obj) {
+                        $(obj).find(".delete-cust-contact").removeClass("hidden");
+                    });
+                }
+             
+            }
+        })
+    });
+
+
+    $('.custContact-create').on('click', '.delete-cust-contact', function (control) {
+      
+        var checked = $(this).closest("tr").find(".isChecked").prop("checked");
+        var sid = $(this).closest("tr").find(".cnoType").val();
+        if (checked) {
+            $(".cust-contact-table > tbody >tr").each(function (trCounttotal, obj) {
+
+                if ($(obj).find('.cnoType').val() == sid) {
+                    {
+                        $(obj).find(".isChecked").prop("disabled", false);
+                    }
+                }
+            });
+        }
+        var parent = $(this).closest("tr");
+        debugger;
+         $(this).closest("tr").find(".IsDeleted").val(true);
+        $(parent).hide();
+        var trCount = $(".cust-contact-table > tbody > tr").length;
+        if (trCount < 2) {
+            $('.cust-contact-table   > tbody >tr').find(".delete-cust-contact").addClass("hidden");
+        }
+    });
+    function custcontactdeleteshowhide(container) {
+        debugger;
+
+        var hiddencount = $(container).find('.delete-cust-contact-div').filter(":hidden").size();
+        var allcount = $(container).find('.delete-cust-contact-div').length;
+        if (allcount == 1) {
+            $(container).find('.delete-cust-contact-div').hide();
+        }
+        else if (allcount != hiddencount) {
+         
+            $(container).find('.delete-cust-contact-div').show();
+        }
+    }
+    function DeleteContact(control) {
+       
+        var parent = $(control).closest("tr");
+        $(parent).remove();
+        var trCount = $(".cust-contact-table > tbody > tr").length;
+        if (trCount < 2) {
+            $('.cust-contact-table   > tbody >tr').find(".delete-cust-contact").addClass("hidden");
+        }
+    }
+
+    $(function () {
+        $(".datepicker").datepicker();
+    });
+
+    $('.cust-contact-table').on('change', '.isChecked', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        var sid = $(this).closest("tr").find(".cnoType").val();
+        var me = $(this);
+
+        $(".cust-contact-table > tbody >tr").each(function (trCounttotal, obj) {
+
+            if ($(obj).find('.cnoType').val() == sid) {
+                {
+                    $(obj).find(".isChecked").prop("disabled", checked);
+                }
+            }
+        });
+        $(me).prop("disabled", false);      
+
+    })
+
+        // SIR WALA
+    $('.cust-contact-table').on('focus', '.cnoType', function (control) {
+        lastcontactType = $(this).closest("tr").find(".cnoType").val();
+    });
+
+    $('.cust-contact-table').on('change', '.cnoType', function (control) {
+        //var checked = $(this).closest("tr").prop("checked");
+        debugger;
+        var isChecked = false;
+        if (lastcontactType != 0) {
+            var checked = $(this).closest("tr").find(".isChecked").prop("checked");
+            if(checked==true)
+            {
+                $(this).closest("tr").find(".isChecked").prop("checked", false)
+                $(".cust-contact-table > tbody >tr").each(function (trCounttotal, obj) {
+
+                    if ($(obj).find('.cnoType').val() == lastcontactType) {
+                        $(this).closest("tr").find(".isChecked").prop("disabled", false);
+
+                        //if ($(obj).find(".isChecked").prop("checked")) {
+                        //    isChecked = true;
+                        //};
+                    }
+                });
+            }
+        }
+        var sid = $(this).closest("tr").find(".cnoType").val();
+       // var me = $(this);
+        $(".cust-contact-table > tbody >tr").each(function (trCounttotal, obj) {
+
+            if ($(obj).find('.cnoType').val() == sid) {
+                    if ($(obj).find(".isChecked").prop("checked")) {
+                        isChecked = true;
+                    };
+            }
+        });
+        $(this).closest("tr").find(".isChecked").prop("checked", false)
+        $(this).closest("tr").find(".isChecked").prop("disabled", isChecked)  
+        lastcontactType = sid;
+        // $(me).prop("disabled", isChecked);
+    })
+    });
+</script>
+
+

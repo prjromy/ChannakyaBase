@@ -1,0 +1,66 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    ViewBag.Title = "EmployeeList";
+}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            @if (Model.LoadType == EEmployeeOrShare.Employee.GetDescription())
+            {
+                <h4 class="modal-title">Employee</h4>
+            }
+            else
+            {
+                <h4 class="modal-title">Share Account </h4>
+            }
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+                <div class="row">
+                    @Html.HiddenFor(x => x.LoadType, new { @class = "register-user-show-type" })
+                    @Html.HiddenFor(x => x.SearchType, new { @class = "register-user-search-type" })
+                    @*@if (Model.LoadType == EEmployeeOrShare.Employee.GetDescription())
+                    {
+                        <div class="col-md-12">
+                            <div class="form-grop_padding" id="search-Employee-BranchId">
+                                Branch Name
+                                @Html.DropDownListFor(x => x.BranchId, TellerUtilityService.GetBranchList(), "--Select Branch--", new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                    }*@
+                    <div class="col-md-6">
+                        <div class="form-grop_padding">
+                            Search Option
+                            @Html.DropDownListFor(x => x.EmployeeOption, CustomerUtilityService.EmployeeSearchOption(), new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        Search
+                        <div class="form-grop_padding">
+
+                            <div class='input-group input-group pull-right'>
+
+                                @Html.TextBoxFor(x => x.SearchEmployee, new { @class = "form-control" })
+
+                                <div class='input-group-btn'>
+                                    <button type='button' id='btn-employee-search' class='btn btn-default'><i class='fa fa-search'></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="employeeDetails">
+                    @Html.Partial("_EmployeeDetails", Model)
+                </div>
+                <div class="btn-groups modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,219 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Interest Log Report </h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Option</label>
+                        <div class="form-grop_padding">
+
+                            <select id="option" class="form-control" name="option" data-val="true">
+                                <option value="1">All</option>
+                                <option value="2">Individual</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 accounNumberDiv">
+                        @Html.Label("Account No")
+                        @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Other.GetDescription())
+                    </div>
+                    <div class="col-md-6">
+                        <label>Branch Name</label>
+                        <div class="form-grop_padding">
+                            @*@Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchWithOutAllList(), new { @class = "form-control" })*@
+                            @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Convert.ToInt32(Model.branchId)), new { @class = "form-control" })
+                        </div>
+                    </div>
+                   
+                        <div class="col-md-2 AccountTypeDiv">
+                            <label>Account Type</label>
+                            <div class="form-grop_padding">
+
+                                <select id="AccountType" class="form-control" name="AccountType" data-val="true">
+                                    <option value="0">Deposit</option>
+                                    <option value="1">Loan</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 LoanInterestDiv">
+                            <label>Loan Interest</label>
+                            <div class="form-grop_padding">
+
+                                <select id="LoanInterest" class="form-control" name="LoanInterest" data-val="true">
+                                    <option value="0">Penalty</option>
+                                    <option value="1">Interest</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                From Date
+                            </label>
+                            <div class="form-grop_padding">
+
+                                @Html.DatePicker(x => x.FromDate)
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+                        <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-interestLog-export-to-excel" />
+
+                        <button type="button" name="btn-account-log-search" id="btn-account-log-search" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+
+                </div>
+        </fieldset>
+
+        <div class="box-header with-border with-accountLog-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $(document).ready(function () {
+       
+        hide()
+    })
+
+    function hide()
+    {
+        $('.account-aumber').prop("disabled", true);
+        $('#LoanInterest').prop("disabled", true);
+        $('#btn-account-openSearch').prop("disabled", true);
+       
+    }
+    $('#option').on('change', function () {
+       ;
+        var value = $(this).val();
+        if(value==1)
+        {
+            $('.account-aumber').prop("disabled", true);
+            $('#btn-account-openSearch').prop("disabled", true);
+           
+            $(".AccountTypeDiv").find('#AccountType').prop("disabled", false);
+            var accountType = $(".AccountTypeDiv").find('#AccountType').val();
+            if(accountType==1)
+            {
+                $('#LoanInterest').prop("disabled", false);
+            }
+        }else
+        {
+            $('.account-aumber').prop("disabled", false);
+            $('#btn-account-openSearch').prop("disabled", false);
+            $(".AccountTypeDiv").find('#AccountType').prop("disabled", true);
+            $('#LoanInterest').prop("disabled", true);
+        }
+    })
+    $('#AccountType').on('change', function () {
+        var value = $(this).val();
+        if (value == 0) {
+            $('#LoanInterest').prop("disabled", true);
+
+        } else {
+            $('#LoanInterest').prop("disabled", false);
+        }
+    })
+    $('#btn-account-log-search').on('click', function () {
+        debugger
+        var branchId = $('#branchId').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var option = $('#option').val()
+        var loanInterest = $('#LoanInterest').val()
+        var accountType = $(".AccountTypeDiv").find('#AccountType').val()
+        var accountNo = $('.account-id').val();
+        if (option == 2)
+        {
+            if(accountNo==0)
+            {
+                ErrorAlert("Please select Account Number", 5000);
+                document.getElementById('alert-error').scrollIntoView();
+                return;
+            }
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Report/_InterestLog",
+            datatype: "HTML",
+            data: {
+                branchId: branchId,
+                fromDate: fromDate,
+                toDate: toDate,
+                option:option,
+                loanInterest: loanInterest,
+                accountType: accountType,
+                iaccNo: accountNo
+            },
+            success: function (result) {
+                $('.with-accountLog-Report-View').html("");
+                $('.with-accountLog-Report-View').html(result);
+            }
+        })
+
+    });
+
+    $('.btn-interestLog-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var option = $("#option").val();
+        var iAccno = $(".account-id").val();
+        var branchId = $("#branchId").val();
+        var branchName = $('#branchId option:selected').text();
+        var AccountTypeId = $(".AccountTypeDiv").find('#AccountType').val()
+        var AccountTypeName = $('#AccountType option:selected').text();
+        var LoanInterestId = $("#LoanInterest").val();
+        var LoanInterestName = $('#LoanInterest option:selected').text();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/InterestLogExportToExcel?option="+option+ "&iAccno="+iAccno+ "&branchId="+ branchId +"&branchName=" + branchName +
+            "&AccountTypeId=" + AccountTypeId + "&AccountTypeName=" + AccountTypeName + "&LoanInterestId=" + LoanInterestId +
+            "&LoanInterestName=" + LoanInterestName + " &fromDate=" + fromDate + " &toDate=" + toDate)
+
+    })
+</script>
+
+
+
+

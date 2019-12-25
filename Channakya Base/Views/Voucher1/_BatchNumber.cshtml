@@ -1,0 +1,8 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1T
+@{ 
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service batch = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+
+    var batchList = batch.GetBatchNumber(Model.VTypeId);
+}
+
+@Html.DropDownListFor(x=>x.BatchNo,batchList,"Select Batch Type",new { @class="form-control"})

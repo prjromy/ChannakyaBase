@@ -1,0 +1,77 @@
+﻿@model ChannakyaBase.Model.ViewModel.ProductTransactionSummeryModel
+@using ChannakyaBase.BLL
+
+@{
+    decimal InflowCash = 0;
+    decimal outFlowCash = 0;
+    decimal InflowNonCash = 0;
+    decimal OutflowNonCash = 0;
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+
+                <th>
+                    Product Name
+                </th>
+
+                <th>
+                    Cash In Flow
+                </th>
+                <th>
+                    Non-Cash In Flow
+                </th>
+                <th>
+                    Cash Out Flow
+                </th>
+                <th> Non-Cash Out Flow</th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.ProductSummeryList)
+        {
+
+            <tr>
+
+                <td>
+                    @item.ProductName
+                </td>
+
+                <td style="text-align:right">
+                    @item.CashInFlow.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.NonCashInFlow.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">@item.CashOutFlow.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td style="text-align:right">@item.NonCashOutFlow.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            </tr>
+            InflowCash = InflowCash + item.CashInFlow;
+            outFlowCash = outFlowCash + item.CashOutFlow;
+            InflowNonCash = InflowNonCash + item.NonCashInFlow;
+            OutflowNonCash = OutflowNonCash + item.NonCashOutFlow;
+        }
+        <tr>
+            <th>Total</th>
+            <th style="text-align:right">@InflowCash.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@InflowNonCash.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@outFlowCash.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@OutflowNonCash.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+

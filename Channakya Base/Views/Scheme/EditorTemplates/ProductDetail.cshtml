@@ -1,0 +1,296 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+
+
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var schemeList = finaccService.GetSchmDetails();
+    var accountType = 1;//Deposit Account
+    var loanAccount = ViewData["AccountType"];
+    if (loanAccount != null)
+    {
+        accountType = 2; //Loan Account
+    }
+}
+
+
+@Html.HiddenFor(m => m.PID, new { @class = "form-control" })
+@Html.HiddenFor(x => x.FID)
+@Html.HiddenFor(x => x.SDID)
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Rate
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.OIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.OIRate, new { @class = "form-control" })
+                            </div>
+
+                            @Html.LabelFor(m => m.PPRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PPRate, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.PIRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.PIRate, new { @class = "form-control" })
+                            </div>
+
+                        </div>
+                        <div class="form-group col-md-12">
+
+                            @Html.LabelFor(m => m.IRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.IRate, new { @class = "form-control" })
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Select Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+
+
+
+                        @if (Model.SchemeofProduct.HasIndivRate == true)
+                        {
+
+                            @Html.LabelFor(m => m.HasIndivRate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasIndivRate.HasValue)
+                            </div>
+                            @if (accountType == 1)
+                            {
+                                @Html.LabelFor(m => m.HasOverdraw, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-3">
+                                    @Html.CheckBoxFor(m => m.HasOverdraw)
+                                </div>
+                            }
+                        }
+
+                        @if (Model.SchemeofProduct.HasCheque == true)
+                        {
+                            @Html.LabelFor(m => m.HasCheque, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasCheque)
+                            </div>
+                            @Html.LabelFor(m => m.HasCard, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasCard)
+                            </div>
+                        }
+
+                        @if (Model.SchemeofProduct.HasCertificate == true)
+                        {
+                            @Html.LabelFor(m => m.HasCertificate, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasCertificate)
+                            </div>
+                            @Html.LabelFor(m => m.HasIndivLimit, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasIndivLimit.HasValue)
+                            </div>
+                        }
+
+
+                        @if (Model.PID != 2)
+                        {
+                            @Html.LabelFor(m => m.enabled, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.enabled)
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.MultiDeposit == true)
+                        {
+                            if (Model.MultiDep == null)
+                            {
+                                Model.MultiDep = false;
+                            }
+                            @Html.LabelFor(m => m.MultiDep, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("MultiDep", Model.MultiDep.Value)
+                            </div>
+                        }
+
+
+                        @if (Model.SchemeofProduct.Withdrawal == true)
+                        {
+                            if (Model.Withdrawal == null)
+                            {
+                                Model.Withdrawal = false;
+                            }
+                            @Html.LabelFor(m => m.Withdrawal, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Withdrawal", Model.Withdrawal.Value)
+                            </div>
+                        }
+                        @*@if (Model.SchemeofProduct.i == true)
+                            {*@
+
+                        @*//}*@
+
+                        @if (Model.IntraBrnhTrnx == null)
+                        {
+                            Model.IntraBrnhTrnx = false;
+                        }
+                        @Html.LabelFor(m => m.IntraBrnhTrnx, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBox("IntraBrnhTrnx", Model.IntraBrnhTrnx.Value)
+                        </div>
+
+                        @if (Model.SchemeofProduct.Nomianable == true)
+                        {
+                            @Html.Label("Nominable", new { @class = "col-md-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.Nomianable)
+                            </div>
+                        }
+
+                        @if (Model.SchemeofProduct.IsInsured == true)
+                        {
+                            @Html.LabelFor(m => m.IsInsured, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.IsInsured)
+                            </div>
+                        }
+                        @if (accountType == 2)
+                        {
+                            if (Model.Schedule == null)
+                            {
+                                Model.Schedule = false;
+                            }
+                            @Html.LabelFor(m => m.Schedule, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Schedule", Model.Schedule.Value)
+                            </div>
+                        }
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Enter Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+
+                        @if (Model.SchemeofProduct.HasDormancy == true && accountType == 1)
+                        {
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(m => m.DormantPeriod, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-3">
+                                    @Html.TextBoxFor(m => m.DormantPeriod, new { @class = "form-control", @placeholder = "In Month" })
+
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.SchemeofProduct.HasDuration == true)
+                        {
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(m => m.Duration, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(m => m.Duration, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(m => m.NSId, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(m => m.NSId, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        }
+
+                        @if (accountType == 2)
+                        {
+                            <div class="form-group col-md-12">
+
+                                @Html.LabelFor(m => m.PGRACE, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-3">
+                                    @Html.TextBoxFor(m => m.PGRACE, new { @class = "form-control", @placeholder = "In Days" })
+                                </div>
+
+
+
+                                @Html.LabelFor(m => m.ODuration, new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-sm-3">
+                                    @Html.TextBoxFor(m => m.ODuration, new { @class = "form-control" })
+                                </div>
+
+
+                            </div>
+                        }
+
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.Apfix, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.Apfix, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.LAmt, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.TextBoxFor(m => m.LAmt, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+

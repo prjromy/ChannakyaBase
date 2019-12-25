@@ -1,0 +1,45 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.PolicyIntCalc>
+<fieldset>
+    <legend>Interest Policy List</legend>
+    <table class="table table-responsive table-hover interest-policy-list-table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayName("Interest Policy")
+                </th>
+                <th>
+                    @Html.DisplayName("Interest On Balance")
+                </th>
+                <th>
+                    @Html.DisplayName("Interest In")
+                </th>
+                <th>
+                    @Html.DisplayName("Interest Rate")
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PSName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RuleBalance.BalRule)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RuleDuration.DurRule)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RuleRate.RateRule)
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-sm btn-edit-policy-interest glyphicon glyphicon-edit" data-id="@item.PSID" data-toggle="tooltip" title="Edit"></button>
+                        <button type="button" class="btn btn-info btn-sm btn-sm btn-delete-policy-interest glyphicon glyphicon-trash danger" data-id="@item.PSID" data-val="@item.PSName" data-toggle="tooltip" title="Delete"></button>
+                    </td>
+                </tr>
+            }
+
+</table>
+    </fieldset>

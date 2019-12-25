@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="06b884d8c83e4e828c86a4a5e60294ba" Name="Diagram1" ZoomLevel="37">
+        <EntityTypeShape EntityType="ChannakyaBaseModel.PmEditLog" Width="1.5" PointX="25.375" PointY="4.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CertificateDef" Width="1.5" PointX="13.5" PointY="99" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ContactDef" Width="1.5" PointX="16.5" PointY="32" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustAddress" Width="1.5" PointX="18.75" PointY="36.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustCertificate" Width="1.5" PointX="18.75" PointY="52.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustCompany" Width="1.5" PointX="3.75" PointY="22.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustCompGroup" Width="1.5" PointX="1.5" PointY="23.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustContact" Width="1.5" PointX="18.75" PointY="32.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustContactPerson" Width="1.5" PointX="18.75" PointY="49.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustIndividual" Width="1.5" PointX="21.75" PointY="36.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustInfo" Width="1.5" PointX="16.5" PointY="35" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustIRegContact" Width="1.5" PointX="21" PointY="32.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustType" Width="1.5" PointX="14.25" PointY="35.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustTypeCertificate" Width="1.5" PointX="16.5" PointY="67" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustTypeContact" Width="1.5" PointX="21.75" PointY="30" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CustTypeSector" Width="1.5" PointX="22.5" PointY="41" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.OccupationDef" Width="1.5" PointX="19.5" PointY="41.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RemittanceCustomer" Width="1.5" PointX="6" PointY="23" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADrlimitLog" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.LicenseRegion" Width="1.5" PointX="0.75" PointY="17.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AAdjustmnt" Width="1.5" PointX="10.75" PointY="16.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ABal" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AccountStatu" Width="1.5" PointX="8.25" PointY="81.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AChq" Width="1.5" PointX="12.75" PointY="45.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AchqH" Width="1.5" PointX="15" PointY="45.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AchqHH" Width="1.5" PointX="17.25" PointY="45.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Aclosed" Width="1.5" PointX="4.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADetail" Width="1.5" PointX="10.5" PointY="86.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADrLimit" Width="1.5" PointX="12.75" PointY="83.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADSch" Width="1.5" PointX="12.75" PointY="55.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADSchLog" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ADur" Width="1.5" PointX="12.75" PointY="127.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AICBDur" Width="1.5" PointX="12.75" PointY="119" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AintCap" Width="1.5" PointX="19.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AintPayable" Width="1.5" PointX="12.75" PointY="145.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALColl" Width="1.5" PointX="15.75" PointY="84.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALCollLand" Width="1.5" PointX="18" PointY="81.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALCollVehicle" Width="1.5" PointX="18" PointY="94" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALFixedDeposit" Width="1.5" PointX="18" PointY="98.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALoanGrace" Width="1.5" PointX="12.75" PointY="136.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALRegCust" Width="1.5" PointX="15" PointY="81" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALRegistration" Width="1.5" PointX="12.75" PointY="85.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALSch" Width="1.5" PointX="12.75" PointY="58.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALSchHistry" Width="1.5" PointX="19.75" PointY="5.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMClearance" Width="1.5" PointX="19.75" PointY="9.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMinBal" Width="1.5" PointX="12.75" PointY="134.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMTransLoan" Width="1.5" PointX="5.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ANomAcc" Width="1.5" PointX="12.75" PointY="111.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ANominee" Width="1.5" PointX="15.75" PointY="90.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AOfCust" Width="1.5" PointX="18.75" PointY="90.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AOPolInt" Width="1.5" PointX="12.75" PointY="67.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.APBookChked" Width="1.5" PointX="7.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.APolicyInterest" Width="1.5" PointX="12.75" PointY="143.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.APolPen" Width="1.5" PointX="12.75" PointY="179.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.APRate" Width="1.5" PointX="12.75" PointY="62.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ARate" Width="1.5" PointX="15.75" PointY="94.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ARateMaster" Width="1.5" PointX="13.5" PointY="102" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ASClearance" Width="1.5" PointX="19.75" PointY="15.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ASTransLoan" Width="1.5" PointX="16.75" PointY="19.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ASTransLoanDesc" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ATempFloatIntRate" Width="1.5" PointX="12.75" PointY="177.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AWtdQueue" Width="1.5" PointX="12.75" PointY="78.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CashFlow" Width="1.5" PointX="10.75" PointY="20.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CashLimit" Width="1.5" PointX="18.75" PointY="76.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChequeBookStatu" Width="1.5" PointX="0.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChqAttribute" Width="1.5" PointX="12.75" PointY="20.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChqInventory" Width="1.5" PointX="18.75" PointY="20.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChqSize" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CollMainTemp" Width="1.5" PointX="14.75" PointY="11" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CollSheet" Width="1.5" PointX="14.75" PointY="16" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CollSheetTran" Width="1.5" PointX="17" PointY="16.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CollTemp" Width="1.5" PointX="17" PointY="11.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.CurrencyType" Width="1.5" PointX="8.25" PointY="100" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DenoBal" Width="1.5" PointX="17" PointY="7.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Denosetup" Width="1.5" PointX="14.75" PointY="4.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DepositBasi" Width="1.5" PointX="2.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisburseCash" Width="1.5" PointX="15" PointY="153.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisburseCharge" Width="1.5" PointX="15" PointY="162.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisburseCheque" Width="1.5" PointX="15" PointY="159.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisburseDeposit" Width="1.5" PointX="15" PointY="122.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisburseVsPID" Width="1.5" PointX="15" PointY="156.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Duration" Width="1.5" PointX="20.75" PointY="20.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.EmployeeVsBranch" Width="1.5" PointX="21.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Flag" Width="1.5" PointX="21.75" PointY="4.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ForeignSBuySell" Width="1.5" PointX="21.75" PointY="7.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FrxCurrency" Width="1.5" PointX="21.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.HADRenew" Width="1.5" PointX="21.75" PointY="15.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.HALRenew" Width="1.5" PointX="14.75" PointY="22.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.IchkBounce" Width="1.5" PointX="12.75" PointY="49.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.IChkDep" Width="1.5" PointX="18.75" PointY="85.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.InterestLog" Width="1.5" PointX="22.75" PointY="19.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.LicenseBranch" Width="1.5" PointX="3" PointY="15" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.MessInfo" Width="1.5" PointX="23.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.MobileBanking" Width="1.5" PointX="23.75" PointY="4.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.MyBalance" Width="1.5" PointX="23.75" PointY="8.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.NCollateralDetail" Width="1.5" PointX="13.5" PointY="74.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.PolicyIntCalc" Width="1.5" PointX="5.25" PointY="77.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.PolicyPenCalc" Width="1.5" PointX="11.25" PointY="103.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductBrnch" Width="1.5" PointX="7.5" PointY="212" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductDetail" Width="1.5" PointX="5.25" PointY="86.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductDurationInt" Width="1.5" PointX="7.5" PointY="208.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductICBDur" Width="1.5" PointX="7.5" PointY="90.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductPay" Width="1.5" PointX="7.5" PointY="96.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductPCID" Width="1.5" PointX="13.5" PointY="90.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductPSID" Width="1.5" PointX="7.5" PointY="93.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductTID" Width="1.5" PointX="7.5" PointY="84.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ReferenceInfo" Width="1.5" PointX="12.75" PointY="108.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RemitDeposit" Width="1.5" PointX="8.25" PointY="15.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RemitPayment" Width="1.5" PointX="5.25" PointY="15.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleBalance" Width="1.5" PointX="3" PointY="80.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleDuration" Width="1.5" PointX="3" PointY="75.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleICB" Width="1.5" PointX="0.75" PointY="91.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleICBDuration" Width="1.5" PointX="5.25" PointY="98.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleMovement" Width="1.5" PointX="0.75" PointY="88.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RulePay" Width="1.5" PointX="5.25" PointY="101.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RulePaySch" Width="1.5" PointX="23.75" PointY="11.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RulePenBalance" Width="1.5" PointX="9" PointY="104.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleRate" Width="1.5" PointX="3" PointY="78.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.RuleRenew" Width="1.5" PointX="3" PointY="86.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SchmDetail" Width="1.5" PointX="3" PointY="89" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SCrtDtl" Width="1.5" PointX="9.75" PointY="1.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SectorDef" Width="1.5" PointX="14.25" PointY="38.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrReg" Width="1.5" PointX="9.75" PointY="5.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrSPurchase" Width="1.5" PointX="12" PointY="8.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrSReturn" Width="1.5" PointX="23.75" PointY="14.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Snominee" Width="1.5" PointX="12" PointY="12.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.StatusChangeLog" Width="1.5" PointX="16.75" PointY="24.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SWRestrictionA" Width="1.5" PointX="18.75" PointY="24.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TaxsetupDef" Width="1.5" PointX="12" PointY="35.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TempALSch" Width="1.5" PointX="12.75" PointY="52.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TempIntRate" Width="1.5" PointX="5.25" PointY="84.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TempIntRateVal" Width="1.5" PointX="7.5" PointY="79" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Company" Width="1.5" PointX="16.5" PointY="75.875" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Employee" Width="1.5" PointX="24.75" PointY="19.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FiscalYear" Width="1.5" PointX="20.75" PointY="24.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.UserRole" Width="1.5" PointX="0.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.UserVSBranch" Width="1.5" PointX="25.75" PointY="6.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Location" Width="1.5" PointX="16.5" PointY="28.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.LocationMaster" Width="1.5" PointX="18.75" PointY="29" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.LocationTypeDef" Width="1.5" PointX="16.5" PointY="41.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Event" Width="1.5" PointX="3" PointY="8.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Module" Width="1.5" PointX="0.75" PointY="4.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SheetNo" Width="1.5" PointX="8.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Task" Width="1.5" PointX="5.25" PointY="8.5" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TaskDetail" Width="1.5" PointX="7.5" PointY="8.625" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMTrn" Width="1.5" PointX="25.75" PointY="10.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ASTrn" Width="1.5" PointX="10.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChgMTrnx" Width="1.5" PointX="22.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChgSTrnx" Width="1.5" PointX="24.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DenoTrxn" Width="1.5" PointX="17" PointY="55.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DenoTrxnLog" Width="1.5" PointX="17" PointY="1.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FrxCurrencyRate" Width="1.5" PointX="25.75" PointY="15.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TmEditLog" Width="1.5" PointX="2.75" PointY="26.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TType" Width="1.5" PointX="4.75" PointY="26.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AIntExpens" Width="1.5" PointX="12.75" PointY="42.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALoanTra" Width="1.5" PointX="26.75" PointY="18.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMClearanceH" Width="1.5" PointX="12.75" PointY="121.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AMClearanceHR" Width="1.5" PointX="26.75" PointY="24.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AODIntReceivable" Width="1.5" PointX="27.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AODSetUp" Width="1.5" PointX="27.75" PointY="4.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ForeignBuySell" Width="1.5" PointX="27.75" PointY="7.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.IntLog" Width="1.5" PointX="12.75" PointY="140" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductCurrency" Width="1.5" PointX="7.5" PointY="206" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductOPSID" Width="1.5" PointX="7.5" PointY="88" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrPurchase" Width="1.5" PointX="12" PointY="3.25" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrReturn" Width="1.5" PointX="27.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChequeBookStatus1" Width="1.5" PointX="12.75" PointY="28.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShrSetup" Width="1.5" PointX="28.75" PointY="17.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.taskDetails1" Width="1.5" PointX="28.75" PointY="20.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.uttno" Width="1.5" PointX="28.75" PointY="23.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TranLnk" Width="1.5" PointX="28.75" PointY="25.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.TransactionEditStatusLog" Width="1.5" PointX="28.75" PointY="28.75" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ANominee_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustInfo_CertificateDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeCertificate_CertificateDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustContact_ContactDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeContact_ContactDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustAddress_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustAddress_Location" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustAddress_LocationTypeDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustCertificate_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustCompany_CustCompGroup" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustCompany_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemittanceCustomers_CustCompany" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustContact_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustIRegContact_CustContact1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustContactPerson_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustIndividual_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustIndividual_OccupationDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AOfCust_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustInfo_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustInfo_CustType" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustInfo_SectorDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustIRegContact_CustInfo" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustType_TaxsetupDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeCertificate_CustType" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeContact_CustType" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeSector_CustType" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CustTypeSector_SectorDef" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemitDeposit_RemittanceCustomer" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemitPayment_RemittanceCustomer" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_LicenseBranch_LicenseRegion" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ADetail_AccountStatus" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AChq_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AchqH_AChq" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AchqHH_AchqH" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountCreInfo_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountDur_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountMinBal_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountOPolInt_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountPolPen_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountPRate_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AccountSch_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ADetail_CurrencyType" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ADetail_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ADrLimit_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ADSch_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AICBDur_ADetail1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AIntExpenses_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AintPayable_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALColl_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALoanGrace_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALRegistration_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AMClearanceH_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ANomAcc_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ANominee_ANominee" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AOfCust_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ARate_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ATempIntRate_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AWtdQueue_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisburseDeposit_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_IchkBounce_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_IChkDep_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_IChkDep_ADetail1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_IntLog_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ReferenceInfo_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_TempALSch_AccountDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALColl_NCollateralDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALCollLand_ALColl" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALCollVehicle_ALColl" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALFixedDeposit_ALColl" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALRegCusts_ALRegistration1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALRegistration_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ARate_ARateMaster" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CashLimitS_CashLimitS" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CashLimitS_Company" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CollTemp_CollMainTemp" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_CollSheetTrans_CollSheet" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DenoBal_Denosetup" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DenoTrxn_Denosetup" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DenoTrxnCopy_Denosetup" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_IChkDep_Company" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemitDeposit_LicenseBranch" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemitPayment_LicenseBranch" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyIntCalc_RuleBalance" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyIntCalc_RuleDuration" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyIntCalc_RuleRate" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductOPSID_PolicyIntCalc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPSID_PolicyIntCalc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyPenCalc_RuleDuration" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyPenCalc_RulePenBalance" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_PolicyPenCalc_RuleRate" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPCID_PolicyPenCalc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_BrnchProducts_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductCurrency_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDetail_RuleRenew" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDetail_SchmDetails" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDurationInt_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductICBDur_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductOPSID_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPay_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPCID_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPSID_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductTID_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductICBDur_RuleICBDuration" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductPay_RulePay" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductTID_TempIntRate" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_SchmDetails_RuleICB" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_SchmDetails_RuleMovement" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ShrPurchase_SCrtDtls" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ShrPurchase_ShrReg" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ShrSPurchase_ShrReg" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_Snominee_ShrReg" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_tempIntRateVal_tempIntRate" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_LocationMaster_Location" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_Events_Modules" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_Task_Events" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_TaskDetails_Task" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FinAcc" Width="1.5" PointX="0.75" PointY="58.375" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FinSys1" Width="1.5" PointX="0.75" PointY="51.125" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.FinSys2" Width="1.5" PointX="0.75" PointY="54.75" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_FinAcc_FinSys2" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDetail_FinAcc1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_RemittanceCustomers_FinAcc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_SchmDetails_FinAcc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_FinSys2_FinSys1" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_FrxCurrencyRate_CurrencyType" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.DisbursementMain" Width="1.5" PointX="12.75" PointY="153.875" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisbursementMain_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisCash_DisbursementMain" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisburseCharge_DisbursementMain" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisburseCheque_DisbursementMain" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisburseDeposit_DisbursementMain" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_DisburseVsPID_DisbursementMain" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChqRqst" Width="1.5" PointX="12.75" PointY="70.875" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ChqRqst_ADetail" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALinkloan" Width="1.5" PointX="12.75" PointY="114.875" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALinkloan_ADetail" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ChargeDetail" Width="1.5" PointX="5.25" PointY="3.625" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ChargeDetail_FinAcc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ChargeDetail_Modules" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ShareReferenceInfo" Width="1.5" PointX="12" PointY="31.125" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ShareReferenceInfo_ShareRegistration" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.AchqFGdPymt" Width="1.5" PointX="21.75" PointY="84" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AchqFGdPymt_ADetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_AchqFGdPymt_Company" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Guarantor" Width="1.5" PointX="12.75" PointY="94.375" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_Guarantor_ADetail" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ALoan" Width="1.5" PointX="12.75" PointY="159.375" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ALoan_ADetail" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.Role" Width="1.5" PointX="7.375" PointY="28.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ParamValue" Width="1.5" PointX="30.375" PointY="0.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.User" Width="1.5" PointX="30.375" PointY="3.75" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

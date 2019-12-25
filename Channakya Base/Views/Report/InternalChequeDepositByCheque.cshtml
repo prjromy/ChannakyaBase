@@ -1,0 +1,140 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        @if (ViewBag.internalChq == "Internal")
+        {
+            <h3 class="box-title">Internal Cheque Deposit Report</h3>
+        }
+        else
+        {
+            <h3 class="box-title">Cheque Good For Payment Report</h3>
+        }
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <label>Branch Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Model.branchId), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>
+                            From Date
+                        </label>
+                        <div class="form-grop_padding">
+
+                            @Html.DatePicker(x => x.FromDate)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            To Date
+                        </label>
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.ToDate)
+                        </div>
+                    </div>
+                    @if (ViewBag.internalChq == "GoodFor")
+                    {
+                        <div class="col-md-3">
+                            <label>Status</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.VerifyStatus, ReportUtilityService.VerifyStatusGoodForPayment(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-3">
+                            <label>Status</label>
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(x => x.VerifyStatus, ReportUtilityService.VerifyStatus(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-internalCheque-chequeGoods-export-to-excel" />
+                    <button type="button" name="btn-account-holder-search" id="btn-report-product-summary-related" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+
+
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border with-ProductSummaryDetails-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $('#btn-report-product-summary-related').on('click', function () {
+        var branchId = $('#branchId').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var status = $("#VerifyStatus").val();
+        var Url = "";
+        if ('@ViewBag.internalChq' != 'Internal') {
+            Url = "/Report/_ChequeGoodForPaymentReport";
+        } else {
+            Url = "/Report/_InternalChequeDepositByCheque";
+        }
+        $.ajax({
+            type: "GET",
+            url: Url,
+            datatype: "HTML",
+            data: {
+
+                fromDate: fromDate,
+                toDate: toDate,
+                branchId: branchId,
+                status: status
+            },
+            success: function (result) {
+                $('.with-ProductSummaryDetails-Report-View').html("");
+                $('.with-ProductSummaryDetails-Report-View').html(result);
+            }
+        })
+
+    });
+    $('.btn-internalCheque-chequeGoods-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var branchId = $('#branchId').val();
+        var branchName = $('#branchId option:selected').text();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var status = $("#VerifyStatus").val();
+        if ('@ViewBag.internalChq' == 'Internal') {
+            window.open("/Report/InternalChequeDepositExportToExcel?branchid=" + branchId + "&branchName=" + branchName + "&status=" + status + " &FromDate=" + fromDate + " &ToDate=" + toDate)
+        } else {
+            window.open("/Report/ChequeGoodForPaymentExportToExcel?branchid=" + branchId + "&branchName=" + branchName + "&status=" + status + " &FromDate=" + fromDate + " &ToDate=" + toDate)
+        }
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+
+    })
+</script>

@@ -1,0 +1,536 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChargeTransactionViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+
+@{
+    CommonService cmService = new CommonService();
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    bool withDetails = true;//withDetails is used whether to display the details or not while accountnumber search, refer in AccountNumberSearch.js
+}
+@using (Html.BeginForm("ManualChargeCreate", "Teller", FormMethod.Post, new { id = "ManualChargeCreate-form" }))
+{
+
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div>
+                        Non-Account Related Cash: @Html.RadioButtonFor(x => x.ChargeRelatedType, "0", new { @class = "ChargeRelatedType", @checked = "checked" })
+                        Account Related Cash: @Html.RadioButtonFor(x => x.ChargeRelatedType, "1", new { @class = "ChargeRelatedType" })
+                    </div>
+                    <hr />
+                    <div class="form-horizontal" id="mydiv">
+
+                        <fieldset class="disable-inputs col-md-6">
+                            <legend>Charge details</legend>
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Modules, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-9">
+                                    @Html.DropDownListFor(model => model.Modules, FinanceParameterUtilityService.Modules(), "-Select Any-", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Modules, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="account-related-charge">
+
+                                <div class="account-number-div deposit-accounts hide">
+                                    <div class="form-group">
+                                        @Html.Label("Account", new { @class = "control-label  col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.AccountNumberSearch(x => x.Iaccno, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription(), "", withDetails)
+                                        </div>
+                                    </div>
+                                    <div id='account-details-show-div' class="account-details-div" style="max-height: 350px; overflow: auto;"></div>
+                                    <div class="form-group">
+                                        @Html.Label("Account Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.EditorFor(x => x.AccountName, new { htmlAttributes = new { @class = "form-control depositName" } })
+                                            @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="account-number-div loan-accounts hide">
+                                    <div class="form-group">
+                                        @Html.Label("Account", new { @class = "control-label  col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.AccountNumberSearch(x => x.LIaccno, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription(), "", withDetails)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.AccountName, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.EditorFor(x => x.AccountName, new { htmlAttributes = new { @class = "form-control loanName" } })
+                                            @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="account-number-div share-customers hide">
+
+
+                                    <div class="form-group">
+
+                                        @Html.LabelFor(model => model.AccountName, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.EmployeeSearch(x => x.SIaccno, "", EEmployeeChange.PurchaseShare.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                            @Html.ValidationMessageFor(model => model.SIaccno, "", new { @class = "text-danger" })
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+
+
+                                @*<div class="form-group">
+
+                                        @Html.LabelFor(model => model.Aname, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextAreaFor(x => x.Aname, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>*@
+
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Slip-No", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-3">
+                                        @Html.EditorFor(model => model.slpno, new { htmlAttributes = new { @class = "form-control Ratio" } })
+                                        @Html.ValidationMessageFor(model => model.slpno, "", new { @class = "text-danger" })
+                                    </div>
+
+                                <div class="col-md-6 Cash-Related hidden pull-right">
+                                    Cash: @Html.RadioButtonFor(x => x.CashRelated, "0", new { @class = "CashRelated", @checked = "checked" })
+                                    Non-Cash: @Html.RadioButtonFor(x => x.CashRelated, "1", new { @class = "CashRelated" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.Label("Charge", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.ChgID, FinanceParameterUtilityService.chargesByModules(Model.Modules), "-Select-", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ChgID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Ratio, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.Ratio, new { htmlAttributes = new { @class = "form-control Ratio" } })
+                                    @Html.ValidationMessageFor(model => model.Ratio, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.Label("Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.CAmount, new { htmlAttributes = new { @class = "form-control CAmount", @style = "text-align: right;" } })
+                                    @Html.ValidationMessageFor(model => model.CAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+
+                                @Html.Label("Total", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.Amt, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "text-align: right;" } })
+                                    @Html.ValidationMessageFor(model => model.Amt, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.TextAreaFor(x => x.Remarks, new { @class = "form-control", @placeholder = "Remarks" })
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </fieldset>
+
+                        @if (IsTransactionWithDeno)
+                        {
+                            <div class="form-group deno-div">
+                                <div class="col-md-6 transaction-with-deno">
+                                    @{Html.RenderAction("DenoTransaction", "Teller", new
+                                        {
+                                            currencyId = new CommonService().DefultCurrency(),
+                                            denoInOut = EDeno.DenoIn.GetDescription()
+                                        });}
+
+                                </div>
+                            </div>
+
+                        }
+                        @*@if (Model.ChgID == 0)
+                            {*@
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+
+                                <input type="button" value="Save" class="btn btn-default btn-save-ManualchargeSetup" data-eventid="8" data-val="Charge Creation Opening" data-isMultiVerifier="false" />
+                                @*<input type="button" value="Cancel" id="btn-Cancel-ManualchargeSetup" class="btn btn-default btn-Cancel " />*@
+                            </div>
+                        </div>
+                        @*}*@
+                        @*else {
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input type="button" value="Save" id="btn-save-ManualchargeSetup" class="btn btn-default btn-save " />
+                                        <input type="button" value="Cancel" id="btn-Cancel-ManualchargeSetup" class="btn btn-default btn-Cancel " />
+                                    </div>
+                                </div>
+                            }*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+
+
+
+<script>
+    $(document).ready(function () {
+        var chargeType;
+
+        $(function () {
+
+            $.validator.unobtrusive.parse('#ManualChargeCreate-form');
+            $(".btn-save-ManualchargeSetup").on("click", function (e) {
+                debugger;
+                e.stopImmediatePropagation();
+                debugger;
+                var IsDenoTransaction = $('.manual-charge-create').find('#transactionDeno').prop('checked');
+                var cashrelated = $('input[name=CashRelated]:checked', '#ManualChargeCreate-form').val();
+                var accountRelated = $('input[name=ChargeRelatedType]:checked', '#ManualChargeCreate-form').val();
+
+                $('#ManualChargeCreate-form').removeData("validator").removeData("unobtrusiveValidation");
+
+                var modules = $('#Modules option:selected').val();
+                $.validator.unobtrusive.parse($('#ManualChargeCreate-form'));
+                if ($("#ManualChargeCreate-form").valid()) {
+                    if (IsDenoTransaction == true) {
+                        if (cashrelated == "0" || accountRelated == "0") {
+                            var amount = $("#Amt").val();
+                            var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                            if (amount <= 0) {
+                                ErrorAlert("Please enter valid amount", 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                                return
+                            }
+                            if (accountRelated == "1" && modules=="1") {
+                                debugger;
+                               // var accountId = $(".manual-charge-create").find('.account-number-div.deposit-accounts').find('#Iaccno').val()
+                                var accountId = $('#Iaccno').val()
+                                if (accountId == "" && accountId == "undefined") {
+                                    ErrorAlert("Account Number is required!!", 5000);
+                                    document.getElementById('alert-error').scrollIntoView();
+                                    return false
+                                }
+                            }
+                           
+                           if (accountRelated == "1" && modules == "2") {
+                               // var accountId = $(".manual-charge-create").find('.account-number-div.loan-accounts').find('#LIaccno').val()
+                               var accountId = $('#LIaccno').val()
+                               if (accountId == "" && accountId == "undefined") {
+                                    ErrorAlert("Loan Account Number is required!!", 5000);
+                                    document.getElementById('alert-error').scrollIntoView();
+                                    return false
+                                }
+                            }
+                           if (accountRelated == "1" && modules == "3") {
+                               // var accountId = $(".manual-charge-create").find('.account-number-div.share-customers').find('#SIaccno').val()
+                               var accountId = $('#SIaccno').val()
+                               if (accountId == "" && accountId == "undefined") {
+                                    ErrorAlert("Share Account Number is required!!", 5000);
+                                    document.getElementById('alert-error').scrollIntoView();
+                                    return false
+                                }
+                            }
+                        }
+                        if (parseFloat(amount) != parseFloat(balanceInDeno)) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "Collected amount does not match with deno balance!!"
+                            }).done(function () {
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+                    }
+                }
+                else {
+                    var message = "";
+                    $(".field-validation-error").each(function (index, item) {
+                        message = message + $(item).text();
+                      
+                    });
+                    InfoAlert(message, 3000)
+                    return false;
+                }
+                var strictVerifiable = $('.manual-charge-create').find('#strictlyverifiable').prop('checked');
+
+
+                eventid = $(this).data('eventid');
+                ismultiVerify = $(this).attr('isMultiVerifier');
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+
+                    ManualChargeCreate();
+                }
+            })
+          
+    })
+        })
+
+
+
+
+        $(".ChargeRelatedType").change(function () {
+            debugger;
+            var checked = $(this).val();
+            var cashrelated = $('input[name=CashRelated]:checked', '#ManualChargeCreate-form').val();
+            $('.disable-inputs :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            //$(".deno-div").find(':input').not(':textbox').val('');
+            //$(':checkbox :radio').prop('checked', false);
+            if (checked == 0) {
+                $(".manual-charge-create").find(".account-related-charge").addClass("hidden");
+                $(".manual-charge-create").find(".Cash-Related").addClass("hidden");
+                $(".manual-charge-create").find(".deno-div").removeClass("hidden");
+            }
+            if (checked == 1) {
+                $(".manual-charge-create").find(".account-related-charge").removeClass("hidden");
+                $(".manual-charge-create").find(".account-number-div").removeClass("hidden");
+                $(".manual-charge-create").find(".Cash-Related").removeClass("hidden");
+                if (cashrelated == 0) {
+                    $(".manual-charge-create").find(".deno-div").removeClass("hidden");
+                }
+                else {
+                    $(".manual-charge-create").find(".deno-div").addClass("hidden");
+                }
+
+            }
+
+            //document.getElementById("ManualChargeCreate-form").not("").reset();
+        })
+        $(".CashRelated").change(function () {
+            debugger;
+            $('.manual-charge-create').find('#transactionDeno').attr('checked', false);
+
+            var checked = $(this).val();
+            //   $(':input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            //$(':checkbox :radio').prop('checked', false);
+            if (checked == 0) {
+                $(".manual-charge-create").find(".deno-div").removeClass("hidden");
+                //$(".manual-charge-create").find(".Cash-Related").addClass("hidden");
+
+            }
+            if (checked == 1) {
+
+                $(".manual-charge-create").find(".deno-div").addClass("hidden");
+
+            }
+            //document.getElementById("ManualChargeCreate-form").not("").reset();
+        })
+        $("#Modules").change(function () {
+
+            debugger;
+            var id = $("#Modules option:selected").val();
+            var accountRelated = $('input[name=ChargeRelatedType]:checked', '#ManualChargeCreate-form').val();
+            if (accountRelated == 1) {
+                if (id == 1) {
+                    $(".manual-charge-create").find(".deposit-accounts").removeClass("hide");
+                    $(".manual-charge-create").find(".loan-accounts").addClass("hide");
+                    $(".manual-charge-create").find(".share-customers").addClass("hide");
+                }
+                if (id == 2) {
+                    $(".manual-charge-create").find(".deposit-accounts").addClass("hide");
+                    $(".manual-charge-create").find(".loan-accounts").removeClass("hide");
+                    $(".manual-charge-create").find(".share-customers").addClass("hide");
+                }
+                if (id == 3) {
+                    $(".manual-charge-create").find(".loan-accounts").addClass("hide");
+                    $(".manual-charge-create").find(".deposit-accounts").addClass("hide");
+                    $(".manual-charge-create").find(".share-customers").removeClass("hide");
+                }
+            }
+
+            $.ajax({
+                url: "/Teller/GetCascadedChargesByModules",
+                data: { id: id },
+                success: function success(data) {
+                    debugger;
+                    $("#ChgID").html("----loading-----");
+                    var items;
+                    //= "<option value='" + 0 + "'>All</option>";
+
+                    $.each(data, function (i, state) {
+                        items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+
+                    });
+                    $('#ChgID').html(items);
+                    $("#ChgID").trigger("change");
+                }
+            })
+
+        });
+
+        //$(".account-aumber").change(function () {
+        //    debugger;
+        //    alert("alert from inside accountname");
+        //    alert('alert from inside accountname');
+        //    var iaccno = $(this).val();
+        //    $.ajax({
+        //        contentType: "Json",
+        //        url: "/Teller/GetAccountNamefromIaccno",
+        //        data: { iaccno: iaccno },
+
+        //        success: function (data) {
+        //            debugger;
+        //            $(".account-related-charge").find("#AccountName").val(data);
+        //        }
+
+        //    })
+
+        //});
+
+
+
+
+        $("#ChgID").change(function () {
+            debugger;
+            var chargeId = $("#ChgID option:selected").val();
+            $.ajax({
+
+                contentType: "Json",
+                url: "/Teller/GetChargeDetailsByChargeId",
+                data: { chargeId: chargeId },
+
+                success: function (data) {
+                    debugger;
+                    chargeType = data.ChrType
+                    if (chargeType == 1) {
+                        $(".manual-charge-create").find("#Ratio").val("");
+                        $(".manual-charge-create").find("#Ratio").attr('readonly', true);
+                        if (data.Chngble == true) {
+                            $(".manual-charge-create").find("#CAmount").attr('readonly', false);
+                        }
+                        else {
+                            $(".manual-charge-create").find("#CAmount").attr('readonly', true);
+                        }
+                        $(".manual-charge-create").find("#CAmount").val(data.CAmount);
+                        $(".manual-charge-create").find("#Amt").val(data.CAmount);
+
+                    }
+                    if (chargeType == 2) {
+                        if (data.CAmount == null) {
+                            debugger;
+                            CAmount = 0;
+                        }
+                        $(".manual-charge-create").find("#CAmount").val(CAmount);
+                        //$(".manual-charge-create").find("#CAmount").attr('readonly', true);
+                        $(".manual-charge-create").find("#Ratio").attr('readonly', true);
+                        if (data.Chngble == true) {
+                            $(".manual-charge-create").find("#Ratio").attr('readonly', true);
+                            $(".manual-charge-create").find("#CAmount").attr('readonly', false);
+
+                            ////$(".manual-charge-create").find("#CAmount").attr('readonly', false);
+                        }
+                        else {
+                            $(".manual-charge-create").find("#Ratio").attr('readonly', true);
+                        }
+
+                        $(".manual-charge-create").find("#Ratio").val(data.Ratio);
+                        $(".manual-charge-create").find("#Amt").val(data.CAmount);
+                    }
+
+                }
+            })
+
+        });
+        $("#CAmount").change(function () {
+            debugger;
+            var CAmount = $(this).val();
+            var ratio = $(".manual-charge-create").find("#Ratio").val();
+            if (chargeType == 1) {
+                $(".manual-charge-create").find("#Amt").val(CAmount);
+            }
+            else if (chargeType == 2) {
+                $(".manual-charge-create").find("#Amt").val(CAmount * (ratio / 100));
+            }
+        });
+        $("#Ratio").change(function () {
+            debugger;
+            var ratio = $(this).val();
+            var CAmount = $(".manual-charge-create").find("#CAmount").val();
+            if (chargeType == 1) {
+                $(".manual-charge-create").find("#Amt").val(CAmount);
+            }
+            else if (chargeType == 2) {
+                $(".manual-charge-create").find("#Amt").val(CAmount * (ratio / 100));
+            }
+        });
+   
+
+    function ManualChargeCreate() {
+        debugger;
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            $('#ManualChargeCreate-form').ajaxSubmit({
+
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Teller/ManualChargeIndex",
+                            type: 'get',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+

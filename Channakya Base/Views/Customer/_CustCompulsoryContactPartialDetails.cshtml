@@ -1,0 +1,33 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContact
+@using ChannakyaBase.BLL.Service
+@{
+    var abc = Model;
+}
+<tr>
+
+  
+        @Html.HiddenFor(x => x.CCID)
+        @Html.HiddenFor(x => x.IsDeleted, new { @class = "IsDeleted" })
+
+        <td class="col-md-3">
+            @Html.DropDownListFor(model => model.CNotype, CustomerUtilityService.CustCompulSoryContactType(Model.CNotype,Model.CtypeId), new { @class = "form-control cnoType" })
+            
+        </td>
+
+        <td class="col-md-3">
+            <span class="control-label">@Model.CNo</span>
+          
+        </td>
+            <td class="col-md-2">
+                @Html.CheckBoxFor(x => Model.IsDefault, new { @class = "isChecked" })
+               
+            </td>
+            <td class="col-md-2">
+
+            </td>
+
+    }
+
+</tr>
+
+

@@ -1,0 +1,55 @@
+﻿<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Deno Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+    <div class="box box-body">
+        <div id="deno-setup-create">
+            @{Html.RenderAction("InsertUpdateDenoSetup", "FinanceParameter");}
+
+        </div>
+
+        <div id="deno-setup-list">
+
+            @{Html.RenderAction("_DenosetupList", "FinanceParameter");}
+
+        </div>
+    </div>
+</div>
+<script>
+    function EditDemoSetup(DenoID) {
+        debugger;
+        $.ajax({
+            type: "GET",
+            url: "/FinanceParameter/InsertUpdateDenoSetup",
+            datatype: "Json",
+            data: { DenoID: DenoID },
+            success: function (result) {
+                //$("#CurrID").prop("disabled", true);
+                $('#deno-setup-create').html("");
+                $('#deno-setup-create').html(result);
+                
+            }
+        })
+    }
+
+    $("#deno-setup-create").on("change", "#CurrID", function () {
+        debugger;
+        var CurrID = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: "/FinanceParameter/_DenosetupList",
+            data: { CurrID: CurrID },
+            success: function (data) {
+                $("#deno-setup-list").html("");
+                $("#deno-setup-list").html(data);
+            }
+        })
+    });
+      
+
+</script>

@@ -1,0 +1,173 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustomerCompanyViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    CustomerService customerService = new CustomerService();
+    if (Model.CCGroupID != 0)
+    {
+
+        var ccgroup = customerService.CustomerCompanyInfoId(Model.CCGroupID);
+        Model.CCGroupID = ccgroup.CCGroupID;
+        Model.CCGroupName = ccgroup.CCGroupName;
+
+    }
+
+    Layout = null;
+
+}
+
+@using (Html.BeginForm("InsertUpdateCustomerCompanyGroup", "Customer", FormMethod.Post, new { id = "cc-group-form" }))
+{
+    <div class="box-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @Html.HiddenFor(x => x.CCGroupID)
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCGroupName, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(x => x.CCGroupName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CCGroupName, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="box-footer">
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Save" class="btn btn-default btn-cc-group-save" />
+                <input type="button" value="Cancel" class="btn btn-default btn-cc-group-cancel" onclick="CancelCompanyGroup()" />
+
+            </div>
+        </div>
+    </div>
+
+}
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+    //$(function () {
+    //    $.validator.unobtrusive.parse('#cc-group-form');
+    //    $(".btn-cc-group-save").on("click", function () {
+
+    //        $('#cc-group-form').removeData("validator").removeData("unobtrusiveValidation");
+    //        $.validator.unobtrusive.parse($('#cc-group-form'));
+    //        if ($("#cc-group-form").valid()) {
+
+    //            customerCompanyGroup();
+
+    //        } else {
+    //            return false;
+    //        }
+
+    //    })
+
+    //});
+
+
+    $(document).ready(function () {
+
+    });
+
+    $.validator.unobtrusive.parse('#cc-group-form');
+    $(".btn-cc-group-save").on("click", function () {
+        debugger;
+        $('#cc-group-form').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#cc-group-form'));
+        if ($("#cc-group-form").valid() == false) {
+
+            InfoAlert("Please fill form correctly", 5000);
+            return false;
+        }
+
+
+        var CCGroupName = $('#CCGroupName').val();
+        var CCGroupID = $('#CCGroupID').val();
+
+        $.ajax({
+            url: "/Customer/CheckCustomerCompanyGroup",
+            type: 'GET',
+            async: false,
+            data: { CCGroupID: CCGroupID, CCGroupName: CCGroupName },
+            success: function (result) {
+                debugger;
+                var message = $(this).closest("form").find(".field-validation-error").text();
+                if (result == false) {
+                    debugger;
+
+                    InfoAlert("Duplicate Customer Type Company", 5000);
+                    return false;
+
+                }
+                else {
+                    customerCompanyGroup();
+                }
+            }
+        });
+
+
+    });
+
+
+
+    function customerCompanyGroup() {
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            $('#cc-group-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Customer/CustomerCompanyIndex",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+                        debugger;
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+    function CancelCompanyGroup() {
+
+        $.ajax({
+            url: "/Customer/CustomerCompanyIndex",
+            type: 'GET',
+            async: false,
+        })
+    }
+
+</script>

@@ -1,0 +1,267 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShrSPurchaseModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+
+@{
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+}
+
+<div class="box box-warning share-purchase-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Share Purchase</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*<div class="verfier-list">
+
+        </div>*@
+    @using (Html.BeginForm("SharePurchase", "Share", FormMethod.Post, new { id = "Share-Purchase-form" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Purchase-Details</legend>
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Regno, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.EmployeeSearch(x => x.Regno, "", EEmployeeChange.PurchaseShare.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                        @Html.ValidationMessageFor(model => model.Regno, "", new { @class = "text-danger" })
+
+                                    </div>
+
+
+
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.SType, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(model => model.SType, ShareUtilityService.ShareType(), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.SType, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Rate, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.Rate, new { @class = "form-control share-rate text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                    </div>
+                                    @Html.LabelFor(model => model.SQty, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.SQty, new { @class = "form-control share-quantity text-right" })
+                                        @Html.ValidationMessageFor(model => model.SQty, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Amt, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.Amt, new { @class = "form-control share-amount text-right", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Amt, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Note, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @if (IsTransactionWithDeno)
+                                {
+                                    <div class="form-group">
+                                        <div class="transaction-with-deno">
+
+                                            @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription() });}
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-9 col-md-12">
+
+                    <input type="button" value="Save" class="btn btn-default btn-share-purchase-save" data-eventid="25" data-isMultiVerifier="false" />
+
+                </div>
+            </div>
+        </div><!-- box-footer -->
+    }
+
+
+</div>
+
+<div id="employee-pop-up-div" class='modal' role='dialog'>
+
+
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $("#SQty").val($(this).val() == 0 ? '' : $(this).val());
+    })
+
+    $('.share-quantity').on('change', function () {
+        debugger;
+        var shareRate = $(".share-rate").val();
+
+        if (shareRate == "" || shareRate == "0") {
+            shareRate = 0;
+        }
+        var shareQuantity = $('.share-quantity').val();
+        if (shareQuantity == "" || shareQuantity == "0") {
+            shareQuantity = 0;
+        }
+        var shareTotalAmount = parseFloat(shareRate) * parseFloat(shareQuantity);
+        $('.share-amount').val(shareTotalAmount)
+    })
+
+
+    $.validator.unobtrusive.parse('#Share-Purchase-form');
+    $(".btn-share-purchase-save").on("click", function (e) {
+        debugger;
+        var regno = $('#Regno').val();
+        if (regno =="")
+        {
+            ErrorAlert("Please Fill the Register Account", 5000);
+            return false;
+        }
+        var strictVerifiable = $('.share-purchase-create').find('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        ismultiVerify = $(this).attr('isMultiVerifier');
+
+        $('#Share-Purchase-form').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#Share-Purchase-form'));
+        if ($("#Share-Purchase-form").valid()) {
+
+            var IsDenoTransaction = $('.share-purchase-create').find('#transactionDeno').prop('checked');
+
+            if (IsDenoTransaction == true) {
+
+                var depositAmount = $(".share-amount").val();
+                var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+
+                if (parseFloat(depositAmount) != parseFloat(balanceInDeno)) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "Amount doesnot match with deno balance!!"
+                    }).done(function () {
+                        $(balanceDiv).find("#Balance").focus();
+                        return false;
+                    }).fail(function () {
+                        //return false;
+                    })
+                    return;
+                }
+
+            }
+            if (strictVerifiable == true) {
+                taskVerifierList(eventid, ismultiVerify);
+            }
+            else {
+                purchaseNewShare();
+            }
+        }
+    })
+
+    function purchaseNewShare() {
+        //estopImmediatePropagation();
+        debugger;
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#Share-Purchase-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Share/SharePurchase",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>
+

@@ -1,0 +1,179 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChequeInventorySetupModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+                /**/
+
+                Layout = null;
+}
+
+
+@using (Html.BeginForm("InsertUpdateChequeInventorySetup", "FinanceParameter", FormMethod.Post, new { id = "inventory-update-setup-form" }))
+{
+    <div class="box box-bodyy">
+        <div class="row">
+            <div class="col-md-12">
+                @Html.AntiForgeryToken()
+
+
+                <div class="form-horizontal">
+
+                    @Html.HiddenFor(x => x.ChequeInventorySetupId)
+
+                    <div class="form-group" id="chequeInventorySetup">
+                        @Html.LabelFor(x => x.BranchId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(x => x.BranchId, Loader.Service.UserVSBranchService.GetBranchList(), "--Please Select--", new { @class = "form-control branch-select", @id = "DdlBranch" })
+                            @Html.ValidationMessageFor(x => x.BranchId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.fromCheckNo, new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(x => x.fromCheckNo, new { @class = "form-control", @id = "FromCheckNo" })
+                            @Html.ValidationMessageFor(x => x.fromCheckNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.toCheckNo, new { @class = "control-label col-md-2"})
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(x => x.toCheckNo, new { @class = "form-control", @id = "ToCheckNo" })
+                            @Html.ValidationMessageFor(x => x.toCheckNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                 
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box-footer">
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Save" class="btn btn-default btn-cheque-inventory-setup-save" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+  
+    $(function () {
+        
+        $.validator.unobtrusive.parse('#inventory-update-setup-form');
+        $(".btn-cheque-inventory-setup-save").on("click", function () {
+            $('#inventory-update-setup-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#inventory-update-setup-form'));
+            debugger;
+            //var fromcheckNo = $("#FromCheckNo").val();
+            //var toCheckNo = $("#ToCheckNo").val();
+
+            //if (fromcheckNo > toCheckNo) {
+            //    InfoAlert("", 6000);
+            //    return false;
+            //}
+            if ($("#inventory-update-setup-form").valid()) {
+                chequeInventorySetupLimit();
+
+            } else {
+                InfoAlert("Please fill out the form", 6000);
+                return false;
+            }
+
+        });
+
+    });
+
+    function chequeInventorySetupLimit() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            $('#inventory-update-setup-form').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/FinanceParameter/ChequeInventorySetupIndex",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+                        debugger;
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+
+
+
+
+
+</script>
+@*Tochange value of fromcheckno textbox  based on selected branch dropdownlist*@
+
+<script>
+
+
+
+    $('#DdlBranch').on('change', function () {
+
+        debugger;
+
+        var selectedddlbranch = $('.branch-select').val();
+
+        $.ajax({
+            url: "/FinanceParameter/GetFromChequeByBranch",
+            type: "GET",
+
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: { BranchID: selectedddlbranch },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            },
+            success: function (data) {
+                $('#FromCheckNo').val(data);
+                $('#FromCheckNo').attr('readonly', true);
+            }
+        });
+    });
+</script>

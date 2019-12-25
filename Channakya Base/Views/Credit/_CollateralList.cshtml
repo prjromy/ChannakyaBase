@@ -1,0 +1,141 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ALCollModel
+@using ChannakyaBase.BLL.CustomHelper
+@{
+
+}
+<div class="box-body table-responsive no-padding table-collateral-entery-list-partial">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountName)
+            </th>
+
+            <th>
+                Collateral Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OAdd)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contactNo)
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CValue)
+            </th>
+            <th></th>
+
+        </tr>
+
+        @foreach (var item in Model.CollList)
+        {
+            <tr>
+                <td><a href="#" onclick="Editcollateral(@item.Sno,@item.NCID,@item.LandId,@item.fixedDepoId,@item.VehicleId,@item.IAccno)"><i class="fa fa-edit"></i>@item.AccountNumber</a></td>
+                <td>
+
+                  @item.AccountName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CollateralName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OAdd)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contactNo)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.CValue)
+                </td>
+                <td><a href="javascript:void(0)" onclick="detailCollateral(@item.IAccno)"><i class="fa fa-list"></i>Detail</a></td>
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_CollateralList", "credit", Model.CollList.PageCount, Model.CollList.PageNumber, Model.CollList.PageSize)
+</div>
+<script>
+    function Editcollateral(colId, ncId, landId, fixedDepoId, vehicleId, iAccno)
+    {
+        $.ajax({
+            type: "GET",
+            url: "/credit/InsertUpdateCollateral",
+            datatype: "Json",
+            data: {
+                ncId: ncId,
+                colId: colId,
+                landId: landId,
+                fixedDepoId: fixedDepoId,
+                vehicleId: vehicleId,
+                iAccno: iAccno
+            },
+            success: function (result) {
+                debugger;
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+    function detailCollateral(iAccno)
+    {
+        $.ajax({
+            type: "GET",
+            url: "/credit/CollateralDetails",
+            datatype: "Json",
+            data: {               
+                iAccno: iAccno
+            },
+            success: function (result) {
+                debugger;
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+</script>
+<script>
+    $("div.table-collateral-entery-list-partial").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-collateral-entery-list-partial")
+        var account = $(parentContainer).find(".collateral-account-number").find("#AccountNumber").val();
+        var url = "?accountNumber=" + account
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-collateral-entery-list-partial").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-collateral-entery-list-partial")
+        var account = $(parentContainer).find(".collateral-account-number").find("#AccountNumber").val();
+        var url = "?accountNumber=" + account
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-collateral-entery-list-partial").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-collateral-entery-list-partial")
+        var account = $(parentContainer).find(".collateral-account-number").find("#AccountNumber").val();
+        
+        var url = "?accountNumber=" + account;
+        getPageSizeChangeData(url, container, me)
+    });
+
+</script>

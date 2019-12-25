@@ -1,0 +1,82 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher3T
+@using ChannakyaAccounting.Helper
+@using ChannakyaAccounting.Helper.BeginCollectionHelper
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var fromVoucher = Model.fromVoucher;
+}
+@if (fromVoucher == 0)
+{
+    using (Html.BeginCollectionItem("SubsiVSLedgerList"))
+    {
+
+        <div id="subsiDetails" class="subsi-voucher-container">
+            <table class="table table-bordered ">
+                @Html.HiddenFor(x => x.SId)
+                <thead>
+                    <tr>
+                        <th class="col-md-5">
+                            Select Subsi
+                        </th>
+                        <th>
+                            @*@Html.DropDownListFor(x => Model.SFId, voucher1.GetVoucherSubsiList(Model.SId), "Select", new { @class = "form-control col-md-12 subsi-name" })*@
+                            @Html.GenerateSubsiTypeList(x => Model.SFId, Model.SFId, "")
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="col-md-5">
+                            Description
+                        </th>
+                        <th>
+                            @Html.TextBoxFor(x => x.Description, new { @class = "form-control col-md-12", @placeholder = "Description" })
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="col-md-5">
+                            Amount
+                        </th>
+                        <th>
+                            @Html.TextBoxFor(x => x.Amount, new { @class = "form-control col-md-12", @placeholder = "Amount", @id = "subsiAmount" })
+                        </th>
+                    </tr>
+
+
+                </thead>
+
+            </table>
+        </div>
+    }
+}
+else
+{
+    @Html.HiddenFor(x => Model.SId)
+    @Html.HiddenFor(x => x.SFId)
+    @Html.HiddenFor(x => x.Amount)
+    @Html.HiddenFor(x => x.Description)
+}
+
+<script type="text/javascript">
+
+    @*$('.addSubsi').click(function () {
+        debugger;
+        var subsiName = $('.subsi-name option:selected').text();
+        var container = $('.add-voucher-finacc').find('.subsi-voucher-list')
+
+        $.ajax({
+            url: '/Voucher1/AddSubsiInVoucher/',
+            data:{SId:@Model.SId,SubsiName:subsiName},
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $(container).append(data);
+            },
+            error: function (data) {
+            debugger;
+        },
+        });
+
+
+
+    });*@
+</script>

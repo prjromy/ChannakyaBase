@@ -1,0 +1,33 @@
+﻿@model  List<ChannakyaAccounting.Models.Models.FinAcc>
+
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped col-md-12" >
+
+                    <thead>
+                    <th>
+                        FinAcc Name
+                    </th>
+                    <th>
+                        IsGroup
+                    </th>
+                    <th>
+                        IsContext
+                    </th>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @Html.Partial("_ListView", item)
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

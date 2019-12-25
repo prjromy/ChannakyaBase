@@ -1,0 +1,450 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustInfo
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper
+@{
+
+    ViewBag.Title = "Customer Create";
+}
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            @if (Model.CID == 0)
+            {
+                <h3 class="page-title">New Customer</h3>
+            }
+            else
+            {
+                <h3 class="page-title">Edit Customer</h3>
+
+            }
+        </p>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        @using (Html.BeginForm("_CustomerCreate", "Customer", FormMethod.Post, new { id = "createSubmitForm" }))
+        {
+            @*@using (Ajax.BeginForm("_CustomerCreate", "Customer", new AjaxOptions
+                {
+                    UpdateTargetId = "customer-create",
+                    InsertionMode = InsertionMode.Replace,
+                    HttpMethod = "Post"
+                    // OnSuccess = "createSuccess"
+                    //OnFailure = "errMessage"
+
+                }, new { id = "createSubmitForm" }))
+                {*@
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.CRegdate)
+
+
+            <div class="customer-create-main">
+
+                <div class="form-horizontal">
+                    <fieldset>
+                        <legend>Customer Type</legend>
+
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                @Html.HiddenFor(x => x.CID)
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CtypeID, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    @*<div class="col-md-9">
+                                            @Html.DropDownListFor(model => model.CtypeID, CustomerUtilityService.CustTypeList(), "Please Select...", htmlAttributes: new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.CtypeID, "", new { @class = "text-danger" })
+                                        </div>*@
+
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(model => model.CtypeID, (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Please Select...", htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CtypeID, "", new { @class = "text-danger" })
+                                    </div>
+
+
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CDepSector, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(model => model.CDepSector, CustomerUtilityService.CustTypeSectorList(Model.CtypeID), "Choose Any", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CDepSector, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PANNo, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.EditorFor(model => model.PANNo, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                                        @Html.ValidationMessageFor(model => model.PANNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCCertID, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(model => model.CCCertID, CustomerUtilityService.CustTypeCertificateList(Model.CtypeID), "Choose Any", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CCCertID, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCCertno, htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.EditorFor(model => model.CCCertno, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                                        @Html.ValidationMessageFor(model => model.CCCertno, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @*@if (Model.CustType != null)
+                                    {
+                                        if (Model.CustType.isind == 1)
+                                        {
+                                            @Html.Label("Date Of Birth", htmlAttributes: new { @class = "control-label col-md-3" })
+
+                                        }
+                                        else if (Model.CustType.isind == 0)
+                                        {
+                                            @Html.Label("Established Date", htmlAttributes: new { @class = "control-label col-md-3" })
+
+                                        }
+                                        <div class="col-md-9">
+
+                                            @Html.DatePicker(x => x.DoB)
+                                            @Html.ValidationMessageFor(model => model.DoB, "", new { @class = "text-danger" })
+                                        </div>
+                                    }
+                                    else
+                                    {*@
+                                        @Html.Label(" Established Date",htmlAttributes: new { @class = "control-label col-md-3",@id="LabelDateOfBirth" })
+                                        <div class="col-md-9">
+                                            @Html.DatePicker(x => x.DoB)
+                                            @Html.ValidationMessageFor(model => model.DoB, "", new { @class = "text-danger" })
+                                        </div>
+                                    @*}*@
+                                </div>
+
+
+
+                            </div>
+
+                        </div>
+                    </fieldset>
+                    <div class="customer-type-create">
+                        @if (Model.CtypeID != 0 && ViewBag.cType == 1)
+                        {
+                            @Html.Partial("_CustomerIndividualCreate", Model.CustIndividual);
+
+                        }
+                        else if (Model.CtypeID != 0 && ViewBag.cType == 0)
+                        {
+                            @Html.Partial("_CustomerCompanyCreate", Model.CustCompany);
+                        }
+                    </div>
+                    <div class="custAddress-create table-responsive">
+                        <fieldset>
+                            <legend>Address Details</legend>
+                            <table class="table  table-hover cust-address-header-table">
+                                <thead>
+                                    <tr>
+                                        <th>Address Type</th>
+                                        <th>Address</th>
+                                        <th>Street Name</th>
+                                        <th>Block</th>
+                                        <th>Office Name</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                            <table class="table table-responsive table-hover cust-address-table">
+                                <tbody>
+                                    @if (Model.CID == 0)
+                                    {
+                                        foreach (var item in Model.CustAddresses)
+                                        {
+                                            @Html.Partial("_CustAddress", item);
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        foreach (var item in Model.CustAddresses)
+                                        {
+                                            item.CID = Model.CID;
+                                            item.LType = item.LocationTypeDef.LType;
+                                            item.AddressTypeId = item.LocationTypeDef.ATypeId;
+                                            @Html.Partial("_CustAddress", item)
+                                        }
+                                    }
+                                </tbody>
+
+                            </table>
+                        </fieldset>
+                    </div>
+
+                    <div class="custContact-create table-responsive">
+                        <fieldset>
+                            <legend>Contact Details</legend>
+                            <table class="table table-responsive table-hover cust-contact-header-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-3">Contact Type</th>
+                                        <th class="col-md-3">Contact Number</th>
+                                        <th class="col-md-2">Is Default</th>
+                                        <th class="col-md-2">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="table table-responsive" style="min-height:50px;max-height:300px;overflow:auto;">
+
+                                <table class="table table-responsive table-hover cust-contact-table">
+                                    <tbody class="custList">
+                                        @if (Model.CID != 0)
+                                        {
+
+                                            foreach (var item in Model.CustContacts)
+                                            {
+
+                                                int count = item.CustIRegContacts.Where(x => x.CCID == item.CCID).Count();
+                                                //int countContact = item.CustInfo.CustType.CustTypeContacts.Where(x=>x.CNoType==item.CNotype&&x.CNoState!=2).Count();
+                                                //if (countContact > 0)
+                                                //{
+                                                //    item.IsDeleted = true;
+                                                //}
+                                                if (count > 0)
+                                                {
+                                                    item.IsDefault = true;
+                                                }
+
+                                                item.CtypeId = Model.CtypeID;
+                                                @Html.Partial("_CustContactCreate", item)
+                                            }
+
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4">
+                                                <input type="button" class="btn btn-default pull-left add-cust-contact" id="add-cust-contact" value="Add" />
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="table table-responsive custContact-person-create">
+                        <fieldset>
+                            <legend>Contact Person Details</legend>
+                            <table class="table table-responsive table-hover cust-contact-person-header-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-4">Name</th>
+                                        <th class="col-md-4">Contact Number</th>
+                                        <th class="col-md-2">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="table table-responsive" style="min-height:50px;max-height:300px;overflow:auto;">
+
+                                <table class="table table-responsive table-hover cust-contact-person-table">
+                                    <tbody class="cust-Contact-Person-List">
+
+                                        @if (Model.CID == 0)
+                                        {
+                                            {
+                                                Html.RenderAction("_CustContactPerson");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var item in Model.CustContactPersons)
+                                            {
+                                                @Html.Partial("_CustContactPerson", item)
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4">
+                                                <input type="button" class="btn btn-default pull-left add-cust-contact-person" id="add-cust-contact-person" value="Add" />
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+
+
+
+
+
+                    <div>
+
+                        @if (Model.CID != 0)
+                        {
+                            <div class="table-certificate">
+                                <table class="table table-responsive table-hover cust-certificate-table ">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Certificate List</th>
+                                            <th>Submitted</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.CustTypeCertificate)
+                                        {
+
+                                            //item.CCCertID = item.CertificateDef.CCCertID;
+                                            ////var CustCertificatesCheck = Model.CustCertificates.Where(x => x.CCCertID == item.CCCertID).FirstOrDefault();
+                                            //var isSubmitted = Model.CustCertificates.Where(x => x.CCCertID == item.CCCertID).FirstOrDefault();
+                                            //if (isSubmitted != null)
+
+                                            ////if (CustCertificatesCheck != null)
+                                            //{
+                                            //    item.CCertID = isSubmitted.CCertID;
+                                            //    item.isSubmitted = true;
+                                            //    //item.CCertID = CustCertificatesCheck.CCertID;
+
+                                            //}
+                                            //else
+                                            //{
+                                            //   // item.CCertID = isSubmitted.CCertID;
+                                            //    item.isSubmitted = false;
+                                            //}
+                                                @Html.Partial("_AttachedCertificate", item)
+                                           // }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                        }
+                        <div class="table table-responsive cust-type-certificate"></div>
+
+
+                        @*<div class="table table-responsive cust-type-certificate">
+                            </div>*@
+                    </div>
+                    <div class="form-group">
+                        <hr />
+                        <div class="col-md-12">
+                            <span class="pull-right">
+                                <input type="button" value="Save" id="btn-save-submit" class="btn btn-default btn-save" />
+                                <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@*style in search part of location*@
+<style>
+    #location-search-container {
+        position: relative;
+    }
+
+    #btnlocationsearch {
+        border: none;
+        position: absolute;
+        background-color: white;
+        top: 8px;
+        right: 10px;
+    }
+</style>
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/Customer.js"></script>
+<script src="~/Scripts/LocationSearch.js"></script>
+<script src="~/Scripts/location.js"></script>
+
+<script>
+
+$(".customer-create-main").on("change", "#CtypeID", function () {
+        debugger;
+
+        var id = $(".customer-create-main").find("#CtypeID option:selected").val();
+        var isind = 0;
+        if (id == "") {
+            $('.customer-create-main').find(".customer-type-create").html("");
+        }
+        else {
+            $.ajax({
+                type: "GET",
+                url: "/Customer/GetCustypeByCTypeId",
+                data: { ctypeId: id },
+                success: function (data) {
+                    debugger;
+                    $(".customer-create-main").find(".customer-type-create").show();
+                    $('.customer-create-main').find(".customer-type-create").html("");
+                    $('.customer-create-main').find(".customer-type-create").html(data);
+
+                }
+            })
+        }
+        debugger;
+        $.ajax({
+            type: "GET",
+            url: "/Customer/_AttachedCertificate",
+            data: { cTypeId: id },
+            success: function (data) {
+                debugger;
+                //if (Model.CCState== 2 || Model.CCState== 3) {
+                //$(".checkboxCert").prop("checked", true);
+                //$(".checkboxCert").attr('readonly', true);
+                //$.each($("input[name='checkboxCert']:checked"), function () {
+                //    var check = $(this).val();
+                //});
+
+                //var n = $(".checkboxCert:checked").length;
+                //for (var i = 1; i <= n;i++){
+                //    $(".checkboxCert:checked").each(function () {
+                //        $(this).prop('disabled', true);
+                //    });
+                //}
+
+                var n = $('input[id="checkboxCount"]:checked');
+                var count = $('input[id="checkboxCount"]:checked').length;
+
+                //}
+                //else {
+                //    $(".checkboxCert").prop("checked", false);
+
+                //}
+
+                //$(".customer-create-main").find(".cust-type-certificate").prop("checked", true);
+                //$(".customer-create-main").find(".cust-certificate-table").show();
+                //$(".cust-type-certificate").find('.cust-certificate-table').empty();
+                if(@Model.CID==0){
+                    $('.customer-create-main').find(".cust-type-certificate").show();
+                    $('.customer-create-main').find(".cust-type-certificate").html("");
+                    $('.customer-create-main').find(".cust-type-certificate").html(data);
+                }
+                else{
+                    $('.customer-create-main').find(".cust-type-certificate").html("");
+                    $('.customer-create-main').find(".table-certificate").show();
+                    $('.customer-create-main').find(".table-certificate").html("");
+
+                    $('.customer-create-main').find(".table-certificate").html(data);
+                }
+
+            }
+        });
+});
+
+</script>

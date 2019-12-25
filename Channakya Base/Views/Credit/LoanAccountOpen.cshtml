@@ -1,0 +1,1508 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanRegAccOpenViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    CommonService cmService = new CommonService();
+    var mod = Model;
+
+}
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Account Open</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        @using (Html.BeginForm("LoanAccountOpen", "Credit", FormMethod.Post, new { id = "LoanAccountOpen-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="loanRegistration-transaction">
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+            </div>
+            @Html.Hidden("MessageEventID", 18)
+            @Html.Hidden("FDLoanAllow")
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @if (Model.RegId == 0)
+                {
+                    <fieldset>
+                        <legend style="font-size:14px;font-weight:bold">Client-Details</legend>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CustomerId, new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.CustomerSearch(x => x.CustomerId, ECustomerSearchType.AccountOpen)
+                                @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div id="customer-related-message">
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Aname, new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => model.Aname, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+
+                <fieldset>
+                    @*<legend style="font-size:14px;font-weight:bold">Product-Description</legend>*@
+                    <div class="loan-registration-details">
+
+                        @if (Model.RegId == 0)
+                        {
+                            Html.RenderPartial("LoanRegDetails", Model);
+                        }
+                        else
+                        {
+                            <fieldset>
+                                @Html.HiddenFor(x => x.isAccepted)
+                                <legend style="font-size:14px;font-weight:bold">Client-Details</legend>
+                                <div class="table-responsive table-click-customer">
+                                    @{Html.RenderAction("UnverifiedCustomerDetails", Model.RegId);}
+                                </div><div class="form-group">
+                                    @Html.LabelFor(model => model.Aname, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(model => model.Aname, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="loan-registration-details">
+                                @{Html.RenderPartial("LoanRegDetails", Model);}
+                            </div>
+                        }
+                        @if (Model.isAfterRegistration == 0)
+                        {
+                            <div class="form-group">
+                                @Html.Label("Sanction Amount", new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.SAmt, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SAmt, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.Label("Maximum Duration", new { @class = "control-label col-md-2 day-month" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.GrantedDuration, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.GrantedDuration, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.isAfterRegistration == 1)
+                        {
+                            <div class="form-group">
+                                @Html.Label("Sanction Amount", new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.SAmt, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.SAmt, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.Label("Granted Duration", new { @class = "control-label col-md-2 day-month" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.GrantedDuration, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.GrantedDuration, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.Label("Remarks", new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Remarks" })
+                                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                            </div>
+                            <label class="control-label col-md-2">Change Date</label>
+                            <div class="col-md-4">
+                                @*@if (cmService.DateType() == "1")
+                                    {
+                                        @Html.CheckBoxFor(x => x.DateType, new { @readonly = "readonly" })
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBoxFor(x => x.DateType)  <lable>apply for current account only</lable>
+                                    }*@
+
+                                <form id="my-radio-button">
+
+                                    @Html.RadioButtonFor(model => model.DateType, 1, new { @checked = "true" }) AD
+
+                                    @Html.RadioButtonFor(model => model.DateType, 2) BS
+                                </form>
+
+                            </div>
+                        </div>
+                        <div class="form-group MaturationDate">
+                            @Html.LabelFor(model => model.MaturationDate, new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(x => x.MaturationDate, true)
+                                @Html.ValidationMessageFor(model => model.MaturationDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Link-Accounts-Description</legend>
+                    <div class="link-accounts">
+                        <div class="content-table" id="content-link-account">
+                            <div class="link-account-table-div1">
+                                <table class="table table-bordered table-striped table-hover" id="link-account-table-div">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.Label("Account Name")</th>
+                                            <th>@Html.Label("Account Number")</th>
+                                            <th>@Html.Label("Priority")</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group link-accounts-search">
+                            @Html.Label("Account", new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.AccountNumberSearch(x => x.LinkAccountNumber, EAccountDetailsShow.NoDisplay.GetDescription(), EAccountFilter.Nominee.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessage("accountNumber", "", new { @class = "text-danger" })
+                            </div>
+                            <input type="button" value="Add" class="btn btn-success btn-add-link-account" />
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Interest-Description</legend>
+                    <div class="form-group">
+                        @Html.Label("Interest Calculation Rule", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(model => model.InCalRuleId, CreditUtilityService.GetAllRuleCalculation(Model.AccountDetailsViewModel.PID), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.InCalRuleId, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.Label("Interest Rate(%)", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.InterestRate, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.InterestRate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Principal Penalty Rate(%)", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.PrincipalPenaltyRate, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PrincipalPenaltyRate, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.Label("Interest Penalty Rate(%)", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.InterestPenaltyRate, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.InterestPenaltyRate, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Penalty Grace Days", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.penGDys, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.penGDys, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.PenaltyCalculation, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(model => model.PenaltyCalculation, CreditUtilityService.GetAllPenaltyCalculation(Model.AccountDetailsViewModel.PID), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PenaltyCalculation, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="loan-attributes">
+                    @if (Model.isAfterRegistration == 1)
+                    {
+                        Html.RenderAction("_LoanAttributes", new { PId = Model.AccountDetailsViewModel.PID });
+                    }
+                </div>
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Payment-Description</legend>
+                    <div class="form-group">
+                        @Html.Label("Payment Mode", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(model => model.PAYID, CreditUtilityService.GetAllPaymentMode(Model.AccountDetailsViewModel.PID), new { @class = "form-control  principal-interest-payment-mode" })
+                            @Html.ValidationMessageFor(model => model.PAYID, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.Label("Interest Frequency", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.IFreq, new { @class = "form-control interest-frequency" })
+                            @Html.ValidationMessageFor(model => model.IFreq, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+
+                        <div class="col-md-6">
+
+                        </div>
+                        @Html.Label("Principal Frequency", new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.PFreq, new { @class = "form-control principal-frequency" })
+                            @Html.ValidationMessageFor(model => model.PFreq, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold" class="Grace-description-legend">Grace-Description</legend>
+                    <div class="form-group">
+                        @Html.Label("Grace Option", new { @class = "control-label  col-md-1" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.ScheduleTrialModel.GraceOption, CreditUtilityService.GraceOption(), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ScheduleTrialModel.GraceOption, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="grace-in-day-month">
+                            <div class="">
+                                @Html.LabelFor(model => model.ScheduleTrialModel.Principal, new { @class = "control-label col-md-1" })
+                                <div class="col-md-2">
+                                    @Html.TextBoxFor(model => model.ScheduleTrialModel.Principal, new { @class = "form-control Principal-day", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.ScheduleTrialModel.Principal, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @Html.LabelFor(model => model.ScheduleTrialModel.PrincipalDate, new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(x => x.ScheduleTrialModel.PrincipalDate, true)
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group grace-month-day-date">
+                        <div class="">
+                            @Html.LabelFor(model => model.ScheduleTrialModel.Interest, new { @class = "control-label col-md-1" })
+                            <div class="col-md-2">
+                                @Html.TextBoxFor(model => model.ScheduleTrialModel.Interest, new { @class = "form-control Interest-day", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        @Html.LabelFor(model => model.ScheduleTrialModel.InterestDate, new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DatePicker(x => x.ScheduleTrialModel.InterestDate, true)
+                        </div>
+                    </div>
+
+                    @*@Html.Label("Principal", new { @class = "control-label col-md-1" })
+                        <div class="col-md-2">
+                            @Html.TextBoxFor(model => model.ScheduleTrialModel.Principal, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ScheduleTrialModel.Principal, "", new { @class = "text-danger" })
+
+                        </div>
+                        <div class="form-group">
+
+                            @Html.Label("Eq.Date", new { @class = "control-label col-md-1" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(x => x.ScheduleTrialModel.PrincipalDate, true)
+                                @Html.ValidationMessageFor(model => model.ScheduleTrialModel.PrincipalDate, "", new { @class = "text-danger" })
+                            </div*@
+                    @*</div>
+                        </div>*@
+                    @*<div class="form-group">
+                            <div class="col-md-4">
+                            </div>
+                            <div>
+                                @Html.Label("Interest", new { @class = "control-label col-md-1" })
+                                <div class="col-md-2">
+                                    @Html.TextBoxFor(model => model.ScheduleTrialModel.Interest, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ScheduleTrialModel.Interest, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Eq.Date", new { @class = "control-label col-md-1" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(x => x.ScheduleTrialModel.InterestDate, true)
+                                    @Html.ValidationMessageFor(model => model.ScheduleTrialModel.InterestDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>*@
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold" class="Grace-description-legend">Guarantor-Description</legend>
+                    <div class="Guarantor-Entry-Details">
+                        @Html.Partial("_GuarantorEntry", Model.GuarantorModel)
+                        <legend style="font-size:14px;font-weight:bold" class="Grace-description-legend">Guarantor-Display</legend>
+                        <div class="col-md-12 display-guarantor-detail">
+
+                            <div class="guarantor-table-dis">
+                                <table class="table table-bordered table-striped table-hover" id="display-Entry-table-div">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Account Number</th>
+                                            <th>Percent Or Amount</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <legend style="font-size:14px;font-weight:bold" class="Grace-description-legend">Added-Guarantor</legend>
+                        <div class="col-md-12 guarantor-Entry-add-display">
+                            <div class="guarantor-table-div">
+                                <table class="table table-bordered table-striped table-hover" id="guarantor-Entry-table-div">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Account Number</th>
+                                            <th>Amount or Percent</th>
+
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                @if (Model.AccountDetailsViewModel.PID != 0 && Model.IsChargeAvailable == true)
+                {
+                    <div class="chargeDetails  table-responsive table-hover table-striped">
+                        @{ Html.RenderAction("_ChargeAutoTriggered", "FinanceParameter", new { productId = Model.AccountDetailsViewModel.PID, modevent = 23 });}
+                    </div>
+                }
+                <div class="chargeDetails  table-responsive table-hover table-striped">
+
+                </div>
+                <div class="box-footer">
+                    <div class="form-group">
+                        <div class="col-md-offset-10 col-md-12">
+                            <input type="button" value="Save" class="btn btn-success btn-LoanAccount-sheet-save" data-eventid="19" data-val="Loan Account Open" data-isMultiVerifier="false" />
+                        </div>
+                    </div><!-- box-footer -->
+                </div>
+
+
+            </div>
+        }
+    </div>
+</div>
+
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Content/Custom/Customer.css" rel="stylesheet" />
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script>
+
+
+    $(".multiselectCustomer").chosen({
+        single_backstroke_delete: true,
+        placeholder_text_multiple: "Customer"
+    });
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#FDLoanAcId").prop('disabled', true);
+        $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', true);
+    })
+    $(".link-accounts-search").on("click", ".btn-add-link-account", function () {
+        debugger;
+        var iaccno = $(".link-accounts-search").find(".account-id").val();
+        var tr = $('table#link-account-table-div').find("tr").find(".IndAccounts");
+        var accountNumber = $(".link-accounts-search").find("#LinkAccountNumber").val();
+        if (accountNumber == "") {
+            InfoAlert("Link Account is Empty", 3000);
+            return false;
+        }
+        var count = 0;
+
+        $.each(tr, function (index, item) {
+            if (iaccno == $(item).val()) {
+                count += 1;
+            }
+        })
+        if (count > 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Already Added"
+            }).done(function () {
+                return false;
+            }).fail(function () {
+            })
+            return false;
+        }
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/_LinkAccountDetails",
+            datatype: "Json",
+            data: { iaccno: iaccno },
+            success: function (result) {
+                debugger;
+                $('#link-account-table-div').append(result);
+                $(".link-accounts-search").find("#LinkAccountNumber").val(null);
+                $(".link-accounts-search").find(".account-id").val(result.AccountId).prop("readonly", false);
+                $(".link-accounts-search").find("#LinkAccountNumber").val(result.AccountNumber).prop("readonly", false);
+
+            }
+        })
+    })
+    function DeleteRowLinkAccounts(node) {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $(node).closest('tr').remove();
+        }).fail(function () {
+        })
+    }
+    $('#PID').on('change', function () {
+        debugger;
+        var productId = $("#PID option:selected").val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetAllInterestRatebyPid",
+            data: { productId: productId },
+            success: function (result) {
+                debugger;
+                var items;
+                $.each(result, function (i, state) {
+                    items += "<option value='" + state.InCalRuleId + "'>" + state.InterestCalRule + "</option>";
+                })
+                $('#InCalRuleId').html(items);
+            }
+        })
+    });
+    $('#PID').on('change', function () {
+        debugger;
+        var productId = $("#PID option:selected").val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetProductDetailsbyPid",
+            data: { productId: productId },
+            success: function (result) {
+                debugger;
+                if (result.IsFDLoan) {
+                    $("#FDLoanAllow").val(result.IsFDLoan);
+                    $("#FDLoanAcId").prop('disabled', false);
+                    $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', false);
+                    $(".fdLoanAccount").find(".account-aumber").prop('disabled', false);
+                    $("#InCalRuleId").prop('readonly', true);
+                    $("#PrincipalPenaltyRate").prop('readonly', true);
+                    $("#InterestPenaltyRate").prop('readonly', true);
+                    $("#penGDys").prop('readonly', true);
+                    $("#PenaltyCalculation").prop('readonly', true);
+                    $("#Duration").prop('readonly', false);
+                    $("#SAmt").val("");
+                    $("#LAmt").val("");
+                    $("#GIaccno").prop('readonly', true);
+                    $("#BlockedAmt").val("");
+                    $(".guaranty-account").find(".btn-account-open-search").prop('disabled', false);
+                    $(".guaranty-account").find("#GIaccno").prop('disabled', false);
+                    $('#display-Entry-table-div >tbody').empty();
+                    $('#guarantor-Entry-table-div >tbody').empty();
+                    $('#link-account-table-div .MoveableRow').empty();
+                    //$(".link-accounts-search").find(".btn-account-open-search").prop('disabled', true);
+                }
+                else {
+                    $("#FDLoanAllow").val(result.IsFDLoan);
+
+                    $("#FDLoanAcId").prop('disabled', true);
+                    $("#FDLoanAcId").val("")
+                    $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', true);
+                    $(".fdLoanAccount").find(".account-aumber").prop('disabled', true);
+                    $("#GIaccno").val("");
+                    $("#LinkAccountNumber").val("");
+                    $("#LAmt").val("");
+                    $("#SAmt").val("");
+                    $("#BlockedAmt").val(""); 
+                    $("#GIaccno").prop('readonly', false);
+                    $(".guaranty-account").find(".btn-account-open-search").prop('disabled', false);
+                    $(".link-accounts-search").find(".btn-account-open-search").prop('disabled', false);
+                    $("#InCalRuleId").prop('disabled', false);
+                    $("#PrincipalPenaltyRate").prop('disabled', false);
+                    $("#InterestPenaltyRate").prop('disabled', false);
+                    $("#penGDys").prop('disabled', false);
+                    $("#PenaltyCalculation").prop('disabled', false);
+                    $('#display-Entry-table-div >tbody').empty();
+                    $('#guarantor-Entry-table-div >tbody').empty();
+                    $('#link-account-table-div .MoveableRow').empty();
+
+                }
+
+
+                if (result.Revolving == true) {
+                    debugger;
+                   // var duration = $('#Duration').val();
+                    $('#PaymentMode').val(1);
+                    $('.principal-interest-payment-mode').css('pointer-events', 'none');
+                    $('#PFreq').val(result.Duration)
+                    $('#PFreq').prop('readonly', true)
+                    $('.grace-in-day-month').prop('readonly', true)
+                    $('#IFreq').prop('readonly', false)
+                }
+                else {
+                    debugger;
+                    $('#PFreq').val(1)
+                    $('.principal-interest-payment-mode').css('pointer-events', 'auto')
+                    $('#PFreq').prop('readonly', false)
+                }
+                changeGraceDayOption();
+                var items;
+                $.each(result.InterestCapitalisation, function (i, state) {
+                    items += "<option value='" + state.PAYID + "'>" + state.PRule + "</option>";
+                })
+                var item1;
+                $.each(result.PenaltyCalculationList, function (i, state) {
+                    item1 += "<option value='" + state.PCID + "'>" + state.PCNAME + "</option>";
+                })
+
+                $('#PAYID').html(items);
+                $('#PenaltyCalculation').html(item1);
+                $('#InterestRate').val(result.IRate);
+                $('#PrincipalPenaltyRate').val(result.PPRate);
+                $('#InterestPenaltyRate').val(result.PIRate);
+                $('#penGDys').val(result.penGDys);
+                $('#Durtype').val(result.durState);
+                $('#Duration').val(result.Duration);
+                var durationType = result.durState == 1 ? "Month(s)" : "Day(s)";
+                debugger;
+                //   var registrationDateVal = $("#RegistrationDate").val();
+                //   var maturationDateVal = $("#MaturationDate").val();
+                //   registrationDateVal = new Date(registrationDateVal)
+                //  registrationDateVal
+                ////   var month = registrationDateVal
+                //   //   var mnth = registrationDateVal
+
+
+                //   var d = new Date("2012-07-01 00:00:00.0");
+
+                //   var monthIndex = d
+
+                //   if (result.durState == 1) {
+
+                //       registrationDateVal.setMonth(5 + result.duration);
+                //       maturationDateVal = registrationDateVal;
+                //       $("#MaturationDate").val(maturationDateVal);
+                //   }
+
+
+                //if (result.durState == 1)
+                //{
+
+                //   $(".day-month").text("Duration"+"[Month(s)]")
+                //}
+                //else
+                //{
+                var allObj = $('.loan-registration-details').find('.day-month');
+                $(allObj).each(function (index, item) {
+                    if (index == 0) {
+                        $(item).html("Granted Duration" + '[' + durationType + ']');
+                    }
+                    else {
+                        $(item).html("Maximum Duration" + '[' + durationType + ']');
+                    }
+                });
+
+
+                //}
+
+                if (result.HasIndivRate == false) {
+                    $('#InterestRate').prop("readonly", true);
+                    $('#PrincipalPenaltyRate').prop("readonly", true);
+                    $('#InterestPenaltyRate').prop("readonly", true);
+
+                }
+                else if (result.HasIndivRate == true) {
+                    $('#InterestRate').prop("readonly", false);
+                    $('#PrincipalPenaltyRate').prop("readonly", false);
+                    $('#InterestPenaltyRate').prop("readonly", false);
+
+                }
+                if (!result.IsFDLoan) {
+
+                    if (result.HasIndDuration) {
+
+                        $("#Duration").prop('readonly', false);
+                        $("#GrantedDuration").prop('readonly', false);
+                        $("#GrantedDuration").val("0");
+                        $('#GrantedDuration').trigger('change');
+
+                    }
+                    else {
+                       $("#Duration").prop('readonly', false);
+                        $("#GrantedDuration").val(result.Duration);
+                        $("#GrantedDuration").prop('readonly', true);
+                        $('#GrantedDuration').trigger('change');
+                    }
+                } else {
+                    //$("#Duration").prop('readonly', true);
+
+
+                    $("#GrantedDuration").val(result.Duration);
+                    $("#GrantedDuration").prop('readonly', true);
+                    $('#GrantedDuration').trigger('change');
+                }
+                if (result.IsChargeAvailable) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/FinanceParameter/_ChargeAutoTriggered",
+                        datatype: "Json",
+                        data: {
+                            productId: productId, modevent: 23,
+                        },
+                        success: function (result) {
+                            debugger;
+                            $(".chargeDetails").html("");
+                            $(".chargeDetails").html(result);
+                            $(".chargeDetails").removeAttr("hidden");
+
+                        }
+
+                    })
+                }
+            }
+         
+
+        })
+    })
+
+    ////principle and interest edited
+    $('#PID').on('change', function () {
+        debugger;
+        var PId = $("#PID option:selected").val();
+        var duration = $('#Duration').val();
+        $.ajax({
+            type: "GET",
+            url: "/Credit/_LoanAttributes",
+            data: { PId: PId },
+            success: function (result) {
+                debugger;
+                //if (result.Revolving == true) {
+                //    debugger;
+                //    var duration = $('#Duration').val();
+                //    $('#PaymentMode').val(1);
+                //    $('.principal-interest-payment-mode').css('pointer-events', 'none');
+                //    $('#PFreq').val(duration)
+                //    $('#PFreq').prop('readonly', true)
+                //    $('.grace-in-day-month').prop('readonly', true)
+                //    $('#IFreq').prop('readonly', false)
+                //}
+                //else {
+                //    debugger;
+                //    $('#PFreq').val(1)
+                //    $('.principal-interest-payment-mode').css('pointer-events', 'auto')
+                //    $('#PFreq').prop('readonly', false)
+                //}
+                $(".loan-attributes").html("");
+                $(".loan-attributes").html(result)
+                //changeGraceDayOption()
+
+            }
+        })
+    });
+    function changeGraceDayOption() {
+        debugger;
+        var value = $('#GraceOption').val();
+        if (value != 1) {
+
+            $(".Principal-day").prop('readonly', false)
+            $(".Interest-day").prop('readonly', false)
+
+            if (value == 4) {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+
+                if ($('#Revolving').prop("checked")) {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+                } else {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+                }
+                $(".Principal-day").prop('readonly', true)
+                $(".Interest-day").prop('readonly', true)
+
+            } else {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                if ($('#Revolving').prop("checked")) {
+                    $(".Principal-day").prop('readonly', true)
+                } else {
+                    $(".Principal-day").prop('readonly', false)
+                }
+
+                $(".Interest-day").prop('readonly', false)
+            }
+
+        }
+        else {
+            $(".Principal-day").prop('readonly', true)
+            $(".Interest-day").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+        }
+    }
+    $('#Duration').on('change', function () {
+        if ($('#Revolving').prop("checked")) {
+            $('#PFreq').val($(this).val())
+        }
+    })
+
+
+
+    
+    $('#ScheduleTrialModel_GraceOption').on('change', function () {
+        debugger;
+        var paymentOption = $("#ScheduleTrialModel_GraceOption option:selected").text();
+        $(".Grace-description-legend").text("Payment-Description[" + paymentOption + "]")
+    });
+    $("#SAmt").on('change', function () {
+        debugger;
+        var fdloan = $("#FDLoanAllow").val();
+
+        var fdloanval = $("#LoanAccountOpen-form").find(".schemevalue").val();
+        var accountId = $(".account-number-div").find('.account-id').val();
+      //  var accountId = $(".guaranty-account").find('.account-id').val()
+        var sAmount = 0;
+        sAmount = $(this).val();
+        var Pid = $('#PID').val();
+        var quotationAmount = $('#LAmt').val();
+        if (fdloan == "true") {
+            //var sAmount = 0;
+            //sAmount = $(this).val()
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/CheckFDLoanDetails',
+                data: {
+                
+                    accountId: accountId,
+                },
+                success: function (fdloan) {
+                    debugger;
+                    if (sAmount > fdloan.MinValue) {
+                        $("#SAmt").val(fdloan.MinValue).focus();
+                        $('#BlockedAmt').val($("#SAmt").val());
+                        ErrorAlert("Amount must not be greater than!!" + fdloan.MinValue, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    } else {
+                        debugger;
+                        $("#BlockedAmt").val(sAmount);
+                    }
+
+
+                },
+
+            });
+        }
+        else {
+            debugger;
+        
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/GetWithOutFDLoanDetails',
+
+                data: {
+                    Pid: Pid,
+                    quotationAmount: quotationAmount,
+                    sAmount:sAmount,
+                },
+                success: function (fdloan) {
+                    debugger;
+                    if (sAmount > fdloan.MinValue) {
+                       
+                        ErrorAlert("Amount must not be greater than " + fdloan.MinValue, 5000);
+                        $("#SAmt").val(fdloan.MinValue).focus();
+                        document.getElementById('alert-error').scrollIntoView();
+                    } else {
+                        $("#SAmt").val(sAmount).focus();
+                    }
+
+
+                },
+
+            });
+        }
+    })
+    $(function () {
+        $.validator.unobtrusive.parse('#LoanAccountOpen-form');
+        $(".btn-LoanAccount-sheet-save").on("click", function (e) {
+            debugger
+            //var interestfreq = $('#IFreq').val();
+            //var principalfreq = $('#PFreq').val();
+            var Aname = $('#Aname').val();
+            if (Aname == "") {
+                ErrorAlert("Account Name is required!!", 5000);
+                document.getElementById('alert-error').scrollIntoView();
+                return false
+            }
+            
+            var strictVerifiable = $('.loanRegistration-transaction').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            $('#LoanAccountOpen-form').removeData("validator").removeData("unobtrusiveValidation");
+
+            $.validator.unobtrusive.parse($('#LoanAccountOpen-form'));
+
+            if ($("#LoanAccountOpen-form").valid()) {
+        
+                var fdloan = $("#FDLoanAllow").val()
+                if (fdloan == "true") {
+                    var accountId = $(".fdLoanAccount").find(".account-id").val()
+                    if (accountId == 0) {
+                        ErrorAlert("Account Number is required!!", 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                        return false
+                    }
+                    var rowCount1 = $('#guarantor-Entry-table-div >tbody >tr').length;
+                    if (parseInt(rowCount1) < 1) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Guarantor Not Added."
+                        }).done(function () {
+                            return false;
+                        }).fail(function () {
+                        })
+                        return false;
+                    }
+                }
+
+                var rowCount = $('table#link-account-table-div').find("tr").find(".IndAccounts").length;
+                //var rowCount = $('#guarantor-Entry-table-div >tbody >tr').length;
+                //if (fdloan == "false") {
+                //    if (parseInt(rowCount) < 1) {
+                //        var gaurantorName = $(".Guarantor-Entry-Details").find("#GIaccno").val();
+                //        var amount = $(".Guarantor-Entry-Details").find(".BlockedAmt").val();
+                //        if (gaurantorName == "") {
+                //            ErrorAlert("Gaurantor Account Number needed", 5000);
+                //            return false;
+                //        }
+                //        if (amount == "") {
+                //            ErrorAlert("Amount or Percent needed in Gaurantor", 5000);
+                //            return false;
+                //        }
+                //    }
+
+                //}
+
+                //Guarantor-Entry-Details
+
+
+
+                if (parseInt(rowCount) < 1) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "Link Account Not Added."
+                    }).done(function () {
+                        return false;
+                    }).fail(function () {
+                    })
+                    return false;
+                }
+
+                var SchId = $("#AccountDetailsViewModel_SchemeId").val();
+                var FDLoanVal = $("#FDLoanAcc").val();
+                var check = false;
+                $.ajax({
+                    type: "GET",
+                    url: "/Credit/GetSchemeDetailsBySchemeId",
+                    datatype: "Json",
+                    async: false,
+                    data: { SchId: SchId },
+                    success: function (result) {
+                        debugger;
+                        if (result) {
+                            if (FDLoanVal == null || FDLoanVal == "") {
+                                ErrorAlert("FD Loan Account is Required", 5000);
+                                check = true;
+                                return false;
+                            }
+                        }
+
+
+                    },
+                    error: function () {
+                        debugger;
+                        alert('Error occurs!');
+                    }
+                })
+
+                if (check == true) {
+                    return false;
+                }
+
+
+
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+
+                    LoanAccountOpen();
+                }
+            }
+        })
+    })
+    function LoanAccountOpen(e) {
+        debugger;
+            
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#LoanAccountOpen-form').ajaxSubmit({
+                success: function (result) {
+                    debugger;
+                    var url;
+
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Credit/LoanAccountOpen",
+                            data: { regId: 0 },
+                            type: 'get',
+                            async: false,
+                            success: function (abc) {
+                                $(".content").html(abc)
+                                SuccessAlert(result.Msg, 5000);
+                                document.getElementById('alert-success').scrollIntoView();
+                            }
+                        })
+
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+    $("#DateType").on("click", function () {
+        debugger;
+        var isChecked = $(this).prop("checked");
+        var parent = $(this).parents();
+        var engdate = $(parent).find(".chdPickerMain").find(".chdPicker").find(".txtDateAD");
+        var nepDate = $(parent).find(".chdPickerMain").find(".chdPicker").find(".txtDateBS");
+        var calDateType = $(parent).find(".chdPickerMain").find(".chdPicker").find(".calDateType");
+        if (isChecked == true) {
+
+            $(calDateType).html('AD');
+            $(calDateType).attr("id", "1");
+            $(engdate).show();
+            $(nepDate).hide();
+
+        } else {
+            $(nepDate).show();
+            $(engdate).hide();
+
+            $(calDateType).html('BS');
+            $(calDateType).attr("id", "2");
+        }
+    })
+    $("#GrantedDuration").on("change", function () {
+        debugger;
+        var duration = $("#GrantedDuration").val();
+        // var regDate = formatDate($("#RegDate").val());
+        var regDate = formatDate($("#RegistrationDate").val());
+        var productId = $("#PID option:selected").val();
+        var durtype = $("#Durtype").val();
+        var dateAd = $("#MaturationDate").closest(".chdPickerMain").find(".txtDateAD");
+        var dateBs = $("#MaturationDate").closest(".chdPickerMain").find(".txtDateBS");
+        var datetype = $('#DateType').is(":checked")
+        var productDuration = $("#Duration").val();
+        if (duration > productDuration) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Granted Duration shoud not be greater than Product Duration "
+            }).done(function () {
+                $("#GrantedDuration").val(productDuration);
+                return false;
+            }).fail(function () {
+            })
+            return false;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/GetCaptRuleByProductAndMatDuration",
+            datatype: "Json",
+            data: {
+                registerDate: regDate,
+                duration: duration,
+                datetype: datetype,
+                durtype: durtype,
+                productId: productId
+            },
+            success: function (result) {
+                debugger;
+
+
+
+                //This part added to change for AD to BS in correctly
+                var newAdDate = new Date(result.duration.EnglishDate);
+                var d = newAdDate.getDate();
+                var m = newAdDate.getMonth();
+                m += 1;
+                var y = newAdDate.getFullYear();
+                var newdateforAd = (d + "-" + m + "-" + y);
+                result.duration.dateAd = newdateforAd;
+
+
+
+                $("#MaturationDate").val(result.duration.Date);
+                $('#DateType').prop('readonly', true);
+                dateAd.val(result.duration.EnglishDate);
+                dateBs.val(result.duration.NepaliDate)
+            }
+        })
+    });
+    $('#ScheduleTrialModel_GraceOption').on('change', function () {
+        debugger;
+        $('#ScheduleTrialModel_Principal').trigger('change')
+        $('#ScheduleTrialModel_Interest').trigger('change')
+        changeGraceDayOption()
+        //if($(this).val()==1)
+        //{
+        //    $('#Principal').val(0);
+
+        //    $('#ValueDate').change();
+        //}
+    })
+    $('#ScheduleTrialModel_Principal').on('change', function () {
+        debugger;
+        var graceOption = $('#ScheduleTrialModel_GraceOption option:selected').val();
+        var pinVal = $(this).val();
+        if (pinVal == "") {
+            pinVal = 0;
+        }
+        //var currentDate = $('#RegDate').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        ////var currentDate = "12/07/2019";
+       // var today = new Date();
+       // var currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+       // var currentDate = (today.getMonth() + 1) + '-' + today.getDate() + '-' + today.getFullYear();
+
+        var currentDate = new Date();
+        
+        $.ajax({
+            url: "/Credit/GetBranchTransactionDate",
+            type: "Get",
+            async: false,
+            dataType: "json",
+            success: function (result) {
+                debugger;
+                var startDate = new Date(parseInt(result.replace("/Date(", "").replace(")/")));
+                var formattedStartDate = (startDate.getMonth() + 1) + "-" + startDate.getDate() + "-" + startDate.getFullYear();
+
+               // alert(formattedStartDate);
+                currentDate = formattedStartDate;
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                debugger;
+                ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+            }
+        })
+
+        if (graceOption == 1) {
+            pinVal = 0;
+            $('#ScheduleTrialModel_Principal').val(0);
+        }
+        if (graceOption != 4) {
+            $.ajax({
+                url: "/Credit/GetGraceDate",
+                type: "Get",
+                data: { graceOption: graceOption, dayMonth: pinVal, date: currentDate },
+                dataType: "json",
+                success: function (result) {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.Date);
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.EnglishDate)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.NepaliDate)
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    debugger;
+                    ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+                }
+            })
+        }
+    })
+    $('#ScheduleTrialModel_Interest').on('change', function () {
+        debugger;
+        var graceOption = $('#ScheduleTrialModel_GraceOption option:selected').val();
+        var intVal = $(this).val();
+        if (intVal == "") {
+            intVal = 0;
+        }
+        if (graceOption == 1) {
+            intVal = 0;
+            $('#ScheduleTrialModel_GraceOptionInterest').val(0);
+        }
+       // var currentDate = $('#RegDate').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        //////var currentDate = "12/07/2019";
+      //  var today = new Date();
+      //  var currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+       // var currentDate = (today.getMonth() + 1) + '-' + today.getDate() + '-' + today.getFullYear();
+
+        var currentDate = new Date();
+
+        $.ajax({
+            url: "/Credit/GetBranchTransactionDate",
+            type: "Get",
+            async: false,
+            dataType: "json",
+            success: function (result) {
+                debugger;
+                var startDate = new Date(parseInt(result.replace("/Date(", "").replace(")/")));
+                var formattedStartDate = (startDate.getMonth() + 1) + "-" + startDate.getDate() + "-" + startDate.getFullYear();
+
+                //alert(formattedStartDate);
+                currentDate = formattedStartDate;
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                debugger;
+                ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+            }
+        })
+
+        if (graceOption != 4) {
+            $.ajax({
+                url: "/Credit/GetGraceDate",
+                type: "Get",
+                data: { graceOption: graceOption, dayMonth: intVal, date: currentDate },
+                dataType: "json",
+                success: function (result) {
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.Date);
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.EnglishDate)
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.NepaliDate)
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    debugger;
+                    ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+                }
+            })
+        }
+    })
+    function changeGraceDayOption() {
+        debugger;
+        var value = $('#ScheduleTrialModel_GraceOption').val();
+        if (value != 1) {
+
+            $(".Principal-day").prop('readonly', false)
+            $(".Interest-day").prop('readonly', false)
+
+            if (value == 4) {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+
+                if ($('#Revolving').prop("checked")) {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+                } else {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+                }
+                $(".Principal-day").prop('readonly', true)
+                $(".Interest-day").prop('readonly', true)
+
+            } else {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                if ($('#Revolving').prop("checked")) {
+                    $(".Principal-day").prop('readonly', true)
+                } else {
+                    $(".Principal-day").prop('readonly', false)
+                }
+
+                $(".Interest-day").prop('readonly', false)
+            }
+
+        }
+        else {
+            $(".Principal-day").prop('readonly', true)
+            $(".Interest-day").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+        }
+    }
+    $('#GraceOption').on('change', function () {
+        $('#ScheduleTrialModel_Principal').trigger('change')
+        $('#ScheduleTrialModel_Interest').trigger('change')
+        changeGraceDayOption()
+
+    })
+
+    $(".loan-attributes").on("click", ".isRevolving", function () {
+        debugger;
+        if ($(this).prop("checked")) {
+            var duration = $('#Duration').val();
+            $('#PAYID').val(1);
+            $('.principal-interest-payment-mode').css('pointer-events', 'none')
+            $('.principal-frequency').val(duration)
+            $('.principal-frequency').prop('readonly', true)
+            $('.grace-in-day-month').prop('readonly', true)
+            $('.interest-frequency').prop('readonly', false)
+
+        } else {
+            $('.principal-frequency').val(1)
+            $('.principal-interest-payment-mode').css('pointer-events', 'auto')
+            $('.principal-frequency').prop('readonly', false)
+
+        }
+        changeGraceDayOption()
+    })
+
+    $(".link-accounts").on("click", ".up,.down", function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var $element = this;
+
+        //var row = $($element).parents("tbody tr:first");
+        var row = $(this).closest('tr');
+        var currentElement = $(row).html();//current
+
+        if ($(this).is('.up')) {
+            var rowToInsert = $(row).prev();
+            var secondElement = $(rowToInsert).html();//second
+
+            //if (rowToInsert.length > 0) {
+            //    $(rowToInsert).html(currentElement);
+            //    $(row).html(secondElement)
+            //}
+            if (secondElement != "") {
+                $(rowToInsert).html(currentElement);
+                $(row).html(secondElement)
+            }
+
+            //row.insertBefore(row.prev());
+        }
+        else {
+            var rowToInsert = $(row).next();
+            var secondElement = $(rowToInsert).html();//second
+            //if (rowToInsert.length > 0) {
+            //    $(rowToInsert).html(currentElement);
+            //    $(row).html(secondElement)
+            //}
+            if (secondElement != "") {
+                $(rowToInsert).html(currentElement);
+                $(row).html(secondElement)
+            }
+        }
+
+    });
+    $('#PAYID').on('change', function () {
+        debugger;
+        var value = $(this).val();
+        if (value == 1) {
+            $('#PFreq').prop('readonly', false)
+            $('#IFreq').prop('readonly', false)
+        } else if (value == 2) {
+            $('#PFreq').prop('readonly', true)
+            $('#IFreq').prop('readonly', false)
+        } else {
+            $('#PFreq').prop('readonly', true)
+            $('#IFreq').prop('readonly', true)
+        }
+
+    })
+    $('#PFreq').on('change', function () {
+        debugger;
+        var principalfreq = $(this).val();
+        var duration = $('#GrantedDuration').val();
+        var interestfreq = $('#IFreq').val();
+        if (principalfreq == "" || principalfreq == "0") {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "Principal frequency cann't be less than 1.!!! "
+            }).done(function () {
+                $(this).val(1)
+            }).fail(function () {
+
+            });
+
+            return
+        }
+        var divideResult = parseFloat(duration) % parseFloat(principalfreq)
+
+        if (divideResult != 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "Principal frequency must be factor of duration.!!! "
+            }).done(function () {
+                $('#PFreq').focus()
+                $('#PFreq').val(1)
+            }).fail(function () {
+
+            });
+
+            return
+        }
+
+        if (parseInt(principalfreq) < parseInt(interestfreq)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal frequency cann't be less than interest frequency.!!! "
+            }).done(function () {
+                $('#PFreq').focus()
+                $('#PFreq').val(1)
+            }).fail(function () {
+
+            });
+
+            return
+        }
+    })
+    $('#IFreq').on('change', function () {
+        debugger;
+        var duration = $('#GrantedDuration').val();
+        var interestfrequency = $(this).val();
+        var PaymentMode = $('#PAYID option:selected').val();
+
+        if (interestfrequency == "" || interestfrequency == "0") {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal frequency cann't be less than 1.!!! "
+            }).done(function () {
+                $(this).val(1)
+            }).fail(function () {
+
+            });
+
+            return
+        }
+        var principalfreq = $('#PFreq').val()
+
+        var interestfreq = $('#IFreq').val();
+        if (PaymentMode != 2) {
+            if (parseInt(principalfreq) < parseInt(interestfreq)) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Principal frequency cann't be less than interest frequency.!!! "
+                }).done(function () {
+                    $('#IFreq').focus()
+                    $('#IFreq').val(1)
+                }).fail(function () {
+
+                });
+
+                return
+            }
+        } else {
+            $('.principal-frequency').val(interestfreq)
+        }
+
+        var divideIntResult = parseFloat(duration) % parseFloat(interestfreq)
+        if (divideIntResult != 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "interest frequency must be factor of duration.!!! "
+            }).done(function () {
+                $('#IFreq').focus()
+                $('#IFreq').val(1);
+            }).fail(function () {
+
+            });
+
+            return
+        }
+    })
+
+    $('input[type="radio"][name="DateType"]').on('change', function () {
+        debugger;
+        //var radiovalue = $('input[type="radio"][name="DateType"]:checked').val();
+        var selected_value = $('input[type="radio"][name="DateType"]:checked').val();
+        //var radiovalue1 = $('input[type="radio"][name="DateType"]:checked').find("#BS").val();
+        //var bsvalue = $("#BS option:checked").val();
+        //var advalue = $("#AD option:checked").val();
+        //var isChecked = $(this).prop("checked");
+        var parent = $(this).parents();
+        var engdate = $(parent).find(".chdPickerMain").find(".chdPicker").find(".txtDateAD");
+        var nepDate = $(parent).find(".chdPickerMain").find(".chdPicker").find(".txtDateBS");
+        //var calDateType = $(parent).find(".chdPickerMain").find(".chdPicker").find(".calDateType");
+        var calDateType = $(parent).find(".chdPickerMain").find(".chdPicker").find('.dpDFormat').find("#DateTypeADBS");
+
+        if (selected_value == "1") {
+
+            $(calDateType).val(1);
+
+            $(engdate).show();
+            $(nepDate).hide();
+            // $(engdate).focus();
+        } else {
+            $(nepDate).show();
+            $(engdate).hide();
+            // $(nepDate).focus();
+            $(calDateType).val(2);
+        }
+    })
+
+</script>

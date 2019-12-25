@@ -1,0 +1,164 @@
+﻿@using PagedList
+@model PagedList.IPagedList<ChannakyaBase.Model.ViewModel.TaskViewModel>
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+
+@{
+    string message = "";
+
+}
+@*<div class="box box-info task-listDtails">
+    @*<div class="box-header with-border">*@
+
+<div class="box-body no-padding task-listDtails">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-responsive table-hover all-pending-task-table">
+            <tr>
+                <th>
+
+                    Raised By(UserName)
+                </th>
+
+                <th>
+                    Message
+                </th>
+                <th>
+                    Notification Type
+                </th>
+                <th>
+                    Raised On
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @Html.HiddenFor(modelItem => item.Task1Id)
+                    <td>
+                        @item.EmployeeName (@item.UserName)
+
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Message)
+                    </td>
+                    <td>
+                        <span>@BaseTaskUtilityService.GetTaskNameByEventId(item.EventId)</span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RaisedOn)
+                    </td>
+                    <td>
+                        @if (item.IsRejected == true)
+                        {
+                            <span style="color:#ff0000;font-family:'Century Gothic';padding-left:20px">Rejected</span>
+
+                        }
+                        else {
+                            <span style="color:#4ea529;font-family:'Century Gothic';padding-left:20px">New Task</span>
+
+                        }
+                            
+                        </td>
+                        @Html.HiddenFor(modelItem => item.EventId, new { @class = "eventId" })
+                        <td>
+                            @if (item.Message != "" && item.Message != null)
+                            {
+                                message = item.Message.Trim();
+                            }
+
+                            @*<button type="button" class="btn btn-info btn-sm " onclick="directToRead(@item.Task1Id,@item.EventId,@item.EventValue,'@message','TaskMain')">Details <i class="fa fa-info-circle" aria-hidden="true"></i></button>*@
+                            <button type="button" class="btn btn-info btn-sm " onclick="directToRead(@item.Task1Id,@item.EventId,@item.EventValue,'@message','TaskMain')">Details <i class="fa fa-info-circle" aria-hidden="true"></i></button>
+
+                        </td>
+                    </tr>
+            }
+
+        </table>
+    </div>
+
+    @Html.Paging("_ViewAllPendingTaskList", "TaskVerification", Model.PageCount, Model.PageNumber, Model.PageSize)
+
+</div>
+
+
+<div id="account-pop-up-div2" class='modal' role='dialog'>
+
+
+</div>
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+<script>
+    
+
+    $("div.task-listDtails").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var employeeName = parentContainer.find("#search-Employee-Name").find("#txtEmployeeSearch").val();
+        var eventId = parentContainer.find('#search-Event-EventId').find("#EventId").val();
+        var fromdate = parentContainer.find('#search-date-range').find("#fromdate").val();
+        var todate = parentContainer.find('#search-date-range').find("#todate").val();
+        var container = parentContainer.find("div.task-listDtails")
+        var url = "?employeeName=" + employeeName + "&eventId=" + eventId + "&fromdate=" + fromdate + "&todate=" + todate;
+        getPageNumberBtnAction(url, container, me)
+
+    });
+    $("div.task-listDtails").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var employeeName = parentContainer.find("#search-Employee-Name").find("#txtEmployeeSearch").val();
+        var eventId = parentContainer.find('#search-Event-EventId').find("#EventId").val();
+        var fromdate = parentContainer.find('#search-date-range').find("#fromdate").val();
+        var todate = parentContainer.find('#search-date-range').find("#todate").val();
+        var container = parentContainer.find("div.task-listDtails")
+        var url = "?employeeName=" + employeeName + "&eventId=" + eventId + "&fromdate=" + fromdate + "&todate=" + todate;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.task-listDtails").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var employeeName = parentContainer.find("#search-Employee-Name").find("#txtEmployeeSearch").val();
+        var eventId = parentContainer.find('#search-Event-EventId').find("#EventId").val();
+        var fromdate = parentContainer.find('#search-date-range').find("#fromdate").val();
+        var todate = parentContainer.find('#search-date-range').find("#todate").val();
+        var container = parentContainer.find("div.task-listDtails")
+        var url = "?employeeName=" + employeeName + "&eventId=" + eventId + "&fromdate=" + fromdate + "&todate=" + todate;
+        getPageSizeChangeData(url, container, me)
+    });
+    $(".task-verification-index").on('click', '.btn-searchTaskedetails', function (e) {
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var employeeName = parentContainer.find("#search-Employee-Name").find("#txtEmployeeSearch").val();
+        var eventId = parentContainer.find('#search-Event-EventId').find("#EventId").val();
+        var fromdate = parentContainer.find('#search-date-range').find("#fromdate").val();
+        var todate = parentContainer.find('#search-date-range').find("#todate").val();
+        $.ajax({
+            contentType: "html",
+            type: "Get",
+            url: "/TaskVerificationAcc/_ViewAllPendingTaskList",
+            data: { employeeName: employeeName, eventId: eventId, fromdate: fromdate, todate: todate },
+            success: function (data) {
+                $(".task-verification-index").find("div.task-listDtails").html("");
+                $(".task-verification-index").find("div.task-listDtails").html(data);
+            }
+        })
+    });
+</script>

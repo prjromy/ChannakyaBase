@@ -1,0 +1,85 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher2T
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service service = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    var ledgerName = "";
+    if (Model.Fid != null)
+    {
+        if (Model.Fid != 0)
+        {
+            ledgerName = service.GetLedgerName(Convert.ToInt32(Model.Fid));
+            //if (Model.Voucher4T != null)
+            //{
+            //    if (Model.Voucher4T.Count() > 0)
+            //    {
+            //        ledgerName = ledgerName + "<br/> <b>Dimension Values</b>";
+            //        foreach (var item in Model.Voucher4T)
+            //        {
+            //            ledgerName = ledgerName + "<br/><br/>" + "<b>" + service.GetVoucherDimensionLabel(Convert.ToInt32(item.DVId)) + "</b>" + ":" + "&nbsp" + service.GetVoucherDimensionValue(Convert.ToInt32(item.DDID));
+            //        }
+            //    }
+            //}
+        }
+        //    if (Model.Voucher3T != null)
+        //    {
+        //        if (Model.Voucher3T.Count() > 0)
+        //        {
+        //            ledgerName = ledgerName + "<br/> <b>Subsi Values</b>";
+        //            foreach (var item in Model.Voucher3T)
+        //            {
+        //                ledgerName = ledgerName + "<br/><br/>" + item.SId;
+        //            }
+        //        }
+        //    }
+
+        //}
+
+    }
+}
+
+<tr id="newrow">
+    @if (Model.CreditAmount == null)
+    {
+        <td style="text-align:left">
+
+            @Html.Label("By", new { @class = "control-label" })
+
+        </td>
+    }
+    else
+    {
+        <td style="text-align:left">
+            @Html.Label("To", new { @class = "control-label" })
+        </td>
+    }
+
+
+    <td style="text-align:left" class="ledger-search-container" id="append">
+        @Html.Raw(ledgerName)
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+    <td style="text-align:left" class="ledger-search-container" id="append">
+        @Html.DisplayFor(x => x.Particulars, new { @class = " form-control Particulars", @id = "particularsSearch" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+
+
+    <td style="text-align:right" class="debit-amount">
+        @Html.DisplayFor(x => x.DebitAmount, new { @class = "DebitAmount form-control", @style = "width:100%" })
+    </td>
+    <td style="text-align:right" class="credit-amount">
+        @Html.DisplayFor(x => x.CreditAmount, new { @class = "CreditAmount form-control", @style = "width:100%" })
+    </td>
+
+    
+</tr>
+
+   

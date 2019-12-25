@@ -1,0 +1,52 @@
+﻿
+@using PagedList.Mvc
+@using PagedList;
+
+@model PagedList<ChannakyaBase.DAL.DatabaseModel.FGetLocationTB_Result>
+
+@using ChannakyaBase.BLL.CustomHelper;
+@{
+    List<SelectListItem> list = ViewBag.sortFilter;
+}
+@Html.SearchSorting("_GetLocationList", "Location", list)
+<div class="scroll">
+    <table class="table col-xs-12 locationlist">
+
+        <tr>
+            <th class="col-xs-5">
+                @Html.DisplayNameFor(model => model.First().LocationName)
+            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.First().Mobile)
+                </th>
+                <th>
+
+                    @Html.DisplayNameFor(model => model.First().Department)
+                </th>*@
+
+        </tr>
+        @if (Model.Count() != 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr id="selectLocation" class="selectLocation" style="cursor:pointer" data-dismiss="modal">
+                    @Html.HiddenFor(modelItem => item.LId)
+
+                    <td id="locationName" class="col-xs-5">
+                        @Html.DisplayFor(modelItem => item.LocationName)
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Record Found</td>
+            </tr>
+        }
+    </table>
+
+</div>
+
+
+@Html.Paging("_GetLocationList", "Location", @Model.PageCount, @Model.PageNumber, @Model.PageSize)

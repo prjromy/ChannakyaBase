@@ -1,0 +1,47 @@
+﻿@model ChannakyaCustomeDatePicker.Models.HolidaysInYear
+@{
+    Layout = null;
+    int counter = 1;
+}
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="width-30">
+                SN.
+            </th>
+            <th>
+                Year
+            </th>
+            <th>
+                Month
+            </th>
+
+            <th>Days</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.HolidayList)
+        {
+            <tr>
+                <td>
+                    @counter
+                </td>
+
+                <td>
+                    <a href="#" onclick="editholiday(@item.HolidayId)"><i class="fa fa-edit"></i>@item.YearId</a>
+                </td>
+                <td>
+                    @ChannakyaCustomeDatePicker.Helper.MonthNameHelper.GetMonthName(item.MonthId)
+                </td>
+
+
+                <td>@item.Holiday</td>
+                <td>@item.Description</td>
+
+            </tr>
+            counter++;
+        }
+    </tbody>
+</table>

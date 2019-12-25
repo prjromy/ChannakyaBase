@@ -1,0 +1,68 @@
+﻿@model  ChannakyaBase.Model.ViewModel.TaxCertificateModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ChannakyaAccounting.Service.VoucherMap.VoucherMapService subService = new ChannakyaAccounting.Service.VoucherMap.VoucherMapService();
+
+}
+<div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Tax Certificate</h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        <fieldset>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-5 ">
+                        @Html.Label("Account No:")
+                        @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Other.GetDescription())
+                    </div>
+                    
+                    <div class="form-group">
+                        @Html.Label("Fiscal Year", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-5">
+                            @Html.DropDownListFor(x => Model.FYID, ReportUtilityService.GetFiscalYearByFYIDAndCurrentDate(Loader.Models.Global.CurrentFYID), "Select Fiscal Year", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    <button type="button" name="btn-tax-certificate" id="btn-tax-certificate" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                        @*<i class="fa fa-search"></i>*@ GENERATE
+                    </button>
+                </div>
+
+
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border balance-certificate-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $('#btn-tax-certificate').on('click', function () {
+        debugger
+        var FYID = $('#FYID').val();
+        var accountNo = $('.account-id').val(); //khai k ho id iAccno xa
+        window.open("/Report/_TaxCertificate?FYID=" + FYID + " &accountNo=" + accountNo)
+    });
+
+</script>
+
+

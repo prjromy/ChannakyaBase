@@ -1,0 +1,62 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustomerPhotoViewModel
+
+@using ChannakyaBase.BLL.CustomHelper
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<script>
+
+
+    $(".multiselectCustomer").chosen({
+        single_backstroke_delete: true,
+        placeholder_text_multiple: "Customer"
+    });
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>
+<div class="customer-photo-create">
+
+
+    
+    <h3 class="box-title customer-photo-title">Member Photo</h3>
+    <div class="row">
+        <div class="col-md-12">
+
+
+            <div class="form-horizontal">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+
+                        @Html.LabelFor(model => model.CustomerName, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9 Referred-By">
+
+                            @Html.CustomerSearch(x => x.CustomerName, ECustomerSearchType.All)
+                            @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                </div>
+                @*<div class="col-md-6">
+                    <div class="form-group">
+                        <button type="button" class="col-md-2 btn btn-success" onclick="LoadImage()">View</button>
+                    </div>
+                </div>*@
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+    <script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+
+

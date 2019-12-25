@@ -1,0 +1,55 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareSignatureViewModel
+
+@using ChannakyaBase.BLL.CustomHelper
+
+
+<div class="share-signature-create">
+
+
+    <h3 class="box-title share-signature-title">Share Signature</h3>
+
+
+
+
+    <div class="box-body">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-horizontal">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.Regno, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.EmployeeSearch(x => x.Regno, "", EEmployeeChange.ImageChange.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                @Html.ValidationMessageFor(model => model.Regno, "", new { @class = "text-danger" })
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    @*<div class="col-md-6">
+                        <div class="form-group">
+                            <button type="button" class="col-md-2 btn btn-success" onclick="LoadImage()">View</button>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<style>
+    .share-signature-title {
+        color: #00a65a;
+        text-align: center;
+    }
+</style>
+
+

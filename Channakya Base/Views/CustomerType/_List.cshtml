@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.CustType>
+
+@{
+    var Modelte = Model;
+    ViewBag.Title = "Index";
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            <h3>List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+            <table class="table">
+                <tr>
+                    <th class=col-md-6>
+                        @Html.DisplayNameFor(model => model.Ctype)
+                    </th>
+                    <th class=col-md-2>
+                      Individual
+                    </th>
+                    <th class=col-md-2>
+                        @Html.DisplayNameFor(model => model.TaxsetupDef.TaxName)
+                    </th>
+                    <th class=col-md-2>
+                        Action
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+            {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ctype)
+                        </td>
+                        <td>
+                            @if (item.isind == 1)
+                            {
+                                <span>Yes</span>
+                            }
+                            else 
+                            {
+                                <span>No</span>
+                            }
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaxsetupDef.TaxName)
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.CtypeID" data-toggle="tooltip" title="Edit"></button>
+                            <button type="button" class="btn btn-info btn-sm btn-details glyphicon glyphicon-list" data-id="@item.CtypeID" data-toggle="tooltip" title="Detail"></button>
+                            <button type="button" class="btn btn-info btn-sm btn-sm btn-delete glyphicon glyphicon-trash danger" data-id="@item.CtypeID" data-val="@item.Ctype"data-toggle="tooltip" title="Delete"></button>
+
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

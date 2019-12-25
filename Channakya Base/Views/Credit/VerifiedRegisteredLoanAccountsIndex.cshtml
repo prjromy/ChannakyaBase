@@ -1,0 +1,63 @@
+﻿@model  ChannakyaBase.Model.ViewModel.LoanRegAccOpenViewModel
+@using ChannakyaBase.BLL
+
+@using ChannakyaBase.BLL.CustomHelper
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<div class="box box-success" id="VerifiedRegisteredAccountIndex">
+    <div class="box-header with-border">
+        <p>
+            <h3>Registered Loan Accounts</h3>
+        </p>
+        <div class="form-horizontal">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CustomerId, new { @class = "control-label col-md-2" })
+                <div class="col-md-6">
+                    @Html.CustomerSearch(x => x.CustomerId, ECustomerSearchType.VerifiedRegisteredLoanList)
+                    @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Aname, new { @class = "control-label col-md-2" })
+                <div class="col-md-6">
+                    @Html.TextBoxFor(model => model.Aname, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            </div>
+            <div id="registered-loan-accountnumber-list">
+                @{Html.RenderAction("_VerifiedRegisteredLoanAccounts", "Credit");}
+            </div>
+
+        </div>
+        </div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+
+<link href="~/Content/Custom/Customer.css" rel="stylesheet" />
+<script>
+    function LoanAccountOpen(RegId) {
+        debugger;
+        $.ajax({
+            url: "/credit/LoanAccountOpen",
+            data: { regId: RegId,taskId:0,isAfterRegistration:1 },
+            type: "Get",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                $("section.content").html(result);
+               
+
+
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+    }
+</script>

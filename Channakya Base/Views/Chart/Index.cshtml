@@ -1,0 +1,196 @@
+﻿@{
+    Layout = null;
+}
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script>
+        $(document).ready(function()
+        {
+         //   jQuery.noConflict();
+            debugger;
+            //$('#chartContainer').css('display','none');
+            $('.sidebar').find('.main-side-tree').find('.master').nextAll('li').slideToggle();
+            var pieChart = new CanvasJS.Chart("chartContainer1", {
+                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                exportEnabled: true,
+                animationEnabled: true,
+                title: {
+                    text: "Total Balance of Ledger"
+                },
+                subtitles: [{
+                    text: "For Current Year"
+                }],
+                data: [{
+                    type: "pie",
+                    startAngle: 180,
+                    toolTipContent: "<b>{label}</b>: {y}",
+                    showInLegend: "true",
+                    legendText: "{label}",
+                    click: explodePie,
+                    indexLabel: "{label} - {y}",
+                    dataPoints: @Html.Raw(ViewBag.DataPoints),
+                }]
+            });
+
+
+            var barChart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                title:{
+                    text: "Total Balance In Ledger"
+                },
+                axisY: {
+                    title: "Amount(LB)"
+                },
+                data: [{
+                    type: "column",
+                    showInLegend: true,
+                    click: explodePie,
+                    legendMarkerColor: "grey",
+                    legendText: "LB= Ledger Balance",
+                    dataPoints: @Html.Raw(ViewBag.DataPoints),
+
+                }]
+            });
+            pieChart.render();
+            barChart.render();
+    
+
+
+
+            function explodePie(e) {
+                debugger;
+                for(var i = 0; i < e.dataSeries.dataPoints.length; i++) {
+                    if(i !== e.dataPointIndex)
+                        e.dataSeries.dataPoints[i].exploded = false;
+                }
+                var isPie=true;
+                if(e.dataSeries.type=="column")
+                {
+                    isPie=false;
+                }
+
+                renderChildChart(e.dataPoint.LedgerId,isPie);
+            }
+
+            function renderChildChart(ledgerId,isPie)
+            {
+                $.ajax({
+                    url:'/Chart/Index',
+                    data:{ledgerId:ledgerId,chartType:isPie},
+                    type:'GET',
+                    success:function(data)
+                    {
+                        debugger;
+                        $('.index-body').find('.main-chart').html(data);
+                    } 
+                });
+            }
+
+          
+        });
+        function changeChart()
+        {
+            debugger;
+            //$('#chartContainer').children('canvas').height = $('#chartContainer1').height;
+            //var graph = document.querySelectorAll('#chartContainer canvas');
+            //var graphcontainer = document.querySelector('#chartContainer');
+            //graph.forEach(function(i){
+            //    console.log(i.height);
+            //    i.height = 370;
+            //    i.width = 1140;
+            //});
+            debugger;
+           // $('#chartContainer1 ,#chartContainer').toggle();
+            if($('#chartContainer1').css('display')=='block'||$('#chartContainer1').css('display')==undefined)
+            {
+                debugger;
+                {
+                    $('#chartContainer').css('display','block');
+                    $('#chartContainer1').css('display','none');
+                }
+            }
+            else
+            {
+                debugger;
+                $('#chartContainer').css('display','none');
+                $('#chartContainer1').css('display','block');
+            }
+            
+        }
+        if('@ViewBag.IsPie'=='True')
+        {
+            setTimeout(()=>{
+                document.querySelector('#chartContainer').setAttribute('style','display:none;height:370px');
+            }, 1000);
+        }
+        else
+        {
+            document.querySelector('#chartContainer1').setAttribute('style','display:none;height:370px');
+            //setTimeout(()=>{
+            //}, 0);
+        }
+
+      
+        function goBack(ledgerId)
+        {
+            debugger;
+            var isPie='@ViewBag.IsPie';
+            $.ajax({
+                url:'/Chart/Index',
+                data:{ledgerId:ledgerId,chartType:isPie},
+                type:'GET',
+                success:function(data)
+                {
+                    debugger;
+                    $('.index-body').find('.main-chart').html(data);
+                } 
+            });
+        }
+    </script>
+
+</head>
+<body>
+   @if (ViewBag.LedgerId != 0)
+   {
+    <button class="btn" onclick="goBack(@ViewBag.PId)"><i class="fa fa-backward"></i> Back</button>
+    <button class="btn" onclick="changeChart()" style="margin-left: 900px;"><i class="fa fa-exchange"></i> Swap</button>
+   }
+   else
+   {
+    <button class="btn" onclick="changeChart()" style="margin-left: 966px;"><i class="fa fa-exchange"></i> Swap</button>
+   }
+   
+    @*@if (ViewBag.IsPie == true)
+    {*@
+    <div id="chartContainer1" style="height: 370px;"></div>
+    <div id="chartContainer" style="height: 370px;"></div>
+       
+    @*else
+    {
+        <div id="chartContainer1" style="height: 370px; display:none"></div>
+        <div id="chartContainer" style="height: 370px;"></div>
+    }*@
+    <br/><br/>
+    
+    
+    
+
+    <script src="~/Scripts/canvasjs.min.js"></script>
+    
+</body>
+</html>                           
+
+
+
+<style>
+    canvas.canvasjs-chart-canvas {
+    width: 93%;
+    height: 370px;
+}
+   /*#chartContainer .canvasjs-chart-canvas {
+        left: 256px;
+    }*/
+</style>

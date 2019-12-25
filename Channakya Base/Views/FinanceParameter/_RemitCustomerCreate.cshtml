@@ -1,0 +1,67 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.RemittanceCustomer
+
+@using ChannakyaBase.BLL.Service
+
+@using (Ajax.BeginForm("_RemitCustomerCreate", "FinanceParameter", new AjaxOptions
+{
+    UpdateTargetId = "RemitCustomer-list",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createSuccess"
+    //OnFailure = "errMessage"
+
+}, new { id = "RemitCustomerSubmitForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.RID)
+    <div class="box box-info">
+        <div class="box-header with-border">
+         
+            <div class="row">
+                <div class="col-md-12">
+
+
+                    <div class="form-horizontal">
+                        <fieldset>
+                            <legend>Remittance details</legend>
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CID, "Remittance Customer", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.CID, FinanceParameterUtilityService.CustCompany(),"Please Select", htmlAttributes: new { @class = "form-control focusdiv" })
+                                    @Html.ValidationMessageFor(model => model.CID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.FID, "Remit Ledger", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.FID, FinanceParameterUtilityService.RemitanceLegderList(), "Please Select", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.FID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                           <span style="color:#3636e4;padding-left:20px;font-family:'Century Gothic'">Note: To define New Remit Ledger Please go to LedgerSetup->Assests->Other Assests->Remittance.</span>
+                        </fieldset>
+                     
+                        @if (Model.RID == 0)
+                        {
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="button" value="Save" id="btn-save-RemitCustomer" class="btn btn-default btn-save " />
+                                </div>
+                            </div>
+                        }
+                        else {
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="button" value="Save" id="btn-editsave-RemitCustomer" class="btn btn-default btn-save " />
+                                    <input type="button" value="Cancel" id="btn-Cancel-RemitCustomer" class="btn btn-default btn-Cancel " />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

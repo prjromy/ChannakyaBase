@@ -1,0 +1,323 @@
+﻿@model  ChannakyaAccounting.Models.ViewModel.VoucherReportMainViewModel
+@{
+
+    var totalPage = ViewBag.totalPage;
+}
+
+<ul class="pagination pager-list" style="float:left;margin-right:20px;">
+    <li class="previous"><a href="#">Previous</a></li>
+    @for (int i = 1; i <= totalPage; i++)
+    {
+        if (i > 4)
+        {
+            if (i == ViewBag.ActivePager)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+
+                    if (i > ViewBag.ActivePager)
+                    {
+                        if (i - ViewBag.ActivePager <= 2)
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i == totalPage)
+                            {
+                                if (totalPage - ViewBag.ActivePager > 3)
+                                {
+                                    <li class=""><a>.......</a> </li>
+                                }
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                    else
+                    {
+
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+        else
+        {
+            if (i == ViewBag.ActivePager)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+    }
+    <li class="next"><a href="#">Next</a></li>
+
+</ul>
+<div style="margin-top:20px;margin-left:20px" class="search-container">
+    @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+</div>
+<script>
+    $(document).ready(function () {
+        debugger;
+        var formData = new FormData($(this)[0]);
+        //var totalCount = totalPage;
+        //var voucherReportMainViewModel = [
+        //];
+        //javascript view model
+        var voucherReportViewModel = {};
+        voucherReportViewModel['StartDate']='@Model.StartDate';
+        voucherReportViewModel['EndDate']='@Model.EndDate';
+        voucherReportViewModel['VType'] ='@Model.VType';
+        voucherReportViewModel['BatchNo'] ='@Model.BatchNo';
+        voucherReportViewModel['PostedBy'] ='@Model.PostedBy';
+        voucherReportViewModel['BranchId'] ='@Model.BranchId';
+        voucherReportViewModel['VerifiedVoucher'] ='@Model.VerifiedVoucher';
+        var totalCount = @totalPage;
+        //voucherReportMainViewModel.push(voucherReportViewModel);
+
+
+        var data = JSON.stringify({ voucherMainReport: voucherReportViewModel });
+        function goBackToIndex() {
+            //jQuery.noConflict();
+            debugger;
+            $.ajax({
+                type: "get",
+                url: "/VoucherReport/VoucherIndex",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $('section.content').html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+        function directToRead(v1Id) {
+
+            var urlToDirect;
+            urlToDirect = "/VoucherReport/_VerificationModal";
+            $.ajax({
+                type: "GET",
+                url: urlToDirect,
+                data: { v1Id: v1Id },
+                success: function (result) {
+
+                    $('#getTaskVerficationLists').html(result).modal({
+                        'show': true,
+                        'backdrop': false
+                    });
+                },
+                error: function () {
+
+                }
+            });
+        }
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.pager-list').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    $.ajax({
+                        url: '/VoucherReport/_GetVoucherList',
+                        type: 'POST',
+                        data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/TransReportPagination',
+                                type: 'POST',
+                                data: JSON.stringify({ voucherMainReport: voucherReportViewModel, totalPage: totalCount, pageno: finalId }),
+                                contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+
+
+                }
+            }
+            else {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.pager-list').find('li#' + finalId)
+                var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    $.ajax({
+                        url: '/VoucherReport/_GetVoucherList',
+                        type: 'POST',
+                        data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/TransReportPagination',
+                                type: 'POST',
+                                data: JSON.stringify({ voucherMainReport: voucherReportViewModel, totalPage: totalCount, pageno: finalId }),
+                                contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var pagingData = $(this).val();
+            var container = $(this).closest('.BankStatement-DataTable').find('#container-to-append');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: '/VoucherReport/_GetVoucherList',
+                    type: 'POST',
+                    data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                    contentType: 'application/json',
+                    dataType: 'html',
+                    success: function (data) {
+                        debugger;
+                        $('#container-to-append').html(data);
+                        $.ajax({
+                            url: '/VoucherReport/TransReportPagination',
+                            type: 'POST',
+                            data: JSON.stringify({ voucherMainReport: voucherReportViewModel, totalPage: totalCount, pageno: finalId }),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (pagination) {
+                                $('.pagination-only').html("");
+                                $('.pagination-only').html(pagination);
+                            }
+                        });
+                        var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.pager-list').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                });
+            }
+
+        });
+            function goBackToIndex() {
+                    jQuery.noConflict();
+                     debugger;
+                    $.ajax({
+                        type: "get",
+                        url: "/VoucherReport/VoucherIndex",
+                         contentType: "application/json; charset=utf-8",
+                         dataType: "html",
+                            success: function (html) {
+                                 debugger;
+                                 $('section.content').html(html);
+                            },
+                             error: function () {
+                                      alert("error");
+                             }
+                     });
+            }
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.ledgerReport-DataTable').find('#container-to-append');
+            // var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+            $.ajax({
+                url: '/VoucherReport/_GetVoucherList',
+                type: 'POST',
+                data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: pagingData }),
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    debugger;
+                    $('#container-to-append').html(data);
+                    $.ajax({
+                        url: '/VoucherReport/TransReportPagination',
+                        type: 'POST',
+                        data: JSON.stringify({ voucherMainReport: voucherReportViewModel, totalPage: totalCount, pageno: pagingData }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (pagination) {
+                            $('.pagination-only').html("");
+                            $('.pagination-only').html(pagination);
+                        }
+                    });
+                    var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.pager-list').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + pagingData).addClass('active');
+
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+
+
+        });
+
+    });
+</script>

@@ -1,0 +1,1203 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanDisbursement
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "LoanAccount";
+    var modelFrom = @Model.IsRevolving;
+
+}
+
+
+<div class="box box-success disburse-loan-index">
+
+    <div class="box-header with-border">
+
+        @if (Model.IsOtherLoan)
+        {
+            <h3 class="box-title">Other Loan Disbursement</h3>
+        }
+        else
+        {
+            <h3 class="box-title">Loan Disbursement</h3>
+        }
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("LoanDisbursementCreate", "Credit", FormMethod.Post, new { id = "LoanDisbursement-Create" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.Hidden("MessageEventID", 21)
+                @*end *@
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        <fieldset>
+                            <legend>Account Details</legend>
+                            <div class="col-md-12">
+                                <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+                                <hr />
+                            </div>
+                            <div class="form-group">
+
+                                @Html.Label("Account", new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.LoanDetails.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                                </div>
+                            </div>
+                            <div class="customer-event-message">
+                            </div>
+                        </fieldset>
+                        <div class="loan-disburse-details">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            @Html.HiddenFor(x => x.IsOtherLoan, new { @class = "isOtherLoan" })
+        </div>
+        <div class="disbursement-schedule-final">
+
+        </div>
+
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-12">
+                    <input type="button" value="Save" class="btn btn-default btn-Loan-Disburse-save" data-eventid="21" data-val="Loan Account Open" data-isMultiVerifier="false" />
+                </div>
+            </div>
+        </div>
+    }
+    <div class="disbursement-schedule" id="Preview-trial-list">
+
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+
+<script>
+
+    ////$(document).ready(function () {
+    ////    debugger;
+    //    $('.disburse-loan-index').on(':checked', '#ChargeDeductOnDisburse', function (control) {
+    //        debugger;
+    //        //var checked = $(this).prop("checked");
+    //        //if (checked == true) {
+    //        //    $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", false);
+    //        //}
+    //        //else {
+    //        //    $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+    //        //    $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", true);
+    //        //}
+    //        var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+    //        var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+    //        var disburseAmount = $(".loan-disburse-details").find("#RegularLoan").val();
+    //        var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+    //        var RegularLoan = $(".loan-disburse-details").find("#RegularLoan").val();
+    //        // var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+    //        // if (checked == true) {
+    //        //$(".disburse-loan-index").find(".bank-type").prop("checked", false)
+    //        //$(".disburse-loan-index").find(".bank-type").trigger('change');
+    //        //$(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+    //        //$(".disburse-loan-index").find(".deposit-type").trigger('change');
+    //        $.ajax({
+    //            type: 'get',
+    //            url: '/FinanceParameter/_ChargeAutoTriggered',
+    //            data: { productId: productId, modevent: 20, AmountCharge: disburseAmount, checkSanction: checkSanction, RegularLoanCharge: RegularLoan },
+    //            datatype: "html",
+    //            success: function (result) {
+    //                debugger;
+    //                $(".disburse-loan-index").find(".chargeDetails").html("");
+    //                $(".disburse-loan-index").find(".chargeDetails").html(result);
+    //                //$(".disburse-loan-index").find(".cash-details").html(data);
+    //            }
+    //        })
+    //    })
+
+
+
+
+    //})
+
+    $('.disburse-loan-index').on('change', '.deposit-type', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+        if (checked == true) {
+            var isotherLoan = '@Model.IsOtherLoan';
+            var ModelFrom = "";
+            if (isotherLoan == "True") {
+                ModelFrom = "OtherLoan";
+            }
+            else {
+                ModelFrom = "Loan";
+            }
+            $(".disburse-loan-index").find(".bank-type").prop("checked", false)
+            $(".disburse-loan-index").find(".bank-type").trigger('change');
+            //$(".disburse-loan-index").find(".bank-type").attr("disabled", true)
+            $(".disburse-loan-index").find(".cash-type").prop("checked", false)
+            $(".disburse-loan-index").find(".cash-type").trigger('change');
+            //$(".disburse-loan-index").find(".cash-type").attr("disabled", true)
+            $.ajax({
+                type: 'get',
+                url: '/credit/_LoanDepositAccountsForDisbursement',
+                data: { iaccno: id, ModelFrom:ModelFrom },
+                success: function (data) {
+                    debugger;
+                    $(".disburse-loan-index").find(".nominee-accounts").html(data);
+                    $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+
+                    var amountOtherLoan = $('#OtherLoan').val();
+                    if (amountOtherLoan != undefined) {
+                        $('.total-amount-deposit').first().val(amountOtherLoan);
+                    }
+
+                    $.ajax({
+                        type: 'get',
+                        url: '/credit/_LoanDisburseToShare',
+                        data: { iaccno: id },
+                        success: function (data) {
+                            debugger;
+                            if (data.Status == true) {
+                                debugger
+                                $(".disburse-loan-index").find(".share-details").html(data.htmlToShow);
+
+                            }
+                        }
+
+                    })
+                }
+
+            })
+        }
+        else if (checked == false) {
+            $(".disburse-loan-index").find(".nominee-accounts").html("");
+            $(".disburse-loan-index").find(".bank-type").attr("disabled", false)
+            $(".disburse-loan-index").find(".cash-type").attr("disabled", false)
+        }
+    })
+
+    $('.disburse-loan-index').on('change', '.bank-type', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+        if (checked == true) {
+            $(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+            $(".disburse-loan-index").find(".deposit-type").trigger('change')
+            $(".disburse-loan-index").find(".cash-type").prop("checked", false)
+            $(".disburse-loan-index").find(".cash-type").trigger('change');
+            $.ajax({
+                type: 'get',
+                url: '/credit/_LoanDisburseByCheque',
+                success: function (data) {
+                    debugger;
+                    $(".disburse-loan-index").find(".cheque-details").html(data);
+                }
+
+            })
+        }
+        else if (checked == false) {
+            $(".disburse-loan-index").find(".cheque-details").html("");
+        }
+    })
+    $('.disburse-loan-index').on('change', '.cash-type', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+        if (checked == true) {
+            $(".disburse-loan-index").find(".bank-type").prop("checked", false)
+            $(".disburse-loan-index").find(".bank-type").trigger('change');
+            $(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+            $(".disburse-loan-index").find(".deposit-type").trigger('change');
+            $.ajax({
+                type: 'get',
+                url: '/credit/_LoanDisburseByCash',
+                data: { iaccno: id },
+                success: function (data) {
+                    debugger;
+                    $(".disburse-loan-index").find(".cash-details").html(data);
+                }
+
+            })
+        }
+        else if (checked == false) {
+            $(".disburse-loan-index").find(".cash-details").html("");
+        }
+    })
+    var i = 0;
+    $('.disburse-loan-index').on('click', '.add-addtional-charge-type', function () {
+        debugger;
+        //var thisVal = $(this).html();
+
+        var myVal = "Addtional Charges <i class='fa addtional-charge-plus  fa-minus' aria-hidden='true'></i>";
+        var textMy = myVal.trim();
+        if (i == 1) {
+            $(".add-addtional-charge-type").addClass("btn-success")
+            $(".add-addtional-charge-type").removeClass("btn-danger")
+            this.innerHTML = "Addtional Charges <i class='fa addtional-charge-plus  fa-plus' aria-hidden='true'></i>"
+            $(".additional-charge-details").hide();
+            $(".additional-charge-details").html("");
+            i = 0;
+            //i = i - 1;
+
+        }
+        else {
+            this.innerHTML = "Addtional Charges <i class='fa addtional-charge-plus fa-minus' aria-hidden='true'></i>";
+            i = 1;
+            $(".add-addtional-charge-type").removeClass("btn-success")
+            $(".add-addtional-charge-type").addClass("btn-danger")
+            $.ajax({
+                type: 'get',
+                url: '/credit/_AddtionalChargeForDisburse',
+                success: function (data) {
+                    debugger;
+                    $(".disburse-loan-index").find(".additional-charge-details").html(data);
+                    $('.additional-charge-details').show();
+                }
+
+            })
+        }
+    })
+    $('.disburse-loan-index').on('click', '.add-more-charge-type', function () {
+        debugger;
+        $.ajax({
+            type: 'get',
+            url: '/credit/_AddtionalChargeList',
+            success: function (data) {
+                debugger;
+                $(".disburse-loan-index").find(".loan-charge-details-list").append(data);
+
+            }
+
+        })
+    })
+    $('.disburse-loan-index').on('click', '.remove-charge-type', function () {
+        var mydiv = $(this).closest(".added-charge-list").remove();
+    })
+
+    $(".btn-Loan-Disburse-save").on("click", function () {
+
+        debugger;
+        var strictVerifiable = $('.disburse-loan-index').find('#strictlyverifiable').prop('checked');
+        eventid = $(this).data('eventid');
+        $('#LoanDisbursement-Create').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#LoanDisbursement-Create'));
+        var remainingamount = $("#RemainingAmount").val();
+        var totalAmountDeposit = $('.total-amount-deposit').val();
+        if ($("#LoanDisbursement-Create").valid()) {
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            if ($('.total-amount-deposit').val()>$("#RemainingAmount").val() ) {
+                ErrorAlert("Balance amount not match with Disburse Amount", 9000);
+                $('.total-amount-deposit').first().val(remainingamount);
+                document.getElementById('alert-error').scrollIntoView();
+                return false;
+            }
+            var remainingamount = $("#RemainingAmount").val();
+            var sum = 0;
+            var tree = true;
+            $('.total-amount-deposit').each(function () {
+                debugger;
+                var item = parseInt($(this).val());
+
+                if (isNaN(item) === true) {
+                    item = 0;
+                }
+                sum = sum + item;
+                if ( sum > remainingamount) {
+                    ErrorAlert('Total Deposit Amount must be equal to:' + remainingamount, 3000);
+                    tree = false;
+                    return false;
+                }
+            });
+            if (tree == true) {
+                var stateDeposit = $('#Deposit').prop("checked");
+                if (!stateDeposit) {
+                    ErrorAlert("Please select Deposit Checkbox", 4000);
+                    return false;
+
+                }
+                //if ($("{#RemainingAmounts").val() == $('.total-amount-deposit').val()) {
+                //    ErrorAlert("Balance amount not match with Disburse Amount", 5000);
+                //    document.getElementById('alert-error').scrollIntoView();
+                //    return false;
+                //}
+
+
+                //if ($("#RemainingAmount").val() < 0) {
+                //    ErrorAlert("Balance amount not match with Disburse Amount", 5000);
+                //    document.getElementById('alert-error').scrollIntoView();
+                //    return
+                //}
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+
+                    DisburseLoan();
+                }
+            }
+
+        }
+        else {
+            InfoAlert("Please fill the form correctly",5000);
+            return false;
+        }
+
+    })
+
+    function DisburseLoan() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#LoanDisbursement-Create').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        var url;
+                        var isotherLoan = '@Model.IsOtherLoan'
+                        if (isotherLoan == "True")
+                        {
+                            url = "/Credit/OtherLoanDisbursement"
+                        } else
+                        {
+                            url = "/Credit/LoanDisbursement"
+                        }
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            async: false,
+                            success: function (result1) {
+                                debugger;
+                                $('section.content').html(result1);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+    $('.disburse-loan-index').on('change', '.total-amount', function (control) {
+        debugger;
+        var disbursableAmount = $("#DisbursableAmount").val();
+        var container = $(this);
+        var totaldebit = 0;
+        var total = 0;
+        var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+
+        $('.total-debit-amount').each(function () {
+
+            totaldebit += parseFloat(this.value);
+
+        })
+
+        $('.total-amount').each(function () {
+
+            total += parseFloat(this.value) || 0// parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+        })
+        var shareAmount = $('.disburse-loan-index').find('.share-amount').val();
+        if (shareAmount == "NaN") {
+            shareAmount = 0;
+        }
+        if (shareAmount == undefined) {
+            shareAmount = 0;
+        }
+        var totalcharge = 0;
+        var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+        $.each(allTr, function (index, item) {
+            debugger;
+            var chargeType = $(item).find('.chargeType').val();
+            var currentCharge = $(item).find('input.Ratio').val();
+            if (currentCharge == "NaN") {
+                currentCharge = 0;
+            }
+            if (currentCharge == undefined) {
+                currentCharge = 0;
+            }
+            if (chargeType == 1) {
+                totalcharge += parseFloat(currentCharge)
+            }
+            else {
+                if (chargeType == 2) {
+                    var regularAmnt = 0;
+                    if (IsOnSanction == true) {
+                        regularAmnt = $("#DisbursableAmount").val();
+                    }
+                    else {
+                        regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                    }
+                    currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+                    //if (currentCharge == "NaN") {
+                    //    currentCharge = 0;
+                    //}
+                    //if (currentCharge == 'NaN') {
+                    //    currentCharge = 0;
+                    //}
+                    totalcharge = Math.round(currentCharge);
+                }
+            }
+        })
+        //if (totalcharge == "NaN")
+        //{
+        //    totalcharge = 0;
+        //}
+        $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit -shareAmount- total - totalcharge)
+        $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+        //if (IsOnSanction == false) {
+        //    total = total + totalcharge;
+        //}
+        //else {
+        //    total = total - totalcharge;
+        //}
+        if (total > totaldebit) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Regular Loan Amount Exceeds !!!"
+            }).done(function () {
+                $(container).focus();
+                return false;
+            }).fail(function () {
+            })
+        }
+    })
+
+    $('.disburse-loan-index').on('change', '.Ratio', function (control) {
+        debugger;
+        var disbursableAmount = 0;
+        var container = $(this);
+        var totaldebit = 0;
+        var total = 0;
+        var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+        //if (IsOnSanction == true) {
+        //    totaldebit = $("#ApprovedAmount").val();
+        //}
+        //else {
+            $('.total-debit-amount').each(function () {
+
+                totaldebit += parseFloat(this.value);
+            })
+        //}
+
+
+        $('.total-amount').each(function () {
+
+            total += parseFloat(this.value) || 0// parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+        })
+
+        var totalcharge = 0;
+        var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+        $.each(allTr, function (index, item) {
+            debugger;
+            var chargeType = $(item).find('.chargeType').val();
+            var currentCharge = $(item).find('input.Ratio').val();
+            if (chargeType == 1) {
+                totalcharge += parseFloat(currentCharge);
+            }
+            else {
+                if (chargeType == 2) {
+                    var regularAmnt = 0;
+                    if (IsOnSanction == true) {
+                        regularAmnt = $("#ApprovedAmount").val();
+                    }
+                    else {
+                        regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                    }
+                    currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+                    totalcharge = currentCharge;
+                }
+            }
+        })
+
+        $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit - total - totalcharge);
+        $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+        debugger;
+        //if (IsOnSanction == false) {
+        //    total = total + totalcharge;
+        //}
+        //else {
+        //    total = total - totalcharge;
+        //}
+        if (total > totaldebit) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Regular Loan Amount Exceeds !!!"
+            }).done(function () {
+                $(container).focus();
+                return false;
+            }).fail(function () {
+            })
+        }
+    })
+
+
+
+
+    $('.disburse-loan-index').on('change', '.charge-deduct-method-disburse', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        if('@Model.IsRevolving' == 'False'){
+         if (checked == true) {
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", false);
+        }
+        else {
+            $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", true);
+         }
+
+    }
+         if ('@Model.IsRevolving' == 'False') {
+            if(checked==false){
+                $('.IndCharge').hide();
+                $('.IndCharge').val("");
+
+                $('.Ratio').hide();
+                $('.Ratio').val("");
+                return false;
+            }
+    }
+        var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+        var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+        var disburseAmount = $(".loan-disburse-details").find("#RegularLoan").val();
+        var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+        var RegularLoan = $(".loan-disburse-details").find("#RegularLoan").val();
+        // var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+        // if (checked == true) {
+        //$(".disburse-loan-index").find(".bank-type").prop("checked", false)
+        //$(".disburse-loan-index").find(".bank-type").trigger('change');
+        //$(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+        //$(".disburse-loan-index").find(".deposit-type").trigger('change');
+        $.ajax({
+            type: 'get',
+            url: '/FinanceParameter/_ChargeAutoTriggered',
+            data: { productId: productId, modevent: 20, AmountCharge: disburseAmount, checkSanction: checkSanction, RegularLoanCharge: RegularLoan },
+            datatype: "html",
+            async:false,
+            success: function (result) {
+                debugger;
+                $(".disburse-loan-index").find(".chargeDetails").html("");
+                $(".disburse-loan-index").find(".chargeDetails").html(result);
+                //$(".disburse-loan-index").find(".cash-details").html(data);
+            }
+        })
+    })
+
+
+    $('.disburse-loan-index').on('change', '.charge-deduct-method-disburse', function () {
+        debugger;
+        var totalcharge = 0;
+        var checked = ($(this)).prop("checked");
+        var totaldebit = 0;
+        var total = 0;
+        totaldebit = $('.total-debit-amount').val();
+       // var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+        //$('.total-debit-amount').each(function () {
+
+        //    totaldebit += parseFloat(this.value);
+
+        //})
+
+        //$('.total-amount').each(function () {
+
+        //    total += parseFloat(this.value) || 0   //parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+
+        //})
+        if (checked == true) {
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", false);
+        }
+        else {
+            $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", true);
+        }
+        var IsOnSanction = false;
+
+        var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+
+        $.each(allTr, function (index, item) {
+            debugger;
+            var chargeType = $(item).find('.chargeType').val();
+            var currentCharge = $(item).find('input.Ratio').val();
+            if (chargeType == 1) {
+                totalcharge += parseFloat(currentCharge)
+            }
+            else {
+                if (chargeType == 2) {
+                    var regularAmnt = 0;
+                    if (IsOnSanction == true) {
+                        regularAmnt = $("#DisbursableAmount").val();
+                    }
+                    else {
+                        regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                    }
+                    currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+                    totalcharge = Math.round(currentCharge);
+                }
+            }
+        })
+        $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit - total - parseFloat(totalcharge));
+        $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+    });
+
+
+
+
+
+
+
+
+
+    $('.disburse-loan-index').on('change', '.charge-deduct-method-sanction', function () {
+        debugger;
+        var checked = ($(this)).prop("checked");
+        if (checked == true) {
+            $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+        }
+        else {
+            $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", true);
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", false);
+        }
+    });
+
+    $('.disburse-loan-index').on('change', '#ChargeDeductOnSanction', function (control) {
+        debugger;
+        var checked = $(this).prop("checked");
+        var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+        var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+        var AmountCharge = $(".loan-disburse-details").find("#DisbursableAmount").val();
+        var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+        var RegularLoanCharge = $(".loan-disburse-details").find("#RegularLoan").val();
+       // var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+       // if (checked == true) {
+            //$(".disburse-loan-index").find(".bank-type").prop("checked", false)
+            //$(".disburse-loan-index").find(".bank-type").trigger('change');
+            //$(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+            //$(".disburse-loan-index").find(".deposit-type").trigger('change');
+            $.ajax({
+                type: 'get',
+                url: '/FinanceParameter/_ChargeAutoTriggered',
+                data: { productId: productId, modevent: 20, AmountCharge: AmountCharge, checkSanction: checkSanction, RegularLoanCharge: RegularLoanCharge },
+                datatype: "html",
+                success: function (result) {
+                    debugger;
+                    $(".disburse-loan-index").find(".chargeDetails").html("");
+                    $(".disburse-loan-index").find(".chargeDetails").html(result);
+                    //$(".disburse-loan-index").find(".cash-details").html(data);
+                }
+            })
+    })
+
+    $('.disburse-loan-index').on('change', '#ChargeDeductOnSanction', function (control) {
+        debugger;
+        var disbursableAmount = $("#DisbursableAmount").val();
+        var remainingAmount = $("#RemainingAmount").val();
+        var regLoan = $(".total-debit-amount").val();
+        var accountNumber = $(".account-id").val();
+        if (regLoan == "") {
+
+            $(".total-debit-amount").val(0);
+        }
+        var container = $(this);
+        var totaldebit = 0;
+        var total = 0;
+        var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+        $('.total-debit-amount').each(function () {
+
+            totaldebit += parseFloat(this.value);
+
+        })
+
+        $('.total-amount').each(function () {
+
+            total += parseFloat(this.value) || 0   //parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+
+        })
+        var shareAmount = $('.loan-disburse-details').find('.share-amount').val();
+        if (shareAmount == "NaN") {
+            shareAmount = 0;
+        }
+        if (shareAmount == undefined) {
+            shareAmount = 0;
+        }
+        if (totaldebit > parseFloat(disbursableAmount)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Cannot Be Inserted Disbursable Amount Exceeds !!!"
+            }).done(function () {
+                $(container).focus();
+                return false;
+            }).fail(function () {
+            })
+        }
+        debugger;
+        var totalcharge = 0;
+        debugger;
+
+
+
+
+
+        $.ajax({
+            type: 'GET',
+            url: '/Credit/GetCheckSanctionStatusFromDisbursementMaininRemaingAmountonChange',
+            data: {
+                accountNumber: accountNumber
+            },
+            success: function (result) {
+                debugger;
+
+                if (result == false) {
+
+                    var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+
+                    $.each(allTr, function (index, item) {
+                        debugger;
+                        var chargeType = $(item).find('.chargeType').val();
+                        var currentCharge = $(item).find('input.Ratio').val();
+                        if (chargeType == 1) {
+                            totalcharge += parseFloat(currentCharge)
+                        }
+                        else {
+                            if (chargeType == 2) {
+                                var regularAmnt = 0;
+                                if (IsOnSanction == true) {
+                                    regularAmnt = $("#DisbursableAmount").val();
+                                }
+                                else {
+                                    regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                                }
+                                currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+                                totalcharge = Math.round(currentCharge);
+                            }
+                        }
+                    })
+                    $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit - shareAmount-total - parseFloat(totalcharge));
+                    $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+                    // $(".disburse-loan-index").find("#RegularLoan").val(null);
+                    //$("#RegularLoan").val(null);
+                    //total = parseFloat(total + totalcharge);
+                    debugger;
+                    if (total > totaldebit) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Regular Loan Amount Exceeds !!!"
+                        }).done(function () {
+                            $(container).focus();
+                            return false;
+                        }).fail(function () {
+                        })
+                    }
+                }
+                else {
+                    $("#RemainingAmount").val(regLoan);
+                }
+            },
+            error: function (result) {
+                debugger;
+                ErrorAlert(result.responseText, 15000)
+            }
+
+        });
+    })
+
+
+
+
+
+
+    //loan-disburse-details
+    $('.loan-disburse-details').on("change", "#RegularLoan", function () {
+        debugger;
+        var regularAmount = $(this).val();
+        var isCustomised = $('.loan-disburse-details').find('#HasCustomisedSchedule').val();
+        var accountId = $(".account-id").val();
+        //if (accountId == "" && regularAmount!=0 ) {
+        //    ErrorAlert("Please Select Account Number", 3000);
+        //    return false;
+        //}
+        debugger;
+        if ('@Model.IsRevolving' == 'False') {
+          
+            $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+            $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", true);
+            }
+
+        
+        if (regularAmount != 0) {
+            $.ajax({
+                type: 'get',
+                url: '/credit/_CustomisedLoanSchedule',
+                data: { regularLoan: regularAmount, accountId: accountId },
+                success: function (data) {
+                    debugger
+                    if (isCustomised == "True") {
+                        $(".disbursement-schedule").html(data.htmlToShow).show();
+                    }
+                    else {
+
+                        $(".disbursement-schedule-final").html(data.htmlToShow).show();
+                    }
+
+                 //   GetCheckSanctionStatusFromDisbursementMaininRemaingAmountonChange();
+
+                }
+            })
+        }
+
+
+
+    });
+
+
+
+    //function GetCheckSanctionStatusFromDisbursementMaininRemaingAmountonChange() {
+    //    debugger;
+    //    var disbursableAmount = $("#DisbursableAmount").val();
+    //    var remainingAmount = $("#RemainingAmount").val();
+    //    var regLoan = $(".total-debit-amount").val();
+    //    var accountNumber = $(".account-id").val();
+    //    if (regLoan == "") {
+
+    //        $(".total-debit-amount").val(0);
+    //    }
+    //    var container = $(this);
+    //    var totaldebit = 0;
+    //    var total = 0;
+    //    var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+    //    $('.total-debit-amount').each(function () {
+
+    //        totaldebit += parseFloat(this.value);
+
+    //    })
+
+    //    $('.total-amount').each(function () {
+
+    //        total += parseFloat(this.value) || 0   //parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+
+    //    })
+
+    //    if (totaldebit > parseFloat(disbursableAmount)) {
+    //        $.MessageBox({
+    //            buttonDone: "OK",
+    //            message: "Cannot Be Inserted Disbursable Amount Exceeds !!!"
+    //        }).done(function () {
+    //            $(container).focus();
+    //            return false;
+    //        }).fail(function () {
+    //        })
+    //    }
+    //    debugger;
+    //    var totalcharge = 0;
+    //    debugger;
+
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: '/Credit/GetCheckSanctionStatusFromDisbursementMaininRemaingAmountonChange',
+    //        data: {
+    //            accountNumber: accountNumber
+    //        },
+    //        success: function (result) {
+    //            debugger;
+
+    //            if (result == false) {
+
+    //                var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+
+    //                $.each(allTr, function (index, item) {
+    //                    debugger;
+    //                    var chargeType = $(item).find('.chargeType').val();
+    //                    var currentCharge = $(item).find('input.IndCharge').val();
+    //                    if (chargeType == 1) {
+    //                        totalcharge += parseFloat(currentCharge)
+    //                    }
+    //                    else {
+    //                        if (chargeType == 2) {
+    //                            var regularAmnt = 0;
+    //                            if (IsOnSanction == true) {
+    //                                regularAmnt = $("#ApprovedAmount").val();
+    //                            }
+    //                            else {
+    //                                regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+    //                            }
+    //                            currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+    //                            totalcharge = Math.round(currentCharge);
+    //                        }
+    //                    }
+    //                })
+    //                $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit - total - parseFloat(totalcharge));
+
+    //                 $(".disburse-loan-index").find("#RegularLoan").val(null);
+    //                $("#RegularLoan").val(null);
+    //                total = parseFloat(total + totalcharge);
+    //                debugger;
+    //                if (total > totaldebit) {
+    //                    $.MessageBox({
+    //                        buttonDone: "OK",
+    //                        message: "Regular Loan Amount Exceeds !!!"
+    //                    }).done(function () {
+    //                        $(container).focus();
+    //                        return false;
+    //                    }).fail(function () {
+    //                    })
+    //                }
+    //            }
+    //            else {
+    //                $("#RemainingAmount").val(regLoan);
+    //            }
+    //            ChargeAutoTriggered();
+
+    //        },
+    //        error: function (result) {
+    //            debugger;
+    //            ErrorAlert(result.responseText, 15000)
+    //        }
+
+    //    });
+    //}
+
+
+
+
+
+    //function ChargeAutoTriggered()
+    //{
+    //    debugger;
+    //    var regularAmount = $(this).val();
+    //    var accountNumber = $(".account-id").val();
+    //      var accountNumber = $(".table-click-account-number-search table tr").closest('tr').attr('id');
+    //      var checked = $(this).prop("checked");
+    //    var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+    //    var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+    //    var AmountCharge = $(".loan-disburse-details").find("#DisbursableAmount").val();
+    //    var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+    //    var RegularLoanCharge = $(".loan-disburse-details").find("#RegularLoan").val();
+
+    //      if (checked == false) {
+    //    $.ajax({
+    //        type: 'get',
+    //        url: '/FinanceParameter/_ChargeAutoTriggered',
+    //        data: { productId: productId, modevent: 20, AmountCharge: AmountCharge, checkSanction: checkSanction, RegularLoanCharge: RegularLoanCharge, accountNumber: accountNumber },
+    //        datatype: "html",
+    //        success: function (result) {
+    //            debugger;
+    //            $(".disburse-loan-index").find(".chargeDetails").html("");
+    //            $(".disburse-loan-index").find(".chargeDetails").html(result);
+    //            $(".disburse-loan-index").find(".cash-details").html(data);
+
+    //        }
+    //    });
+    //}
+
+
+
+
+    $('.loan-disburse-details').on("change", "#RegularLoan", function () {
+        debugger;
+        var regularAmount = $(this).val();
+        var accountNumber = $(".account-id").val();
+
+        var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+        var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+        var AmountCharge = $(".loan-disburse-details").find("#DisbursableAmount").val();
+        var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+        var RegularLoanCharge = $(".loan-disburse-details").find("#RegularLoan").val();
+
+
+        $.ajax({
+            type: 'get',
+            url: '/FinanceParameter/_ChargeAutoTriggered',
+            data: { productId: productId, modevent: 20, AmountCharge: AmountCharge, checkSanction: checkSanction, RegularLoanCharge: RegularLoanCharge, accountNumber: accountNumber },
+            datatype: "html",
+            success: function (result) {
+                debugger;
+                $(".disburse-loan-index").find(".chargeDetails").html("");
+                $(".disburse-loan-index").find(".chargeDetails").html(result);
+            }
+        });
+
+    });
+
+
+
+
+    $('.disburse-loan-index').on('change', '#RegularLoan', function (control) {
+        debugger;
+        var disbursableAmount = $("#DisbursableAmount").val();
+        var remainingAmount = $("#RemainingAmount").val();
+        var regLoan = $(".total-debit-amount").val();
+        var accountNumber = $(".account-id").val();
+        if (accountNumber == "") {
+            ErrorAlert("Please Select Account Number", 3000);
+            return false;
+
+        }
+        if (regLoan == "") {
+
+            $(".total-debit-amount").val(0);
+        }
+        var container = $(this);
+        var totaldebit = 0;
+        var total = 0;
+        var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+        $('.total-debit-amount').each(function () {
+
+            totaldebit += parseFloat(this.value);
+
+        })
+
+        $('.total-amount').each(function () {
+
+            total += parseFloat(this.value) || 0
+
+        })
+        var shareAmount = $('.loan-disburse-details').find('.share-amount').val();
+        if (shareAmount == "NaN") {
+            shareAmount = 0;
+        }
+        if (shareAmount == undefined) {
+            shareAmount = 0;
+        }
+        if (totaldebit > parseFloat(disbursableAmount)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Cannot Be Inserted Disbursable Amount Exceeds !!!"
+            }).done(function () {
+                $(container).focus();
+                //$('.chargeDetails').hide();
+                //$('.additional-charge-details').hide();
+                $('.disbursement-schedule-final').hide();
+                return false;
+            }).fail(function () {
+            })
+        }
+        debugger;
+        var totalcharge = 0;
+        debugger;
+
+        $.ajax({
+            type: 'GET',
+            url: '/Credit/GetCheckSanctionStatusFromDisbursementMaininRemaingAmountonChange',
+            data: {
+                accountNumber: accountNumber
+            },
+            success: function (result) {
+                debugger;
+
+                if (result == false) {
+
+                    var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+
+                    $.each(allTr, function (index, item) {
+                        debugger;
+                        var chargeType = $(item).find('.chargeType').val();
+                        var currentCharge = $(item).find('input.Ratio').val();
+                        if (chargeType == 1) {
+                            totalcharge += parseFloat(currentCharge)
+                        }
+                        else {
+                            if (chargeType == 2) {
+                                var regularAmnt = 0;
+                                if (IsOnSanction == true) {
+                                    regularAmnt = $("#DisbursableAmount").val();
+                                }
+                                else {
+                                    regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                                }
+                                currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+                                totalcharge = Math.round(currentCharge);
+                            }
+                        }
+                    })
+                    var test=$(".disburse-loan-index").find("#RemainingAmount").val();
+                    $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit -shareAmount- total - parseFloat(totalcharge));
+                    $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+                    debugger;
+                    if (total > totaldebit) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Regular Loan Amount Exceeds !!!"
+                        }).done(function () {
+                            $(container).focus();
+                            return false;
+                        }).fail(function () {
+                        })
+                    }
+                }
+                else {
+                    //$("#RemainingAmount").val(regLoan);
+                    $("#RemainingAmount").val(totaldebit - shareAmount - total);
+                    $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+                }
+            },
+            error: function (result) {
+                debugger;
+                ErrorAlert(result.responseText, 15000)
+            }
+
+        });
+    });
+
+
+    $('.loan-disburse-details').on("change", "#OtherLoan", function () {
+        debugger;
+        var otherLoan = $(this).val();
+        //  var accountNumber = $(".account-id").val();
+        var shareAmount = $('.loan-disburse-details').find('.share-amount').val();
+        if (shareAmount == "NaN") {
+            shareAmount = 0;
+        }
+        if (shareAmount == undefined) {
+            shareAmount = 0;
+        }
+        if (shareAmount == "") {
+            shareAmount = 0;
+        }
+        $(".disburse-loan-index").find("#OtherLoan").val(otherLoan - shareAmount)
+        $(".total-amount-deposit").first().val($("#OtherLoan").val());
+    });
+
+
+    $('.added-charge-list').on("click", ".addCharge", function () {
+        debugger;
+       // var otherLoan = $(this).val();
+        //  var accountNumber = $(".account-id").val();
+       // $(".loan-disburse-details").find("#RemainingAmount").val(otherLoan);
+
+    });
+
+
+
+</script>

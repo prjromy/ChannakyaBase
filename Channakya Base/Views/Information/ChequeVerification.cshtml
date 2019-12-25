@@ -1,0 +1,52 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChqRqstModel
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">New Cheque Verification</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+       
+        <div id="cheque-registration-list">
+            <div class="row">
+                <div class="form-horizontal">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Account Number</label>
+                            <div class="col-md-4">
+
+                                @Html.TextBoxFor(x => x.AccountNo, new { @class = "form-control" })
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class='input-group-btn'>
+                                    <button type='button' id='btn-cheque-issue-registration' class='btn btn-default'><i class='fa fa-search'></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @{Html.RenderAction("NewChequeissueIndex", "Information");}
+        </div>
+    </div>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $('#btn-cheque-issue-registration').on('click', function () {
+     
+        var accountNumber = $('#AccountNo').val();
+        $.ajax({
+            type: 'GET',
+            url: '/Information/NewChequeIssueIndex',
+            data: {
+                accountNumber: accountNumber,
+
+            },
+            success: function (result) {
+                $('.table-cheque-issue-registration').html(result);
+
+            },
+        });
+    })
+</script>

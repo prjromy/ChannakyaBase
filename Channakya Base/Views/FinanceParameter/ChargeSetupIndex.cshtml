@@ -1,0 +1,327 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ChargeDetail
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "InterestPolicyIndex";
+
+}
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Charge Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="ChargeSetup">
+
+
+        <div id="ChargeSetup-create" class="ChargeSetupCreate">
+            @{Html.RenderAction("_ChargeSetupCreate", "FinanceParameter");}
+        </div>
+        <div id="ChargeSetup-list" class="ChargeSetupList">
+
+            @{Html.RenderAction("_ChargeSetupList", "FinanceParameter");}
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $(document).ready(function () {
+        $(".ChargeSetupCreate").on("change", "#ChrType", function () {
+            debugger
+            var id = $("#ChrType option:selected").val();
+            if (id == 1) {
+                $("#CAmount").rules("add", "required");
+
+                $("#Ratio").attr("disabled", true);
+                $("#Ratio").val("");
+                $("#CAmount").removeAttr("disabled");
+
+                $("#Ratio").rules("remove", "required");
+            }
+            else if (id == 2) {
+                $("#Ratio").rules("add", "required");
+
+                $("#CAmount").attr("disabled", true);
+                $("#CAmount").val("");
+                $("#Ratio").removeAttr("disabled");
+
+                $("#CAmount").rules("remove", "required");
+            }
+        })
+
+
+
+        //save charge
+        $.validator.unobtrusive.parse('#ChargeSetupSubmitForm');
+        $('.ChargeSetup').on('click', '#btn-save-chargeSetup', function () {
+            debugger;
+            $.validator.unobtrusive.parse('#ChargeSetupSubmitForm');
+            $('#ChargeSetupSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#ChargeSetupSubmitForm'));
+
+            var id = $("#Modules option:selected").val();
+            var chargeTypeId = $("#ChrType option:selected").val();
+
+            if (id != 3) {
+                if ($(".products-checked")[0]) {
+                    if (!jQuery(".products-checked").is(":checked")) {
+                        InfoAlert("Choose Products");
+                        return false;
+                    }
+                }
+                else {
+                    InfoAlert("No Products in Module",3000);
+                    return false;
+                }
+            }
+
+            if (chargeTypeId == 1) //fixed
+            {
+                if ($("#CAmount").val() == "") {
+                    InfoAlert('Please Fill Fixed Charge Amount', 6000);
+                    return false;
+                }
+                else {
+                    $("#Ratio").val() == "";
+                }
+            }
+            else {
+                var Ratio = $("#Ratio").val();
+                if (Ratio == "") {
+                    $('#CAmount').removeData("validator").removeData("unobtrusiveValidation");
+                    InfoAlert('Please Fill Ratio', 6000);
+                    return false;
+                }
+                else {
+                    $("#CAmount").val() == "";
+                }
+            }
+
+            if ($('#ChargeSetupSubmitForm').valid() == false) {
+
+                InfoAlert("Please Fill out the form properly", 6000);
+                return false;
+            }
+
+            var ChgName = $('#ChgName').val();
+            var ChgID = $('#ChgID').val();
+
+            $.ajax({
+                url: "/FinanceParameter/ChargeNameExist",
+                type: 'GET',
+                async: false,
+                data: { ChgID: ChgID, ChgName: ChgName },
+                success: function (result) {
+                    debugger;
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert('Please Fill out the form properly', 5000);
+                        return false;
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#ChargeSetupSubmitForm").ajaxSubmit({
+                                beforeSubmit: function () {
+                                },
+                                success: function (result) {
+                                    if (result.Success == true) {
+                                        debugger
+                                        $.ajax({
+
+                                            url: "/FinanceParameter/ChargeSetupIndex",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                debugger;
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            });
+                        }).fail(function () {
+
+                        })
+                    }
+                }
+                });
+        });
+
+
+
+
+        $('.ChargeSetup').on('click', '.btn-edit-chargeSetup', function () {
+
+            debugger
+            var ChgID = $(this).data('id');
+
+
+
+            $.ajax({
+
+                type: "GET",
+                url: "/FinanceParameter/_ChargeSetupCreate/",
+                data: { ChgID: ChgID },
+                success: function (data) {
+                    debugger
+
+                    $('.ChargeSetupCreate').html(data).find('.focusdiv').focus()
+                    //$("#Modules").trigger("change");
+                    var chargetype = $('.ChargeSetupCreate').find("#ChrType").val();
+                    var triggertype = $('.ChargeSetupCreate').find("#Triggertype").val();
+                    if(chargetype=="2"){
+                        $("#CAmount").attr("disabled",true);
+                        $("#Ratio").removeAttr("disabled");
+                    }
+                    else if (chargetype == "1") {
+                        $("#Ratio").attr("disabled", true);
+                        $("#CAmount").removeAttr("disabled");
+                    }
+                    if (triggertype == "2")
+                    {
+                        $("#ModEveID").attr('disabled', true);
+                        $(".ChargeSetupCreate").find("#ModEveID").html("");
+                        
+                    }
+
+                    var id = $("#Modules option:selected").val();
+                    $.ajax({
+                        url: "/FinanceParameter/_ProductListByModulesEdit",
+                        data: { ChgID: ChgID },
+                        success: function success(data) {
+                            $('#product-checkbox').html(data);
+                        }
+                    })
+
+                }
+            })
+
+        });
+        $('.ChargeSetup').on('click', '#btn-Cancel-chargeSetup', function () {
+
+            var container = $(this).closest('.ChargeSetup').find(".ChargeSetupCreate");
+            $(this).closest('.ChargeSetup').find(".ChargeSetupCreate").find('#btn-cancel-chargeSetup').hide();
+            $(container).html("");
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/_ChargeSetupCreate/",
+                success: function (data) {
+                    $(container).html(data);
+                }
+            })
+        });
+
+        $('.ChargeSetup').on('click', '.btn-delete-chargeSetup', function () {
+
+
+            ChgID = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("_ChargeSetupDelete", "FinanceParameter")',
+                data: { ChgID: ChgID },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    if (result == "true") {
+                        ErrorAlert("Cannot Be deleted, is in use. ", 5000);
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to Delete ?"
+                        }).done(function () {
+                            //alert(result)
+
+                           
+
+                                deleteChargeSetup(ChgID);
+                           
+                            
+                        })}
+                   
+                }, error: function () {
+                    alert("error");
+                }
+            });
+
+
+        });
+        function deleteChargeSetup(ChgID) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("_ChargeSetupDeleteConfirm", "FinanceParameter")',
+                data: { ChgID: ChgID },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert("Sucessfully Deleted", 5000);
+                    $("#ChargeSetup-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+    });
+    function ChargeSetupcreateSuccess() {
+
+        SuccessAlert("Succesfully Saved. ", 5000);
+        $.ajax({
+            url: '@Url.Action("_ChargeSetupList", "FinanceParameter")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".ChargeSetupList").html(data);
+                console.log(data)
+                $.ajax({
+                    url: '@Url.Action("_ChargeSetupCreate", "FinanceParameter")',
+                    type: 'GET',
+                    processData: false,
+                    success: function (data) {
+                        $(".ChargeSetupCreate").html(data);
+                        console.log(data)
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    }
+
+
+</script>

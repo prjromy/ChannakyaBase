@@ -1,0 +1,115 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL.Service
+
+@{
+    
+}
+
+
+    <div class="col-md-12">
+        <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+    </div>
+    <div class="form-group">
+        @Html.Label("Apply Action", new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @if (Model.cstate != 5)
+            {
+                if (Model.cstate == 2)
+                {
+                    @Html.DropDownListFor(x => x.ApplyStatus, InformationUtilityService.GetChequeApplyStatus(),"--Select One--", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ApplyStatus, "", new { @class = "text-danger" })
+                }
+                else
+                {
+                    @Html.DropDownListFor(x => x.ApplyStatus, InformationUtilityService.GetChequeActiveApplyStatus(), new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ApplyStatus, "", new { @class = "text-danger" })
+                }
+
+            }
+
+
+        </div>
+    </div>
+           
+    <div class="Check-status-apply-table">
+        @Html.Partial("CheckByChequeStatusTable",Model)
+</div>
+<style>
+    .btn-custome {
+        padding: 0px 3px;
+        font-size: 11px;
+        line-height: 1.5;
+        border-radius: 14px;
+    }
+
+    .rotate-fa {
+        transform: rotate(+86deg);
+    }
+</style>
+
+<script>
+    $("#ApplyStatus").on('change',function () {
+        debugger;
+        var statusId = $("#cstate option:selected").val();
+        var iAccNo = $("input.account-id#IAccno").val();
+        $.ajax({
+            type: 'GET',
+            url: '/Information/CheckByChequeStatusTable',
+            data: {
+                statusId: statusId,
+                iAccNo: iAccNo
+            },
+            success: function (chequeTrans) {
+              
+                $(".Check-status-apply-table").html(chequeTrans);
+            },
+        });
+    });
+    //$('.btn-less-chq-num').on('click', function () {
+    //    debugger;
+    //    var currentRno = $(this).attr('Rno')
+    //    var attrShowHide = $(this).attr('Action');
+    //    var chooseTr = $(this).closest('tr');
+    //    var chequeDetailsSelect = $(this).parents().find('.table-cheque-block-unblock-deactive-status-chaqModel').find('#hide-show-' + currentRno).find('table').find('.cheque-details-row-' + currentRno);
+    //    var isSelect = $(chooseTr).find('.select-cheque').prop("checked");
+    //    if (attrShowHide == 'Show') {
+    //        $('.off-' + currentRno).removeClass('hidden');
+    //        $('.on-' + currentRno).addClass('hidden');
+    //        $(this).attr('Action', 'Hide')
+    //        $('#hide-show-' + currentRno).removeClass('hidden');
+    //        getChequeDetails(currentRno, isSelect,"");
+    //    } else {
+    //        $('.on-' + currentRno).removeClass('hidden');
+    //        $('.off-' + currentRno).addClass('hidden');
+
+    //        $(this).attr('Action', 'Show')
+    //      //  getChequeDetails(currentRno, isSelect);
+    //        $('#hide-show-' + currentRno).addClass('hidden');
+
+    //       // return;
+    //    }
+
+    //});
+    function getChequeDetails1(rno, selectList, showWith, applyStatus) {
+
+        $.ajax({
+            type: 'GET',
+            url: '/Information/_ChequeNumberDetailsList',
+            data: {
+                rno: rno,
+                selectChqList: selectList,
+                showWith: showWith,
+                applyStatus: applyStatus
+            },
+            traditional: true,
+            success: function (result) {
+                $('#hide-show-' + rno).removeClass('hidden');
+                $('#load-details-' + rno).html(result);
+
+            },
+        });
+    }
+  
+</script>
+

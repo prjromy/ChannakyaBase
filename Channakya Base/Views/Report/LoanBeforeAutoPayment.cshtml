@@ -1,0 +1,81 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.LoanAutoPayment
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Loan Before Auto Payment";
+}
+<div class="box box-success Loan-Before-Auto-Payment-Index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Before Auto Payment</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12" id="Loan-Before-Auto-Payment-details">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <div class="form-group">
+                            <div class="col-md-4">
+                                <label>Branch Name</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.BranchId, ReportUtilityService.GetBranchList(Model.BranchId), new { @class = "form-control" })
+                                </div>
+                            </div>                          
+                            <div class="col-md-4">
+                                <label>Product Name</label>
+                                @Html.DropDownListFor(model => model.PID, CreditUtilityService.GetAllProductsByStype(1),"All", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-Loan-Before-Auto-Payment" />
+            </div>
+        </div>
+    </div>
+
+    <div class="Loan-Before-Auto-Payment-details" id="Loan-Before-Auto-Payment-list">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+   
+    $(".Loan-Before-Auto-Payment-Index").on("click", '.btn-Loan-Before-Auto-Payment', function () {
+
+        var branchId = $('#BranchId').val();
+        var Pid = $('#PID').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_LoanBeforeAutoPayment",
+            data: { branchId: branchId, Pid: Pid },
+            success: function (result) {
+
+                $(".Loan-Before-Auto-Payment-details").html("");
+                $(".Loan-Before-Auto-Payment-details").html(result)
+            }
+        })
+    })
+
+
+</script>

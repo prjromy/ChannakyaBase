@@ -1,0 +1,391 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerificationAcc.js"></script>
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    //var getVType = voucherService.GetVoucherType();
+    //var getCurrency = voucherService.GetCurrencyType();
+    //var getFiscalYr = voucherService.GetFiscalYear();
+    //var getBatchNumber = voucherService.get;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    List<SelectListItem> emptyList = new List<SelectListItem>();
+    var test = Model;
+}
+<script src="~/Scripts/jquery-1.11.1.min.js"></script>
+<div class="box box-warning Voucher1-create">
+    <div class="box-header with-border">
+        <h2 class="box-title">Voucher Details </h2>
+        <div class="box-tools pull-right">
+            @*<button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "Voucher1", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data", @id = "mainVoucher" }))
+    {
+        @Html.HiddenFor(x => x.V1Id)
+
+        <div class="col-md-12 voucher-header-container">
+            <div class="col-md-4">
+                <label class="col-md-4"> Type:</label>
+                <div class="col-md-8">
+                 @voucherService.GetVoucherTypeName(Model.VNId)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="col-md-4"> Currency:</label>
+                <div class="col-md-8">
+           @Model.CurrencyType.CurrencyName
+                </div>
+            </div>
+            <div class="col-md-4">
+                @Html.Label("BatchNo:", htmlAttributes: new { @class = " col-md-4" })
+                <div class="col-md-8 batch-number">
+                @voucherService.GetBatchName(Model.VNId)
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="form-group main-voucher-table-container">
+            <table id="voucher2Table" border="1" style="width: 96%;border-width: 1px;border-color: Silver;margin-bottom: 20px;margin-right: auto;margin-left: auto;">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">By/To</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Ledger Name</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Description</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Debit Amount</th>
+                        <th style="text-align:center;font-family: sans-serif;font-size: 14px;">Credit Amount</th>
+                        @*<th></th>*@
+                    </tr>
+                </thead>
+                    <tbody class="voucher2-container">
+                            @for (int j = 0; j < Model.Voucher2.Count(); j++)
+                            {
+                                <tr class="newrow">
+                                    <td style="display:none">
+                                        @Html.TextBoxFor(x => Model.Voucher2.ToList()[j].Fid, null, new { @id = "ledgerID-voucher" })
+                                    </td>
+
+                                    <td style="text-align:left">
+
+                                        @Html.HiddenFor(x => Model.Voucher2.ToList()[j].V2Id, new { @class = "rowId voucher2-display-id" })
+                                        @if (Model.Voucher2.ToList()[j].DebitAmount != null)
+                                        {
+                                            @Html.Label("By")
+                                        }
+                                        else
+                                        {
+                                            @Html.Label("To")
+                                        }
+
+                                    </td>
+
+                                    <td style="text-align:left" class="ledger-search-container" id="append">
+                                        @Html.DisplayFor(x => Model.Voucher2.ToList()[j].FinAcc.Fname, null, new { @class = "LedgerName", @style = "width:90%", @id = "ledgerSearch" })
+                                    </td>
+                                    <td style="text-align:left" class="ledger-search-container" id="append">
+                                        @Html.DisplayFor(x => Model.Voucher2.ToList()[j].Particulars, null, new { @class = " form-control Particulars", @id = "particularsSearch" })
+                                        <div id="description-content">
+                                            @if (Model.Voucher2.ToList()[j].Voucher5 != null)
+                                            {
+                                                if (Model.Voucher2.ToList()[j].Voucher5.Count() > 0)
+                                                {
+                                                    foreach (var item in Model.Voucher2.ToList()[j].Voucher5)
+                                                    {
+                                                        <br />
+                                                        <br />
+                                                        <table class="table table-bordered">
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Cheque/Slip No:
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.ChequeNo
+                                                                    </th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>
+                                                                        Cheque/Slip Amount:
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.ChequeAmount
+                                                                    </th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>
+                                                                        Cheque Date:
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.ChequeDate
+                                                                    </th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>
+                                                                        Depositor/Payee:
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.Payees
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    }
+                                                }
+                                            }
+
+                                            @if (Model.Voucher2.ToList()[j].Voucher3 != null)
+                                            {
+                                                if (Model.Voucher2.ToList()[j].Voucher3.Count() > 0)
+                                                {
+                                                    foreach (var item in Model.Voucher2.ToList()[j].Voucher3)
+                                                    {
+
+                                                        <br />
+                                                        <br />
+                                                        <table class="table table-bordered">
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Subsi Name:
+                                                                    </th>
+                                                                    <th>
+                                                                       @{ 
+                                                                           var subsiTableId = ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId((int)item.Voucher2.Fid);
+                                                                       }
+                                                                      @ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName(item.SId, subsiTableId)
+                                                                    </th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>
+                                                                        Subsi Amount
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.Amount
+                                                                    </th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>
+                                                                        Subsi Description
+                                                                    </th>
+                                                                    <th>
+                                                                        @item.Description
+                                                                    </th>
+                                                                </tr>
+
+                                                            </thead>
+
+
+
+                                                        </table>
+                                                    }
+
+                                                }
+                                            }
+
+
+                                            @if (Model.Voucher2.ToList()[j].Voucher4 != null)
+                                            {
+                                                if (Model.Voucher2.ToList()[j].Voucher4.Count() > 0)
+                                                {
+                                                    <table class="table table-bordered">
+
+
+                                                        @foreach (var item in Model.Voucher2.ToList()[j].Voucher4)
+                                                        {
+                                                            <tr>
+                                                                <th class="col-md-5 normal">
+                                                                    @if (item.DDID != 0)
+                                                                    {
+                                                                        <p><strong>  @voucherService.GetDimensionDefination(item.DDID) </strong></p>
+                                                                    }
+                                                                </th>
+                                                                <th class="normal">
+                                                                    @if (item.DVId != 0)
+                                                                    {
+                                                                        <p> @voucherService.GetDimensionValue(Convert.ToInt32(item.DVId))</p>
+                                                                    }
+                                                                </th>
+
+                                                            </tr>
+                                                        }
+
+
+                                                    </table>
+                                                }
+                                            }
+                                        </div>
+
+                                    </td>
+
+                                    <td style="text-align:right" class="ledger-search-container debit" id="append">
+                                        @Html.DisplayFor(x => Model.Voucher2.ToList()[j].DebitAmount, null, new { @class = " form-control " })
+                                        @Html.HiddenFor(x => x.Voucher2.ToList()[j].DebitAmount, new { @class = "dbamnt" })
+
+                                    </td>
+
+                                    <td style="text-align:right;" class="ledger-search-container credit" id="append">
+                                        @{
+                                            var creditAmnt = Model.Voucher2.ToList()[j].CreditAmount;
+                                        }
+                                        @Html.DisplayFor(x => creditAmnt, null, new { @class = " form-control cramnt", @style = "display:none;" })
+                                        @Html.HiddenFor(x => x.Voucher2.ToList()[j].CreditAmount, new { @class = "cramnt" })
+
+                                    </td>
+
+
+
+
+
+                                </tr>
+                            }
+                        
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="noBorder"></td>
+                        <td class="noBorder"></td>
+                        <td class="noBorder" style="text-align:center">
+                            @*<label class="total">Narration</label>*@
+
+                        </td>
+                        <td style="text-align:center">
+
+                            <label id="debitamount"></label>
+                        </td>
+                        <td style="text-align:center">
+
+                            <label id="creditamount"></label>
+                        </td>
+                        
+                        <td class="voucher-ledger-details-container" style="display:none"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center;font-family: sans-serif;font-size: 18px;">
+                            <b>Total</b>
+                        </td>
+                        <td class="debit-total-amount" style="text-align:right;padding-right:8px;">
+                            <b>  0.00</b>
+                        </td>
+                        <td class="credit-total-amount" style="text-align:right;padding-right:8px;">
+                            <b>  0.00</b>
+                        </td>
+                        @*<td></td>*@
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="col-md-12">
+                @Html.LabelFor(x => x.Narration, new { @class = " col-md-1" })
+                <div class="col-md-8">
+                    @*@Html.TextAreaFor(x => x.Narration, new { @class = "form-control" })*@
+                    @Html.DisplayFor(x=>x.Narration)
+                </div>
+
+            </div>
+
+        </div>
+        <div id="appendtr">
+
+        </div>
+        
+
+            <div class="box-footer">
+
+             
+            </div><!-- box-footer -->
+
+
+    }
+
+</div>
+
+<div class="modal fade" id="getVerifiedLists" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true"></div>
+
+
+<script>
+
+    jQuery.noConflict()
+    debugger;
+    var masterId = @Model.V1Id;
+    if (masterId != 0 && masterId != null) {
+        $("#V1TId").val(masterId);
+    }
+    var finalDebitAmount = 0;
+    var finalCreditAmount = 0;
+
+    var allAmounts = $('tbody.voucher2-container').find('tr.newrow');
+
+    $(allAmounts).each(function (index, item) {
+
+        var amountDebit = parseFloat($(item).find('.debit').text()).toFixed(2)
+
+        if (isNaN(amountDebit)) {
+            amountDebit = 0;
+        }
+        else {
+            finalDebitAmount = parseFloat(finalDebitAmount+ amountDebit).toFixed(2);
+        }
+
+        var amountCredit = parseFloat($(item).find('.credit').text()).toFixed(2)
+        if (isNaN(amountCredit)) {
+            amountCredit = 0;
+
+        }
+        else {
+            finalCreditAmount = parseFloat(finalCreditAmount+amountCredit).toFixed(2);
+        }
+
+    });
+    if (isNaN(parseFloat(finalCreditAmount)) == false)
+    {
+        $('.main-voucher-table-container').find('td.credit-total-amount').html("<b>" + finalCreditAmount+"<b>");
+    }
+    if (isNaN(parseFloat(finalDebitAmount))==false)
+    {
+        $('.main-voucher-table-container').find('td.debit-total-amount').html("<b>" + finalDebitAmount + "</b>");
+    }
+
+ 
+</script>
+<style>
+    table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+
+        table tbody {
+            /* body takes all the remaining available space */
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: scroll;
+            max-height: 60vh;
+        }
+
+            table tbody tr {
+                width: 100%;
+            }
+
+            table thead, table tbody tr {
+                display: table;
+                table-layout: fixed;
+            }
+             table tfoot tr {
+                width: 100%;
+                  display: table;
+                table-layout: fixed;
+            }
+</style>
+

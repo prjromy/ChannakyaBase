@@ -1,0 +1,87 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.LoanAfterAutoPayment
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Loan After Auto Payment";
+}
+<div class="box box-success Loan-After-Auto-Payment-Index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan After Auto Payment</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12" id="Loan-After-Auto-Payment-details">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <label>Branch Name</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.brnhno, ReportUtilityService.GetBranchList(Model.brnhno), new { @class = "form-control" })
+                                </div>
+                            </div>
+                            @Html.Label("From Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                @Html.DatePicker(model => model.FromDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("To Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                @Html.DatePicker(model => model.ToDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-Loan-After-Auto-Payment" />
+            </div>
+        </div>
+    </div>
+
+    <div class="Loan-After-Auto-Payment-details" id="Loan-After-Auto-Payment-list">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+
+    $(".Loan-After-Auto-Payment-Index").on("click", '.btn-Loan-After-Auto-Payment', function () {
+
+        var branchId = $('#brnhno').val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+
+            $.ajax({
+                type: "GET",
+                url: "/Report/_LoanAfterAutoPayment",
+                data: { tDate: ToDate, fDate: FromDate, branchId: branchId },
+                success: function (result) {
+
+                    $(".Loan-After-Auto-Payment-details").html("");
+                    $(".Loan-After-Auto-Payment-details").html(result)
+                }
+            })
+        })
+
+
+</script>

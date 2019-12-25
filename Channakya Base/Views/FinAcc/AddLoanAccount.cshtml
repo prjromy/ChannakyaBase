@@ -1,0 +1,15 @@
+﻿
+
+@model ChannakyaAccounting.Models.Models.FinAcc
+@using ChannakyaAccounting.Helper
+@{
+
+    var modelinfo = Model;
+
+}
+
+
+@Html.EditorFor(x => x.ProductDetails, new ViewDataDictionary { { "AccountType", 1 } })
+@*@Html.EditorForList(model => model.ListOfBank, x => x.Bid.ToString())*@
+
+

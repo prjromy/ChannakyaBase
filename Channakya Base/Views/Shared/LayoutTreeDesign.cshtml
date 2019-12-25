@@ -1,0 +1,83 @@
+﻿@model Loader.ViewModel.LayoutTreeDTO
+@{
+    var test = Model;
+    var menuClass = "";
+    if(Model.IsGroup==false)
+    {
+        menuClass = "child";
+    }
+    if(Model.PId==0)
+    {
+        menuClass = "master";
+    }
+}
+<!-- /.search form -->
+<!-- sidebar menu: : style can be found in sidebar.less -->
+
+<li class="active treeview @menuClass" id="@Model.Id" pid="@Model.PId">
+    @if (Model.IsGroup == true)
+    {
+        if (Model.PId == 0)
+        {
+            <a style="padding-bottom:0px;padding-top:5px;margin-top: 9px;font-size:15px;">
+                
+                    <i class="fa fa-dashboard"></i> <span data-toggle="tooltip" title="@Model.Text" style="cursor:pointer">@Model.Text</span>
+                
+
+                <span class="pull-right-container"id="@Model.Id" pid="@Model.PId" style="cursor:pointer;">
+                    <i class="fa fa-angle-left pull-right"@*style="transform:rotate(+270deg)"*@></i>
+                </span>
+            </a>
+        }
+        else
+        {
+
+            <a style="padding-bottom:8px;padding-top:5px;margin-top: 9px;font-weight:500;font-size:15px;">
+                <span class="idtext" style="padding-left: 15px;">
+                    <i class="fa fa-bars"></i>
+                    
+                    <span data-toggle="tooltip" title="@Model.Text" style="cursor:pointer">@Model.Text</span>
+                </span>
+                <span class="pull-right-container"id="@Model.Id" pid="@Model.PId"style="cursor:pointer;">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+
+            </a>
+
+        }
+
+    }
+    else
+    {
+
+        <ul class="treeview-menu" style="list-style-type:none;padding-left:25px;cursor:pointer;">
+            @*<li><a href="@Model.Controler/@Model.Acton" class="treeview-menu-item" controller="@Model.Controler" acton="@Model.Acton"style="font-size:15px;cursor:pointer;" data-toggle="tooltip" title="@Model.Text" ><i class="fa fa-arrow-right"></i> @Model.Text</a></li>*@
+            <li><a  class="treeview-menu-item" controller="@Model.Controler" acton="@Model.Acton" style="font-size:15px;cursor:pointer;" data-toggle="tooltip" title="@Model.Text" tag><i class="fa fa-arrow-right"></i> @Model.Text</a></li>
+        </ul>
+
+    }
+</li>
+
+@if (Model.Children != null)
+{
+        foreach (var item in Model.Children)
+        {
+            @Html.Partial("LayoutTreeDesign", item)
+        }
+}
+
+
+
+
+
+@*<script>
+    $('.treeview-menu-item').bind('click', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        if (e.ctrlKey) {
+            window.open($(this).attr('href'));
+        }
+    
+      
+      })
+</script>*@

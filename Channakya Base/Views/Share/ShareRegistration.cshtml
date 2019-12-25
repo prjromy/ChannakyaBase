@@ -1,0 +1,474 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareRegisterViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+
+@{
+    CommonService cmService = new CommonService();
+
+}
+
+<div class="box box-warning share-registration-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Share Registration</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*<div class="verfier-list">
+
+        </div>*@
+    @using (Html.BeginForm("ShareRegistration", "Share", FormMethod.Post, new { id = "Share-Registration-form" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                     
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Registration-Details</legend>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CId, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.CustomerSearch(x => x.CId, ECustomerSearchType.SingleType)
+                                    @Html.ValidationMessageFor(model => model.CId, "", new { @class = "text-danger" })
+                                </div>
+
+
+                                @Html.LabelFor(model => model.Rdate, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(x => x.Rdate, true)
+                                    @Html.ValidationMessageFor(model => model.Rdate, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        </fieldset>
+
+                       
+                        
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Nominee-Details</legend>
+                            <div class="form-group">
+                                @Html.Label("Share%", new { @class = "control-label  col-md-1" })
+                                <div class="col-md-1">
+                                    <input class="form-control" id="calShare" name="calShare" type="text" readonly>
+                                </div>
+
+                            </div>
+                            <div class="content-table" id="content-Nominee">
+                                <div class="Nominee-table-div">
+                                    <table class="table table-bordered table-striped table-hover" id="Nominee-table-div">
+                                        <thead>
+                                            <tr>
+
+                                                <th>@Html.LabelFor(x => x.AccountNominee.NomNam)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.NomRel)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.ContactNo)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.ContactAddress)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.CCertno)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.Share)</th>
+                                                <th>@Html.Label("CertificateName")</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*@if (Model.IAccno == 0)
+                                                {
+                                                    @Html.Partial("_AccountNominee", Model.AccountNominee)
+                                                }*@
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="Nominee-table-div-Select">
+                                    <fieldset>
+                                        <div class="form-group">
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.NomNam, new { @class = "control-label NomineeName" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.NomNam, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.NomNam, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.NomRel, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.NomRel, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.NomRel, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.ContactNo, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.ContactNo, new { @class = "form-control", @type = "number" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.ContactNo, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.ContactAddress, new { @class = "control-label col-md-2" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.ContactAddress, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.ContactAddress, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.CCertID, new { @class = "control-label" })
+                                                @Html.DropDownListFor(model => model.AccountNominee.CCertID, TellerUtilityService.GetCertificateForNominee(), "--select--", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.CCertID, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.CCertno, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.CCertno, new { @class = "form-control", @type = "number" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.CCertno, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.Share, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.Share, new { @class = "form-control text-right NomineeShare", onchange = "getTotalShare()" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.Share, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                <br />
+                                                <button type="button" id="btn-Nominee" class="btn btn-success btn-add"><i class="fa fa-plus"></i>Add</button>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                               
+                                @Html.LabelFor(model => model.ReferredBy, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.CustomerSearch(x => x.ReferredBy, ECustomerSearchType.SingleType)
+                                    @Html.ValidationMessageFor(model => model.ReferredBy, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.LabelFor(model => model.BroughtBy, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EmployeeSearch(x => x.BroughtBy)
+                                    @Html.ValidationMessageFor(model => model.BroughtBy, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                           
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+            <div class="chargeDetails  table-responsive table-hover table-striped">
+
+            </div>
+        </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-9 col-md-12">
+              
+                                    <input type="button" value="Save" class="btn btn-default btn-share-account-open-save" data-eventid="24"  data-isMultiVerifier="false" />
+                                                                 
+                            </div>
+                        </div>
+                    </div><!-- box-footer -->
+                    }
+
+
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+
+    $(".multiselectCustomer").chosen({
+        single_backstroke_delete: true,
+        placeholder_text_multiple: "Customer"
+    });
+    function DeleteRow(e) {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            $(e).closest('tr').remove();
+            var total = 0;
+            var tr = $('table#Nominee-table-div').find("tr").find(".share");
+            $.each(tr, function (index, item) {
+                total += parseFloat($(item).val())
+            })
+            $("#calShare").val(total);
+
+            $(".Nominee-table-div-Select").show();
+        }).fail(function () {
+        })
+
+    }
+    $('#btn-Nominee').on('click', function () {
+        debugger;
+        var tr = $('table#Nominee-table-div').find("tr").find(".share");
+        var total = 0;
+        $.each(tr, function (index, item) {
+            total += parseFloat($(item).val())
+        })
+        total = total + parseFloat($("#AccountNominee_Share").val())
+        if (total > 100) {
+            total = total - parseFloat($("#AccountNominee_Share").val())
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "share not more than 100%!!"
+            }).done(function () {
+                $("#AccountNominee_Share").val(0);
+                $("#AccountNominee_Share").focus();
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return;
+        }
+        $("#calShare").val(total);
+        var AccountNominee_NomNam = $("#AccountNominee_NomNam");
+        var AccountNominee_NomRel = $("#AccountNominee_NomRel");
+        var AccountNominee_ContactNo = $("#AccountNominee_ContactNo");
+        var AccountNominee_ContactAddress = $("#AccountNominee_ContactAddress");
+        var AccountNominee_CCertID = $("#AccountNominee_CCertID option:selected");
+        var AccountNominee_CCertno = $("#AccountNominee_CCertno");
+        var AccountNominee_Share = $("#AccountNominee_Share");
+        var NomNam = $(AccountNominee_NomNam).val();
+        var NomRel = $(AccountNominee_NomRel).val();
+        var ContactNo = $(AccountNominee_ContactNo).val();
+        var ContactAddress = $(AccountNominee_ContactAddress).val();
+        var CCertID = $(AccountNominee_CCertID).val();
+        var CCertno = $(AccountNominee_CCertno).val();
+        var Share = $(AccountNominee_Share).val();
+        debugger;
+        if (NomNam == "") {
+            AccountNominee_NomNam.focusin();
+            alert("Nominee Name is required")
+            return;
+        } else if (NomRel == "") {
+            AccountNominee_NomRel.focus();
+            alert("Nominee Relation is required")
+            return
+        } else if (ContactNo == "") {
+            AccountNominee_ContactNo.focus();
+            alert("Nominee ContactNo is required")
+            return;
+        } else if (CCertID == "0" || CCertID == "") {
+            alert("Nominee CCertID is required")
+            AccountNominee_CCertID.focus();
+            return;
+        } else if (Share == "" || Share == "0") {
+            AccountNominee_Share.focus();
+            alert("Nominee Share is required")
+            return;
+        }
+
+        var Nominee = {
+            CCertID: CCertID,
+            CCertno: CCertno,
+            ContactAddress: ContactAddress,
+            ContactNo: ContactNo,
+            NomNam: NomNam,
+            NomRel: NomRel,
+            Share: Share
+        };
+        $.ajax({
+            url: "/Teller/AddNominee",
+            data: JSON.stringify({ aNominee: Nominee }),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                debugger;
+                if (total == 100) {
+                    $(".Nominee-table-div-Select").hide();
+
+                }
+
+                $('#Nominee-table-div >tbody').append(result);
+                $(AccountNominee_NomNam).val("");
+                $(AccountNominee_NomRel).val("");
+                $(AccountNominee_ContactNo).val("");
+                $(AccountNominee_ContactAddress).val("");
+                $("#AccountNominee_CCertID").val("");
+                $(AccountNominee_CCertno).val("");
+                $(AccountNominee_Share).val("");
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+
+    });
+    function getTotalShare() {
+        debugger;
+        var items = $('table#Nominee-table-div').find("tr").find(".share");
+        var total = 0;
+        total = total + parseFloat($("#AccountNominee_Share").val())
+        $.map(items, function (value, index) {
+            total += parseFloat($(value).val());
+            if (total > 100) {
+                total -= parseFloat($("#AccountNominee_Share").val());
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "share not more than 100%!!"
+                }).done(function () {
+                    $("#AccountNominee_Share").val(0);
+                    $("#AccountNominee_Share").focus();
+                    return false;
+                }).fail(function () {
+                })
+                return;
+            }
+        });
+        if ($("#AccountNominee_Share").val() == "" || $("#AccountNominee_Share").val() > 100) {
+            $("#calShare").val(0);
+        } else {
+            $("#calShare").val(total);
+        }
+    }
+    $(function () {
+        $.validator.unobtrusive.parse('#Share-Registration-form');
+
+
+        $(".btn-share-account-open-save").on("click", function (e) {
+            debugger;
+            var strictVerifiable = $('.share-registration-create').find('#strictlyverifiable').prop('checked');
+
+            e.stopImmediatePropagation();
+            eventid = $(this).data('eventid');
+
+            ismultiVerify = $(this).attr('isMultiVerifier');
+
+            var customerId = $('#CId').val();
+            if (customerId == null) {
+                ErrorAlert("Please Fill the Customer", 5000);
+                return false;
+            }
+            var referredBy = $('#ReferredBy').val();
+            if (referredBy == null) {
+                ErrorAlert("Please Fill the Referred", 5000);
+                return false;
+            }
+            var broughtBy = $('#BroughtBy').val();
+            if (broughtBy == "") {
+                ErrorAlert("Please Fill the Collector", 5000);
+                return false;
+            }
+            var tr = $('table#Nominee-table-div').find("tr").find(".share");
+            var total = 0;
+            $.each(tr, function (index, item) {
+                total += parseFloat($(item).val())
+            })
+
+            if (total != 100) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Please add 100% share in table!!"
+                }).done(function () {
+
+                    return false;
+                }).fail(function () {
+                })
+                return false;
+            }
+            $('#Share-Registration-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#Share-Registration-form'));
+            if ($("#Share-Registration-form").valid()) {
+
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    createNewShareAccount();
+                }
+            }
+            else {
+
+                return false;
+            }
+
+
+
+        })
+
+    });
+
+    function createNewShareAccount() {
+        //estopImmediatePropagation();
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#Share-Registration-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Share/ShareRegistration",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>

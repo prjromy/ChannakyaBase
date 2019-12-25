@@ -1,0 +1,310 @@
+﻿@model Loader.Models.UserVSBranch
+@using Loader.Helper
+@using Loader.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+
+<script src="~/Scripts/ch-treeview.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+
+@{
+    Layout = null;
+
+    var test = Model;
+    //var treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Model.ParentId, ViewBag.ActiveText, "Select UserVSBranch", "");
+    Loader.ViewModel.TreeViewParam paramData = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "User Branch Setup";
+    if (Model.Id != 0)
+    {
+        //treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 1, ViewBag.ActiveText, "Select UserVSBranch", "");
+        title = "User Branch Setup";
+    }
+    var itemSize = "col-md-12";
+
+    var valueSubmit = "Create";
+    if (Model.Id != 0)
+    {
+        valueSubmit = "Save";
+    }
+    Loader.Service.UserVSBranchService userBranchService = new Loader.Service.UserVSBranchService();
+    Loader.Service.MenuTemplateService menuTemplateService = new Loader.Service.MenuTemplateService();
+
+}
+<div class="modal fade" id="getUserDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("_GUDetails", "UserVSBranch")'></div>
+
+<div class="box box-warning UserVSBranch-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*@using (Ajax.BeginForm("GetPatients", "Patient", new AjaxOptions
+        {//GetPatients is name of method in PatientController
+            InsertionMode = InsertionMode.Replace, //target element(#patientList) will be replaced
+            UpdateTargetId = "patientList",
+            LoadingElementId = "loader" // div with .gif loader - that is shown when data are loading
+        }))*@
+    @using (Html.BeginForm("Create", "UserVSBranch", FormMethod.Post, new { @id = "createUserVSBranch" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.Id)
+                
+                @*@Html.HiddenFor(x=>x.)*@
+
+
+                <div class="form-group @itemSize">
+                    @Html.HiddenFor(x=>x.UserId,new { @class="user-Id"})
+                    @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    @*<div class="col-md-9">
+
+                        @Html.TextBoxFor(x => x.UserId, null, new { @style = "width:90%", @id = "ledgerSearch" })
+                      
+                        <i class='glyphicon glyphicon-search' name='btnUserId' id='btnUsrId' style="cursor:pointer;"></i>
+                        @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                    </div>*@
+                    <div class="col-md-9">
+                        <div class="input-group add-on" style="width:99%;">
+                            @Html.TextBox("User",null, new { @class = "form-control user-name-in-brnch", @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <button class="btn btnUserId" style="background-color:#2aabd2!important" type="button"><i class="glyphicon glyphicon-search"  style="color:white;"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group @itemSize">
+                    @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+
+                        @*@Html.DropDownListFor(model => model.BranchId, userBranchService.GetCompanyList().Where(x=>x.Value!="1").ToList(), "Select Branch", new { @class = "form-control" })*@
+                        @Html.DropDownListFor(model => model.BranchId, userBranchService.GetBranchListForUserVsBranch().ToList(), "Select Branch", new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group @itemSize">
+                    @Html.LabelFor(model => model.RoleId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @*@Html.TextBoxFor(model => model.RoleId, new { @class = "form-control" })*@
+                        @Html.DropDownListFor(model => model.RoleId, new SelectList(menuTemplateService.GetAll().Where(model=>model.MTId!=1), "MTId", "MTName"),"Select Role", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.RoleId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.IsEnable, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(x => x.IsEnable)
+                        @Html.ValidationMessageFor(model => model.IsEnable, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.Label("IsPermanent",null, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @*@Html.TextBoxFor(model => model.RoleId, new { @class = "form-control" })*@
+                       @Html.CheckBoxFor(x=>x.IsPermanent,new { @class="isPermanent"})
+                        @Html.ValidationMessageFor(model => model.RoleId, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3 fromdate">
+                        @*@Html.TextBoxFor(model => model.BranchName, new { @class = "form-control" })*@
+                        @Html.DatePicker(x=>x.From)
+                        @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3 todate">
+                        @Html.DatePicker(x => x.To)
+                        @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+          
+              
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $(".display-txt#PUserVSBranchId").focus();
+        $("#createUserVSBranch").on('click','.isPermanent',function(){
+            debugger;
+            var toObj = $("#createUserVSBranch").find(".todate");
+            if(this.checked)
+            {
+                $(toObj).prop('checked',false);
+                $(toObj).css('pointer-events','none');
+                $(toObj).css('opacity','0.10')
+            }
+            else
+            { $(toObj).css('opacity','initial')
+                $(toObj).css('pointer-events','auto');
+            }
+        
+        });
+        $("#createUserVSBranch").submit(function () {
+            debugger;
+
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+            //BranchId
+            var userName = $("#UserId").val();
+            var branchName = $("#BranchId").val();
+            var roleName = $("#RoleId").val();
+            if (userName == null || userName == "" || userName=="0")
+            {
+                ErrorAlert("UserName is required",5000);
+                return false;
+            }
+            if (branchName == null || branchName == "") {
+                ErrorAlert("BranchName is required",5000);
+                return false;
+            }
+            if (branchName == null || branchName == "") {
+                ErrorAlert("RoleName is required",5000);
+                return false;
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('.UserVSBranch-create').find('input#Id').val()
+            var wrapperClass = $(this).closest("explore-details").find(".panel-list");
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+                debugger;
+                $.ajax({
+                    url: '@Url.Action("Create", "UserVSBranch")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                                            
+                        if(@Model.Id==0)
+                        {
+                            SuccessAlert("UserVSBranch Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("UserVSBranch Edited Succesfully.",1500);
+                        }
+
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+
+        $('.UserVSBranch-create').on('click','.btnUserId',function(){
+        
+            debugger;
+            var url = $('#getUserDetails').data('url');
+            $.get(url, function (data) {
+
+                $('#getUserDetails').html(data);
+                debugger;
+
+                $('#getUserDetails').modal('show');
+            });
+        
+        });
+
+ 
+
+        $('.UserVSBranch-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/UserVSBranch/_GetUserVSBranchTreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/UserVSBranch/_GetUserVSBranchTree", { param: data.param })
+
+            }
+
+
+        });
+
+        $.fn.GetLayoutMenu = function () {
+            debugger;
+
+            $.ajax({
+                type: "POST",
+                url: "/Menu/GetLayoutMenu/",
+                dataType: "html",
+                success: function (data) {
+                    $('aside.main-sidebar').html(data);
+                }
+            });
+        };
+
+    });
+
+
+</script>
+
+<style>
+    div#loadimage {
+        zoom: 27%;
+        margin: -89px -3px -29px 81px;
+    }
+</style>
+

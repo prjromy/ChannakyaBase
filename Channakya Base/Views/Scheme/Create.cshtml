@@ -1,0 +1,368 @@
+﻿@model ChannakyaAccounting.Models.Models.SchmDetail
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = ViewBag.F2Type;
+    var sType = Model.SType;
+    var title = "Create Scheme";
+    if (Model.SDID != 0)
+    {
+        title = "Edit Scheme";
+    }
+    var test1 = Model;
+    List<SelectListItem> schemeType = new List<SelectListItem>();
+    schemeType.Add(new SelectListItem { Text = "Deposit Scheme", Value = "0" });
+    schemeType.Add(new SelectListItem { Text = "Loan Scheme", Value = "1" });
+    ChannakyaAccounting.Service.DepositScheme.DepositSchemeService depService = new ChannakyaAccounting.Service.DepositScheme.DepositSchemeService();
+}
+<div class="box box-warning FinAcc-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "Scheme", FormMethod.Post, new { @id = "createScheme" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(x => x.SDID)
+                <div class="schemeType-container">
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(x => x.SType, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.SType, (IEnumerable<SelectListItem>)schemeType, "Select Type", new { @class = "form-control", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.SType, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.SDName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.SDName, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                        @Html.ValidationMessageFor(model => model.SDName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Alias", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBox("Alias", (string)ViewBag.Alias, new { @class = "form-control", @required = "required" })
+                        @*@Html.ValidationMessageFor(model => model.SDName, "", new { @class = "text-danger" })*@
+                    </div>
+                </div>
+                <div class="depositgroup-container">
+                </div>
+                <div class="form-group">
+                    <div class="deposit-scheme-container">
+                        @if (Model.SType == 0 && Model.SDID != 0)
+                        {
+                            @Html.EditorFor(x => x, new ViewDataDictionary { { "schemeType", 0 } })
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="loan-account-container">
+                        @if (Model.SType == 1 && Model.SDID != 0)
+                        {
+                            @Html.EditorFor(x => x, new ViewDataDictionary { { "schemeType", 1 } })
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="button" id="backbtn" class="btn btn-link" onclick="loadPrevContent()" style="display:none;" value="Back" />
+                <input type="button" id="nextbtn" class="btn btn-link" onclick="loadnextContent()" style="display:none;" value="Next" />
+                <input type="button" id="btnSubmit" value="Create" class="btn btn-default" />
+            </div>
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+</div><!-- /.box -->
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        debugger;
+
+        var F2Id = $("select#SType option:selected").val();
+        var depositcontainer = $('.FinAcc-create').find('.deposit-scheme-container')
+        if(@Model.SDID==0)
+        {
+            $.ajax({
+                url: '/Scheme/GetSchemeDetails/',
+                data: { SchemeType: F2Id },
+                dataType: "html",
+                success: function(data) {
+                    //$(container).show();
+                    $(depositcontainer).html(data);
+                }
+            });
+            if (F2Id == "0") {
+                var container = $('.FinAcc-create').find('.depositgroup-container')
+                var form = $(container).closest("form");
+                $.ajax({
+                    url: '/Scheme/GetSchemeDepositType/',
+                    dataType: "html",
+                    success: function(data) {
+                        //$(container).show();
+                        $(container).html(data);
+                        $(form).removeData("validator");
+                        $(form).removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse($(form));
+                    }
+                });
+
+            }
+            else {
+                $('.depositgroup-container').empty();
+            }
+        }
+
+        $('select#SType').change(function () {
+            debugger
+            var F2Id = $(this).val();
+            var depositContainer = $('.FinAcc-create').find('.deposit-scheme-container');
+            var loanContainer = $('.FinAcc-create').find('.loan-account-container');
+            $(loanContainer).empty();
+            $(depositContainer).empty();
+
+            $.ajax({
+                url: '/Scheme/GetSchemeDetails/',
+                data: { SchemeType: F2Id },
+                dataType: "html",
+                success: function (data) {
+                    $(depositContainer).html(data);
+                }
+            });
+            if (F2Id == "0") {
+                debugger
+                var container = $('.FinAcc-create').find('.depositgroup-container')
+                var form = $(container).closest("form");
+                $.ajax({
+                    url: '/Scheme/GetSchemeDepositType/',
+                    dataType: "html",
+                    success: function (data) {
+                        //$(container).show();
+                        debugger
+                        $(container).html(data);
+                        $(form).removeData("validator");
+                        $(form).removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse($(form));
+                    }
+                });
+            }
+            else {
+                $('.depositgroup-container').empty();
+            }
+        });
+
+        $("#btnSubmit").on('click',function () {
+            debugger;
+
+            var schemeId =  $('#SDID').val();
+            var alias = $('#Alias').val();
+            _globalObject = 0;
+
+            //alias validation start
+            $.ajax({
+                async:false,
+                url: '/Scheme/CheckExistingAlias/',
+                data: { alias: alias , schemeId:schemeId},
+                dataType: "html",
+                success: function (data) {
+                    if(data == 'true'){
+                        ErrorAlert("Alias already exists",5000);
+                        _globalObject = 1;
+                        return false;
+                    }
+                }
+            });
+
+            if(_globalObject == 1)
+            {
+                return false;
+            }
+
+            //alias validation end
+            //form validation start
+            var form = $("#createScheme");
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",5000);
+                return false;
+            }
+            //form validation end
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($("#createScheme")[0]);
+            var nodeId = $(this).closest('form#createScheme').find('.parent-FinAcc').find('div#Pid').find('input.internal-value').val();
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?" 
+            }).done(function () {
+
+                debugger
+                $.ajax({
+                    url: '@Url.Action("Create", "Scheme")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+
+                        //$(container).html("");
+                        if(@Model.SDID==0)
+                        {
+                            SuccessAlert("Scheme Added Succesfully.",3000);
+                        }
+                        else
+                        {
+                            SuccessAlert("Scheme Edited Succesfully.",3000);
+                        }
+
+                        $.ajax({
+                            url: '/Scheme/Index/',
+                            dataType: "html",
+                            success: function(data) {
+                                $(".content").html(data);
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                debugger
+            });
+
+            return false;
+
+        });
+
+
+
+        @*$("#createFinAcc").submit(function () {
+            debugger;
+
+        });*@
+    });
+    $.fn.GetLayoutFinAcc = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/FinAcc/GetLayoutFinAcc/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.deposit-product-container').show();
+        }
+        if (F2type == "Deposit Scheme") {
+            $('.deposit-scheme-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.deposit-product-container').hide();
+        $('.deposit-scheme-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+
+
+    }
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+
+    .dimension-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-finacc {
+        left: 296px;
+        top: -67px;
+    }
+</style>
+
+@*@if (Model.FinSys2 != null)
+    {
+        if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <script type="text/javascript">
+                $('.dimension-group').show();
+
+            </script>
+            if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+            {
+                var nodeId = Model.Fid;
+                <script type="text/javascript">
+                    $('.dimension-group').show();
+                    $("#nextbtn").show();
+
+                </script>
+            }
+
+        }
+    }*@

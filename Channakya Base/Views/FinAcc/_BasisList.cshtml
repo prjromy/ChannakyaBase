@@ -1,0 +1,14 @@
+﻿@model List<ChannakyaAccounting.Models.Models.DepositBasi>
+
+
+@foreach (var item in Model)
+{
+
+    <td class="depositListTextbox" id="@item.Id">
+
+        @Html.TextBoxFor(x => item.ProductDurationInt.InterestRate, new { @class = "form-control" })
+        
+
+        @*@Html.TextBoxFor(x => subitem., new { @class = "form-control interestValue" })*@
+    </td>
+}

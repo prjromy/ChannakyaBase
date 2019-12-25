@@ -1,0 +1,128 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.LoanRebateModel
+<table class="table table-bordered table-striped table-hover loan-rebate-detail">
+
+    <thead>
+        <tr>
+            <th></th>
+            <th>Received Amount </th>
+            <th>Rebate</th>
+         
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align:center">Interest On Other</td>
+            <td>@Html.TextBoxFor(x=>x.InterestOnOther, new { @class = "form-control col-md-3", @readonly = "readonly" })</td>          
+            @if (Model.InterestOnOther == 0)
+            {
+                <td>@Html.TextBoxFor(x => x.RebateInterestOnOther, new { @class = "form-control col-md-3 Amount", @readonly = "readonly" })</td>
+            }
+            else
+            {
+                <td>@Html.TextBoxFor(x => x.RebateInterestOnOther, new { @class = "form-control col-md-3 Amount" })</td>
+            }
+            
+        </tr>
+        <tr>
+            <td style="text-align:center">Interest On Interest</td>
+            <td>@Html.TextBoxFor(x=>x.IntrestOnInterest, new { @class = "form-control col-md-3", @readonly = "readonly" })</td>
+            @if (Model.IntrestOnInterest == 0)
+            {
+                <td>@Html.TextBoxFor(x => x.RebateIntrestOnInterest, new { @class = "form-control col-md-3 Amount" , @readonly = "readonly" })</td>
+            }
+            else
+            {
+                <td>@Html.TextBoxFor(x => x.RebateIntrestOnInterest, new { @class = "form-control col-md-3 Amount" })</td>
+            }
+           
+        </tr>
+        <tr>
+            <td style="text-align:center">Penalty On Principal</td>
+            <td>@Html.TextBoxFor(x=>x.PenaltyOnPrincipal, new { @class = "form-control col-md-3", @readonly = "readonly" })</td>
+            @if (Model.PenaltyOnInterest == 0)
+            {
+                <td>@Html.TextBoxFor(x => x.RebatePenaltyOnPrincipal, new { @class = "form-control col-md-3 Amount", @readonly = "readonly" })</td>
+            }
+            else
+            {
+                <td>@Html.TextBoxFor(x => x.RebatePenaltyOnPrincipal, new { @class = "form-control col-md-3 Amount" })</td>
+            }
+
+        </tr>
+        <tr>
+            <td style="text-align:center">Penalty On Interest</td>
+            <td>@Html.TextBoxFor(x=>x.PenaltyOnInterest, new { @class = "form-control col-md-3", @readonly = "readonly" })</td>
+            @if (Model.PenaltyOnInterest == 0)
+            {
+                <td>@Html.TextBoxFor(x => x.RebatePenaltyOnInterest, new { @class = "form-control col-md-3 Amount", @readonly = "readonly" })</td>
+            }
+            else
+            {
+                <td>@Html.TextBoxFor(x => x.RebatePenaltyOnInterest, new { @class = "form-control col-md-3 Amount" })</td>
+            }
+        </tr>
+        <tr>
+            <td style="text-align:center">Interest On Principal</td>
+            <td>@Html.TextBoxFor(x=>x.InterestOnPrincipal, new { @class = "form-control col-md-3", @readonly = "readonly" })</td>
+            @if (Model.InterestOnPrincipal == 0)
+            {
+                <td>@Html.TextBoxFor(x => x.RebateInterestOnPrincipal, new { @class = "form-control col-md-3 Amount" ,@readonly="readonly"})</td>
+            }
+            else
+            {
+                <td>@Html.TextBoxFor(x => x.RebateInterestOnPrincipal, new { @class = "form-control col-md-3 Amount" })</td>
+            }
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td></td>
+            <td><output id="result"></output></td>
+        </tr>
+
+
+      
+    </tbody>
+</table>
+
+
+<form class="form-inline">
+
+  
+    <div class="form-group">
+        @Html.Label("Principal Out", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(x => x.OldPrincipalOut, new { @class = "form-control" ,@readonly="readonly" })
+            </div>
+        <div class="col-md-5">
+            @Html.TextBoxFor(x => x.NewPrincpalOut, new { @class = "form-control"})
+        </div>
+          
+        </div>
+
+
+    <div class="form-group">
+        @Html.Label("Other Balance", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(x => x.OldOtherBalance, new { @class = "form-control",@readonly="readonly" })
+        </div>
+        <div class="col-sm-5">
+            @Html.TextBoxFor(x => x.NewOtherBalance, new { @class = "form-control"})
+        </div>
+      
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Link Account ", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(x => x.OldLinkAccount, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        <div class="col-sm-5">
+
+            @Html.TextBoxFor(x => x.NewLinkAccount, new { @class = "form-control" })
+        </div>
+        </div>
+
+    
+
+</form>

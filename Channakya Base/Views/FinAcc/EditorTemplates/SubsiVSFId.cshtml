@@ -1,0 +1,19 @@
+﻿@model ChannakyaAccounting.Models.Models.SubsiVSFId
+
+@Html.HiddenFor(x=>x.SFId)
+@Html.HiddenFor(x => x.Fid)
+@*@Html.HiddenFor(x => x.STId)*@
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var subsiTypeList = finaccService.GetSubsiTitle();
+ }
+
+
+<div class="form-group col-md-12">
+    @Html.LabelFor(model => model.SSId, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+        @Html.DropDownListFor(x => x.SSId, subsiTypeList, "Select Subsi Type", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.SSId, "", new { @class = "text-danger" })
+    </div>
+</div>

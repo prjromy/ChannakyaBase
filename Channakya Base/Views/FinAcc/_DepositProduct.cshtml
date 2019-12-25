@@ -1,0 +1,509 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+@{
+
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var schemeList = finaccService.GetSchmDetails();
+    var sectorlist = finaccService.GetSector();
+    var accountType = Model.SchemeofProduct.SType;//Deposit Account
+    List<SelectListItem> durationType = new List<SelectListItem> { new SelectListItem { Text = "Days", Value = "0" }, new SelectListItem { Text = "Months", Value = "1" } };
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+    var capruleList = depositProduct.GetCapitalizationRule();
+    var calcRuleList = depositProduct.GetCalculationRule();
+    Model.SDID = Model.SchemeofProduct.SDID;
+
+}
+
+@Html.HiddenFor(m => m.PID, new { @class = "form-control" })
+@Html.HiddenFor(x => x.FID)
+@Html.HiddenFor(x => x.SDID)
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <div class="modal fade" id="getProductDetailToEdit" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("EditProductInterestRatePopUp", "FinAcc")'></div>
+        <h2 class="box-title paramHeader">
+            Select Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+                        @if (Model.SchemeofProduct.HasIndivRate == true)
+                        {
+                            bool HasIndivRate = Model.HasIndivRate == null ? false : true;
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasIndivRate, new { @class = "col-md-6  control-label col-form-label", @id = "hasIndvRate" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => HasIndivRate)
+                                    @Html.ValidationMessageFor(model => model.HasIndivRate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HasCheque == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasCheque, new { @class = "col-md-6  control-label col-form-label", @id = "hasCheque" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.HasCheque)
+                                    @Html.ValidationMessageFor(model => model.HasCheque, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HasDuration == true)
+                        {
+                            if (Model.HasIndDuration == null)
+                            {
+                                Model.HasIndDuration = false;
+                            }
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasIndDuration, new { @class = "col-md-6  control-label col-form-label", @id = "hasCheque" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBox("HasIndDuration", Model.HasIndDuration.Value, new { @id = "HasIndDuration" })
+                                    @Html.ValidationMessageFor(model => model.HasIndDuration, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HasCard == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasCard, new { @class = "col-md-6  control-label col-form-label", @id = "hasCard" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.HasCard)
+                                    @Html.ValidationMessageFor(model => model.HasCard, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.SchemeofProduct.HasCertificate == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasCertificate, new { @class = "col-md-6  control-label col-form-label", @id = "hasCert" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.HasCertificate)
+                                    @Html.ValidationMessageFor(model => model.HasCertificate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HasIndivLimit == true)
+                        {
+                            bool HasIndivLimit = Model.HasIndivLimit == null ? false : true;
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.HasIndivLimit, new { @class = "col-md-6  control-label col-form-label has-ind-limit" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => HasIndivLimit)
+                                    @Html.ValidationMessageFor(model => model.HasIndivLimit, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.PID != 0)
+                        {
+
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.enabled, new { @class = "col-md-6  control-label col-form-label ", @id = "isenaBled" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.enabled)
+                                    @Html.ValidationMessageFor(model => model.enabled, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.MultiDeposit == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @if (Model.MultiDep == null)
+                                {
+                                    Model.MultiDep = false;
+                                }
+                                @Html.LabelFor(m => m.MultiDep, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBox("MultiDep", Model.MultiDep.Value, new { @class = "multiple-deposit", @id = "multiDep" })
+                                    @Html.ValidationMessageFor(model => model.MultiDep, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HASSMS == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @if (Model.HASSMS == null)
+                                {
+                                    Model.HASSMS = false;
+                                }
+                                @Html.LabelFor(m => m.HASSMS, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBox("HASSMS", Model.HASSMS.Value, new { @id = "hasSMS" })
+                                    @Html.ValidationMessageFor(model => model.HASSMS, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.Withdrawal == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @if (Model.Withdrawal == null)
+                                {
+                                    Model.Withdrawal = false;
+                                }
+                                @Html.LabelFor(m => m.Withdrawal, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBox("Withdrawal", Model.Withdrawal.Value, new { @class = "multiple-withdrawl" })
+                                    @Html.ValidationMessageFor(model => model.Withdrawal, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.HasOverdraw == true)
+                        {
+                            <div class="form-group col-md-6">
+
+                                @Html.LabelFor(m => m.HasOverdraw, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6">
+                                    @Html.CheckBoxFor(m => m.HasOverdraw)
+                                    @Html.ValidationMessageFor(model => model.HasOverdraw, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        }
+                        <div class="form-group col-md-6">
+                            @if (Model.IntraBrnhTrnx == null)
+                            {
+                                Model.IntraBrnhTrnx = false;
+                            }
+                            @Html.LabelFor(m => m.IntraBrnhTrnx, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6 ">
+                                @Html.CheckBox("IntraBrnhTrnx", Model.IntraBrnhTrnx.Value, new { @id = "intraBrnchTrans" })
+                                @Html.ValidationMessageFor(model => model.IntraBrnhTrnx, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @if (Model.SchemeofProduct.Nomianable == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @Html.Label("Nominable", new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.Nomianable, new { @id = "nominable" })
+                                    @Html.ValidationMessageFor(model => model.Nomianable, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.IsInsured == true)
+                        {
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(m => m.IsInsured, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBoxFor(m => m.IsInsured, new { @id = "isInsured" })
+                                    @Html.ValidationMessageFor(model => model.IsInsured, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SchemeofProduct.MultiDeposit == false && Model.SchemeofProduct.HasDuration == true)
+                        {
+
+                            <div class="form-group col-md-6">
+                                @if (Model.Schedule == null)
+                                {
+                                    Model.Schedule = false;
+                                }
+                                @Html.LabelFor(m => m.Schedule, new { @class = "col-md-6  control-label col-form-label" })
+                                <div class="col-md-6 ">
+                                    @Html.CheckBox("Schedule", Model.Schedule.Value, new { @id = "schedule" })
+                                    @Html.ValidationMessageFor(model => model.Schedule, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+<div class="box box-warning col-md-12">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Enter Value
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+
+                <div class="form-group col-md-12">
+
+                    @if (Model.SchemeofProduct.HasDormancy == true && Model.SchemeofProduct.HasDuration == false)
+                    {
+                        <div class="form-group col-md-6">
+                            @Html.LabelFor(m => m.DormantPeriod, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6">
+                                @Html.TextBoxFor(m => m.DormantPeriod, new { @class = "form-control", @placeholder = "In Month", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.DormantPeriod, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                    }
+
+
+                    @*@if (Model.SchemeofProduct.HasDuration == true && Model.SchemeofProduct.HasDormancy == false)
+                    {
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.Duration, new { @class = "col-md-3 control-label col-form-label" })
+                            <div class="col-md-3">
+                                @Html.TextBoxFor(m => m.Duration, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("Duration Type", new { @class = "col-md-3  control-label col-form-label" })
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(m => m.durState, durationType, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+
+                    }*@
+                    @if (Model.SchemeofProduct.HasIndivLimit == true)
+                    {
+                        <div class="form-group col-md-6">
+
+                            @Html.LabelFor(m => m.LAmt, new { @class = "col-md-6  control-label col-form-label" })
+                            <div class="col-md-6">
+                                @Html.TextBoxFor(m => m.LAmt, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.LAmt, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    }
+                    @*//<div class="col-md-12">*@
+
+                        <div class="form-group col-md-6">
+
+
+                            @Html.LabelFor(m => m.StartAcNo, new { @class = "col-md-6 control-label col-form-label" })
+                            <div class="col-md-6">
+                                @Html.TextBoxFor(m => m.StartAcNo, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.StartAcNo, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    @* </div> *@
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+<div class="interest-value-main-container">
+
+</div>
+
+<div class="box box-warning col-md-12 interest-main-container" pid="@Model.PID" style="display:none;">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Interest Setup
+        </h2>
+
+        <br />
+        <br />
+        <div class="container col-md-12 ">
+            @if (Model.InterestValueList != null && Model.InterestValueList.Count()>0)
+            {
+                
+                    <div class="box-header with-border interestValue-box">
+                        <a class="btn btn-primary btn-xs addInterestRate" id="" data-title="Add More" style="float:right;"><span class="glyphicon glyphicon-plus"></span></a>
+                        <div class="interest-value-container">
+                            @foreach (var item in Model.InterestValueList)
+                            {
+                                @Html.Partial("_AddInterestValue", new ViewDataDictionary { { "Value", item.Amount } })
+                            }
+                        </div>
+                        <input type="button" class="btn btn-default useInterestValue" value="Done" style="float:right;">
+                    </div>
+                    
+
+            }
+
+            <ul class="nav nav-pills interest-tabs">
+                @if (Model.InterestValueList != null)
+                {
+                    for (int i = 0; i < Model.InterestValueList.Count(); i++)
+                    {
+                        if (i == 0)
+                        {
+                            <li class="active"><a class="tab-button active" id="@Model.InterestValueList[i].Amount" data-toggle="pill" href="#depositBasisId-@Model.InterestValueList[i].Amount"> @Model.InterestValueList[i].Amount </a></li>
+                        }
+                        else
+                        {
+                            <li><a class="tab-button active" id="@Model.InterestValueList[i].Amount" data-toggle="pill" href="#depositBasisId-@Model.InterestValueList[i].Amount"> @Model.InterestValueList[i].Amount </a></li>
+                        }
+                    }
+                }
+
+
+            </ul>
+            <div class="interest-list-container">
+
+                @if (Model.InterestValueList != null)
+                {
+                    if (Model.InterestValueList.Count() > 0)
+                    {
+                        Response.Write("<script language=javascript>$('.interest-main-container').show();</script>");
+                        @Html.Partial("_RecurringProduct",Model)
+                        @*<div class="row">
+                            <div class="form-group col-md-12">
+                                @Html.Label("Interest Calculation Rule", new { @class = "col-sm-3  control-label col-form-label" })
+                                <div class="col-md-9">
+                                    @Html.DropDownListFor(m => Model.InterestValueList[0].PolicyIntCalcId, depositProduct.GetCalculationRule(Model.InterestValueList[0].PolicyIntCalcId), "Select Calculation Rule", new { @class = "form-control", @id = "calc-rule-dropdown" })
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="tab-content">
+                            @for (int i = 0; i < Model.InterestValueList.Count(); i++)
+                            {
+                                //using (Html.BeginCollectionItem("ProductInterest"))
+                                //{
+
+                                var interestCss = "tab-pane fade";
+                                if (i == 0)
+                                {
+                                    interestCss = "tab-pane fade in active";
+                                }
+
+                                <div id="depositBasisId-@Model.InterestValueList[i].Amount" class="@interestCss">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Duration
+                                                </th>
+                                                @foreach (var item in depositBasisList)
+                                                {
+                                                    <th class="depositBasis" id="@item.Id">@item.Name</th>
+                                                }
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @Html.HiddenFor(x => Model.InterestValueList[i].Amount)
+
+                                            @for (int j = 0; j < Model.InterestValueList[i].DurationList.Count(); j++)
+                                            {
+
+                                                @Html.HiddenFor(x => Model.InterestValueList[i].DurationList[j].Id)
+                                                <tr class="DurationList">
+                                                    <th scope="row" class="Duration" id="@Model.InterestValueList[i].DurationList[j].Id">@Model.InterestValueList[i].DurationList[j].Duration1</th>
+
+                                                    @for (int k = 0; k < Model.InterestValueList[i].DurationList[j].DepositBasisList.Count(); k++)
+                                                    {
+                                                        @Html.HiddenFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].Id)
+
+                                                        <td class="depositListTextbox" id="@Model.InterestValueList[i].DurationList[j].DepositBasisList[k].Id">
+                                                            <input type="button" producticb-id="@Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.Id" onclick="showPopUp(this)" class="btn btn-link pull-right" value="Edit" style="margin: -13px -10px -5px -9px" />
+                                                            @Html.DropDownListFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.ICBId, depositProduct.GetCapitalizationRule(Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.ICBId), "Select Rule", new { @class = "form-control", @readonly = "readonly" })
+                                                            @Html.TextBoxFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.InterestRate, new { @class = "form-control", @readonly = "readonly" })
+
+                                                        </td>
+                                                    }
+
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>*@
+
+                    }
+                }
+                @if (Model.FixedDepositList != null)
+                {
+                    Response.Write("<script language=javascript>$('.interest-main-container').show();</script>");
+                    @Html.Partial("_GetFixedDepositContainer", Model)
+                }
+
+                @if (Model.NormalDepositList != null)
+                {
+                    Response.Write("<script language=javascript>$('.interest-main-container').show();</script>");
+                    @Html.Partial("_GetNormalDepositContainer", Model)
+                }
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function showPopupToEditProduct(currentEvent)
+    {
+        debugger;
+        var productIcbId = $(currentEvent).attr('producticb-id');
+        var url= $("#getProductDetailToEdit").attr('data-url');
+        var data = {productICBId:productIcbId};
+
+        $.get(url,data, function (data) {
+
+            $('#getProductDetailToEdit').html(data);
+            debugger;
+
+            $('#getProductDetailToEdit').modal('show');
+        });
+    }
+
+
+
+    $('.deposit-product-container').on('change', 'input.multiple-deposit', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $('.deposit-product-container').find('.interest-value-main-container');
+        var withdrawlCheck = $(this).closest(".deposit-product-container").find("input.multiple-withdrawl").prop("checked");
+        //withdrawlcheck wala case chai remove gareko sir sanga discuss garera
+        if (this.checked  && @Json.Encode(Model.SchemeofProduct.HasDuration)==true) {
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("_GetValueContribution", "Product")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (html) {
+                    $(container).empty();
+                    $('.interest-main-container').css("display","none");
+                    $('.interest-main-container').find('.interest-list-container').empty();
+                    $(container).html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $(container).html("");
+        }
+    });
+    //$('.addInterestRate').click(function () {
+    //    debugger;
+    //    var container = $(this).closest('.interestValue-box').find('.interest-value-container');
+
+    //    $.ajax({
+    //        url: '/FinAcc/AddInterestValue/',
+    //        dataType: "html",
+    //        success: function (data) {
+    //            $(container).append(data);
+    //        }
+    //    });
+
+
+
+    //});
+</script>

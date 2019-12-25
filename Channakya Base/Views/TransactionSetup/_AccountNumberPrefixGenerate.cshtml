@@ -1,0 +1,93 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.AccNoPrefixDef>
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+@*<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<link href="~/Content/assets/css/style.css" rel="stylesheet" />*@
+
+<style>
+  /*#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; }*/
+    #sortable {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 20%;
+    }
+
+        #sortable li {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            height: 18px;
+        }
+
+            #sortable li span {
+                position: absolute;
+                margin-left: -1.3em;
+            }
+
+        #sortable li {
+            margin: 0 3px 3px 3px;
+            padding: 0.4em;
+            padding-left: 1.5em;
+            font-size: 1.4em;
+            height: 45px;
+        }
+</style>
+
+@*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<script>
+    $(function () {
+        $("#sortable").sortable();
+        $("#sortable").disableSelection();
+    });
+</script>
+ 
+<div class="form-group prefix-contents" id="contentDiv">
+    <ul id="sortable" class="param-list">
+        @foreach (var item in Model)
+            {
+            <li class="ui-state-default"><span PrfxId="@item.PrfxId" class="ui-icon ui-icon-arrowthick-2-n-s"><input type="text" value="@item.PrfxId" class="hidden prefixid" /></span>@item.PrefixName</li>
+        }
+
+    </ul>
+    <div>
+        <input type="button" value="Save" id="btn-save-submit" class="btn btn-default btn-save " />
+        <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+    </div>
+</div>
+<script>
+    $('.prefix-contents').on('click', '.btn-save', function () {
+        // var paramcode = "";
+        debugger;
+        var list = Array.from(document.querySelectorAll('#contentDiv>ul>li>span>input.prefixid'));
+
+        var paramcode = [];
+        $(list).each(function (index, item) {
+            debugger;
+            // paramcode+= $(this).val();
+            paramcode.push($(this).val());
+        })
+        $.ajax({
+            type: "post",
+            url: "/TransactionSetup/_AccountNumberPrefixGenerate",
+            data: { paramcode: paramcode },
+            success: function (data) {
+                SuccessAlert(" Sucessfully Added", 5000);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+    })
+</script>

@@ -1,0 +1,54 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustAddress
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+@{
+    LocationService locationService = new LocationService();
+}
+ 
+    <tr>
+
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.CID)
+        @Html.HiddenFor(x=>x.AddressTypeId)
+        @Html.HiddenFor(x => x.CAId)
+        <td>
+            @Model.LType
+           
+        </td>
+        <td>
+            @if (Model.LId != null)
+            {
+            <span class="control-label">@locationService.GetAddressOfCustomerByLID((int)Model.LId)</span>
+            }
+</td>
+        <td>
+            @if (Model.StreetNo != null)
+            {
+            <span class="control-label">@Model.StreetNo</span>
+            }
+
+        </td>
+        <td> 
+            <span class="control-label">@Model.BlockNo</span>
+            
+        </td>
+       
+        @if (Model.AddressTypeId == 2)
+        {
+            <td>
+                <span class="control-label">@Model.OName</span>
+
+           
+            </td>
+        }
+        else
+        {
+            <td></td>
+        }
+
+
+
+    </tr>
+ 

@@ -1,0 +1,54 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.CollectedAccountSheet
+@{
+    Layout = null;
+
+}
+@using ChannakyaBase.BLL.Service;
+<div class="box-tools col-md-6  form-group" id="search-Account-Number">
+    @Html.TextBoxFor(x=>x.Name, "", htmlAttributes: new { @class = "form-control", @id = "txtAccountNumber", @placeholder = "Account Number/Name" })
+</div>
+<table class="table table-bordered table-striped table-hover" id="accountCollected-table-div">
+    <thead>
+        <tr>
+
+            <th>@Html.Label("Name")</th>
+            <th>@Html.Label("Account Number")</th>
+            <th>@Html.Label("Description")</th>
+            <th>@Html.Label("Amount")</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+
+    @foreach (var item in Model.CollectedAccountSheetList)
+    {
+        <tr>
+            @Html.HiddenFor(x=>item.Amount, new { @class= "IndAmount"})
+            @Html.HiddenFor(x => item.RetId, new { @class = "RetId" })
+            @Html.HiddenFor(x => item.Id, new { @class = "TempCollId"})
+            <td>@item.Name</td>
+            <td>@item.AccountNumber</td>
+            <td>@item.Description</td>
+            <td style = "text-align: right;" >@item.Amount.ToString("0.00")</td>
+            <td>
+                <input type="button" value="Remove" class="btn btn-danger" onclick="DeleteRowCollection(this,@item.Id,@item.RetId)" />
+                @*<button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" onclick="EditRow(this)"></button>*@
+            </td>
+        </tr>
+
+      
+    }
+    <tr>
+        <th colspan="3">
+           Sub-Total
+        </th>
+        <td style = "text-align: right;" >
+           @Html.HiddenFor(model=>model.TempTotal)
+            @Model.TempTotal.ToString("0.00")
+        </td>
+        <td>
+
+        </td>
+    </tr>
+</table>

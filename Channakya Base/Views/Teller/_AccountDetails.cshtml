@@ -1,0 +1,464 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ADetail
+@using ChannakyaCustomeDatePicker.Helper;
+
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@{
+    CommonService commonService = new CommonService();
+    ChannakyaBase.DAL.DatabaseModel.ADetail check = new ChannakyaBase.DAL.DatabaseModel.ADetail();
+    check = Model;
+    var modelFrom=ViewBag.ModelFrom ;
+}
+
+<script>
+    $(document).ready(function () {
+
+        $(".btn-event-id").on('click', function (e) {
+            debugger;
+            var id = $(this).attr('data-id');
+            // 2 indicate account number
+            var idtype = 2;
+            $.ajax({
+                type: 'GET',
+                url: "/Customer/EventMessage",
+                data: {
+                    id: id,
+                    idtype: idtype,
+                    formEventId: 4
+                },
+                success: function (result) {
+                    debugger;
+                    $('#message-pop-up-div2').html(result).modal({
+                        'show': true,
+                        'backdrop': 'static'
+                    });
+                }
+            })
+        });
+
+      
+
+    })
+</script>
+<div id='message-pop-up-div2' class='modal fade' role='dialog'></div>
+<div id='account-pop-up-div3' class='modal fade verfier-list' role='dialog'>
+</div>
+<div class="box-header with-border no-padding">
+    <div class="box box-warning menu-create no-padding">
+        <div class="box-header with-border">
+            <h4 class="page-title">Details Of Account</h4>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+               
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+        @*<div class="btn col-md-12">
+                <button type="button" style="float:right" class="btn btn-info btn-save-item btn-sm glyphicon glyphicon-edit" data-id="@Model.IAccno">EventMessage</button>
+            </div>*@
+        <div class="box-body no-padding">
+
+            <div class="">
+                <div class="btn col-md-12">
+                    @if (ViewBag.ModelFrom != "Report" && ViewBag.ModelFrom != "DepositReport")
+                    {
+                        <button type="button" style="float:right" class="btn btn-info btn-event-id btn-sm glyphicon glyphicon-edit" data-id="@Model.IAccno">EventMessage</button>
+
+                        if (TellerUtilityService.IsFixedAccount(Model.PID) || TellerUtilityService.IsRecurringDeposit(Model.PID) || TellerUtilityService.IsOtherTypeOfRecurringDeposit(Model.PID))
+                        {
+                            if (Model.AccState == 7)
+                            {
+                                <button type="button" style="float:right" class="btn btn-info btn-renew-account btn-sm glyphicon glyphicon-edit" data-id="@Model.IAccno" productId="@Model.PID">Re-New</button>
+                            }
+
+                        }
+                    }
+
+                </div>
+                <div class="col-md-12 account-details">
+
+                    <fieldset>
+                        <legend style="font-size:large;font-weight:bold">Account-Details</legend>
+
+
+                        <div class="box-body ">
+                            <span class="control-label">Registered Date:@commonService.GetDate(Model.RDate)</span>
+                            @* @Html.DatePicker(x => x.RDate)*@
+                        </div>
+                        @Html.HiddenFor(x => x.IAccno)
+
+                        <div class="table table-responsive table-hover ">
+                            <table class="table table-responsive table-hover table-striped table-bordered">
+                                <tr>
+                                    <th> Account Name </th>
+                                    <td><span class="control-label">@Model.Aname</span></td>
+                                    <th> Account Number </th>
+                                    <td><span class="control-label">@Model.Accno</span></td>
+                                    <th>Scheme Name </th>
+                                    <td>
+                                        <span class="control-label"> @Model.ProductDetail.SchmDetail.SDName</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Product Name </th>
+                                    <td> <span class="control-label">@Model.ProductDetail.PName </span></td>
+                                    <th>Currency Name </th>
+                                    <td>
+                                        <span class="control-label">@Model.CurrencyType.CurrencyName</span>
+                                    </td>
+                                    <th>Agreement Amount</th>
+
+
+
+                                    <td>
+                                        @if (@Model.ADrLimit != null)
+                                        {
+                                            <span class="control-label">@Model.ADrLimit.AppAmt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                                        }
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </div>
+
+                    </fieldset>
+
+                    @Html.Partial("_AccountsWiseCustomerDetails", Model.AccountsWiseCustomer)
+                    <div class="customer-details-div" id="customer-details">
+
+                    </div>
+                    <fieldset>
+
+                        <legend style="font-size:large;font-weight:bold">Interest-Details</legend>
+                        <div class="form-horizontal table-responsive">
+
+                            <div class="col-md-8">
+                                @if (Model.ADur != null)
+                                {
+                                    if (Model.ADur.MatDat != null)
+                                    {
+                                        <span class="control-label">Maturity Date:@commonService.GetEnglishDate(Model.ADur.MatDat.Value)</span>
+                                    }
+                                }
+                                @*  @Html.DatePicker(x => x.ADur.MatDat)*@
+                            </div>
+
+
+
+                            <table class="table table-striped table-bordered table-responsive">
+                                <tr>
+                                    <th> Duration </th>
+                                    <td>
+                                        @if (Model.ADur != null)
+                                        {
+                                            if (Model.ADur.DurType == 0)
+                                            {
+
+                                                <span class="control-label">@Model.ADur.Days Days</span>
+                                            }
+                                            if (Model.ADur.DurType == 1)
+                                            {
+
+                                                <span class="control-label">@Model.ADur.Month Months</span>
+                                            }
+                                        }
+                                        //for using duration in months and days type
+                                        @*@if (Model.ADur.DurType == 2)
+                                            {
+                                            DateTime enddate = Convert.ToDateTime(Model.ADur.MatDat);
+                                            DateTime valdate = Convert.ToDateTime(Model.ADur.ValDat);
+                                            var monthsdays = TellerUtilityService.GetDateDiffInMonthDays(valdate, enddate);
+                                            <span class="control-label">@monthsdays.Month Months @monthsdays.Days Days</span>
+                                            }*@
+                                    </td>
+
+
+
+                                    <th>
+                                        Interest Calulation Rule
+                                    </th>
+                                    <td>
+                                        @if (Model.APolicyInterest != null)
+                                        {
+                                            <span class="control-label">@TellerUtilityService.PolicyIntCal(Model.APolicyInterest.PSID)</span>
+                                        }
+                                    </td>
+                                    <th>
+                                        Interest Capitalize Rule
+                                    </th>
+
+                                    <td>
+                                        @if (Model.AICBDur != null)
+                                        {
+                                            <span class="control-label">@TellerUtilityService.RuleICBDuration(Model.AICBDur.ICBDurID)</span>
+                                        }
+
+                                    </td>
+                                </tr>
+                                @*@Html.LabelFor(model => model.InterestCalRule, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.DropDownListFor(model => model.InterestCalRule, TellerUtilityService.GetAllInterestCalculationRuleByProductId(Model.PID), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.InterestCalRule, "", new { @class = "text-danger" })
+                                    </div>*@
+                                @*
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FloatingInterest, new { @class = "control-label  col-md-2" })
+                                        <div class="col-md-4">
+                                            @Html.DropDownListFor(model => model.FloatingInterest, TellerUtilityService.GetFloatingInterest(Model.PID), new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.FloatingInterest, "", new { @class = "text-danger" })
+                                        </div>
+                                        @Html.LabelFor(model => model.InterestCapitalize, new { @class = "control-label  col-md-2" })
+                                        <div class="col-md-4">
+                                            @Html.DropDownListFor(model => model.InterestCapitalize, TellerUtilityService.GetFloatingInterest(Model.PID), new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.InterestCapitalize, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>*@
+                                <tr>
+                                    <th>
+                                        Nominee Account
+                                    </th>
+                                    <td>
+                                        @foreach (var item in Model.ANomAccs)
+                                        {
+                                            <span class="control-label">@item.NIAccno.ToString()</span>
+                                        }
+                                    </td>
+                                    <th>
+                                        Interest Rate
+                                    </th>
+                                    <td>
+                                        <span class="control-label"> @Model.IRate</span>
+                                    </td>
+                                    <th>
+                                        Account Min Balance
+                                    </th>
+                                    <td>
+                                        @if (Model.AMinBal != null)
+                                        {
+                                            <span class="control-label">@Model.AMinBal.Minbal.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                        }
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend style="font-size:Large;font-weight:bold">Nominee-Details</legend>
+                        <div class="content-table" id="content-Nominee">
+                            <div class="Nominee-table-div table-responsive">
+                                <table class="table table-striped table-bordered table-responsive" id="Nominee-table-div">
+                                    <thead>
+                                        <tr>
+                                            <th>Nominee Name</th>
+                                            <th>Relation</th>
+                                            <th>Contact No.</th>
+                                            <th>Address</th>
+                                            <th>Certificate No</th>
+                                            <th>Certificate Name</th>
+                                            <th>Share</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.ANominees)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="control-label">@item.NomNam</span>
+                                            </td>
+                                            <td>
+                                                <span class="control-label">@item.NomRel</span>
+                                            </td>
+                                            <td>
+                                                <span class="control-label">@item.ContactNo</span>
+                                            </td>
+                                            <td>
+                                                <span class="control-label">@item.ContactAddress</span>
+                                            </td>
+                                            <td>
+                                                <span class="control-label">@item.CCertno</span>
+                                            </td>
+
+                                            <td>
+                                                <span class="control-label">@item.CertificateDef.CCCert</span>
+                                            </td>
+                                            <td>
+                                                <span class="control-label">@item.Share</span>
+                                            </td>
+                                        </tr>
+                                    }
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend style="font-size:Large;font-weight:bold">Reference Details</legend>
+                        <table class="table table-striped table-bordered table-responsive">
+                            <tr>
+                                <th> Reffered By </th>
+                                <td>
+                                    @foreach (var item in Model.ReferenceInfoes)
+                                    {
+                                        CustomerService custservice = new CustomerService();
+
+                                        <span class="control-label">@custservice.GetCustomerName(item.ReferredBy)</span>
+                                    }
+                                </td>
+
+
+                                <th>Collector</th>
+                                <td>
+
+                                    @foreach (var item in Model.ReferenceInfoes)
+                                    {
+                                        CommonService cs = new CommonService();
+                                        <span class="control-label">@cs.GetEmployeeName(item.BroughtBy)</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <fieldset>
+                        <legend style="font-size:Large;font-weight:bold">Status Change Log</legend>
+                        <table class="table table-responsive">
+                            <tr>
+                                <th> Status </th>
+                                <th>Change On</th>
+                                <th>Change By</th>
+
+                            </tr>
+
+                            @foreach (var item in Model.StatusLogList)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelitem => item.StatusName)</td>
+                                    <td>@Html.DisplayFor(modelitem => item.ChangeOn)</td>
+                                    <th>@commonService.EmployeeInfoUserId(item.UserID).EmployeeName</th>
+                                </tr>
+                            }
+                        </table>
+
+                    </fieldset>
+                </div>
+                @if (ViewBag.ModelFrom != "")
+                {
+                    <div class="box-footer">
+                        <div class="form-group">
+
+                            <div class="col-md-offset-10 col-md-12">
+                                <input type="button" value="Back To List" class="btn btn-info btn-details-back" buttonTab="@ViewBag.ModelFrom" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div><!-- /.box-body -->
+
+    </div>
+</div>
+
+<div id="#account-pop-up-div3">
+
+
+</div>
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('.btn-details-back').on('click', function () {
+            debugger;
+            var tabFrom = $(this).attr('buttonTab')
+            var url;
+            if (tabFrom == 'Report') {
+                url = '/Report/AccountopenDetailsReport'
+            } else if (tabFrom == "DepositReport") {
+                url = '/Report/MatureDurationWiseAccount'
+            } else if (tabFrom == "LoanReport") {
+                url = '/Report/MatureDurationWiseAccountLoan'
+            } else if (tabFrom == "indexReport") {
+                url = '/Teller/AccountOpenIndex'
+            } else if (tabFrom == "CustomerList") {
+                url = "/Customer/CustomerListIndex"
+            } else if (tabFrom == "Credit") {
+                url = "/Credit/LoanAccountIndex"
+            }
+            $.ajax({
+                type: "GET",
+                url: url,
+                datatype: "Json",
+                success: function (result) {
+                    debugger;
+                    $('section.content').html("");
+                    $('section.content').html(result);
+                }
+            })
+        })
+        $('.account-details').on('click', '.view-account-details', function () {
+            debugger;
+            var thisVal = $(this).val();
+            var CID = $(this).data('id');
+            var me = $('#account-customers-details-tr-' + CID);
+
+            var tabFrom = $('.btn-details-back').attr('buttonTab')
+            if (thisVal == "Hide Details") {
+                $(this).val("View Details")
+                $(this).addClass("btn-success")
+                $(this).removeClass("btn-warning")
+
+                me.addClass("hidden");
+            }
+            else {
+                $(this).val("Hide Details")
+                $(this).removeClass("btn-success")
+                $(this).addClass("btn-warning")
+                $.ajax({
+                    type: "GET",
+                    url: "/Customer/_CustomerDetails",
+                    datatype: "Json",
+                    data: { CID: CID, modelFrom: tabFrom },
+                    success: function (result) {
+                        me.removeClass("hidden");
+                        $(me).find('td').html("");
+                        $(me).find('td').html(result);
+                        $('#btn-cancel').hide();
+
+                    }
+                })
+            }
+        })
+       
+    }); 
+    
+
+    $(".btn-renew-account").on('click', function (e) {
+
+        var iaccno = $(this).data("id")
+        var productId = $(this).attr("productId")
+        $.ajax({
+            type: 'GET',
+            url: "/Teller/DepositAccountRenew",
+            data: {
+                iaccno: iaccno,
+                productId: productId
+            },
+            success: function (result) {
+
+                $('#message-pop-up-div2').html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+                });
+            },
+            error: function () {
+
+            }
+        });
+    });
+</script>

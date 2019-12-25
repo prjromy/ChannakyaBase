@@ -1,0 +1,63 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContact
+@using ChannakyaBase.BLL.Service
+@using HtmlHelpers.BeginCollectionItem
+
+@{
+    var y = @Model;
+}
+<tr>
+
+    @using (Html.BeginCollectionItem("CustContactList"))
+    {
+        @Html.HiddenFor(x => x.CCID, new { @class = "CCID" })
+        @Html.HiddenFor(x => x.IsDeleted, new { @class = "IsDeleted" })
+
+        <td class="col-md-3">
+            @Html.DropDownListFor(model => model.CNotype, CustomerUtilityService.CustContactType(Model.CtypeId), "Choose Any", new { @class = "form-control cnoType col-md-3" })
+            @Html.ValidationMessageFor(model => model.CNotype, "", new { @class = "text-danger" })
+        </td>
+
+        <td class="col-md-3">
+            @Html.EditorFor(model => model.CNo, new { htmlAttributes = new { @class = "form-control contact-value col-md-2"  } })
+            @Html.ValidationMessageFor(model => model.CNo, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-2">
+            @Html.CheckBoxFor(x => Model.IsDefault, new { @class = "isChecked" })
+            @Html.ValidationMessageFor(model => model.IsDefault, "", new { @class = "text-danger" })
+        </td>
+       //var cNoState = CustomerUtilityService.CNoStateByCID(Model.CNotype, Model.CID);
+
+        if (Model.CID != 0)
+        {
+            var cNoState = CustomerUtilityService.CNoStateByCID(Model.CNotype, Model.CID);
+           
+            if (cNoState == 2)
+            {
+
+                <td>
+                    <input type="button" class="btn btn-default delete-cust-contact hidden" id="delete-cust-contact" value="Delete" />
+                </td>
+            }
+            
+            else
+            {
+                <td>
+                    <input type="button" class="btn btn-default delete-cust-contact" id="delete-cust-contact" value="Delete" />
+                </td>
+            }
+        }
+
+        
+        else
+        {
+            <td class="col-md-2">
+                <input type="button" class="btn btn-default delete-cust-contact-add hidden" id="delete-cust-contact" value="Delete" />
+            </td>
+
+        }
+
+    }
+
+
+
+</tr>

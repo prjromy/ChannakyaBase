@@ -1,0 +1,95 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+@using ChannakyaAccounting.Helper
+
+<div id="loanCalculationRule" class="">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-sm-1">
+                    Select
+                </th>
+                <th>
+                    Penalty Payment Modes
+                </th>
+                <th>
+                    IsDefault
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.PID == 0)
+            {
+                for (int i = 0; i < Model.LoanInterestList.RulePayList.Count(); i++)
+
+                {
+                    <tr class="depositCalculationRule">
+                        @Html.HiddenFor(x => x.LoanInterestList.RulePayList[i].PAYID)
+                        <td>@Html.CheckBoxFor(x => x.LoanInterestList.RulePayList[i].IsChecked, new { @id = "checkbox-ischecked" })</td>
+                        <td>
+                            @Html.Label(Model.LoanInterestList.RulePayList[i].PRule, new { @class = "control-label" })
+                        </td>
+                        <td class="loancalcboxcontainer">@Html.MyCheckBoxFor(x => x.LoanInterestList.RulePayList[i].IsDefault, new { @id = "checkbox-loancalc" }, Model.LoanInterestList.RulePayList[i].IsChecked)</td>
+
+                    </tr>
+                }
+
+            }
+            else
+            {
+                for (int i = 0; i < Model.LoanInterestList.RulePayList.Count(); i++)
+
+                {
+                    <tr class="depositCalculationRule">
+                        @Html.HiddenFor(x => x.LoanInterestList.RulePayList[i].PAYID)
+                        <td>@Html.CheckBoxFor(x => x.LoanInterestList.RulePayList[i].IsChecked, new { @id = "checkbox-ischecked" , onclick = "return false" })</td>
+                        <td>
+                            @Html.Label(Model.LoanInterestList.RulePayList[i].PRule, new { @class = "control-label" })
+                        </td>
+                        <td class="loancalcboxcontainer">@Html.MyCheckBoxFor(x => x.LoanInterestList.RulePayList[i].IsDefault, new { @id = "checkbox-loancalc", onclick = "return false" }, Model.LoanInterestList.RulePayList[i].IsChecked)</td>
+
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#loanCalculationRule').on('change', 'input#checkbox-ischecked', function (e) {
+            debugger;
+
+            e.stopPropagation();
+            var container = $(this).closest('tr.depositCalculationRule');
+            if ($(this).prop("checked") == true) {
+
+                $(container).find('#checkbox-loancalc').prop('disabled', false);
+            }
+            else {
+                $(container).find('#checkbox-loancalc').prop('checked', false);
+                $(container).find('#checkbox-loancalc').prop('disabled', true);
+            }
+
+
+
+        });
+        $('div#loanCalculationRule').on('change', 'input#checkbox-loancalc', function (e) {
+            debugger;
+            var currentevent = $(this);
+            e.stopPropagation();
+            var container = $(this).closest('#loanCalculationRule');
+            var allLoanLists = $(container).find('td.loancalcboxcontainer');
+
+            $(allLoanLists).each(function (index, item) {
+                $(item).find('input[type="checkbox"]').prop('checked', false);
+
+            });
+            $(currentevent).prop('checked', true);
+
+        });
+    });
+</script>

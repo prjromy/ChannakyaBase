@@ -1,0 +1,92 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+@using ChannakyaBase.BLL.Service
+<div class="box box-success share-holderList-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Share Holder List</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label>Branch Name</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Model.branchId), new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label>Ordinary Promoter</label>
+                                <div class="form-grop_padding">
+                                    @Html.DropDownListFor(x => x.VerifyStatus, ReportUtilityService.OrdinaryPromoter(), new { @class = "form-control" })
+                                </div>
+                            </div>
+
+
+                                <div class="col-md-6">
+                                    <label></label>
+                                    <div class="form-grop_padding">
+                                        <input type="button" value="Generate" class="btn btn-success btn-share-holderList-generate" />
+                                        <input type="button" value="ExportToExcel" class="btn btn-info btn-share-holderList-export-to-excel" />
+                                        </div>
+                                    </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+
+    </div>
+
+    <div class="share-holderList-details" id="share-holderList-Details">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+
+    $(".share-holderList-main").on("click", '.btn-share-holderList-generate', function () {
+        var branchId = $('#branchId').val();
+        var ordPromter = $('#VerifyStatus').val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ShareHolderList",
+            data: { branchId: branchId, stype: ordPromter },
+            success: function (result) {
+
+                $(".share-holderList-details").html("");
+                $(".share-holderList-details").html(result)
+            }
+        })
+    });
+
+    $('.btn-share-holderList-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var branchId = $('#branchId').val();
+        var verifyStatus = $('#VerifyStatus').val();
+        var branchName = $('#branchId option:selected').text();
+        var verifyStatusName = $('#VerifyStatus option:selected').text();
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ShareHolderExportToExcel?branchId=" + branchId + "&branchName=" + branchName + "&verifyStatusId=" + verifyStatus + "&verifyStatusName=" + verifyStatusName)
+
+    })
+</script>

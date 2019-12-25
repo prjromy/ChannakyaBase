@@ -1,0 +1,125 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.AccountSearchViewModelAcc
+
+@using ChannakyaAccounting.Helper
+
+<div class="table-responsive table-click-account-number-search">
+    <table class="table table-bordered table-striped table-hover" style="display:flex;flex-flow:column;width:100%;">
+        <thead style="flex:0 0 auto;width:calc(100%-0.9em);display:table;table-layout:fixed">
+            <tr>
+                <th>Customer Name</th>
+                <th>@Html.LabelFor(x => x.AccountNumber)</th>
+                <th>Account Name</th>
+            </tr>
+        </thead>
+        <tbody style="flex:1 1 auto;display:block;overflow-y:auto;max-height:60vh;">
+            @foreach (var item in Model.AccountList)
+            {
+                <tr id="@item.AccountId" iaccno="@item.AccountId" accountname="@item.AccountName" class="account-name-tr" style="width:100%;display: table; table-layout: fixed;">
+                    <td class="account-name">
+                        <a data-toggle="popover-@item.CustomerId-@item.AccountId" data-trigger="hover" data-container="body" data-placement="top" type="button" data-html="true" href="#" id="accountPopover-@item.CustomerId-@item.AccountId" class="nounderline">
+                            <span class="glyphicon glyphicon-user"></span>@item.AccountName
+                        </a>
+                        <div id="popover-content-@item.CustomerId-@item.AccountId" class="table-responsive hide">
+                            <form class="form-inline" role="form">
+                                <div class="form-group">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <tr>
+                                            <td class="text-info">CustomerId</td>
+                                            <td class="text-info">@item.CustomerId</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-info">Account Title</td>
+                                            <td class="text-info">@item.AccountHolder</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-info">Contact </td>
+                                            <td class="text-info">@item.ContactPerson</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-info">A/c Status</td>
+                                            <td class="text-info">@item.AccountStatus</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-info">Mobile</td>
+                                            <td class="text-info">@item.Mobile</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-info">A/c Type</td>
+                                            <td class="text-info">@item.AccountType</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </form>
+                        </div>
+                        @Html.Partial("~/Views/Voucher1/_AccountSearchDetails.cshtml", item)
+                    </td>
+                    <td>@item.AccountNumber</td>
+                    <td>@item.AccountHolder</td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_AccountNumberSearch", "Voucher1", Model.AccountList.PageCount, Model.AccountList.PageNumber, Model.AccountList.PageSize)
+</div>
+<style>
+    .nounderline {
+        text-decoration: none !important;
+        color: black;
+    }
+</style>
+
+<script>
+    @*$(document).ready(function () {
+        alert(@Model.AccountList.PageSize);
+    })*@
+    $(function () {
+        $("div.table-click-account-number-search").on('click', 'input.btnPaging', function (e) {
+
+            e.stopImmediatePropagation();
+
+            var productCode = $(this).parents().find(".appount-search-product-code").find("#ProductId").val();;
+            var branchCode = $(this).parents().find(".appount-search-branch").find("#BranchId option:selected").val();
+            var currencyCode = $(this).parents().find(".appount-search-currency").find("#CurrencyId option:selected").val();
+            var me = $(this);
+            var customerName = $("#AccountHolder").val();
+            var container = $("div.table-click-account-number-search");
+
+            var filterAccount = $(this).parents().find(".appount-search-branch").find("#FilterAction").val();
+            var accountType = $(this).parents().find(".appount-search-branch").find("#AccountType").val();
+
+            var url = "?branchCode=" + branchCode + "&productCode=" + productCode + "&currencyCode=" + currencyCode + "&customerName=" + customerName + "&filterAccount=" + filterAccount + "&accountType=" + accountType;
+            getPageNumberBtnAction(url, container, me)
+        });
+        $("div.table-click-account-number-search").on('change', 'input#pageNo', function (e) {
+
+            e.stopImmediatePropagation();
+            var me = $(this);
+            var productCode = $(this).parents().find(".appount-search-product-code").find("#ProductId").val();;
+            var branchCode = $(this).parents().find(".appount-search-branch").find("#BranchId option:selected").val();
+            var currencyCode = $(this).parents().find(".appount-search-currency").find("#CurrencyId option:selected").val();
+            var customerName = $("#AccountHolder").val();
+            var container = $("div.table-click-account-number-search");
+            var filterAccount = $(this).parents().find(".appount-search-branch").find("#FilterAction").val();
+            var accountType = $(this).parents().find(".appount-search-branch").find("#AccountType").val();
+
+            var url = "?branchCode=" + branchCode + "&productCode=" + productCode + "&currencyCode=" + currencyCode + "&customerName=" + customerName + "&filterAccount=" + filterAccount + "&accountType=" + accountType;
+            getPageNumberChangeData(url, container, me)
+        });
+        $("div.table-click-account-number-search").on('change', 'input#pageSize', function (e) {
+
+            e.stopImmediatePropagation();
+            var me = $(this);
+            var productCode = $(this).parents().find(".appount-search-product-code").find("#ProductId").val();;
+            var branchCode = $(this).parents().find(".appount-search-branch").find("#BranchId option:selected").val();
+            var currencyCode = $(this).parents().find(".appount-search-currency").find("#CurrencyId option:selected").val();
+            var customerName = $("#AccountHolder").val();
+            var container = $("div.table-click-account-number-search");
+            var filterAccount = $(this).parents().find(".appount-search-branch").find("#FilterAction").val();
+            var accountType = $(this).parents().find(".appount-search-branch").find("#AccountType").val();
+
+            var url = "?branchCode=" + branchCode + "&productCode=" + productCode + "&currencyCode=" + currencyCode + "&customerName=" + customerName + "&filterAccount=" + filterAccount + "&accountType=" + accountType;
+            getPageSizeChangeData(url, container, me)
+        });
+    });
+</script>

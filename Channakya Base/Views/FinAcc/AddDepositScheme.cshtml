@@ -1,0 +1,14 @@
+﻿
+@model ChannakyaAccounting.Models.Models.FinAcc
+@using ChannakyaAccounting.Helper
+@{
+
+    var modelinfo = Model;
+    var schemeType = ViewBag.SchemeType;
+
+}
+
+
+@Html.EditorFor(x => x.SchmDetails, new ViewDataDictionary { { "schemeType", schemeType } })
+@*@Html.EditorForList(model => model.ListOfBank, x => x.Bid.ToString())*@
+

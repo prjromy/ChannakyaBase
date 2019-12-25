@@ -1,0 +1,108 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareCustomerDetailsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding table-click-share-return-unverifiedList">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.RegNo)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Scrtno)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Qty)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShareType)
+            </th>
+            <th>
+                Action
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model.ShareCustomerDetailsIPageList)
+        {
+            <tr>
+                @Html.HiddenFor(modelItem => item.AccState)
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Scrtno)
+                </td>
+                @*<td>
+                        @{ CommonService commonService = new CommonService();}
+                        @commonService.GetNepaliDate(item.Rdate)
+                    </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+
+                </td>
+
+                <td>
+                    @if (item.ShareType == 1)
+                    {
+                        <span>Ordinary</span>
+                    }
+                    else
+                    {
+                        <span>Promoter</span>
+                    }
+                </td>
+
+                <td>
+                   @if (commonService.IsAuthotityToVerify(item.Tno, 26))
+                    {
+                    <input type="button" value="Verify" class="btn btn-sm btn-success btn-share-return-verifier-confirmations" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(26, Convert.ToInt64(item.Tno)))">
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_ShareReturnUnVerifiedIndexList", "share", Model.ShareCustomerDetailsIPageList.PageCount, Model.ShareCustomerDetailsIPageList.PageNumber, Model.ShareCustomerDetailsIPageList.PageSize)
+</div>
+<script>
+    $("div.table-click-share-return-unverifiedList").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-share-return-unverifiedList")
+
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.table-click-share-return-unverifiedList").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-share-return-unverifiedList")
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.table-click-share-return-unverifiedList").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-share-return-unverifiedList")
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>

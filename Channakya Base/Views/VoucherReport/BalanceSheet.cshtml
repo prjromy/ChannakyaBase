@@ -1,0 +1,144 @@
+﻿@model  List<ChannakyaAccounting.Models.ViewModel.BalanceSheetViewModel>
+@using PagedList.Mvc;
+
+
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.jqueryui.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.jqueryui.min.css">
+
+
+@*<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>*@
+
+
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.jqueryui.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.jqueryui.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.colVis.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+
+<button type="button" id="goBack" class="btn btn-info btn-sm pull-left" onclick="return goBackToIndex()" style="margin-bottom:5px;">
+    <span class="glyphicon glyphicon-backward"></span> Back
+</button>
+<table class="col-md-12 table table-striped" id="balancesheet-DataTable">
+
+    <thead>
+        <tr>
+            <th>
+                LedgerId
+            </th>
+            <th>
+                LedgerName
+            </th>
+            <th>
+                Transaction Date
+            </th>
+            <th style="text-align:right;">
+                Debit Amount
+            </th>
+            <th style="text-align:right;">
+                CreditAmount
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.FId
+                </td>
+                <td>
+                    @item.Fname
+                </td>
+                <td>
+                    @item.TDate
+                </td>
+                <td style="text-align:right;">
+                    @item.DebitAmount
+                </td>
+                <td style="text-align:right;">
+                    @if (item.CreditAmount != null)
+                    {
+                        <p>@Convert.ToInt32(item.CreditAmount * (-1))</p>
+                    }
+                </td>
+
+            </tr>
+
+        }
+    </tbody>
+    <tfoot>
+        <tr style="text-align:right;">
+            <td colspan="3" align="right" style="font-weight:bold">
+                Total
+            </td>
+            <td>
+                @Model.Select(x => x.TotalDebitAmount).FirstOrDefault()
+            </td>
+            <td>
+                @Model.Select(x => x.TotalCreditAmount).FirstOrDefault()
+            </td>
+        </tr>
+    </tfoot>
+</table>
+@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("TrialBalance",
+        new { page, pageSize = Model.PageSize }))*@
+
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            $('#trialBalance-DataTable').dataTable({
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ]
+            });
+        });
+    </script>*@
+<script type="text/javascript">
+    function goBackToIndex() {
+        jQuery.noConflict();
+        debugger;
+        $.ajax({
+            type: "get",
+            url: "/VoucherReport/Index?url=2",
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $('section.content').html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        var table = $('#balancesheet-DataTable').DataTable({
+            "paging": false,
+            lengthChange: false,
+            buttons: ['copy', 'excel', 'pdf', 'colvis']
+        });
+
+        table.buttons().container()
+            .insertBefore('#balancesheet-DataTable_filter');
+    });
+</script>

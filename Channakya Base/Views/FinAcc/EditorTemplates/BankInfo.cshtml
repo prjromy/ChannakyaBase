@@ -1,0 +1,205 @@
+﻿@model ChannakyaAccounting.Models.Models.BankInfo
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+
+@*<script src="~/Scripts/DatePicker/CHDialog.js"></script>*@
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var calcRuleList = finaccService.GetCalculationRules();
+}
+<br/>
+
+<label class="col-md-12 myHeader">Bank Info Details</label>
+<br/>
+<div class="form-group">
+    @Html.LabelFor(m => m.Branch, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.Branch, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Branch, "", new { @class = "text-danger" })
+    </div>
+</div>
+@Html.HiddenFor(x => x.Bid)
+
+<div class="form-group ">
+    @Html.LabelFor(m => m.ContactPerson, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.ContactPerson, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ContactPerson, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => m.PhoneNo, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+
+<div class="form-group ">
+    @Html.LabelFor(model => model.OpenDate, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-3">
+        @*@Html.TextBoxFor(model => model.OpenDate, new { @class = "form-control dt", @Value = DateTime.Now.ToShortDateString() })*@
+        @Html.DatePicker(model=>model.OpenDate)
+        @Html.ValidationMessageFor(model => model.OpenDate, "", new { @class = "text-danger" })
+    </div>
+
+    @Html.LabelFor(model => model.IsFixed, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-3">
+        @Html.CheckBoxFor(model => model.IsFixed,new { @id="IsFixed"})
+        @Html.ValidationMessageFor(model => model.IsFixed, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+
+<div class="form-group maturedate" style="display:none;">
+    @Html.LabelFor(m => m.MatureDate, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-md-9">
+        @*<input type="date" class="form-control" />*@
+        @Html.DatePicker(x => x.MatureDate)
+        @*@Html.TextBoxFor(model => model.DateOfJoin, new { @class = "form-control dt", @Value = DateTime.Now.ToShortDateString() })*@
+        @Html.ValidationMessageFor(model => model.MatureDate, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group InterestRate">
+    @Html.LabelFor(m => m.InterestRate, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.InterestRate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.InterestRate, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group InterestRuleId">
+    @Html.LabelFor(m => m.InterestRuleId, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.DropDownListFor(m => m.InterestRuleId,calcRuleList,"Select Calculation Rule", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.InterestRuleId, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group MinimumBalance">
+    @Html.LabelFor(m => m.MinimumBalance, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.MinimumBalance, new { @class = "form-control"})
+        @Html.ValidationMessageFor(model => model.MinimumBalance, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group accountNo">
+    @Html.LabelFor(m => m.AccountNo, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.AccountNo, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.AccountNo, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+@*</form>*@
+
+<style>
+
+    .myHeader {
+        padding-left: 89px;
+        margin-left: 104px;
+        width: 93%;
+        left:-46px;
+        margin-bottom:18px;
+        height: 28px;
+        padding-top: 4px;
+        border-bottom: 1px solid grey;
+        padding-left: 7px;
+        background-color: #3c8dbc;
+        color: white;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#IsFixed').on('click', function (e) {
+            debugger;
+            var fixedvalue = $('#IsFixed').prop('checked') ? 1 : 0;
+            if (fixedvalue == 1) {
+                $(".maturedate").show();
+                //$(".InterestRate").hide();
+                //$(".InterestRuleId").hide();
+                $(".MinimumBalance").hide();
+            }
+            else {
+                $(".maturedate").hide();
+                $(".InterestRate").show();
+                $(".InterestRuleId").show();
+                $(".MinimumBalance").show();
+            }
+
+
+        });
+    })
+</script>
+<script>
+  $( function() {
+    $( ".dt" ).datepicker();
+  } );
+    </script>
+
+
+
+
+
+
+
+
+
+<style>
+    #IsFixed {
+        left: 54%;
+        position: absolute;
+    }
+</style>
+@*<script type="text/javascript">
+        $(document).ready(function () {
+             ;
+
+
+            $('#F2Desc').blur(function () {
+                var descvalue =$(this).val();
+                $.ajax({
+                    url: '@Url.Action("IsDescriptionExists", "FinSys2")',
+                    data:{ desc:descvalue ,Parent:@ViewBag.Parent},
+                    success: function (CheckDesc) {
+                        if(CheckDesc==true)
+                        {
+                            $("#descerror").html("Data already exists / Invalid Data").attr('class','text-danger')
+                            $("#descerror").show();
+                            $('#btndone').prop("disabled",true);
+                        }
+                        else
+                        {
+                            $("#descerror").hide();
+
+                            $('#btndone').prop("disabled",false);
+                        }
+
+
+                    },
+                    error:function(req,status,error)
+                    {
+                        alert("Error!!!!!!!!!!");
+                    }
+                });
+
+            });
+        });
+
+
+    </script>*@
+
+
+
+
+
+

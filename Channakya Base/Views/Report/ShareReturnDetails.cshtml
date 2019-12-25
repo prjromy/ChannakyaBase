@@ -1,0 +1,96 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success share-returndetails-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Share Return Details</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+                        <div class="col-md-3">
+                            <label>
+                                From Date
+                            </label>
+                            <div class="form-grop_padding">
+
+                                @Html.DatePicker(x => x.FromDate)
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+
+
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-share-returndetails-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-share-returndetails-export-to-excel" />
+
+            </div>
+        </div>
+    </div>
+
+    <div class="share-returndetails-details" id="share-returndetails-Details">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+    $(".share-returndetails-main").on("click", '.btn-share-returndetails-generate', function () {
+
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ShareReturnDetails",
+            data: { fromDate: fromDate, toDate: toDate },
+            success: function (result) {
+
+                $(".share-returndetails-details"
+                    ).html("");
+                $(".share-returndetails-details").html(result)
+            }
+        })
+    });
+
+    $('.btn-share-returndetails-export-to-excel').on('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ShareReturnDetailsExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate)
+
+    })
+
+</script>

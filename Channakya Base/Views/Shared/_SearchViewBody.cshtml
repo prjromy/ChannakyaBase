@@ -1,0 +1,131 @@
+﻿@model Loader.ViewModel.SearchViewModel
+@{ 
+    var test = Model;
+    //Loader.ViewModel.SearchViewModel param = (Loader.ViewModel.SearchViewModel) ViewData["param"];
+    int searchData = Convert.ToInt32(ViewData["PagedList"]);
+    if(searchData==0 && ViewBag.CountPager!=null)
+    {
+        searchData = ViewBag.CountPager;
+    }
+    var activeId = 1;
+    if(ViewBag.ActivePager!=null)
+    {
+        activeId = ViewBag.ActivePager;
+    }
+
+}
+<div class="list-group"style="width: 400px;position: relative;left: -45px;">
+    <ul>
+        @Html.EditorFor(x => Model.SearchData)
+    </ul>
+    </div>
+
+<ul class="pagination Userpopuppagination">
+    <li class="previous"><a href="#">Previous</a></li>
+    @for (int i = 1; i <= searchData; i++)
+    {
+        if (i > 4)
+        {
+            if (i == activeId)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i == searchData)
+                {
+                    <li class=""><a>.......</a> </li>
+                                    <li id=@searchData class="pagerClass"><a>@searchData</a> </li>
+
+                }
+                else
+                {
+
+                    <li id=@i class="pagerClass" style="display:none;"><a>i</a> </li>
+                }
+
+            }
+        }
+        else
+        {
+            if (i == activeId)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                <li id=@i class="pagerClass"><a>@i</a> </li>
+            }
+        }
+
+    }
+    <li class="next"><a href="#">Next</a></li>
+
+</ul>
+
+<script>
+
+    $(document).ready(function () {
+        $('.Userpopuppagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var treeViewParam = {
+             
+                Title: "Select Employee",
+            }
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var query = $(this).closest('.treeview-popup').find("#text-filter-tree").val();
+                var pager = $('ul.pagination.Userpopuppagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Userpopuppagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('#search-area');
+                    //.find('.Users-explore').find('#viewType').val();
+                    $(container).load("/Users/_GetEmployeeSearchTree", { param: treeViewParam,query:query, page: finalId, ViewType: 1 });
+
+                    var checkActive = $('ul.pagination.Userpopuppagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpopuppagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Userpopuppagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var query = $(this).closest('.treeview-popup').find("#text-filter-tree").val();
+                var pager = $('ul.pagination.Userpopuppagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Userpopuppagination').find('li#' + finalId)
+                var listType = $(this).closest('.User-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('#search-area');
+                    $(container).load("/Users/_GetEmployeeSearchTree", { param: treeViewParam,query:query,page: finalId, ViewType: 1 });
+
+                    var checkActive = $('ul.pagination.Userpopuppagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpopuppagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Userpopuppagination').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var treeViewParam = {
+
+                Title: "Select Employee",
+            }
+            var query = $(this).closest('.treeview-popup').find("#text-filter-tree").val();
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('#search-area');
+            $(container).load("/Users/_GetEmployeeSearchTree", {param:treeViewParam,query:query, page: pagingData, ViewType: 1 });
+            var checkActive = $('ul.pagination.Userpopuppagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Userpopuppagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Userpopuppagination').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+</script>

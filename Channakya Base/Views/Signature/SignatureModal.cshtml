@@ -1,0 +1,111 @@
+﻿@{
+    string imgPath = ViewData["ImgPath"] as string;
+
+
+}
+
+
+
+@using ChannakyaBase.Model.ViewModel
+@model ShareSignatureViewModel
+
+<div class="modal-dialog modal-lg signature-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">
+                <span>Image</span>
+            </h4>
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+                <fieldset>
+                 
+                    <div class="form-horizontal">
+                       @if (imgPath != "")
+                       {
+                        <div class="viewer-wrapper">
+
+                            <div class="image-sample">
+                                <div class="row">
+                                <div class="col-md-12">
+                                    <h3 class="box-title">Image Preview</h3>
+                                </div>
+                                
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="pr-img col-md-12">
+                                        <img src="@imgPath" alt="No image" class="img-responsive preview-image" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class="col-md-12">
+                                <div id="button-history btn-group">
+                                    <button type="button" class="btn btn-success" onclick="clickbutton()">Image History</button>
+
+                                </div>
+                            </div>*@
+
+                        </div>
+                       }
+                       else
+                       {
+                        <h3 class="box-title">Image Preview</h3>
+                        <div class="empty"> <img src="~/images/No Image.png" alt="No image" height="250" width="250" class="col-md-offset-5" /></div>
+                       }
+                     
+                 </div>
+                    
+                </fieldset>
+
+
+
+
+            </div>
+
+            <div class="btn-groups modal-footer" style="padding:5px">
+
+                <button type="button" style="float:right" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+             
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .preview-image {
+        position: relative;
+        -webkit-transition: all 200ms ease-in;
+        -webkit-transform: scale(1);
+        -ms-transition: all 200ms ease-in;
+        -ms-transform: scale(1);
+        -moz-transition: all 200ms ease-in;
+        -moz-transform: scale(1);
+        transition: all 200ms ease-in;
+        transform: scale(1);
+    }
+
+        .preview-image:hover {
+            z-index: 2;
+            -webkit-transition: all 200ms ease-in;
+            -webkit-transform: scale(1.09);
+            -ms-transition: all 200ms ease-in;
+            -ms-transform: scale(1.09);
+            -moz-transition: all 200ms ease-in;
+            -moz-transform: scale(1.09);
+            transition: all 200ms ease-in;
+            transform: scale(1.09);
+        }
+
+    /*.pr-img {
+        margin: 0 auto;
+        float: none;
+    }*/
+
+    .viewer-wrapper {
+        width: 100%;
+    }
+</style>

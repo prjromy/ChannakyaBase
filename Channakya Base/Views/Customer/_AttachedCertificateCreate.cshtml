@@ -1,0 +1,18 @@
+﻿@model List<ChannakyaBase.DAL.DatabaseModel.CustTypeCertificate>
+
+<table class="table table-responsive table-hover cust-certificate-table">
+    <thead>
+        <tr>
+            <th>Certificate List</th>
+            <th>Submitted</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            @Html.Partial("_AttachedCertificate", item)
+        }
+    </tbody>
+</table>

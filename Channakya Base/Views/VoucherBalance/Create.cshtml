@@ -1,0 +1,444 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.OpeningBalanceViewModel>
+@using PagedList;
+@using PagedList.Mvc;
+@using ChannakyaAccounting.Models.Helper
+@using DataEntities = ChannakyaAccounting.Repository.UnitOfWork.Implementation_Classes;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var test = ViewBag.F2Type;
+    var count = 0;
+    var Status = ViewBag.Edit;// to check wheather to edit or display only
+    var title = "Opening Balance Entry For Subsi";
+    ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService voucherBalanceService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+    ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService subsiService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+    List<SelectListItem> subsiList = ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService.GEtSubsiName(Model);
+
+    //List<SelectListItem> amountType = new List<SelectListItem>() { new SelectListItem { Text = "Dr", Value = "1" }, new SelectListItem { Text = "Cr", Value = "2" } };
+}
+<div class="box box-warning VoucherBalance-create">
+    <div class="box-header with-border">
+        <h3 class="box-title">@title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="row">
+        <div class="input-group add-on" style="width:40%;float:right;">
+            @*  @Html.TextBox("BranchName", null, new { @class = "BranchName form-control", @placeholder = "Search Ledger", @id = "branchNameSearch" })*@
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    @Html.DropDownListFor(x => Model[0].LedgerName, subsiList, new { @class = "form-control subsitype" })
+                </div>
+                <div class="col-md-3">
+                    <input type="button" id="btnSubmit" value="Search" class="btn btn-default getSubsi" />
+                </div>
+                <div class="col-md-3">
+                    <input type="button" id="backButton" value="Cancel" class="btn btn-default Remove-subsi" />
+                </div>
+            </div>
+        </div>
+        @* <button class="btn btn-box-tool" ></button>*@
+    </div>
+
+    @using (Html.BeginForm("Create", "VoucherBalance", FormMethod.Post, new { @id = "createFinAcc" }))
+    {
+        <div class="container ledger-list-model col-md-12">
+            <div class="row load-data">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="voucherBalanceTable" class="table table-bordred">
+                            <tr class="subsi-show-container" style="display:none;">
+                                <td></td>
+                                <td class="load-subsi-to-me" colspan="4" @*style="display:none;"*@ @*isDepositOrLoan="@voucherBalanceService.IsParentDepositOrLoanProduct((int)Model[i].FId)" ledgerId="@Model[i].FId"*@>
+                                    <div class="input-group add-on" style="width:40%;position:absolute;right:20px;">
+                                        @Html.TextBox("SearchSubsiAName", null, new { @class = "searchSubsiAccName form-control", @placeholder = "Search Acc.Name", @id = "subsiSearchAName", @style = "width:49%" })
+                                        @Html.TextBox("SearchSubsiANo", null, new { @class = "searchSubsiAccNo form-control", @placeholder = "Search Acc.No ", @id = "subsiSearchANo", @style = "width:50%" })
+                                        <div class="input-group-btn">
+                                            <button class="btn" style="background-color:#2aabd2!important" type="button"><i class="glyphicon glyphicon-search" id="btnSubsiSearch" style="color:white;"></i></button>
+                                        </div>
+                                    </div>
+                                    @*@Html.HiddenFor(x => Model[i].FId)*@
+                                    <div class="subsi-container-body" style="margin-top: 35px;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            @*<div class="col-md-offset-11">
+                    <input type="submit" id="btnSubmit" value="Save" class="btn btn-default" />
+                </div>*@
+        </div>
+    }
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var subsicontainer = $('.subsicontainer');
+        $(subsicontainer).hide();
+        var typeText = "Dr";
+        var mainContainer = $('table#voucherBalanceTable').find('tbody').find('tr');
+        var totalContainer = $('table#voucherBalanceTable').find('tfoot');
+        var totalSum = 0;
+        $(mainContainer).each(function (index, item) {
+
+            var opBal = parseFloat($(item).find('.opening-total-balance').val()).toFixed(2);
+            var amntType = $(item).find('.amntType').val();
+            if (amntType == 2) {
+                opBal = -1 * opBal;
+            }
+            if (!isNaN(opBal)) {
+                //(parseFloat(finalCreditAmount) + parseFloat(amountCredit)).toFixed(2)
+                totalSum = (parseFloat(totalSum) + parseFloat(opBal)).toFixed(2);
+            }
+            if (totalSum < 0) {
+                totalSum = -1 * totalSum;
+                typeText = "Cr";
+            }
+            $(totalContainer).find('.totalOpBal').text(totalSum);
+            $(totalContainer).find('.totalOpBalType').text(typeText);
+        });
+        //alert(totalSum)
+    });
+    $('.VoucherBalance-create').on('click', '#btnSubsiSearch', function (e) {
+        debugger;
+        var accName = $(this).closest('td').find('.searchSubsiAccName').val();
+        var accNo = $(this).closest('td').find('.searchSubsiAccNo').val();
+        var ledgerId = $('.subsitype option:selected').val();
+        var parentId = $(this).closest('td').find('.load-paged-list-here').find('tr:first').attr('parentId');
+        var subsiContainer = $(this).closest('.load-subsi-to-me').find('.subsi-container-body');
+
+        $.ajax({
+            type: 'POST',
+            url: '/VoucherBalance/AddSubsiBalance',
+            data: { ledgerId: ledgerId, accNo: accNo, AccName: accName, parentId: parentId },
+            dataType: 'html',
+            success: function (data) {
+                debugger;
+                $(subsiContainer).html("");
+                $(subsiContainer).html(data);
+                if(@Status==0)
+                {
+                    $(subsiContainer).find('#submitSubsi').hide();
+                }
+            }
+        });
+    });
+    $('.VoucherBalance-create').on('keyup', ".BranchName", function (e) {
+        debugger;
+        var query = $(this).val();
+        var filter = query.toUpperCase();
+        var allTableRow = $('.VoucherBalance-create').find('.ledger-list-model').find('tr');
+        if (filter != "") {
+            $(allTableRow).each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.voucherBalLedgerName').text().toUpperCase();
+                if (findList != "") {
+                    if (findList.includes(filter)) {
+                        debugger;
+                        $(item).css('display', 'table-row');
+                        $(item).next().css('display', 'table-row');
+                    }
+                    else {
+                        $(item).css('display', 'none');
+                        $(item).next().css('display', 'none');
+                    }
+                }
+            });
+        }
+        else {
+            $(allTableRow).each(function (index, item) {
+                var findList = $(item).find('.voucherBalLedgerName').text().toUpperCase();
+                if (findList != "") {
+                    $(item).css('display', 'table-row');
+                    $(item).next().css('display', 'table-row');
+                }
+            });
+        }
+    });
+    $('.getSubsi').on('click', function () {
+        debugger;
+        var id = $('.subsitype option:selected').val();
+        $(".subsitype").prop("disabled", true);
+        // var subsicontainer = $(currentEvent).closest('tr').next();
+        var subsicontainer = $('#createFinAcc').find('.subsi-show-container');
+        var subsicontainerBody = subsicontainer.find(".subsi-container-body");
+        var url = '/VoucherBalance/AddSubsiBalance';
+        var data = { ledgerId: id };
+        var Edit=@Status;
+        $(subsicontainer).show();
+
+        $.ajax({
+            url: url,
+            data: { ledgerId: id,Status:@Status },
+            type: 'GET',
+            dataType: 'html',
+            success: function (value) {
+                debugger;
+                $(subsicontainerBody).html("")
+                $(subsicontainerBody).html(value);
+                if(Edit==0)
+                {
+                    $(subsicontainerBody).find('#submitSubsi').hide();
+                }
+                $(subsicontainerBody).show();
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //$(currentEvent).closest('tr').next().show();
+
+    });
+
+    $('.Remove-subsi').on('click', function () {
+        $(".subsitype").prop("disabled", false);
+        var subsicontainer = $('#createFinAcc').find('.subsi-show-container');
+        var subsicontainerBody = subsicontainer.find(".subsi-container-body");
+        subsicontainer.hide();
+    });
+
+    function expandSubsi(id, currentEvent) {
+        debugger;
+
+        var subsicontainer = $(currentEvent).closest('tr').next();
+        var subsicontainerBody = subsicontainer.find(".subsi-container-body");
+        var url = '/VoucherBalance/AddSubsiBalance';
+        var data = { ledgerId: id };
+        //$.get(url, data, function (data) {
+
+        //$(subsicontainer).html(data);
+        if ($(currentEvent).find('i').hasClass('fa-minus') == true) {
+            $(subsicontainer).hide();
+            //$(currentEvent).closest('tr').next().hide();
+        }
+        else {
+            $(subsicontainer).show();
+
+            $.ajax({
+                url: url,
+                data: { ledgerId: id },
+                type: 'GET',
+                dataType: 'html',
+                success: function (value) {
+                    debugger;
+                    $(subsicontainerBody).html(value);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            //$(currentEvent).closest('tr').next().show();
+        }
+        $(currentEvent).find('i').toggleClass('fa-minus');
+        //});
+    }
+
+    $(document).ready(function () {
+        //$('VoucherBalance-create').on('change', '.ledger-detail', function () {
+
+        //    var ledgerId = $(this).attr('id');
+
+
+        //});
+        $('.VoucherBalance-create').on('click', 'i#btnledgersearch', function () {
+
+            debugger;
+            var url = $('#getAllLedger').data('url');
+            $.get(url, function (data) {
+
+                $('#getAllLedger').html(data);
+                debugger;
+
+                $('#getAllLedger').modal('show');
+            });
+        });
+
+        $('select#IsManual').change(function () {
+            var ddId = $(this).val();
+            var fromtablecontainer = $('.VoucherBalance-create').find('.from-table')
+
+            if (ddId == 1) {
+
+                $(fromtablecontainer).show();
+            }
+            else {
+                $(fromtablecontainer).hide();
+            }
+        });
+
+        $("#createFinAcc").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty");
+                return false;
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createVoucherBalance').find('input#DDId').val();
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $.ajax({
+                    url: '@Url.Action("Create", "VoucherBalance")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        //$.fn.updateTreeview('VoucherBalance', '_UpdateVoucherBalanceTree', nodeId, -1)
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+            return false;
+        });
+
+
+    });
+    $.fn.GetLayoutVoucherBalance = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/VoucherBalance/GetLayoutVoucherBalance/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+    $(document).ready(function () {
+        debugger;
+    });
+
+
+
+</script>
+
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+
+
+<script type="text/javascript">
+
+
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.deposit-product-container').show();
+        }
+        if (F2type == "Deposit VoucherBalance") {
+            $('.deposit-VoucherBalance-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.deposit-product-container').hide();
+        $('.deposit-VoucherBalance-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+
+
+    }
+
+</script>
+@*@if (Model.FinSys2 != null)
+    {
+        if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <script type="text/javascript">
+                $('.dimension-group').show();
+
+            </script>
+            if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+            {
+                var nodeId = Model.Fid;
+                <script type="text/javascript">
+                    $('.dimension-group').show();
+                    $("#nextbtn").show();
+
+                </script>
+            }
+
+        }
+    }*@
+
+
+
+
+
+<style>
+    .dimension-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-VoucherBalance {
+        left: 296px;
+        top: -67px;
+    }
+</style>

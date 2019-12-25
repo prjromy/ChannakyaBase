@@ -1,0 +1,75 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.CompanyViewModel
+
+@*<div class="col-md-12 company-heading" >
+    <div class="row">
+
+        <p>@Model.BranchName</p>
+    </div>
+    <div class="row">
+        <p>@Model.Address,@Model.Region,@Model.State</p>
+        </div>
+    <div class="row">
+        <p>Phone No.: @Model.PhoneNo, Fax No .: @Model.FaxNo</p>
+        </div>
+    <div class="row">
+        <p>Email.: @Model.Email</p>
+    </div>
+
+</div>*@
+
+@*<style>
+    .company-heading {
+        margin: 20px 450px;
+    }
+
+</style>*@
+
+@*<div style="text-align:center;margin:20px 321px;">*@
+    <table style="text-align:center; margin:0px 321px;">
+        <tr style="text-align:center;">
+            <th colspan="5"  style="letter-spacing: 1px;    font-weight: bolder;">
+                <h3> @Model.BranchName</h3>
+            </th>
+        </tr>
+        <tr style="text-align:center;">
+            <td colspan="5" ><h5>@Model.Address,@Model.Region,@Model.State</h5></td>
+        </tr>
+
+        <tr style="text-align:center;">
+            <td colspan="5">
+                <h5>Phone No.: @Model.PhoneNo, Fax No .: @Model.FaxNo</h5>
+
+            </td>
+
+        </tr>
+        <tr style="text-align:center;">
+            <td colspan="5">
+                <h5>Email.: @Model.Email</h5>
+            </td>
+        </tr>
+        <tr style="text-align:center;">
+            <td colspan="5"></td>
+        </tr>
+        <tr style="text-align:center;">
+            <td>
+                <h5>
+                    <b>From Date .:</b> @ViewBag.fromDate &nbsp;
+                    <b>To Date .:</b> @ViewBag.toDate
+
+                </h5>
+            </td>
+        </tr>
+
+    </table>
+<div class="col-md-12" style="text-align:center">
+    <div class="row">
+
+       
+
+    </div>
+</div>
+
+
+
+@*</div>*@

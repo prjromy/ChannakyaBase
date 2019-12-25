@@ -1,0 +1,266 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.RemitPaymentModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+    Layout = null;
+}
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Remittance Payment</h3>
+        <div class="box-tools pull-right">
+
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("RemittancePayment", "Teller", FormMethod.Post, new { id = "remittance-payment-form" }))
+    {
+        <div class="box-body">
+            <div class="remittance-transaction">
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                @Html.HiddenFor(x => x.UserTellerLimit)
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RemitCompanyId, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.RemitCompanyId, FinanceParameterUtilityService.RemittanceCompany(), "Select Company", new { @class = "form-control focusdiv" })
+                                    @Html.ValidationMessageFor(model => model.RemitCompanyId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RemittanceCode, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.RemittanceCode, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.RemittanceCode, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverName, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverIdNumber, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverIdNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverIdNumber, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiverAddress, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ReceiverAddress, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReceiverAddress, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Amount", new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8 remitAmount">
+                                    @Html.TextBoxFor(x => x.Amount, new { @class = "form-control text-right" })
+                                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks, new { @class = "control-label  col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(x => x.Remarks, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+
+                            @if (commonServices.IsTransactionWithDeno())
+                            {
+                                <div class="form-group">
+                                    <div class="transaction-with-deno">
+
+                                        @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription() });}
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="form-group">
+                    <div class="col-md-offset-10 col-md-12">
+                        <input type="button" value="Save" class="btn btn-default btn-remittance-transaction-payment-save" data-eventid="16" data-val="deposit transaction" data-isMultiVerifier="false" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+
+<script>
+
+    $("#Amount").on("change", function () {
+        debugger;
+        var amount = $("#Amount").val();
+        //var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        var accountId = 0;
+        //$.ajax({
+        //    type: 'GET',
+        //    url: '/Teller/TransactionLimit',
+        //    data: {
+        //        amount: amount,
+        //        accountId: accountId
+        //    },
+        //    success: function (result) {
+        //        debugger;
+        //        if (result.TellerLimit == true) {
+        //            $.MessageBox({
+        //                buttonDone: "OK",
+        //                message: "Teller Limit Exceed.!!!!"
+        //            }).done(function () {
+        //                debugger;
+        //                $("#denoHeader").hide();
+        //                SuccessAlert("Amount is out of limit", 5000);
+        //                return false;
+        //            }).fail(function () {
+        //                //return false;
+        //            })
+        //               $('#UserTellerLimit').val(result.TellerLimit);
+
+        //        }
+
+        //        else {
+        //            $("#denoHeader").show();
+        //            $('#UserTellerLimit').val(result.TellerLimit);
+        //            SuccessAlert("Amount is within the limit", 5000);
+        //        }
+
+
+
+        //    },
+        //});
+
+
+    })
+
+
+    $(function () {
+        $.validator.unobtrusive.parse('#remittance-payment-form');
+        $(".btn-remittance-transaction-payment-save").on("click", function (e) {
+            debugger;
+
+            var strictVerifiable = $('.remittance-transaction').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            var depositAmount = 0;
+            var IsTellerLimit = $('#UserTellerLimit').val();
+            depositAmount = $('div.remitAmount').find('input#Amount').val();
+
+            $('#remittance-payment-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#remittance-payment-form'));
+            if ($("#remittance-payment-form").valid()) {
+                var IsDenoTransaction = $('.remittance-transaction').find('#transactionDeno').prop('checked');
+                if (IsDenoTransaction == true) {
+                    if (IsTellerLimit ==false) {
+                        var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                        if (parseFloat(depositAmount) != parseFloat(Math.abs(balanceInDeno))) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "Amount doesn't match with deno balance!!"
+                            }).done(function () {
+                                $(".balance-deno-div").find("#Balance").focus();
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+
+                    }
+                }
+
+
+
+
+
+
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    remittanceDepositSave();
+                }
+            }
+        })
+
+    });
+
+    function remittancePaymentSave() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#remittance-payment-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Teller/RemittancePayment",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+

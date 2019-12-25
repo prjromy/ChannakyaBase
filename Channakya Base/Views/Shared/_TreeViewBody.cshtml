@@ -1,0 +1,9 @@
+﻿@model Loader.ViewModel.TreeView
+@{ 
+    var test = Model;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam) ViewData["param"];
+}
+
+<ul>
+    @Html.EditorFor(x => Model.TreeData)
+</ul>

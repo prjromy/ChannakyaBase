@@ -1,0 +1,157 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChqRqstModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+
+@using (Html.BeginForm("ChequeRegistration", "Information", FormMethod.Post, new { id = "cheque-registration-form" }))
+{
+    <div class="box-body cheque-registration-create">
+        <div>
+            @* verifier section start *@
+            @{
+                bool isverified = new CommonService().isStrictlyVerifiable();
+            }
+            <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+            </div>
+            @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+            @Html.Hidden("MessageEventID",9)
+         
+                @*end *@
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+               
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Iaccno, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-6">
+                            @Html.AccountNumberSearch(x => x.Iaccno, EAccountDetailsShow.WithOutAccount.GetDescription(), EAccountFilter.AllowCheque.GetDescription(), EAccountType.Normal.GetDescription())
+                            @Html.ValidationMessageFor(model => model.Iaccno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                    </div>
+                    <div class="customer-event-message">
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Pics, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+
+                            @Html.TextBoxFor(x => x.Pics, new { @class = "form-control text-right" })
+                            @Html.ValidationMessageFor(model => model.Pics, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    @*event message display*@
+                   
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @*<div class="box-footer">*@
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Save" class="btn btn-default btn-cheque-registration-save" data-eventid="9" data-val="cheque registration" data-isMultiVerifier="false" />
+                <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+            </div>
+        </div>
+    @*</div>*@
+
+                }
+
+        <script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<div>
+    <script>
+    $(function () {
+        $.validator.unobtrusive.parse('#cheque-registration-form');
+        $(".btn-cheque-registration-save").on("click", function () {
+            var strictVerifiable = $('.cheque-registration-create').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            $('#cheque-registration-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#cheque-registration-form'));
+            if ($("#cheque-registration-form").valid()) {
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    chequeRegistration();
+                }
+            } else {
+                return false;
+            }
+
+        })
+
+    });
+
+    function chequeRegistration() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#cheque-registration-form').ajaxSubmit({
+
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Information/NewChequeIssue",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+
+
+    $('.btn-cancel').click(function () {
+        debugger;
+        $.ajax({
+            type: "GET",
+            //  url: "/Customer/CustomerListIndex/",
+            // url: "/Customer/CustomerListIndex/",
+            url: "/Customer/ChequeRegistration/",
+
+            success: function (data) {
+                $('#cheque-registration-create').html(data);
+
+
+            }
+        })
+    });
+    </script>
+</div>

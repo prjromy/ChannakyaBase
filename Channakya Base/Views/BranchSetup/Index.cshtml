@@ -1,0 +1,280 @@
+﻿@model IEnumerable<Loader.Models.Company>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Branch Setup";
+    var check = Loader.Models.Global.CurrentFYID;
+}
+
+@{
+
+    var BranchSetupTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="BranchSetup-explore">
+            @Html.Hidden("viewType", 1)
+            <div class="col-md-3 BranchSetup-treeview section-treeview">
+                @Html.Partial("~/Views/Shared/_TreeView.cshtml", BranchSetupTreeview,
+                                new ViewDataDictionary { { "param", param } })
+            </div>
+            <div id="explore-details" class="col-md-9 explore-details">
+                <div class="panel-create" id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+
+
+            </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+
+    $('.BranchSetup-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.BranchSetup-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pBranchSetupId').val();
+
+        $('.BranchSetup-treeview').SelectNode(nodeId);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null)
+        {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.BranchSetup-explore').find('.panel-list');
+        var listType = $(this).closest('.BranchSetup-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "BranchSetup")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.BranchSetup-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.BranchSetup-explore').find('.panel-list');
+        var listType = $(this).closest('.BranchSetup-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "BranchSetup")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.BranchSetup-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.BranchSetup-explore').find('.BranchSetup-treeview').moveUp();
+        //$(this).closest('.BranchSetup-explore').find('.BranchSetup-treeview').updateTreeview("BranchSetup", "_UpdateBranchSetupTree", 1009,-1)
+    });
+
+    $('.BranchSetup-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.BranchSetup-explore').find('.BranchSetup-treeview').SelectNode(id);
+    });
+
+    $('.BranchSetup-explore').on('click', '.BranchSetupImage, .editList, .btn-create-brnch', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.BranchSetup-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.BranchSetup-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.BranchSetup-explore').find('.treeview-selected').attr('nodeid');
+        var BranchSetupId = 0;
+        if ($(this).attr('class') == 'BranchSetupImage' || 'editList') {
+            BranchSetupId = $(this).attr('id');
+        }
+        var pBranchSetupId = $('#pBranchSetupId').val()
+        if (pBranchSetupId == "") {
+            pBranchSetupId = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "BranchSetup")',
+            data: { activeText: activeElement, activeId: pBranchSetupId, BranchSetupId: BranchSetupId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+             
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.BranchSetup-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var BranchSetupId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#pBranchSetupId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "BranchSetup")',
+            data: { id: BranchSetupId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+                    
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteBranchSetup(BranchSetupId, nodeId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes or Data Linked To Other Table First ", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteBranchSetup(BranchSetupId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "BranchSetup")',
+            data: { BranchSetupId: BranchSetupId },
+            success: function () {
+                SuccessAlert("BranchSetup Sucessfully Deleted", 5000)
+               
+                
+                    $.fn.updateTreeview('BranchSetup', '_UpdateBranchSetupTree', nodeId, -1)
+                
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.BranchSetup-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/BranchSetup/_GetBranchSetupTree"
+        var container = $(this).closest('.BranchSetup-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        //var checkBranchSetup = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true) {
+                    $(item).css('display', 'table-row');
+                }
+                else {
+                    $(item).css('display', 'block');
+                }
+
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('BranchSetup-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else {
+                    var text = $(item).find('.inner').attr('BranchSetup-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                }
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+        }
+
+
+
+    });
+
+
+</script>
+

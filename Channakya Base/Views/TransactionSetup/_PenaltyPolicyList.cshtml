@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.PolicyPenCalc>
+
+<fieldset>
+    <legend>Penalty Policy List</legend>
+    <table class="table table-responsive table-hover penalty-policy-list-table">
+  
+            <tr>
+                <th>
+                    @Html.DisplayName("Penalty Policy")
+                </th>
+                <th>
+                    @Html.DisplayName("Penalty In")
+                </th>
+                <th>
+                    @Html.DisplayName("Penalty On Balance")
+                </th>
+                <th>
+                    @Html.DisplayName("Penalty Rate")
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PCNAME)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RuleDuration.DurRule)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RulePenBalance.PBalance)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RuleRate.RateRule)
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-sm btn-edit-policy-penalty glyphicon glyphicon-edit" data-id="@item.PCID" data-toggle="tooltip" title="Edit"> </button>
+                        <button type="button" class="btn btn-info btn-sm btn-sm btn-delete-policy-penalty glyphicon glyphicon-trash danger" data-id="@item.PCID" data-val="@item.PCNAME" data-toggle="tooltip" title="Delete"></button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </fieldset>

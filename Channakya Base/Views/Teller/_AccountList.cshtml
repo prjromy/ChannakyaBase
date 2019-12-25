@@ -1,0 +1,148 @@
+﻿@using PagedList
+
+@model ChannakyaBase.Model.ViewModel.AccountListViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="Account-page-list">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+
+                @Html.DisplayNameFor(model => model.AccountNumber)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.AccountName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegisterDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountStatus)
+            </th>
+            <th>
+                    Action
+                </th>
+
+        </tr>
+        @if (Model.AccountOpenList.Count() == 0)
+        {
+            <tr>
+                <td colspan="4">
+                    No Records Found.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model.AccountOpenList)
+            {
+                <tr>
+                    @Html.HiddenFor(modelItem => item.AccountState)
+                    <td>
+                        @{
+                            byte sType = commonService.GetStypeByIaccno(@item.AccountId);
+                        }
+                        <a href="#" onclick="EditAccountNumber('@item.AccountId')"><i class="fa fa-edit"></i>@item.AccountNumber</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountName)
+                    </td>
+                    <td>
+
+                        @commonService.GetEnglishDate(item.RegisterDate)
+                    </td>
+                    <td>
+                        @if (item.AccountStatus == 6)
+                        {
+                            if (commonService.IsAuthotityToVerify(item.AccountId, 1))
+                            {
+                                <input type="button" value="Verify Account" class="btn btn-sm btn-success btn-account-verifier-confirmations" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1, Convert.ToInt64(item.AccountId)))">
+                            }
+                        }
+                        @*else if (commonService.IsAuthorityToDelete(Convert.ToInt64(item.AccountId), 1))
+                            {
+                                <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1, Convert.ToInt64(item.AccountId)))">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>Delete
+                                </a>
+                            }*@
+
+                        else if (item.AccountStatus == 8)
+                        {
+                            @*<input type="button" value="Delete Account" class="btn btn-sm btn-warning btn-account-delete-confirmations" onclick="deleteAccount(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1,Convert.ToInt64(item.AccountId))) ">
+                                }*@
+                            <p class="text-danger">Rejected!</p>
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+
+                </tr>
+            }
+        }
+    </table>
+    @Html.Paging("_AccountList", "teller", Model.AccountOpenList.PageCount, Model.AccountOpenList.PageNumber, Model.AccountOpenList.PageSize)
+</div>
+<div id="account-pop-up-div2" class="modal" role='dialog'>
+</div>
+<div id="account-pop-up-div3" class="modal" role='dialog'>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+<script>
+    $("div.Account-page-list").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var FromDate = $("#From").val();
+        var ToDate = $("#To").val();
+        var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var PID = parentContainer.find("#ProductType option:selected").val();
+        var AccountNumber = $('#AccountId').val();
+        var container = parentContainer.find("div.Account-page-list")
+        var url = "?FromDate=" + FromDate + "&ToDate=" + ToDate + "&AccountName=" + AccountName + "&PID=" + PID + "&AccountNumber=" + AccountNumber;
+        getPageNumberBtnAction(url, container, me)
+
+    });
+
+    $("div.Account-page-list").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var FromDate = $("#From").val();
+        var ToDate = $("#To").val();
+        var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var PID = parentContainer.find("#ProductType option:selected").val();
+        var AccountNumber = $('#AccountId').val();
+        var container = parentContainer.find("div.Account-page-list")
+        var url = "?FromDate=" + FromDate + "&ToDate=" + ToDate + "&AccountName=" + AccountName + "&PID=" + PID + "&AccountNumber=" + AccountNumber;
+        getPageNumberChangeData(url, container, me)
+    });
+
+    $("div.Account-page-list").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var FromDate = $("#From").val();
+        var ToDate = $("#To").val();
+        var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+        var PID = parentContainer.find("#ProductType option:selected").val();
+        var AccountNumber = $('#AccountId').val();
+        var container = parentContainer.find("div.Account-page-list")
+        var url = "?FromDate=" + FromDate + "&ToDate=" + ToDate + "&AccountName=" + AccountName + "&PID=" + PID + "&AccountNumber=" + AccountNumber;
+        getPageSizeChangeData(url, container, me)
+    });
+
+
+</script>

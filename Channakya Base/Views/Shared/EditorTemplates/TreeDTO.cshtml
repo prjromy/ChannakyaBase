@@ -1,0 +1,49 @@
+﻿@model Loader.ViewModel.TreeDTO
+@{
+
+    var test = Model;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+
+    var nodeTextClass = "treeview-text";
+
+    if (Model.Id.ToString() == param.SelectedNodeId.ToString())
+    {
+        nodeTextClass = "treeview-text treeview-selected";
+    }
+
+}
+
+<li>
+    @Html.HiddenFor(x=>x.Id)
+    <span class="collapse treeview-icon treeview-expand"> </span>
+    @if (param.WithImageIcon == true)
+    {
+        if (Model.Image != null)
+        {
+        <span class="treeview-image">
+         
+            @*<img src="~/AdminLTE/dist/img/user3-128x128.jpg" />*@    
+            <img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" width="20" height="20" class="image" />         
+        </span>
+        }
+    }
+    @if (param.WithCheckBox == true)
+    {
+        <span class="treeview-checkbox-container">
+            @Html.CheckBoxFor(x => x.IsChecked, new { @class = "treeview-checkbox" })
+        </span>
+    }
+    <span class="@nodeTextClass" data-toggle="tooltip" data-placement="top" title="@Model.Text" nodeid="@Model.Id" nodetext="@Model.Text"   nodepid="@Model.PId" nodeisgroup="@Json.Encode(Model.IsGroup)" hasnodeChilds="">
+        @Html.DisplayFor(x => x.Text)
+    </span>
+    @if (Model.Children != null)
+    {
+    if (Model.Children.Any())
+    {
+        <ul>           
+            @Html.EditorFor(x => x.Children)
+        </ul>
+    }
+    }
+
+</li>

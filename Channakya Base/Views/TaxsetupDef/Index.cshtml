@@ -1,0 +1,298 @@
+﻿
+@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.TaxsetupDef>
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+<div class="tax-list">
+    <input type="button" value="New Tax Type" id="btn-create" class="btn btn-md btn-primary btn-create border-0" />
+
+    <div class="section-create">
+
+    </div>
+
+    <div class="details" id="tax-list">
+
+        @{ Html.RenderAction("_List", "TaxsetupDef");}
+
+    </div>
+</div>
+
+<script>
+    //function editSuccess() {
+    //    SuccessAlert("Certificate Succesfully Edited. ", 5000);
+    //    debugger;
+    //    $('.tax-list').find('.edit-section').hide();
+    //    $('.-list').find(".btn-create").val('New Certificate');
+    //}
+
+    $(document).ready(function () {
+
+        $('.tax-list').on('click', '.btn-create', function () {
+            debugger;
+            var thisVal = $(this).val();
+            if (thisVal == "Hide Section") {
+                $(this).val("New Tax Type")
+                $(".section-create").hide();
+            }
+            else {
+                $(this).val("Hide Section")
+                //$(".section-create").load("/CertificateDef/_Create");
+                //$('.section-create').find(".focusdiv").focus();
+                $.ajax({
+                    type: "GET",
+                    url: "/TaxsetupDef/_Create",
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+
+                    }
+                })
+            }
+        });
+        //create post
+        $.validator.unobtrusive.parse('#createSubmitForm');
+        $('.tax-list').on('click', '#btn-save-submit', function () {
+            debugger;
+            $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#createSubmitForm"));
+            if ($("#createSubmitForm").valid() === false) {
+
+                InfoAlert("Please fill out the form", 3000);
+                return false;
+
+            }
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+                $("#createSubmitForm").ajaxSubmit({
+                    beforeSubmit: function () {
+
+
+                    },
+
+                    success: function (result) {
+                        if (result.Success) {
+                            $.ajax({
+                                url: "/TaxSetupDef/Index",
+                                type: 'GET',
+                                async: false,
+                                success: function (result) {
+                                    debugger;
+                                    $('section.content').html(result);
+                                }
+                            })
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+                        }
+                        else {
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                })
+                //$("#createSubmitForm").submit();
+                //return false;
+            })
+        });
+          //edit
+        $('.tax-list').on('click', '.btn-edit', function () {
+            debugger;
+            var container = $(this).closest('.tax-list').find('.section-create');
+            var value = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/TaxsetupDef/_Edit/" + value,
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data).find('.focusdiv').focus()
+
+                }
+            })
+        });
+
+        $.validator.unobtrusive.parse($("#editSubmitForm"));
+
+        $('.tax-list').on('click', '#btn-edit-submit', function () {
+
+
+            $('#editSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#editSubmitForm"));
+            debugger;
+            if ($('#editSubmitForm').valid() == false) {
+                InfoAlert('Please Fill out the form correctly', 6000);
+                return false;
+            }
+            var TaxName = $('#TaxName').val();
+            var TaxID = $('#TaxID').val();
+
+            $.ajax({
+                url: "/TaxsetupDef/CheckTaxTypeDef",
+                type: 'GET',
+                async: false,
+                data: { TaxID: TaxID, TaxName: TaxName },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+
+                        InfoAlert(message, 5000);
+
+                    }
+                    else {
+                        debugger;
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#editSubmitForm").ajaxSubmit({
+                                beforeSubmit: function () {
+
+
+                                },
+
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/TaxSetupDef/Index",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                debugger;
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        debugger;
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+
+
+
+                        }).fail(function () {
+                            //return false;
+                        })
+                    }
+                }
+            });
+        });
+
+      
+
+        $('.tax-list').on('click', '.btn-cancel', function () {
+            var container = $(this).closest('.tax-list').find(".section-create");
+            $(container).empty();
+            $(container).hide();
+            $('.btn-create').val("New Tax Type")
+        }
+
+     );
+
+
+        var taxId;
+        var itmName
+        $('#tax-list').on('click', '.btn-delete', function () {
+            debugger;
+             itmName = $(this).attr("data-val");
+             taxId = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("Delete", "TaxsetupDef")',
+                data: { id: taxId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    debugger;
+                    if (result == "true") {
+                        debugger;
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to Delete " + itmName + " ?"
+                        }).done(function () {
+                            //alert(result)
+                            deleteMenu(taxId);
+                        })
+                    }
+                    else {
+                        ErrorAlert("Tax type in use.", 5000);
+                    }
+
+                }, error: function () {
+                    alert("error");
+                }
+            });
+
+
+        });
+        function deleteMenu(taxId) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteConfirm", "TaxsetupDef")',
+                data: { Id: taxId },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert(itmName+" Sucessfully Deleted", 5000);
+                    $("#tax-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+
+        $(document).on('click', '#searchsubmit', function (event1) {
+            debugger;
+            var search = $('#txtsearch').val();
+            var url = '@Url.Action("_List", "TaxsetupDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+
+                $("#tax-list").html(data);
+            });
+
+
+        });
+        $(document).on('change', '#txtsearch', function (event1) {
+            debugger;
+            var search = $('#txtsearch').val();
+            var url = '@Url.Action("_List", "TaxsetupDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+
+                $("#tax-list").html(data);
+            });
+
+
+        });
+    });
+</script>
+

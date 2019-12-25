@@ -1,0 +1,91 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountWiseCollectionModelSummary
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService cmService = new CommonService();
+    decimal? totalBal = 0;
+}
+<div class="modal-dialog modal-lg account-wise-summary-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">
+                <span>Account Wise Summary</span>
+            </h4>
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+                <fieldset>
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover">
+                            <tr>
+
+
+
+                                <th>
+                                    AccountNumber
+                                </th>
+
+                                <th>Eng. Date</th>
+                            
+                                <th>
+                                    TotalAmount
+                                </th>
+                                <th>
+                                    Note
+                                </th>
+
+
+                            </tr>
+
+
+                            @foreach (var item1 in Model.AccountWiseCollectionListSummary)
+                            {
+                            <tr>
+
+                                <td>
+
+
+                                    @Html.DisplayFor(modelItem => item1.Accountnumber)
+
+                                </td>
+
+
+                                <td>@cmService.GetEnglishDate(item1.TDate)</td>
+                               
+
+                                <td style="text-align:right">
+                                    <span> @Convert.ToDecimal(item1.TotalAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item1.note)
+                                </td>
+
+
+
+                            </tr>
+                            totalBal = totalBal + item1.TotalAmount;
+                            }
+                            <tr>
+                                <td colspan="2">Total</td>
+
+                                <td style="text-align:right">@Convert.ToDecimal(totalBal).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                <td></td>
+                            </tr>
+
+                        </table>
+                        </div>
+
+                </fieldset>
+
+
+
+
+            </div>
+
+            <div class="btn-groups modal-footer" style="padding:5px">
+                <button type="button" style="float:right" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+            </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.CustomerAccountsViewModel>
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+<div class="custContact-create">
+    <fieldset>
+        <legend style="font-size:large">Account Details</legend>
+
+        <div style="min-height:50px;max-height:300px;overflow:auto;">
+
+            <table class="table table-responsive table-hover table-striped table-bordered cust-contact-table">
+
+                <tr>
+                    <th class="col-md-4">Account Number</th>
+                    <th class="col-md-4">Product Name</th>
+                    <th class="col-md-2">Account Name</th>
+                    <th class="col-md-2">Account State</th>
+                </tr>
+
+                <tbody class="custList">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @Html.HiddenFor(x => item.CID)
+                            @Html.HiddenFor(x => item.IAccno)
+                             @if(ViewBag.ModelFrom!= "AccountOpen")
+                             {
+                            <td>
+                                <a href="#" onclick="ViewAccountDetails('@item.IAccno')"><i class="fa fa-edit"></i>@item.Accno</a>
+                             
+
+                            </td>
+                             }
+                             else
+                             {
+                                <td>
+
+                                    <i class="fa fa-edit" style="color:blue"></i>@item.Accno
+
+                                </td>
+                             }
+
+                            <td>
+                                <span class="control-label">@item.PName</span>
+
+
+                            </td>
+                            <td>
+                                <span class="control-label">@item.AName</span>
+
+                            </td>
+                            <td>
+                                <span class="control-label">@item.AccountState</span>
+
+                            </td>
+                        </tr>
+
+                    }
+
+                </tbody>
+            </table>
+           
+        </div>
+    </fieldset>
+</div>
+
+<script>
+    function ViewAccountDetails(IAccno) {
+
+        var tabFrom=$('#tabFromData').attr("TabToGo")
+        $.ajax({
+            type: "GET",
+            url: "/Teller/_AccountDetails",
+            datatype: "Json",
+            data: { IAccno: IAccno, ModelFrom: tabFrom },
+            success: function (result) {
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+ 
+
+</script>

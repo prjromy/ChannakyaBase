@@ -1,0 +1,320 @@
+﻿@model ChannakyaBase.Model.ViewModel.DepositViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "Deposit";
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    var mod = Model;
+}
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Deposit</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("Deposit", "Teller", FormMethod.Post, new { id = "deposit-transaction-form" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                    @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+
+                @*end *@
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+
+                                @Html.Label("Account", new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.AccountNumberSearch(x => x.AccountId,true)
+                                    @Html.Hidden("MessageEventID", 2)
+                                    @Html.ValidationMessageFor(model => model.AccountId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="customer-event-message">
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiptNo, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.ReceiptNo, new { @class = "form-control text-right" })
+                                    @Html.ValidationMessageFor(model => model.ReceiptNo, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.DepositBy, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.DepositBy, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DepositBy, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AmountCurrency, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.DropDownListFor(model => model.AmountCurrency, TellerUtilityService.GetAccountOpenCurrency(),new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AmountCurrency, "", new { @class = "text-danger" })
+                                </div>
+
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Amount, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control text-right" })
+                                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ExchangeRate, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.ExchangeRate, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.ExchangeRate, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.LabelFor(model => model.Rate, new { @class = "control-label  col-md-1" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.Rate, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                </div>
+                                @*display event message*@
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="col-md-6 transaction-with-deno">
+                                @*@{Html.RenderAction("DenoTransaction", "Teller", new {  });}*@
+
+                            </div>
+                        </div>
+
+                    </div>
+                    @*</div>*@
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-10 col-md-12">
+                                <input type="button" value="Save" class="btn btn-default btn-deposit-transaction-save" data-eventid="2" data-val="deposit transaction" isMultiVerifier="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+                    }
+</div>
+<script>
+
+    $("#AmountCurrency").on("change", function () {
+        debugger;
+        currencyId = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: '/Teller/GetCurrencyRateAndExchangeRate',
+            data: {
+                currencyId: currencyId,
+
+            },
+            success: function (result) {
+
+                $('#ExchangeRate').val(result.RatePerUnit + "@@PerUnit")
+                $('#Rate').val(result.BuyingRate)
+                if (result.IsTransWithDeno) {
+                    var denoInOut = '@EDeno.DenoIn.GetDescription()'
+                    $.ajax({
+                        type: 'GET',
+                        url: '/Teller/DenoTransaction',
+                        data: {
+                            currencyId: currencyId,
+                            denoInOut: denoInOut
+                        },
+                        success: function (result) {
+                            $('.transaction-with-deno').html(result);
+
+                        },
+                    });
+                }
+
+            },
+        });
+    }
+    )
+
+
+    $("#AmountCurrency").on("keyup", function () {
+        debugger;
+        currencyId = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: '/Teller/GetCurrencyRateAndExchangeRate',
+            data: {
+                currencyId: currencyId,
+
+            },
+            success: function (result) {
+
+                $('#ExchangeRate').val(result.RatePerUnit + "@@PerUnit")
+                $('#Rate').val(result.BuyingRate)
+                if (result.IsTransWithDeno) {
+                    var denoInOut = '@EDeno.DenoIn.GetDescription()'
+                    $.ajax({
+                        type: 'GET',
+                        url: '/Teller/DenoTransaction',
+                        data: {
+                            currencyId: currencyId,
+                            denoInOut: denoInOut
+                        },
+                        success: function (result) {
+                            $('.transaction-with-deno').html(result);
+
+                        },
+                    });
+                }
+
+            },
+        });
+    }
+  )
+
+
+
+
+
+
+
+
+    $(function () {
+
+        $("#AmountCurrency").trigger("change");
+        $.validator.unobtrusive.parse('#deposit-transaction-form');
+        $(".btn-deposit-transaction-save").on("click", function (e) {
+            debugger;
+            var balanceDiv = $(this).parents().find("#dataTransaction")
+            var strictVerifiable = $('.Depost-transaction-create').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+
+            $('#deposit-transaction-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#deposit-transaction-form'));
+            if ($("#deposit-transaction-form").valid()) {
+                var accountId = $('.account-number-div').find(".account-id").val();
+                if (accountId == 0) {
+                    ErrorAlert("Account Number is required!!", 5000);
+                    document.getElementById('alert-error').scrollIntoView();
+                    return false
+                }
+                var depositAmount = $("#Amount").val();
+                if (depositAmount <= 0) {
+                    ErrorAlert("Please insert valid amount!!", 5000);
+                    document.getElementById('alert-error').scrollIntoView();
+                    return false
+                }
+                var IsDenoTransaction = $('.Depost-transaction-create').find('#transactionDeno').prop('checked');
+
+                if (IsDenoTransaction == true) {
+
+                    var balanceDiv = $('.transaction-with-deno').find('.balance-deno-div').find('.deno-inout-balance')
+                   
+                    var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                    if (parseFloat(depositAmount) != parseFloat(balanceInDeno)) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Transaction does not match with enter deno!!"
+                        }).done(function () {
+                            $(balanceDiv).find("#Balance").focus();
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+
+                }
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    depositTransaction();
+                }
+            }
+        })
+
+    });
+
+    function depositTransaction() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#deposit-transaction-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Teller/Deposit',
+
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 10000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>

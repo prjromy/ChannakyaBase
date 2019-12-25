@@ -1,0 +1,126 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanAutoPayment
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    CommonService commonservice = new CommonService();
+}
+<div class="table table-responsive">
+
+
+    <table class="table">
+        <tr>
+            <th colspan="4"></th>
+            <th colspan="2" style="text-align:center">Principal</th>
+            <th colspan="2" style="text-align:center">Interest</th>
+            <th colspan="7"></th>
+        </tr>
+        <tr>
+            <th>
+                Loan No
+            </th>
+            <th>
+                Product
+            </th>
+            <th>
+                Name
+            </th>
+
+            <th>
+                Bal
+            </th>
+            <th>
+                DueDays
+            </th>
+            <th>
+                Matured
+            </th>
+            <th>
+                DueDays
+            </th>
+            <th>
+                Matured
+            </th>
+            <th>
+                Pen. Accurred
+            </th>
+            <th>
+                Other
+            </th>
+            <th>
+                Due Bal
+            </th>
+            <th>
+                LinkAccNo
+            </th>
+            <th>
+                LinkAccName
+            </th>
+            <th>
+                Link Product
+            </th>
+            <th>
+                AvlBal
+            </th>
+
+
+        </tr>
+
+        @foreach (var item in Model.LoanAutoPaymentList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PMDays)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MatPrin)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.IMDays)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MatInt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PenAcc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other)
+                </td>
+                <td>
+                    <span> @(item.MatPrin+item.MatInt + item.PenAcc)</span>
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.LnkAccNo)
+                </td>
+                <td>
+                    <span>@commonservice.GetAccountNameByIaccno(item.ILinkAc).Aname.ToString()</span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LnkPName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AvlBal)
+                </td>
+
+            </tr>
+        }
+
+    </table>
+</div>

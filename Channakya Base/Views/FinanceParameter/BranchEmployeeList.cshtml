@@ -1,0 +1,73 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeViewModel
+@using ChannakyaBase.BLL.Service;
+
+<div class="box box-warning Employee-Branch-create">
+    <div class="box-body">
+        <div class="employeee-branch-map-create">
+            @{Html.RenderAction("BranchEmployeeMap", "FinanceParameter");}
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-1">Name</label>
+                        <div class="col-md-4 b-e-account">
+                            @Html.TextBoxFor(x => x.EmployeeName, new { @class = "form-control" })
+                        </div>
+                        <label class="col-md-1">Branch</label>
+                        <div class="col-md-4 b-e-branch">
+                            @Html.DropDownListFor(x => x.BranchId, TellerUtilityService.GetBranchListForEmployeeBranchMap(), "Please select", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2">
+                            <div class='input-group-btn'>
+
+                                <button type='button' id='btn-Branch-search' class='btn btn-default'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                @Html.Partial("_BranchEmployeeList", Model)
+
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+    <script>
+        function EditBranchEmployee(mapId) {
+
+
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/BranchEmployeeMap",
+                datatype: "Json",
+                data: { mapId: mapId },
+                success: function (result) {
+                    $('.employeee-branch-map-create').html(result);
+
+                }
+            })
+        }
+
+        $("#btn-Branch-search").on('click', function () {
+            debugger;
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/_BranchEmployeeList",
+                datatype: "Json",
+                data: {
+                    employeeName: $(".b-e-account").find("#EmployeeName").val(),
+                    branchId: $(".b-e-branch").find("#BranchId").val()
+                },
+                success: function (result) {
+                    $('.table-click-Employee-Branch-Map').html(result);
+
+                }
+            })
+        });
+    </script>

@@ -1,0 +1,108 @@
+﻿@model ChannakyaBase.Model.ViewModel.RemitPaymentModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@{
+    Layout = null;
+    CommonService commonService = new CommonService();
+}
+<div class="table-responsive unverified-remit-list">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th>ReceiverId</th>
+
+
+                <th>Receiver Name</th>
+
+                <th>Receiver Address</th>
+                <th>Company Name</th>
+                <th>Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RemitPaymentList)
+            {
+
+
+                <tr>
+                    <td>@item.ReceiverIdNumber</td>
+
+                    <td>@item.ReceiverName </td>
+                    <td>
+                        @item.ReceiverAddress
+                    </td>
+                    <td>@item.CompanyName</td>
+                    <td>@item.Amount</td>
+                    <td>
+                        @if (commonService.IsAuthotityToVerify(Convert.ToInt64(item.Tno), 16))
+                        {
+                            <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(16, Convert.ToInt64(item.Tno)))"><i class="fa fa-check" aria-hidden="true"></i>Verify</a>
+                        }
+                        @*else if (commonService.IsAuthorityToDelete(Convert.ToInt64(item.Tno), 16))
+                        {
+                            <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(16, Convert.ToInt64(item.Tno)))">
+                                <i class="fa fa-trash" aria-hidden="true"></i>Delete
+                            </a>
+                        }
+                        else
+                        {
+
+                        }*@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_UnVerifiedRemittancePayment", "Teller", Model.RemitPaymentList.PageCount, Model.RemitPaymentList.PageNumber, Model.RemitPaymentList.PageSize)
+</div>
+
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+<script>
+    $("div.unverified-remit-list").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-remit-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.unverified-remit-list").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-remit-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        // var url = "?accountNumber=" + accountNumber;
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.unverified-remit-list").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-remit-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>
+
+
+
+

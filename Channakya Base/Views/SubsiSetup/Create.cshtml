@@ -1,0 +1,361 @@
+﻿@model ChannakyaAccounting.Models.Models.SubsiSetup
+
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = ViewBag.F2Type;
+
+    var title = "Create Subsi";
+    if (Model.SSId != 0)
+    {
+        title = "Edit Subsi";
+    }
+
+    ChannakyaAccounting.Service.Subsi_Setup.SubsiSetupService subsiService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiSetupService();
+    var subsiTable = subsiService.GetSubsiTable();
+
+}
+<div class="box box-warning FinAcc-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "FinAcc", FormMethod.Post, new { @id = "createFinAcc" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.SSId)
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control",@required="required" } })
+                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.STBId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(x => x.STBId, subsiTable, "Select Subsi Type", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.STBId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Prefix, new { @class = "col-sm-3  control-label col-form-label" })
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(m => m.Prefix, new { @class = "form-control", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Length, new { @class = "col-sm-3  control-label col-form-label" })
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(m => m.Length, new { @class = "form-control", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.Length, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.CurrentNo, new { @class = "col-sm-3  control-label col-form-label" })
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(m => m.CurrentNo, new { @class = "form-control", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.CurrentNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="button" id="backbtn" class="btn btn-link" onclick="loadPrevContent()" style="display:none;" value="Back" />
+                <input type="button" id="nextbtn" class="btn btn-link" onclick="loadnextContent()" style="display:none;" value="Next" />
+                <input type="submit" id="btnSubmit" value="Create" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        debugger;
+
+
+
+        $('select#IsManual').change(function () {
+            var ddId = $(this).val();
+            var fromtablecontainer = $('.FinAcc-create').find('.from-table')
+            //$.ajax({
+            //    url: '/DimensionValue/IsManual/',
+            //    data: { DDID: ddId },
+            //    dataType: "html",
+            //    success: function (id) {
+            //        //$(container).show();
+            //        if (id == 0) {
+            //            $(manualcontainer).show();
+            //            $(fromtablecontainer).hide();
+            //        }
+            //        else {
+            //            $(manualcontainer).hide();
+            //            $(fromtablecontainer).show();
+            //        }
+            //    }
+            //});
+            if (ddId == 1) {
+
+                $(fromtablecontainer).show();
+            }
+            else {
+                $(fromtablecontainer).hide();
+            }
+
+
+
+        });
+
+
+        $("#createFinAcc").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty");
+                return false;
+            }
+            var CurrentNumber=$(this).find('#CurrentNo').val();
+            var length=$(this).find('#Length').val();
+            if(CurrentNumber!="" ||CurrentNumber!=null)
+            {
+                if(Number(CurrentNumber)<1)
+                {
+                    ErrorAlert("Current Number Should Be No Less Than 1");
+                    return false;
+                }
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createFinAcc').find('input#DDId').val();
+
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "SubsiSetup")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        //$.fn.updateTreeview('SubsiSetup', '_UpdateFinAccTree', nodeId, -1)
+                        if(@Model.SSId==0)
+                        {
+                            SuccessAlert("Subsi Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Subsi Edited Succesfully.",1500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+        //$('.FinAcc-create').on('filterTree', '.section-treeview', function (e, data) {
+        //    debugger;
+        //    e.stopPropagation();
+
+        //    if (data.fromPopUp == 'false') {
+
+        //        $dlg_dpicker.load("/FinAcc/_GetFinAccTreePopup", { param: data.param })
+        //    }
+        //    else {
+        //        $dlg_dpicker.find('.treeview-area').load("/FinAcc/_GetFinAccTree", { param: data.param })
+
+        //    }
+
+
+        //});
+
+    });
+    $.fn.GetLayoutFinAcc = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/FinAcc/GetLayoutFinAcc/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+    $(document).ready(function () {
+        debugger;
+        //var F2Id = $("select#F2Type option:selected").val();
+        //var F2type = $("select#F2Type option:selected").text();
+
+
+        //debugger;
+        //$('#labelclass').empty();
+        //$('#labelclass').append("<b>" + " Deposit SubsiSetup" + "</b>")
+        //var container = $('.FinAcc-create').find('.deposit-SubsiSetup-container')
+        //var form = $(container).closest("form");
+        //$.ajax({
+        //    url: '/FinAcc/AddDepositSubsiSetup/',
+        //    dataType: "html",
+        //    success: function (data) {
+        //        $(container).show();
+        //        $(container).html(data);
+        //        $(form).removeData("validator");
+        //        $(form).removeData("unobtrusiveValidation");
+        //        $.validator.unobtrusive.parse($(form));
+        //    }
+        //});
+
+
+
+
+
+
+    });
+
+
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+
+
+<script type="text/javascript">
+
+
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.deposit-product-container').show();
+        }
+        if (F2type == "Deposit SubsiSetup") {
+            $('.deposit-SubsiSetup-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.deposit-product-container').hide();
+        $('.deposit-SubsiSetup-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+
+
+    }
+
+</script>
+@*@if (Model.FinSys2 != null)
+    {
+        if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <script type="text/javascript">
+                $('.dimension-group').show();
+
+            </script>
+            if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+            {
+                var nodeId = Model.Fid;
+                <script type="text/javascript">
+                    $('.dimension-group').show();
+                    $("#nextbtn").show();
+
+                </script>
+            }
+
+        }
+    }*@
+
+
+
+
+
+<style>
+    .dimension-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-finacc {
+        left: 296px;
+        top: -67px;
+    }
+</style>
+

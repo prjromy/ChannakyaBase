@@ -1,0 +1,9 @@
+﻿@model ChannakyaAccounting.Models.Models.SchmDetail
+
+<div class="form-group col-md-12">
+    @Html.Label("Deposit Type", null, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+        @Html.DropDownListFor(model => model.F2Type, (IEnumerable<SelectListItem>)ViewBag.F2Type, "Select Deposit Type", new { @class = "form-control", @required = "required" })
+        @Html.ValidationMessageFor(model => model.F2Type, "", new { @class = "text-danger" })
+    </div>
+</div>

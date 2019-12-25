@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.ProductDetailViewmodel>
+
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>
+                                Product Name
+                            </th>
+                            <th>
+                                Stype 
+                            </th>
+                            <th>
+                                Scheme Name
+                            </th>
+                            <th>
+                               
+                            </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @Html.Partial("_ListView", item)
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

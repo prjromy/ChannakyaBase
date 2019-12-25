@@ -1,0 +1,175 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.LicenseBranch>
+@using ChannakyaBase.BLL
+
+
+@{
+    CommonService commonService = new CommonService();
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-header with-border">
+        <p>
+            <h3>Branch List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.BrnhNam)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Addr)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.RegID)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Phone)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Fax)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IPAdd)
+                        </th>
+                       
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExtraUsrNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Prefix)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CalSID)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CalCid)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UseLimit)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.atclosing)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MigDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CleCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.inExpMode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Floint)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PBrnhID)
+                        </th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BrnhNam)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Addr)
+                            </td>
+                            <td>
+                                @{
+
+                                    var RegionName = commonService.RegionIdToName(Convert.ToInt32(item.RegID));
+
+                                }
+                                @Html.DisplayFor(modelItem => RegionName)
+                                @*@Html.DisplayFor(modelItem => item.RegID)*@
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Phone)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Fax)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IPAdd)
+                            </td>
+                            @*<td>
+                                @{
+
+                                    var BranchName = commonService.BranchIdToName(Convert.ToInt32(item.BrnhID));
+
+                                }
+                                @Html.DisplayFor(modelItem => BranchName)
+                                @Html.DisplayFor(modelItem => item.PBrnhID)
+                            </td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ExtraUsrNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Prefix)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CalSID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CalCid)
+                            </td>
+                            <td>
+                                @String.Format("{0:d}", item.TDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UseLimit)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.atclosing)
+                            </td>
+                            <td>
+                                @String.Format("{0:d}", item.MigDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CleCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.inExpMode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Floint)
+                            </td>
+                            <td>
+                                @{
+
+                                    var PBName = commonService.ParentBranchNamebyID(Convert.ToInt32(item.PBrnhID));
+
+                                }
+                                @Html.DisplayFor(modelItem => PBName)
+
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm btn-edit-branch glyphicon glyphicon-edit" data-id="@item.BrnhID" data-toggle="tooltip" title="Edit"></button>
+                                <button type="button" class="btn btn-info btn-sm btn-sm btn-delete-branch glyphicon glyphicon-trash danger" data-id="@item.BrnhID" data-toggle="tooltip" title="Delete"></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+

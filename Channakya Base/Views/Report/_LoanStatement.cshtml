@@ -1,0 +1,325 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanStatementModel
+@using ChannakyaBase.BLL.Service;
+@using ChannakyaBase.BLL;
+
+
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding">
+    <fieldset>
+        <legend>Account Details</legend>
+
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>
+                        Account No:
+                    </th>
+                    <th>
+                        A/C Holder:
+                    </th>
+                    <th>
+                        Product Name:
+                    </th>
+                    <th>
+                        Reg Date:
+                    </th>
+
+
+                </tr>
+
+            </tbody>
+            <tr>
+
+                <td>
+                    <span class="form-control">@Model.AccountDetails.AccounNumber </span>
+                </td>
+                <td>
+                    <span class="form-control">@Model.AccountDetails.AccountTitle </span>
+                </td>
+                <td>
+                    <span class="form-control">@Model.AccountDetails.ProductName </span>
+                </td>
+                <td>
+                    <span class="form-control">@commonService.GetDate(Model.AccountDetails.RDate) </span>
+                </td>
+
+            </tr>
+            <tbody>
+                <tr>
+                <tr>
+
+                    <th>
+                        Interest Rate:
+                    </th>
+                    <th>
+                        App Amount:
+                    </th>
+                    <th>Duration</th>
+                    <th>
+                        Maturity Date
+                    </th>
+                </tr>
+                <tr>
+
+
+                    <td>
+                        <span class="form-control">@Convert.ToDecimal(Model.AccountDetails.IRate).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </td>
+                    <td>
+                        <span class="form-control">@Model.LoanAccountDetails.SancationAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture) </span>
+                    </td>
+                    @if (Model.LoanAccountDetails.DurType == 1)
+                    {
+                        <td>
+                            <span class="form-control">@Model.LoanAccountDetails.Month Month </span>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <span class="form-control">@Model.LoanAccountDetails.Days Days </span>
+                        </td>
+                    }
+
+
+                    <td>
+                        <span class="form-control">@commonService.GetDate(Convert.ToDateTime(Model.LoanAccountDetails.MaturityDate)) </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Accured Int</th>
+                    <th>Accured Pen</th>
+
+
+                </tr>
+                <tr>
+                    <td><span class="form-control">@Model.AccuredPenalty.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                    <td><span class="form-control">@Model.AccuredInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+
+                </tr>
+            </tbody>
+        </table>
+
+    </fieldset>
+
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SNO)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.TranscDate)
+            </th>
+          
+            <th>
+                @Html.DisplayNameFor(model => model.DrPrincipal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OtherDr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rebate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CrPrincipal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OtherCr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CrPrincInt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CrOtherInt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CrPenalty)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OtherBal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPayment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Particulars)
+            </th>
+        </tr>
+
+        @foreach (var item in Model.LoanStatementList)
+        {
+            string color = "";
+            var checkMarkDate = ReportUtilityService.GetCheckedTillDate(Convert.ToInt32(item.IAccNo), Convert.ToDateTime(item.TranscDate));
+            if (checkMarkDate != null)
+            {
+                color = "#57d48240";
+            }
+            <tr style="background-color:@color">
+                <td>
+                    @item.SNO
+                </td>
+
+                <td>
+                    @commonService.GetEnglishDate(Convert.ToDateTime(item.TranscDate))
+                </td>
+             
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.DrPrincipal).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.OtherDr).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.Rebate).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.CrPrincipal).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.OtherCr).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.CrPrincInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.CrOtherInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.CrPenalty).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelitem => item.Balance)                
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.OtherBal).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Convert.ToDecimal(item.TotalPayment).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Particulars)
+                </td>
+            </tr>
+        }
+
+    </table>
+    <fieldset>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <td>
+                        Total Debit:
+                    </td>
+                    <td>
+                        Count:
+                    </td>
+                    <td>
+                        <span class="form-control">   @Model.LoanStatementList.Where(x=>x.DrPrincipal!=0).Count() </span>
+                    </td>
+                    <td>
+                        <span class="form-control">@Convert.ToDecimal(Model.LoanStatementList.Sum(X => X.DrPrincipal)).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        Total Credit:
+                    </td>
+                    <td>
+                        Count:
+                    </td>
+                    <td>
+                        <span class="form-control"> @Model.LoanStatementList.Where(x => x.CrPrincipal != 0).Count() </span>
+                    </td>
+                    <td>
+                        <span class="form-control">@Convert.ToDecimal(Model.LoanStatementList.Sum(X=>X.CrPrincipal)).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </td>
+
+                </tr>
+
+            </tbody>
+            <tr>
+                <td>
+                   Total Credit Prin. Int.
+                </td>
+                <td>
+                    <span class="form-control">@Convert.ToDecimal(Model.LoanStatementList.Sum(X => X.CrPrincInt)).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                </td>
+                <td>
+                    Total Credit Penalty
+                </td>
+                <td>
+                    <span class="form-control">@Convert.ToDecimal(Model.LoanStatementList.Sum(X => X.CrPenalty)).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                </td>
+            </tr>
+
+        </table>
+        <div class="col-md-12">
+
+
+            <table class="table  mark-passbook-date">
+
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DropDownListFor(model => model.TranscDate, Model.MarkDateList, htmlAttributes: new { @class = "form-control marked-date" })
+                        @Html.ValidationMessageFor(model => model.TranscDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td class="col-md-1"><input type="button" value="Mark" class="btn btn-info btn-sm btn-mark-passbook-date" /></td>
+                    <td class="col-md-1" style="text-align:right;"><span class="control-label" style="text-align:right;">Marked PassBook </span> </td>
+                    <td class="col-md-1">
+                        <p style="top: 19px;width: 20px;height:20px;border: 1px solid #000;background-color:#57d48240;"></p>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </fieldset>
+</div>
+<script>
+    $('.btn-mark-passbook-date').on("click",  function () {
+
+        var markDate = $(".mark-passbook-date").find("#TranscDate option:selected").val();
+        var toDate = $('#ToDate').val();
+        var accountId = $(".account-id").val();
+        var fromDate = $('#FromDate').val();
+
+        $.ajax({
+            type: "Post",
+            url: "/Report/_MarkPassBook",
+            data: { accountId: accountId, markDate: markDate },
+            success: function (result) {
+                if (result.Success == true) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Report/_LoanStatement",
+                        data: {
+
+                            fromDate: fromDate,
+                            toDate: toDate,
+                            iaccno: accountId
+                        },
+                        success: function (result) {
+                            $(".with-loan-Report-View").html("");
+                            $(".with-loan-Report-View").html(result)
+                        }
+                    })
+                    SuccessAlert(result.Msg,5000)
+                }
+                else if(result.Success == false)
+                {
+                    ErrorAlert(result.Msg, 5000)
+                }
+
+
+            }
+        })
+    })
+
+
+</script>

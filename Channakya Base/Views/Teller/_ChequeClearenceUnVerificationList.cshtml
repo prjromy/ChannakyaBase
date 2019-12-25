@@ -1,0 +1,83 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ChequeClearenceViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="content-box table-responsive no-padding table-click-event-message">
+    <div class="pop-up-for-verify">
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>@Html.Label("Account No")</td>
+                <td>@Html.Label("Cheque Account No ")</td>
+                <td>@Html.Label("Bank Name")</td>
+                <td>@Html.Label("Cheque Amount")</td>
+                <td>@Html.Label("Payee Name")</td>
+                <td>@Html.Label("Remarks")</td>
+                <td>@Html.Label("Verification", htmlAttributes: new { @class = "control-label" })</td>
+            </tr>
+        </thead>
+        @foreach (var item in Model.ChequeClearenceWithIpageList)
+            {
+            <tbody>
+                <tr>
+                    <td><a onclick="Detail(@item.rno)"><i class="fa fa-edit"></i>@commonService.GetAccountFullNameByIaccno(item.IAccno)</a></td>
+                    <td>
+                        @Html.DisplayFor(model => item.accno)
+                    </td>
+                    <td>@Html.DisplayFor(model => item.Bankname)</td>
+                    <td>@Html.DisplayFor(model => item.camount)</td>
+                    <td>@Html.DisplayFor(model => item.payee)</td>
+                    <td>@Html.DisplayFor(model => item.remarks)</td>
+                    @if (commonService.IsAuthotityToVerify(@item.rno, 27))
+                    {
+                    <td>
+                        <input type="button" value="Verify" class="btn btn-sm btn-success btn-verify-cheque-clearence" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(27, Convert.ToInt64(item.rno)))">
+                    </td>
+                    }
+                    else{
+                    
+                    }
+                </tr>
+            </tbody>
+
+        }
+
+    </table>
+    @Html.Paging("_ChequeClearenceUnVerificationList", "Teller", Model.ChequeClearenceWithIpageList.PageCount, Model.ChequeClearenceWithIpageList.PageNumber, Model.ChequeClearenceWithIpageList.PageSize)
+</div>
+<div id="account-pop-up-div3" class="modal" role='dialog'>
+</div>
+<script>
+    $("div.table-click-event-message").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-event-message")
+        var url = "";
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-click-event-message").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-event-message")
+        var url = ""; 
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-event-message").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var me = $(this);
+        var container = parentContainer.find(".table-click-event-message")
+        var url = "";
+        getPageSizeChangeData(url, container, me)
+    });
+</script>

@@ -1,0 +1,68 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustSectCertContViewModel
+@{
+    var models = Model;
+    ChannakyaBase.BLL.Service.CustomerTypeService type = new ChannakyaBase.BLL.Service.CustomerTypeService();
+}
+ 
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            <h3>Certificate List</h3>
+        </p>
+
+        <div class="box-body table-responsive no-padding">
+            <div class="pre-scrollable">
+                <table class="table">
+
+                    <tr>
+                        <th class="col-md-6">
+                            Certificate
+                        </th>
+                        
+                        <th class="col-md-6">
+                            State
+                        </th>
+                    </tr>
+                    @*@foreach (var item in Model.CertifiacteDefList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(x=>item.CCCert)
+                                 
+                               
+                            </td>
+
+                            <td>
+                                @Html.DropDownListFor(x=>item.CertStatus, new SelectList(ViewBag.ContactOption, "Value", "Text"), "No", new { @class = "form-control" })
+                            </td>
+                           
+                        </tr>
+                    }*@
+
+                    @for (int item = 0; item < Model.CertifiacteDefList.Count(); item++)
+                    {
+                        @Html.HiddenFor(x => Model.CertifiacteDefList[item].CTCID)
+                        @Html.HiddenFor(x => Model.CertifiacteDefList[item].CCCertID)
+                        @Html.HiddenFor(x => Model.CertifiacteDefList[item].CCCert)
+                        <tr>
+                            <td  class="col-md-6">
+                                @Model.CertifiacteDefList[item].CCCert
+                            
+                            </td>
+
+                            <td class="col-md-6">
+                                @*@Html.DropDownListFor(model => Model.CertifiacteDefList[item].CertStatus, type.CertificateList(Model.CertifiacteDefList[item].CertStatus), "No", new { @class = "form-control" })*@
+
+                                @Html.DropDownListFor(x => Model.CertifiacteDefList[item].CertStatus, new SelectList(ViewBag.CertificateList, "Value", "Text", Model.CertifiacteDefList[item].CertStatus), "No",  new { @class = "form-control certificatetype-list " })
+                            </td>  
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+

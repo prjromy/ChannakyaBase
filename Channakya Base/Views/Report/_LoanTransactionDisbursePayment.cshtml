@@ -1,0 +1,134 @@
+﻿@model    ChannakyaBase.Model.ViewModel.ProductTransactionReport
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService cmService = new CommonService();
+
+}
+<div class="table table-responsive">
+    <table class="table">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.PNAME)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.ACCNO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ANAME)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.VDATE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PriDr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OthrDr)
+            </th>
+            @if (Model.PaymentDisburseFlag != 1)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.Interest)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IonI)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IonCA)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PonPr)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PonInt)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Rbt)
+                </th>
+            }
+            <th>
+                @Html.DisplayNameFor(model => model.NOTES)
+            </th>
+
+
+        </tr>
+
+        @foreach (var item in Model.ProductTransactionReportList)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.PNAME)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ACCNO)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ANAME)
+                </td>
+                
+                <td>
+                    @if (item.VDATE != Convert.ToDateTime("1/1/0001 12:00:00 AM"))
+                {
+                        <span>@cmService.GetEnglishDate(Convert.ToDateTime(item.VDATE))</span>
+                    }
+                </td>
+                <td>
+                    <span>
+                        @Convert.ToDecimal(item.PriDr).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    </span>
+                </td>
+                <td>
+                    <span>
+                        @Convert.ToDecimal(item.OthrDr).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    </span>
+                </td>
+                @if (Model.PaymentDisburseFlag != 1)
+                {
+
+
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.Interest).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.IonI).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.IonCA).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.PonPr).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.PonInt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            @Convert.ToDecimal(item.Rbt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </span>
+                    </td>
+
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.NOTES)
+                </td>
+            </tr>
+        }
+
+    </table>
+    </div>

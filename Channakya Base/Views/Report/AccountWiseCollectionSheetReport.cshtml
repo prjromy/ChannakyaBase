@@ -1,0 +1,98 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountWiseCollectionModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Account Wise Collection Report";
+    CommonService cmService = new CommonService();
+}
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<div class="box box-success account-wise-collection-index">
+    <div class="box-header with-border">
+        <h3 class="box-title">Account Wise Collection</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12" id="filter-report-parameters">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.Label("From Date:", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.FromDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("To Date :", htmlAttributes: new { @class = "contol-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.ToDate)
+                                @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("Collector:", htmlAttributes: new { @class = "contol-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(x => x.collectorId, TellerUtilityService.GetCollectorListByBranchId(), "Choose Collector", new { @class = "form-control selected-collector" })
+                                @Html.ValidationMessageFor(model => model.collectorId, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </fieldset>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="button" value="Generate" class="btn btn-success pull-right account-wise-collection-create" />
+            </div>
+            <div class="col-md-2">
+                <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-account-wise-collection-export-to-excel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="collection-account-wise-details" id="collection-account-wise-list">
+    </div>
+    <div id='account-wise-collection-summary' class='modal fade verfier-list' role='dialog'>
+    </div>
+
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $(".account-wise-collection-index").on("click", '.account-wise-collection-create', function () {
+        debugger;
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var Collector = $('#collectorId').val();
+
+        if (Collector == "") {
+            InfoAlert("Please Choose Any Collector",3000);
+            return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Report/_AccountWiseCollectionSheetReport",
+            data: { fDate: FromDate, tDate: ToDate, collectorId: Collector },
+            success: function (result) {
+                $(".collection-account-wise-details").html("");
+                $(".collection-account-wise-details").html(result)
+            }
+        })
+    });
+    $('.btn-account-wise-collection-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var collectorId = $("#collectorId").val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/AccountWiseCollectionExportToExcel?collectorId=" + collectorId + " &FromDate=" + fromDate + " &ToDate=" + toDate)
+    })
+</script>
+

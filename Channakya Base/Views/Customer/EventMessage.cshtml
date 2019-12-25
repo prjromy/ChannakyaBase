@@ -1,0 +1,172 @@
+﻿@model ChannakyaBase.Model.ViewModel.MessageInfoViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@using PagedList;
+@using PagedList.Mvc;
+
+@Html.HiddenFor(x => Model.CustomerId, new { @id = "getVal" })
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#CustomerName").prop('disabled', true);
+    })
+
+
+    function CreateMessage() {
+        //estopImmediatePropagation();
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            var id = $("#getVal").val();
+
+            debugger;
+            $('#message-send').ajaxSubmit({
+                //beforeSubmit: function () {
+                //},
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Customer/GetEventListByCustomerId",
+                            type: 'GET',
+                            data: { id: id },
+                            success: function (result) {
+                                debugger;
+                                $(".event-message-list").html(result);
+                                $(".textarea").val("");
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        //  $(".content-wrapper").find("#account-pop-up-div1").modal('toggle');
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+            //return list
+        })
+    }
+    //    }).fail(function () {
+
+    //    });
+    //}
+
+</script>
+@using (Html.BeginForm("EventMessage", "Customer", FormMethod.Post, new { id = "message-send" }))
+{
+    @Html.AntiForgeryToken()
+    @*@Html.Hidden("MessageEventID",4)*@
+    @*@Html.Hidden("Idtype", Model.Idtype)*@
+
+    @Html.HiddenFor(x=> Model.Idtype,new { @id="Idtype"})
+    @Html.HiddenFor(x => Model.CustomerId, new { @id = "getVal" })
+
+    <div class="modal-dialog modal-lg verifier-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+                <h4 class="modal-title">
+                    <span>Message</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="content-box">
+                    <fieldset>
+                        @*<legend style="font-size:large;font-weight:bold">Task Related Details</legend>*@
+                        <div class="form-horizontal">
+                            <h4>Message Info</h4>
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.Label("Customer Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                 @*   @Html.EditorFor(model => model.EventValue, new { htmlAttributes = new { @class = "form-control cust-id" } })*@
+                                   @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control cust-id" } })
+                                    @*@Html.DisplayFor(model => model.EventValue, new { htmlAttributes = new { @class = "form-control cust-id" } })*@
+                                    @Html.ValidationMessageFor(model => model.EventValue, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Event Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.Eventid, BaseTaskUtilityService.GetAllEventList(Model.OpenFormEventid), "Select All", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Eventid, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                               @* @Html.LabelFor(model => model.Fdate, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                                @Html.Label("From Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DatePicker(x => x.Fdate)
+                                    @Html.ValidationMessageFor(model => model.Fdate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @*@Html.LabelFor(model => model.Tdate, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                                @Html.Label("Till Date", htmlAttributes: new { @class = "control-label col-md-2" })
+
+                                <div class="col-md-10">
+                                    @Html.DatePicker(x => x.Tdate)
+                                    @*@Html.TextBoxFor(x=>x.Tdate)*@
+                                    @Html.ValidationMessageFor(model => model.Tdate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.Label("Message Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @*@Html.EditorFor(model => model.Mdesc, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    @Html.TextAreaFor(model => model.Mdesc, 3, 50, new { @class = "textarea" })
+                                    @Html.ValidationMessageFor(model => model.Mdesc, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div>
+                            <button type="button" style="float:right" class="btn btn-info btn-save-cust btn-sm btn-save glyphicon glyphicon-save" onclick="CreateMessage()">Save</button>
+                        </div>
+                    </fieldset>
+
+                </div>
+                
+                    <div class="Context-box">
+                        @*<fieldset>
+                            <legend style="font-size:large;font-weight:bold;">Event MessageList</legend>*@
+                            <div class="event-message-list">
+                                @{Html.RenderAction("GetEventListByCustomerId", new { Model.CustomerId });
+                             
+
+                                }
+                                </div>
+                        @*</fieldset>*@
+                    </div>
+                
+                <div class="btn-groups modal-footer" style="padding:5px">
+
+                    @* <button type="button" style="float:right" class="btn btn-danger btn-save-cust btn-sm btn-account-verifier-confirm" onclick="CreateMessage()">Save <i class="fa fa-times" aria-hidden="true"></i></button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+        }
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+

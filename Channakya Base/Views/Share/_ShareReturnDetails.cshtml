@@ -1,0 +1,105 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareCustomerDetailsViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@{
+    CommonService commonService = new CommonService();
+    var mod = Model;
+}
+<div class="box-header with-border no-padding">
+    <div class="box box-warning menu-create no-padding">
+        <div class="box-header with-border">
+            <h4 class="page-title">Details Of Share Return</h4>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+            <div class="row">
+                <div class="col-md-12 account-details">
+
+                    <fieldset>
+                        <legend style="font-size:large;font-weight:bold">Return-Details</legend>
+
+                        <div class="box-body ">
+                            <span class="control-label">Returned Date:@commonService.GetDate(Model.Rdate)</span>
+                            <span class="control-label pull-right">Selling Date:@commonService.GetDate(Model.Sdate)</span>
+                            @* @Html.DatePicker(x => x.RDate)*@
+                        </div>
+                        @Html.HiddenFor(x => x.Tno)
+                      
+                        <div class="table table-responsive table-hover ">
+                            <table class="table table-responsive table-hover table-striped table-bordered">
+                                 <tr>
+                                    <th>Name </th>
+                                    <th> Ceritifcate Number </th>
+                                    <th>From  </th>
+
+
+                                    <th>To  </th>
+
+                                    <th>Quantity </th>
+                                    <th>Type</th>
+                                    <th>Note </th>
+                                    @*<th>Posted By </th>*@
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="control-label">@Model.Name</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="control-label">@Model.Scrtno</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="control-label"> @Model.From</span>
+                                    </td>
+                                    <td>
+                                        <span class="control-label">
+                                            @Model.To
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="control-label">@Model.Qty</span>
+                                </td>
+                                <td>
+                                    @if (@Model.ShareType == 1)
+                                    {
+                                        <span class="control-label">Ordinary</span>
+
+                                    }
+                                    @if (@Model.ShareType == 2)
+                                    {
+                                        <span class="control-label">Promoter</span>
+
+                                    }
+                                </td>
+                                <td>
+                                    <span class="control-label">@Model.Note</span>
+                                </td>
+                                @*<td>
+                                    @{CommonService cs = new CommonService();
+                                        <span class="control-label">@cs.GetEmployeeName(Model.PostedBy)</span>
+                                    }
+                                </td>*@
+                            </tr>
+                        </table>
+                    </div>
+
+                </fieldset>
+
+
+            </div>
+
+        </div>
+    </div><!-- /.box-body -->
+
+</div>
+</div>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+

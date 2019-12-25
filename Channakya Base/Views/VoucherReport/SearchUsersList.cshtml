@@ -1,0 +1,31 @@
+﻿@model List<Loader.Models.ApplicationUser>
+
+@{
+    var count = 0;
+    Loader.Service.EmployeeService _empService = new Loader.Service.EmployeeService();
+}
+
+@foreach (var item in Model)
+{
+    <tr class="user-details" id="@item.Id" user-name="@item.UserName" style="cursor:pointer;">
+        @Html.HiddenFor(x => item.Id)
+
+        <td>@(count += 1)</td>
+        <td class="user-name" style="cursor:pointer;">
+            @item.UserName
+        </td>
+        <td>
+            @{
+                var hasEmp = _empService.GetSingle((int)item.EmployeeId);
+                if (hasEmp != null)
+                {
+                    <p>
+                        @hasEmp.EmployeeName
+                    </p>
+                }
+            }
+
+
+        </td>
+    </tr>
+                }

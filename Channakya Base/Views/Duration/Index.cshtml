@@ -1,0 +1,364 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.DurationAccViewModel>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Duration Setup";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="Duration-explore section-treeview ">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create " id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+
+
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var test = $("input.btn.btn-box-tool.txtSearch");
+        $("input.btn.btn-box-tool.txtSearch").focus();
+
+    });
+    $('.Duration-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.Duration-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pDurationId').val();
+        if (nodeId =="")
+        {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+
+        var container = $(this).closest('.Duration-explore').find('.panel-list');
+        var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Duration")',
+            contentType: "application/json; charset=utf-8",
+            data: {ViewType: listType},
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("errorwwwwwwwwww");
+            }
+        });
+    });
+
+
+
+    $('.Duration-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.Duration-explore').find('.Duration-treeview').moveUp();
+        //$(this).closest('.Duration-explore').find('.Duration-treeview').updateTreeview("Duration", "_UpdateDurationTree", 1009,-1)
+    });
+
+    $('.Duration-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.Duration-explore').find('.Duration-treeview').SelectNode(id);
+    });
+
+
+    $('.Duration-explore').on('click', '.DurationImage, .editList, .btn-create-Durations', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Duration-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        //var activeElement = $(this).closest('.Duration-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.Duration-explore').find('.treeview-selected').attr('nodeid');
+        var DurationId = 0;
+        if ($(this).attr('class') == 'DurationImage' || 'editList') {
+            DurationId = $(this).attr('id');
+        }
+        //var pDurationId = $('#pDurationId').val()
+        //if (pDurationId == "") {
+        //    pDurationId = 0;
+        //}
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "Duration")',
+            data: { DurationId: DurationId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.Duration-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var DurationId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#pDurationId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "Duration")',
+            data: { id: DurationId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteDuration(DurationId, nodeId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes First", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteDuration(DurationId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "Duration")',
+            data: { DurationId: DurationId },
+            success: function () {
+                SuccessAlert("Duration Sucessfully Deleted", 5000)
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+
+    $('.ch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: data.Title,
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Duration/_GetDurationTree"
+        var container = $(this).closest('.Duration-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var listType = $(this).closest('.Duration-explore').find('#viewType').val();
+        var container = $(this).closest('.Duration-explore').find('.bodycontent-and-paging');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "Duration")',
+            data: { ViewType: listType, query: query },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    //$('.panel-list').on('keyup', ".txtSearch", function (e) {
+    //    debugger;
+    //    var query = $('input.txtSearch').val();
+    //    var filter = query.toUpperCase();
+    //    //var checkMenu = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+    //    if (filter == "") {
+    //        $('.detailsList').each(function (index, item) {
+    //            debugger;
+    //            var findList = $(item).find('.inner').hasClass('listDrill');
+    //            if (findList == true)
+    //            {
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else
+    //            {
+    //                $(item).css('display', 'block');
+    //            }
+
+    //        });
+    //    }
+    //    else {
+    //        $('.detailsList').each(function (index, item) {
+    //            debugger;
+    //            var findList = $(item).find('.inner').hasClass('listDrill');
+    //            if (findList == false) {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'block');
+    //            } else
+    //            {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            if (text.search(filter) == -1) {
+    //                debugger;
+    //                $(item).css('display', 'none');
+    //            }
+    //            //$(text+':not(:contains(' + filter + '))').hide();
+    //        });
+    //    }
+
+
+
+    //});
+
+
+
+
+    //$(document).ready(function () {
+    //    $.fn.pagination(1, 0, 0)
+
+    //    $('.pagination').on('click', '.pagerClass', function () {
+    //        debugger;
+    //        var pagingData = $(this).attr('id');
+    //        $.fn.pagination(pagingData, 0, 0);
+
+    //    });
+
+    //    $('.pagination').on('click', 'li.next , li.previous', function () {
+    //        debugger;
+    //        var cls = $(this).attr('class');
+    //        if ($(this).attr('class') == 'next') {
+    //            var pager = $('ul.pagination.Durationpaginatoin').find('.active').attr('id');
+    //            var finalId = parseInt(pager) + 1;
+    //            var hasNext = $('ul.pagination.Durationpaginatoin').find('li#' + finalId)
+    //            if ($(hasNext).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+    //        else {
+    //            var pager = $('ul.pagination.Durationpaginatoin').find('.active').attr('id');
+    //            var finalId = parseInt(pager) - 1;
+    //            var hasPrev = $('ul.pagination.Durationpaginatoin').find('li#' + finalId)
+    //            if ($(hasPrev).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+
+    //    });
+    //});
+
+    //$.fn.pagination = function (pagerId, next, previous) {
+    //    debugger;
+    //    var checkActive = $('ul.pagination.Durationpaginatoin').find('li').hasClass('active');
+    //    if (checkActive == true) {
+    //        $('ul.pagination.Durationpaginatoin').find('.active').removeClass('active');
+    //    }
+    //    else {
+    //        var listcount = 0;
+    //        $('.detailsList').each(function (index, item) {
+    //            listcount++;
+    //        });
+    //        var i;
+    //        var mod = listcount / 10;
+    //        for (i = 1; i <= mod + 1; i++) {
+    //            debugger;
+    //            $('ul.pagination.Durationpaginatoin').append('<li id=' + i + ' class="pagerClass"><a>' + i + '</a> </li>')
+    //        }
+    //    }
+    //    $('ul.pagination.Durationpaginatoin').find('li#' + pagerId).addClass('active');
+    //    var pagerRange = 10;
+    //    var paginatonData = pagerId * pagerRange;
+    //    $('.detailsList').each(function (index, item) {
+    //        debugger;
+    //        if (paginatonData > pagerRange) {
+    //            var checkPagination = paginatonData - pagerRange;
+    //            if (index <= paginatonData && index > checkPagination) {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+    //        else {
+    //            if (index <= paginatonData) {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('Duration-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+
+    //    });
+    //};
+
+
+
+
+
+</script>

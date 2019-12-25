@@ -1,0 +1,155 @@
+﻿@model ChannakyaAccounting.Models.Models.VoucherType
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = ViewBag.F2Type;
+
+    var title = "Create VoucherType";
+    if (Model.VTypeID != 0)
+    {
+        title = "Edit VoucherType";
+    }
+    //var styleTable = "display:none;";
+    ChannakyaAccounting.Service.VoucherType.VoucherTypeService dimService = new ChannakyaAccounting.Service.VoucherType.VoucherTypeService();
+}
+<div class="box box-warning VoucherType-create">
+    <div class="box-header with-border">
+        <h3 class="box-title">@title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "VoucherType", FormMethod.Post, new { @id = "createVoucherType" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(x => x.VTypeID)
+                <div class="form-group col-md-12 from-table">
+                    @Html.LabelFor(model => model.VoucherName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(x => x.VoucherName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.VoucherName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12 from-table">
+                    @Html.LabelFor(model => model.Prefix, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(x => x.Prefix, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="col-md-offset-11">
+                <input type="button" id="backbtn" class="btn btn-link" onclick="loadPrevContent()" style="display:none;" value="Back" />
+                <input type="button" id="nextbtn" class="btn btn-link" onclick="loadnextContent()" style="display:none;" value="Next" />
+                <input type="submit" id="btnSubmit" value="Create" class="btn btn-default" />
+            </div>
+        </div><!-- box-footer -->
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+</div><!-- /.box -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $("#createVoucherType").submit(function () {
+            debugger;
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("Please validate the form !!",5000);
+                return false;
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createVoucherType').find('input#VTypeID').val();
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $.ajax({
+                    url: '@Url.Action("Create", "VoucherType")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        //$.fn.updateTreeview('VoucherType', '_UpdateVoucherTypeTree', nodeId, -1)
+                        if(@Model.VTypeID==0)
+                        {
+                            SuccessAlert("VoucherType Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("VoucherType Edited Succesfully.",1500);
+                        }
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+            return false;
+        });
+    });
+    $.fn.GetLayoutVoucherType = function () {
+        debugger;
+        $.ajax({
+            type: "POST",
+            url: "/VoucherType/GetLayoutVoucherType/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+<style>
+    .VoucherType-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-VoucherType {
+        left: 296px;
+        top: -67px;
+    }
+</style>
+

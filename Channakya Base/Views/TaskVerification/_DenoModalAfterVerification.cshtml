@@ -1,0 +1,174 @@
+﻿@model ChannakyaBase.Model.ViewModel.DenoInOutViewModel
+@using ChannakyaBase.BLL.CustomHelper;
+@{
+    string denoInActive = "";
+    string denoOutActive = "";
+}
+
+
+
+
+<div class="modal-dialog modal-lg verifier-modal modal-dialog-centered" role="document">
+    <div class="modal-content">
+       
+
+
+                <div id="denoHeader" class="denoHeader active">
+                    <div class="panel panel-info deno">
+                        <div class="panel-heading">
+                            <div class="balance-deno-div">
+                                <div class="form-group">
+                                    <div class="col-md-4 deno-in-balance">
+                                        <label>In</label>
+                                        @Html.TextBoxFor(x => x.BalanceIn, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-4 deno-out-balance">
+                                        <label>Out</label>
+                                        @Html.TextBoxFor(x => x.BalanceOut, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-4 deno-inout-balance">
+                                        <label id="inoutbalance">Balance</label>
+
+
+                                        @Html.TextBoxFor(x => x.Balance, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="collapse in" id="dataTransaction">
+                                @Html.CheckBoxFor(x => x.IsTransactionWithDeno, new { @class = "hidden" })
+
+                                @*<div class="form-inline">
+                                        <div class="form-group">
+                                            <label>Transaction Amount:</label>
+
+                                            @Html.TextBoxFor(x => x.TransactionAmount, new { @class = "form-control" })
+                                        </div>
+
+                                    </div>*@
+                                <ul class="nav nav-tabs">
+
+                                    @if (Model.DenoInOut == EDeno.DenoIn.GetDescription())
+                                    {
+                                        <li class="active"><a data-toggle="tab" href="#DenoIn">DenoIn</a></li>
+                                        denoInActive = "in active";
+                                    }
+                                    else
+                                    {
+                                        <li><a data-toggle="tab" href="#DenoIn">DenoIn</a></li>
+                                    }
+                                    @if (Model.DenoInOut == EDeno.DenoOut.GetDescription())
+                                    {
+                                        <li class="active"><a data-toggle="tab" href="#DenoOut">DenoOut</a></li>
+                                        denoOutActive = "in active";
+                                    }
+                                    else
+                                    {
+                                        <li><a data-toggle="tab" href="#DenoOut"> DenoOut </a></li>
+                                    }
+
+                                </ul>
+
+                                <!-- /.box-header -->
+
+                                <div class="tab-content">
+                                    <div id="DenoIn" class="tab-pane fade @denoInActive">
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table table-bordered table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th>
+                                                            Current
+                                                        </th>
+                                                        <th>
+                                                            Deno
+                                                        </th>
+                                                        <th></th>
+                                                        <th>
+                                                            Piece
+                                                        </th>
+
+                                                        <th>
+                                                            Amount
+                                                        </th>
+
+
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @foreach (var item in Model.DenoInList)
+                                                    {
+                                                        @Html.Partial("_DenoIn", item)
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                        <!-- /.box-body -->
+                                    </div>
+                                    <div id="DenoOut" class="tab-pane fade @denoOutActive">
+                                        <div class="box-body table-responsive no-padding" id="Deno-Out-table-div">
+                                            <table class="table table-bordered table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th>
+                                                            Current
+                                                        </th>
+                                                        <th>
+                                                            Deno
+                                                        </th>
+                                                        <th></th>
+                                                        <th>
+                                                            Piece
+                                                        </th>
+
+                                                        <th>
+                                                            Amount
+                                                        </th>
+
+
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @foreach (var item in Model.DenoOutList)
+                                                    {
+                                                        @Html.Partial("_DenoOut", item)
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="panel-footer"></div>
+                    </div>
+
+                </div>
+     
+
+                <div class="btn-groups modal-footer" style="padding:5px">
+
+                    <button type="button" style="float:left" class="btn btn-danger btn-sm btn-account-verifier-delete">Delete <i class="fa fa-remove" aria-hidden="true"></i></button>
+                    @*<button type="button" style="float:left" class="btn btn-danger btn-sm btn-account-verifier-delete" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id>Delete <i class="fa fa-remove" aria-hidden="true"></i></button>*@
+
+                    <button type="button" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+
+                </div>
+    </div>
+</div>
+

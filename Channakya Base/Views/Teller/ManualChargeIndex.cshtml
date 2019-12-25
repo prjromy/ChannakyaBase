@@ -1,0 +1,37 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChargeTransactionViewModel
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "ManualCharge";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Manual Charge</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        <div id="manualchargecreateId" class="manual-charge-create">
+            @{
+                Html.RenderAction("_ManualChargeCreate", "Teller");
+            }
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $(".nav-tabs a").click(function () {
+            $(this).tab('show');
+        });
+    });
+</script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>

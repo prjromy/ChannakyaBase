@@ -1,0 +1,256 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareSignatureViewModel
+
+@using ChannakyaBase.BLL.CustomHelper
+
+
+<div class=" share-signature-create">
+ 
+
+        <h3 class="box-title share-signature-title">Share Signature</h3>
+
+        
+
+    </div>
+    @using (Html.BeginForm( new { id = "ShareSignature-form" }))
+    {
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-12 share-signature">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.HiddenFor(x => x.ShareID)
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="col-md-6">
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.Regno, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.EmployeeSearch(x => x.Regno, "", EEmployeeChange.PurchaseShare.GetDescription(), EEmployeeOrShare.ShareHolder.GetDescription())
+                                    @Html.ValidationMessageFor(model => model.Regno, "", new { @class = "text-danger" })
+
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Signature, new { @class = "control-label col-md-3" })
+                                <div class="col-md-offset-3 col-md-10 ">
+                                    <div id="signatureImageDiv" class="addsignatureimage" style="border:1px dashed;border-color:black; width:500px;height:200px;">
+                                        <center class="center-text">Click Here to upload </center>
+
+                                    </div>
+
+                                        @*<input type="file" name="Signature" id="Signature" onchange="fileCheck(this);" />*@
+                                    <input name="file" id="SigImage" type="file" style="display:none" />
+                                    <div class="dz-default dz-message" data-dz-message="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                       
+
+                    </div>
+                   
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-10 col-md-12">
+                                <button type="submit" id="submit-share" class="btn btn-success" style="cursor: pointer" >Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<style>
+    .share-signature-title {
+        color: #00a65a;
+        text-align: center;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $('form').on('click', '.addsignatureimage', function () {
+
+        $("#SigImage").click();
+
+    });
+    $(document).ready(function () {
+        if (window.File && window.FileList && window.FileReader) {
+            $("#SigImage").on("change", function (e) {
+
+                var files = e.target.files;
+                var filesLength = files.length;
+
+                var img = files[0].name.split('.');
+                var formats = img[img.length - 1];
+                if ((files[0].size > 2000000 && (formats === "jpg" || formats === "png" || formats === "jpeg"))) {
+                    ErrorAlert("Image must be less than 2 MB.");
+                    //$("#errortech").html(alertmessage);
+                } else {
+
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(files[0]);
+                    fileReader.onload = (function (e) {
+                        var file = e.target;
+                        var type = e.target.result.split(';');
+                        type = type[0].split(":");
+
+                        if (type[1] === "image/jpg" || type[1] === "image/png" || type[1] === "image/jpeg") {
+                            var em = '';
+                            em += `<div class="signatureclass"><img  style="max-width:700px; width:100%;" id="getAccountSignature" src="${file.result}" alt="${files[0].name}" title="${files[0].name}"/>`;
+                            em += `<br/><span class="remove">x</span></div>`;
+                            debugger;
+                            $(em).insertAfter("#signatureImageDiv");
+                            $("#signatureImageDiv").hide();
+                            //$("#signatureImageDiv").html(em);
+                        } else {
+                            //alertmessage += 'This Format is not Supported.</div>';
+                            //$("#errortech").html(alertmessage);
+                            ErrorAlert("This Format is not Supported.");
+                        }
+                        $(".remove").click(function () {
+                            $(this).parent(".signatureclass").remove();
+                            $("#signatureImageDiv").show();
+                            var $el = $('#SigImage');
+
+                            $el.wrap('<form>').closest('form').get(0).reset();
+                            $el.unwrap();
+
+                        });
+                    });
+                }
+            });
+        }
+        else {
+            //var alertmessage = '<div class="alert bg-red alert-dismissible text-center" role="alert">';
+            //alertmessage += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+            //alertmessage += "'Your browser doesn't support to File API</div>";
+            // $("#errortech").html(alertmessage);
+            alert("Your browser doesn't support to File API");
+        }
+    });
+    $("#submit-share").on("click", function (event) {
+        event.stopImmediatePropagation();
+        event.preventDefault();
+        debugger;
+        var id = $('.share-signature').find('.employeeId').val();
+        var imgbase = $("#getAccountSignature").attr("src");
+        if ((id == "" && imgbase == null) || (id == "") || (imgbase == null)) {
+            ErrorAlert("Please fill out form!!", 5000);
+            return false;
+
+        }
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $.ajax({
+                url: "/Signature/ShareSignatureViewModel",
+                type: 'POST',
+
+                data: {
+                    'Regno': id,
+                    'Signature': imgbase
+
+                },
+                dataType: 'JSON',
+                success: function (result) {
+
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Signature/SignatureIndex",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        //window.location.pathname = "/Signature/SignatureIndex";
+
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+                    }
+                    else {
+                        debugger;
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+
+
+
+                },
+
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    });
+
+</script>
+
+
+
+<style>
+    .signatureclass{
+        position: relative;
+    } .center-text {
+        margin: 80px 0;
+    }
+
+    span.remove {
+        position: absolute;
+        padding: 1px 7px;
+        /* border-radius: 100%; */
+        background: #333;
+        color: #f4f4f4;
+        cursor: pointer;
+        top: -10px;
+        right: -10px;
+        /*float:right;*/
+        border-radius: 100%;
+        opacity: 0.7;
+    }
+
+        span.remove:hover, span.remove:active {
+            background: #f44336;
+            opacity: 0.9;
+        }
+
+
+    /*#getAccountSignature {
+        position: relative;
+        -webkit-transition: all 200ms ease-in;
+        -webkit-transform: scale(1);
+        -ms-transition: all 200ms ease-in;
+        -ms-transform: scale(1);
+        -moz-transition: all 200ms ease-in;
+        -moz-transform: scale(1);
+        transition: all 200ms ease-in;
+        transform: scale(1);
+    }*/
+
+        #getAccountSignature:hover {
+            z-index: 2;
+            -webkit-transition: all 200ms ease-in;
+            -webkit-transform: scale(1.5);
+            -ms-transition: all 200ms ease-in;
+            -ms-transform: scale(1.5);
+            -moz-transition: all 200ms ease-in;
+            -moz-transform: scale(1.5);
+            transition: all 200ms ease-in;
+            transform: scale(1.5);
+            position:relative;
+        }
+</style>

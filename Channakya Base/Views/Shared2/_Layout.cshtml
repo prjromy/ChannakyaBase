@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+
+    @Styles.Render("~/AdminLTE/css")
+    @Scripts.Render("~/bundles/modernizr")
+  
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+  
+    <link href="~/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+    @*<link href="~/Content/jquery-ui.css" rel="stylesheet" />*@
+    <meta charset="utf-8">
+    <title>AdminLTE 2 | Dashboard</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+</head>
+
+<body class="hold-transition skin-blue-light sidebar-mini fixed">
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/scripts")
+    <script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+    <link href="~/Content/jquery.ui.datepicker.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/AdminLTE/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <div class="wrapper">
+        <!-- Main Header -->
+        <header class="main-header">
+            @Html.Partial("_Layout-Header")
+
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            @Html.Partial("_Layout-Sidebar")
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper" style="padding-top:50px;">
+            <!-- Main content -->
+            <section class="content">
+                <!-- Your Page Content Here -->
+
+                @RenderBody()
+
+                @RenderSection("Scripts", required: false)
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="pull-right hidden-xs">
+                Anything you want
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; @DateTime.Now.Year <a href="#"> Channakya Software Pvt. Ltd.</a>.</strong> All rights reserved.
+        </footer>
+
+        @Html.Partial("_Layout-Control-Sidebar")
+        <div class="loaderContainer" style="display:none;background:rgba(86, 80, 80, 0.18);position: fixed;top:0;left:0;width: 100vw;height: 100vh;z-index: 99999;">
+            <div class="loader"></div>
+        </div>
+    </div>    
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <link href="~/Content/Styles.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-message-box.js"></script>
+    <script src="~/Scripts/Paging.js"></script>
+    <script src="~/Scripts/ch-treeview.js"></script>
+    <link href="~/Content/ch-treeview.css" rel="stylesheet" />
+    <script src="~/Scripts/location.js"></script>
+    <script src="~/Scripts/LocationSearch.js"></script>
+</body>
+</html>
+<style type="text/css">
+    .loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        border: 2px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 2px solid #3498db;
+        width: 50px;
+        height: 50px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+</style>
+<script>
+
+    $(document).bind("ajaxSend", function () {
+        $('.loaderContainer').show().find('.loader').css({ "top": "50%", "left": "50%" });
+    }).bind("ajaxStop", function () {
+        $('.loaderContainer').hide();
+    });
+
+</script>

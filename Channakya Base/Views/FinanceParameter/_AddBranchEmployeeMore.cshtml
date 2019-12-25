@@ -1,0 +1,62 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeBranchMapModel
+@using ChannakyaBase.BLL.Service;
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL;
+@using HtmlHelpers.BeginCollectionItem
+@{
+    CommonService commonService = new CommonService();
+}
+<tr>
+    @using (Html.BeginCollectionItem("EmployeeBranchList"))
+    {
+
+        <td class="col-md-3">
+            @Html.HiddenFor(x => x.MapId)
+            @Html.DropDownListFor(x => x.EmpBranchId, TellerUtilityService.GetBranchList(), "Please select", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.EmpBranchId, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-3">
+            @Html.EmployeeSearch(x => x.EmpId)
+            @Html.ValidationMessageFor(model => model.EmpId, "", new { @class = "text-danger" })
+        </td>
+        <td class="col-md-2">@Html.DatePicker(x => x.StartFrom)</td>
+
+        <td class="col-md-3">
+
+            @Html.CheckBoxFor(x => x.IsCurrentRole, new { @class = "is-checked col-md-1" })
+
+
+            @Html.DropDownListFor(x => x.CurrentRole, commonService.GetDesignationRoleList(), "Please select", new { @class = "form-control  currentRole" })
+
+
+
+        </td>
+        <td class="col-md-1">
+            <input type="button" class="btn btn-default btn-xs hidden delete-empBranch" id="delete-empBranch" value="Delete" />
+        </td>
+
+    }
+</tr>
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+<script>
+    $(".is-checked").on("click", function () {
+        debugger;
+        var isChecked = $(this).prop("checked");
+        var me = $(this);
+        var currentRole = $(this).closest('tr').find('.currentRole');
+        if (isChecked == true) {
+            $(me).prop('checked', true);
+            $(currentRole).addClass("hidden");
+        } else {
+            $(me).prop('checked', false);
+            $(currentRole).removeClass("hidden");
+           
+        }
+    })
+</script>

@@ -1,0 +1,696 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>ChaBase</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{706d914f-babe-42d4-b750-41a10e431aaa}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql110DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>ChaBase</RootNamespace>
+    <AssemblyName>ChaBase</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="Trans\" />
+    <Folder Include="Trans\Tables\" />
+    <Folder Include="Mast\" />
+    <Folder Include="Mast\Tables\" />
+    <Folder Include="loc\" />
+    <Folder Include="loc\Tables\" />
+    <Folder Include="LG\" />
+    <Folder Include="LG\Tables\" />
+    <Folder Include="fin\" />
+    <Folder Include="fin\Tables\" />
+    <Folder Include="cust\" />
+    <Folder Include="cust\Tables\" />
+    <Folder Include="acc\" />
+    <Folder Include="acc\Tables\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="Trans\Functions\" />
+    <Folder Include="Mast\Functions\" />
+    <Folder Include="loc\Functions\" />
+    <Folder Include="LG\Functions\" />
+    <Folder Include="fin\Functions\" />
+    <Folder Include="CTrans\" />
+    <Folder Include="CTrans\Functions\" />
+    <Folder Include="acc\Functions\" />
+    <Folder Include="mig\" />
+    <Folder Include="mig\Functions\" />
+    <Folder Include="cust\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="Trans\Stored Procedures\" />
+    <Folder Include="Mast\Stored Procedures\" />
+    <Folder Include="loc\Stored Procedures\" />
+    <Folder Include="fin\Stored Procedures\" />
+    <Folder Include="acc\Stored Procedures\" />
+    <Folder Include="Security\" />
+    <Folder Include="Trans\Scripts" />
+    <Folder Include="dbo\Scripts" />
+    <Folder Include="mig\Scripts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\tempFinAcc.sql" />
+    <Build Include="dbo\Tables\SubsiDetail.sql" />
+    <Build Include="dbo\Tables\NDateS.sql" />
+    <Build Include="dbo\Tables\NDateD.sql" />
+    <Build Include="dbo\Tables\LicenseRegion.sql" />
+    <Build Include="dbo\Tables\InterestMinimumBalance.sql" />
+    <Build Include="dbo\Tables\HolidaysInYear.sql" />
+    <Build Include="dbo\Tables\FiscalYear.sql" />
+    <Build Include="dbo\Tables\BSADCal.sql" />
+    <Build Include="dbo\Tables\BrnchGlobal.sql" />
+    <Build Include="dbo\Tables\ALSchHistry.sql" />
+    <Build Include="dbo\Tables\ADrlimitLog.sql" />
+    <Build Include="dbo\Tables\_temp.sql" />
+    <Build Include="dbo\Tables\__MigrationHistory.sql" />
+    <Build Include="Trans\Tables\TransactionEditStatusLog.sql" />
+    <Build Include="Trans\Tables\TmEditLog.sql" />
+    <Build Include="Trans\Tables\ASTrns.sql" />
+    <Build Include="Trans\Tables\TType.sql" />
+    <Build Include="Trans\Tables\TranLnk.sql" />
+    <Build Include="Trans\Tables\DenoTrxn.sql" />
+    <Build Include="Trans\Tables\ChgSTrnx.sql" />
+    <Build Include="Trans\Tables\ChgMTrnx.sql" />
+    <Build Include="Trans\Tables\FrxCurrencyRate.sql" />
+    <Build Include="Trans\Tables\AMTrns.sql" />
+    <Build Include="Trans\Tables\DenoTrxnLog.sql" />
+    <Build Include="Mast\Tables\ShrSetup.sql" />
+    <Build Include="Mast\Tables\SheetNo.sql" />
+    <Build Include="Mast\Tables\Modules.sql" />
+    <Build Include="Mast\Tables\Events.sql" />
+    <Build Include="Mast\Tables\ChequeBookStatus.sql" />
+    <Build Include="Mast\Tables\taskDetails1.sql" />
+    <Build Include="Mast\Tables\Task.sql" />
+    <Build Include="Mast\Tables\UserConnection.sql" />
+    <Build Include="Mast\Tables\uttno.sql" />
+    <Build Include="Mast\Tables\TaskDetails.sql" />
+    <Build Include="loc\Tables\LocationTypeDef.sql" />
+    <Build Include="loc\Tables\LocationMaster.sql" />
+    <Build Include="loc\Tables\Location.sql" />
+    <Build Include="LG\Tables\UserVsRole.sql" />
+    <Build Include="LG\Tables\UserVSBranch.sql" />
+    <Build Include="LG\Tables\UserRole.sql" />
+    <Build Include="LG\Tables\UserLogin.sql" />
+    <Build Include="LG\Tables\UserClaim.sql" />
+    <Build Include="LG\Tables\TransferRole.sql" />
+    <Build Include="LG\Tables\Status.sql" />
+    <Build Include="LG\Tables\Religion.sql" />
+    <Build Include="LG\Tables\ParamValue.sql" />
+    <Build Include="LG\Tables\ParamScript.sql" />
+    <Build Include="LG\Tables\Param.sql" />
+    <Build Include="LG\Tables\Nationality.sql" />
+    <Build Include="LG\Tables\MenuVsTransferRole.sql" />
+    <Build Include="LG\Tables\User.sql" />
+    <Build Include="LG\Tables\MenuVsTemplate.sql" />
+    <Build Include="LG\Tables\MenuTemplate.sql" />
+    <Build Include="LG\Tables\MenuMain.sql" />
+    <Build Include="LG\Tables\MaritialStatus.sql" />
+    <Build Include="LG\Tables\LoginLogs.sql" />
+    <Build Include="LG\Tables\Gender.sql" />
+    <Build Include="LG\Tables\FiscalYears.sql" />
+    <Build Include="LG\Tables\Employees.sql" />
+    <Build Include="LG\Tables\Designation.sql" />
+    <Build Include="LG\Tables\Department.sql" />
+    <Build Include="LG\Tables\DataType.sql" />
+    <Build Include="LG\Tables\BloodGroup.sql" />
+    <Build Include="LG\Tables\Role.sql" />
+    <Build Include="LG\Tables\UserConnection.sql" />
+    <Build Include="LG\Tables\Company.sql" />
+    <Build Include="fin\Tables\LicenseBranch.sql" />
+    <Build Include="fin\Tables\ALSch.sql" />
+    <Build Include="fin\Tables\PolicyPenCalc.sql" />
+    <Build Include="fin\Tables\TempALSch.sql" />
+    <Build Include="fin\Tables\PolicyIntCalc.sql" />
+    <Build Include="fin\Tables\NCollateralDetail.sql" />
+    <Build Include="fin\Tables\ChqInventory.sql" />
+    <Build Include="fin\Tables\AAdjustmnt.sql" />
+    <Build Include="fin\Tables\MyBalance.sql" />
+    <Build Include="fin\Tables\AintCap.sql" />
+    <Build Include="fin\Tables\MessInfo.sql" />
+    <Build Include="fin\Tables\ADur.sql" />
+    <Build Include="fin\Tables\ALRegistration.sql" />
+    <Build Include="fin\Tables\AMClearance.sql" />
+    <Build Include="fin\Tables\FrxCurrency.sql" />
+    <Build Include="fin\Tables\AccountStatus.sql" />
+    <Build Include="fin\Tables\ForeignSBuySell.sql" />
+    <Build Include="fin\Tables\Aclosed.sql" />
+    <Build Include="fin\Tables\ForeignBuySell.sql" />
+    <Build Include="fin\Tables\Flag.sql" />
+    <Build Include="fin\Tables\AChq.sql" />
+    <Build Include="fin\Tables\ADetail.sql" />
+    <Build Include="fin\Tables\AchqFGdPymt.sql" />
+    <Build Include="fin\Tables\EmployeeVsBranch.sql" />
+    <Build Include="fin\Tables\AIntExpenses.sql" />
+    <Build Include="fin\Tables\Duration.sql" />
+    <Build Include="fin\Tables\AintPayable.sql" />
+    <Build Include="fin\Tables\ChqAttributes.sql" />
+    <Build Include="fin\Tables\IChkDep.sql" />
+    <Build Include="fin\Tables\IntLog.sql" />
+    <Build Include="fin\Tables\ProductDetail.sql" />
+    <Build Include="fin\Tables\DisbursementMain.sql" />
+    <Build Include="fin\Tables\RemitDeposit.sql" />
+    <Build Include="fin\Tables\AOfCust.sql" />
+    <Build Include="fin\Tables\HADRenew.sql" />
+    <Build Include="fin\Tables\DisburseVsPID.sql" />
+    <Build Include="fin\Tables\ABal.sql" />
+    <Build Include="fin\Tables\ADSchLog.sql" />
+    <Build Include="fin\Tables\RemitPayment.sql" />
+    <Build Include="fin\Tables\ALColl.sql" />
+    <Build Include="fin\Tables\AchqH.sql" />
+    <Build Include="fin\Tables\DepositBasis.sql" />
+    <Build Include="fin\Tables\ADrLimit.sql" />
+    <Build Include="fin\Tables\Denosetup.sql" />
+    <Build Include="fin\Tables\ARateMaster.sql" />
+    <Build Include="fin\Tables\DenoBal.sql" />
+    <Build Include="fin\Tables\CurrencyType.sql" />
+    <Build Include="fin\Tables\CollTemp.sql" />
+    <Build Include="fin\Tables\CashLimitS.sql" />
+    <Build Include="fin\Tables\HALRenew.sql" />
+    <Build Include="fin\Tables\AICBDur.sql" />
+    <Build Include="fin\Tables\AMinBal.sql" />
+    <Build Include="fin\Tables\CollSheet.sql" />
+    <Build Include="fin\Tables\ANomAcc.sql" />
+    <Build Include="fin\Tables\CollMainTemp.sql" />
+    <Build Include="fin\Tables\APolicyInterest.sql" />
+    <Build Include="fin\Tables\TempIntRateVal.sql" />
+    <Build Include="fin\Tables\DisburseCash.sql" />
+    <Build Include="fin\Tables\TempIntRate.sql" />
+    <Build Include="fin\Tables\DisburseCharge.sql" />
+    <Build Include="fin\Tables\ChequeBookStatus.sql" />
+    <Build Include="fin\Tables\DisburseCheque.sql" />
+    <Build Include="fin\Tables\TaxsetupDef.sql" />
+    <Build Include="fin\Tables\ChargeDetail.sql" />
+    <Build Include="fin\Tables\DisburseDeposit.sql" />
+    <Build Include="fin\Tables\SWRestrictionA.sql" />
+    <Build Include="fin\Tables\SWRestriction.sql" />
+    <Build Include="fin\Tables\ReferenceInfo.sql" />
+    <Build Include="fin\Tables\CashFlow.sql" />
+    <Build Include="fin\Tables\StatusChangeLog.sql" />
+    <Build Include="fin\Tables\ShareReferenceInfo.sql" />
+    <Build Include="fin\Tables\APolPen.sql" />
+    <Build Include="fin\Tables\Snominee.sql" />
+    <Build Include="fin\Tables\APRate.sql" />
+    <Build Include="fin\Tables\ShrSReturn.sql" />
+    <Build Include="fin\Tables\ASTransLoanDesc.sql" />
+    <Build Include="fin\Tables\ARate.sql" />
+    <Build Include="fin\Tables\ShrSPurchase.sql" />
+    <Build Include="fin\Tables\ShrReturn.sql" />
+    <Build Include="fin\Tables\ChqRqst.sql" />
+    <Build Include="fin\Tables\ASTransLoan.sql" />
+    <Build Include="fin\Tables\ATempFloatIntRate.sql" />
+    <Build Include="fin\Tables\AWtdQueue.sql" />
+    <Build Include="fin\Tables\ShrReg.sql" />
+    <Build Include="fin\Tables\ASClearance.sql" />
+    <Build Include="fin\Tables\ShrPurchase.sql" />
+    <Build Include="fin\Tables\AODSetUp.sql" />
+    <Build Include="fin\Tables\ProductBrnch.sql" />
+    <Build Include="fin\Tables\ANominee.sql" />
+    <Build Include="fin\Tables\AODIntReceivable.sql" />
+    <Build Include="fin\Tables\InterestLogs.sql" />
+    <Build Include="fin\Tables\AMClearanceH.sql" />
+    <Build Include="fin\Tables\SectorDef.sql" />
+    <Build Include="fin\Tables\ProductCurrency.sql" />
+    <Build Include="fin\Tables\ADSch.sql" />
+    <Build Include="fin\Tables\SCrtDtls.sql" />
+    <Build Include="fin\Tables\ProductDurationInt.sql" />
+    <Build Include="fin\Tables\AchqHH.sql" />
+    <Build Include="fin\Tables\CollSheetTrans.sql" />
+    <Build Include="fin\Tables\RuleRenew.sql" />
+    <Build Include="fin\Tables\ProductICBDur.sql" />
+    <Build Include="fin\Tables\ALCollLand.sql" />
+    <Build Include="fin\Tables\RuleRate.sql" />
+    <Build Include="fin\Tables\APBookChked.sql" />
+    <Build Include="fin\Tables\ALCollVehicle.sql" />
+    <Build Include="fin\Tables\RulePenBalance.sql" />
+    <Build Include="fin\Tables\ProductOPSID.sql" />
+    <Build Include="fin\Tables\ALFixedDeposit.sql" />
+    <Build Include="fin\Tables\RulePaySch.sql" />
+    <Build Include="fin\Tables\MobileBanking.sql" />
+    <Build Include="fin\Tables\ALinkloan.sql" />
+    <Build Include="fin\Tables\RulePay.sql" />
+    <Build Include="fin\Tables\ProductPay.sql" />
+    <Build Include="fin\Tables\ALoan.sql" />
+    <Build Include="fin\Tables\RuleMovement.sql" />
+    <Build Include="fin\Tables\ALoanGrace.sql" />
+    <Build Include="fin\Tables\RuleICBDuration.sql" />
+    <Build Include="fin\Tables\ProductPCID.sql" />
+    <Build Include="fin\Tables\AMTransLoan.sql" />
+    <Build Include="fin\Tables\ALRegCusts.sql" />
+    <Build Include="fin\Tables\RuleICB.sql" />
+    <Build Include="fin\Tables\AOPolInt.sql" />
+    <Build Include="fin\Tables\RuleDuration.sql" />
+    <Build Include="fin\Tables\ProductPSID.sql" />
+    <Build Include="fin\Tables\AMClearanceHR.sql" />
+    <Build Include="fin\Tables\Guarantor.sql" />
+    <Build Include="fin\Tables\RuleBalance.sql" />
+    <Build Include="fin\Tables\IchkBounce.sql" />
+    <Build Include="fin\Tables\ProductTID.sql" />
+    <Build Include="fin\Tables\ALSchHistry.sql" />
+    <Build Include="fin\Tables\ChqSize.sql" />
+    <Build Include="fin\Tables\SchmDetails.sql" />
+    <Build Include="fin\Tables\ALoanTra.sql" />
+    <Build Include="cust\Tables\OccupationDef.sql" />
+    <Build Include="cust\Tables\CustTypeSector.sql" />
+    <Build Include="cust\Tables\CustTypeContact.sql" />
+    <Build Include="cust\Tables\CustTypeCertificate.sql" />
+    <Build Include="cust\Tables\CustType.sql" />
+    <Build Include="cust\Tables\CustIRegContact.sql" />
+    <Build Include="cust\Tables\CustInfo.sql" />
+    <Build Include="cust\Tables\CustIndividual.sql" />
+    <Build Include="cust\Tables\CustContactPerson.sql" />
+    <Build Include="cust\Tables\CustContact.sql" />
+    <Build Include="cust\Tables\CustCompGroup.sql" />
+    <Build Include="cust\Tables\CustAddress.sql" />
+    <Build Include="cust\Tables\CustCompany.sql" />
+    <Build Include="cust\Tables\CustCertificate.sql" />
+    <Build Include="cust\Tables\ContactDef.sql" />
+    <Build Include="cust\Tables\CertificateDef.sql" />
+    <Build Include="cust\Tables\RemittanceCustomers.sql" />
+    <Build Include="acc\Tables\SubsiDetail.sql" />
+    <Build Include="acc\Tables\FinSys1.sql" />
+    <Build Include="acc\Tables\VoucherType.sql" />
+    <Build Include="acc\Tables\VoucherRejected.sql" />
+    <Build Include="acc\Tables\VoucherNo.sql" />
+    <Build Include="acc\Tables\VoucherCount.sql" />
+    <Build Include="acc\Tables\VoucherBal.sql" />
+    <Build Include="acc\Tables\Voucher5T.sql" />
+    <Build Include="acc\Tables\Voucher5.sql" />
+    <Build Include="acc\Tables\Voucher4T.sql" />
+    <Build Include="acc\Tables\Voucher4.sql" />
+    <Build Include="acc\Tables\Voucher3T.sql" />
+    <Build Include="acc\Tables\Voucher3.sql" />
+    <Build Include="acc\Tables\Voucher2T.sql" />
+    <Build Include="acc\Tables\Voucher2.sql" />
+    <Build Include="acc\Tables\Voucher1T.sql" />
+    <Build Include="acc\Tables\UserVSVoucher.sql" />
+    <Build Include="acc\Tables\FinAcc.sql" />
+    <Build Include="acc\Tables\OnProccessingVoucher.sql" />
+    <Build Include="acc\Tables\InterestTime.sql" />
+    <Build Include="acc\Tables\InterestRule.sql" />
+    <Build Include="acc\Tables\FiscalYear.sql" />
+    <Build Include="acc\Tables\SubsiVSOpeningBalance.sql" />
+    <Build Include="acc\Tables\SubsiVSFId.sql" />
+    <Build Include="acc\Tables\DimensionVSLedger.sql" />
+    <Build Include="acc\Tables\SubsiTitle-not used.sql" />
+    <Build Include="acc\Tables\DimensionValue.sql" />
+    <Build Include="acc\Tables\SubsiTable.sql" />
+    <Build Include="acc\Tables\DimensionTable.sql" />
+    <Build Include="acc\Tables\SubsiSetup.sql" />
+    <Build Include="acc\Tables\DimensionDefination.sql" />
+    <Build Include="acc\Tables\CurrencyType.sql" />
+    <Build Include="acc\Tables\BatchDescription.sql" />
+    <Build Include="acc\Tables\BankInfo.sql" />
+    <Build Include="acc\Tables\Voucher1.sql" />
+    <Build Include="acc\Tables\FinSys2.sql" />
+    <Build Include="dbo\Functions\GetTotalBalanceOfLedger.sql" />
+    <Build Include="dbo\Functions\GetLedgerType.sql" />
+    <Build Include="dbo\Functions\FGETNDAYS.sql" />
+    <Build Include="dbo\Functions\FGetMatDat.sql" />
+    <Build Include="dbo\Functions\FGetFormatedDate.sql" />
+    <Build Include="dbo\Functions\FGetDefaultDate.sql" />
+    <Build Include="dbo\Functions\FGetDaysInMonthAD.sql" />
+    <Build Include="dbo\Functions\FGetDaysInMonth.sql" />
+    <Build Include="dbo\Functions\FGetDateType.sql" />
+    <Build Include="dbo\Functions\FGetDateBS.sql" />
+    <Build Include="dbo\Functions\FGetDateADOfMonthStartEnd.sql" />
+    <Build Include="dbo\Functions\FGetDateADByDateBS.sql" />
+    <Build Include="dbo\Functions\FGetDateAD.sql" />
+    <Build Include="dbo\Functions\FGetBSYear.sql" />
+    <Build Include="dbo\Functions\FGetBSMonth.sql" />
+    <Build Include="dbo\Functions\FGetBSDay.sql" />
+    <Build Include="dbo\Functions\FGetBsDateFormat.sql" />
+    <Build Include="dbo\Functions\FGetAdDateFormat.sql" />
+    <Build Include="Trans\Functions\GetTransactionNo.sql" />
+    <Build Include="Mast\Functions\GetPostedOn.sql" />
+    <Build Include="loc\Functions\FGetDetailLocByLID.sql" />
+    <Build Include="LG\Functions\FGetEmployeeNameByUserId.sql" />
+    <Build Include="fin\Functions\IsOtherLoan.sql" />
+    <Build Include="fin\Functions\GETBALANCE.sql" />
+    <Build Include="fin\Functions\GetAcNo.sql" />
+    <Build Include="fin\Functions\FGetValueForAdjustment.sql" />
+    <Build Include="fin\Functions\FGetStypeIAccno.sql" />
+    <Build Include="fin\Functions\fGetScrtno.sql" />
+    <Build Include="fin\Functions\fgetInterestPaidDate.sql" />
+    <Build Include="fin\Functions\FGetGETAVLBALANCE.sql" />
+    <Build Include="fin\Functions\FGetFidOtherLoanByPID.sql" />
+    <Build Include="fin\Functions\FISNeg.sql" />
+    <Build Include="fin\Functions\FGetValueForAdjustmentReport.sql" />
+    <Build Include="fin\Functions\FGetScalarFidByIAccno.sql" />
+    <Build Include="CTrans\Functions\FgetLoanTransactionStatementAmount.sql" />
+    <Build Include="acc\Functions\FGetSubsiTblIdFromFId.sql" />
+    <Build Include="acc\Functions\GenerateSubsiTblIdFromFID.sql" />
+    <Build Include="dbo\Functions\TESTGetTransactionTrialBalanceReport.sql" />
+    <Build Include="dbo\Functions\test.sql" />
+    <Build Include="dbo\Functions\GetTransactionTrialBalanceReport.sql" />
+    <Build Include="dbo\Functions\GetTransactionTrialBalanceData.sql" />
+    <Build Include="dbo\Functions\GetProfitAndLossReport.sql" />
+    <Build Include="dbo\Functions\GetNrmlTrialBalanceReport.sql" />
+    <Build Include="dbo\Functions\GetNormalTrialBalanceReport.sql" />
+    <Build Include="dbo\Functions\GetNormalTrialBalanceDataTest.sql" />
+    <Build Include="dbo\Functions\GetNormalTrialBalanceData.sql" />
+    <Build Include="dbo\Functions\GetNormalTBData.sql" />
+    <Build Include="dbo\Functions\GetBalanceSheetReport.sql" />
+    <Build Include="dbo\Functions\FnSplitString.sql" />
+    <Build Include="dbo\Functions\FNSplit.sql" />
+    <Build Include="dbo\Functions\FgetSubsiStatement.sql" />
+    <Build Include="dbo\Functions\FGetNMonthCal.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
+    <Build Include="dbo\Functions\FGetHeadOffice.sql" />
+    <Build Include="dbo\Functions\FGetDateInMonthDays.sql" />
+    <Build Include="dbo\Functions\FGetAsLoanAmount.sql" />
+    <None Include="dbo\Functions\_dbo.GetTotalBalanceOfPrevYear.sql" />
+    <Build Include="dbo\Functions\_FNSPLIT.sql" />
+    <None Include="mig\Functions\chequeUseReport.sql" />
+    <Build Include="LG\Functions\FGetVerifierList.sql" />
+    <Build Include="fin\Functions\PGETLOANTRABTNDATE.sql" />
+    <Build Include="fin\Functions\FGetTellerCashierRoleTempleteAssign.sql" />
+    <Build Include="fin\Functions\FGetSchCalcInt.sql" />
+    <Build Include="fin\Functions\FGetReportProductTransaction.sql" />
+    <Build Include="fin\Functions\FGetReportLoanStatement.sql" />
+    <Build Include="fin\Functions\FGetReportLoanPayementDetails.sql" />
+    <Build Include="fin\Functions\FGetReportLoanDisburseDetails.sql" />
+    <Build Include="fin\Functions\FGetReportInterestLog.sql" />
+    <Build Include="fin\Functions\FGetReportDepositStatement.sql" />
+    <Build Include="fin\Functions\FGetReportDepositBalanceTillDateAmountWise.sql" />
+    <Build Include="fin\Functions\FGetReportDepartBalanceTillDateAmountWise.sql" />
+    <Build Include="fin\Functions\FGetReportAccOpnByCollector.sql" />
+    <Build Include="fin\Functions\FGetpimatcur.sql" />
+    <Build Include="fin\Functions\FGetHeadOffice.sql" />
+    <Build Include="fin\Functions\FgetCheckUserAssignMenu.sql" />
+    <Build Include="fin\Functions\FCRTMTHENDDT.sql" />
+    <Build Include="fin\Functions\FCHECKISGUARANTORORLOANEE.sql" />
+    <Build Include="fin\Functions\FGetCurrencyList.sql" />
+    <Build Include="fin\Functions\FGetUserForCashLimit.sql" />
+    <Build Include="fin\Functions\FGetReportCollectionSheetPagination.sql" />
+    <Build Include="fin\Functions\FGetVaultByBranchandDate.sql" />
+    <Build Include="fin\Functions\FGetAllCashierByBranchandDate.sql" />
+    <Build Include="fin\Functions\FGetAllTellerByBranchandDate.sql" />
+    <Build Include="fin\Functions\FGetAllVaultBranch.sql" />
+    <Build Include="fin\Functions\FGetAllTellerBranch.sql" />
+    <Build Include="fin\Functions\FGetUserByCollectorDesignation.sql" />
+    <Build Include="fin\Functions\FGetAllCashierBranch.sql" />
+    <Build Include="fin\Functions\FGetReportLoanStatement1.sql" />
+    <Build Include="acc\Functions\FGetSubsiAccListFromFId.sql" />
+    <Build Include="acc\Functions\FGetSubsiTableNameByFid.sql" />
+    <Build Include="acc\Functions\FGetSubsiChildByFid.sql" />
+    <Build Include="acc\Functions\FGetLedgerDetailList.sql" />
+    <Build Include="acc\Functions\GenerateAccountDetailByFid1.sql" />
+    <Build Include="acc\Functions\FGetEmployeeDetailList.sql" />
+    <Build Include="acc\Functions\FGetCustomerDetailList.sql" />
+    <Build Include="acc\Functions\FGetDurationList.sql" />
+    <Build Include="acc\Functions\FGetVoucherNoList.sql" />
+    <Build Include="acc\Functions\FGetMapSubsiList.sql" />
+    <Build Include="acc\Functions\FGetSubsiSetupList.sql" />
+    <Build Include="acc\Functions\FGetSchemeDetailList.sql" />
+    <Build Include="acc\Functions\FGetProductDetailList.sql" />
+    <Build Include="acc\Functions\FGetDimensionValueList.sql" />
+    <Build Include="acc\Functions\FGetDimensionDefinationList.sql" />
+    <Build Include="acc\Functions\FGetOpeningBalance.sql" />
+    <Build Include="acc\Functions\FGetSubsiBalReport.sql" />
+    <Build Include="acc\Functions\FGetSubsiTypeFromLedger.sql" />
+    <Build Include="acc\Functions\FgetSubsiStmnt.sql" />
+    <Build Include="acc\Functions\FgetLedgerStmnt.sql" />
+    <Build Include="acc\Functions\FgetCashStmnt.sql" />
+    <Build Include="acc\Functions\GetOpeningBalanceData.sql" />
+    <Build Include="acc\Functions\GetVerifiedVoucherList.sql" />
+    <Build Include="acc\Functions\GetUnVerifiedVoucherList.sql" />
+    <Build Include="acc\Functions\FgetSubsiStatement.sql" />
+    <Build Include="acc\Functions\FgetLedgerStmntWithOutPaging.sql" />
+    <Build Include="dbo\Functions\TestmyData.sql" />
+    <Build Include="dbo\Functions\Rejected.sql" />
+    <Build Include="dbo\Functions\MigrationFinAcc.sql" />
+    <Build Include="dbo\Functions\ListBranch.sql" />
+    <Build Include="dbo\Functions\GetTransTBData.sql" />
+    <Build Include="dbo\Functions\GetAccountInfoFromLedgerId.sql" />
+    <Build Include="dbo\Functions\GenerateAccountDetailOfDepositAndLoan.sql" />
+    <Build Include="dbo\Functions\FGetWeekHolliday.sql" />
+    <Build Include="dbo\Functions\FGetSubsiList.sql" />
+    <Build Include="dbo\Functions\FGetPaymentModeDictionary.sql" />
+    <Build Include="dbo\Functions\FGetLoanTransType.sql" />
+    <Build Include="dbo\Functions\FGetLedgerWithType.sql" />
+    <Build Include="dbo\Functions\FGetGraceOptionDictionary.sql" />
+    <Build Include="dbo\Functions\FGetCompanyList.sql" />
+    <Build Include="dbo\Functions\FGetChargeVsProductTB.sql" />
+    <Build Include="dbo\Functions\FGetAccountListByStype.sql" />
+    <Build Include="dbo\Functions\Deleted.sql" />
+    <Build Include="dbo\Functions\Accepted.sql" />
+    <None Include="mig\Functions\FGetUsedChk.sql" />
+    <None Include="mig\Functions\ProductCalandCapRule.sql" />
+    <None Include="mig\Functions\ProductAndDuration.sql" />
+    <None Include="mig\Functions\FgetDuration.sql" />
+    <Build Include="Mast\Functions\FGetTaskVerifiedBy.sql" />
+    <Build Include="Mast\Functions\FGetTaskDetails.sql" />
+    <Build Include="Mast\Functions\FGetTaskRejectedBy.sql" />
+    <Build Include="Mast\Functions\FGetTaskDeletedBy.sql" />
+    <Build Include="loc\Functions\FGetLocationTB.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="LG\Functions\GetEmployeeDetails.sql" />
+    <Build Include="LG\Functions\FGetConnectionIDFromTask.sql" />
+    <Build Include="LG\Functions\FGetHierarchyWiseDesignation.sql" />
+    <Build Include="fin\Functions\FGetReportUnverifiedTransaction.sql" />
+    <Build Include="fin\Functions\FGetLoanDisburseDetails.sql" />
+    <Build Include="fin\Functions\FGetReportUserTeller.sql" />
+    <Build Include="fin\Functions\FGetCashFlowDictionary.sql" />
+    <Build Include="fin\Functions\FGetUsedChk.sql" />
+    <Build Include="fin\Functions\FGetRecurringIntCapitalizeRule.sql" />
+    <Build Include="fin\Functions\FGetFixedIntCapitalizeRule.sql" />
+    <Build Include="fin\Functions\FGetFidByIAccno.sql" />
+    <Build Include="fin\Functions\FGetCurrentDenoList.sql" />
+    <Build Include="fin\Functions\FGetEditTransactionDetailByVerified.sql" />
+    <Build Include="fin\Functions\FGetChqInv.sql" />
+    <Build Include="fin\Functions\FGetEditTransactionByUnVerified.sql" />
+    <Build Include="fin\Functions\FGetAccountDetails.sql" />
+    <Build Include="fin\Functions\GetLoanScheduleParameter.sql" />
+    <Build Include="fin\Functions\BranchEmployeeList.sql" />
+    <Build Include="fin\Functions\FGetUserByParamDesignation.sql" />
+    <Build Include="fin\Functions\FgetReportWithdrawPayable.sql" />
+    <Build Include="fin\Functions\FGetReportverifiedTransaction.sql" />
+    <Build Include="fin\Functions\FgetReportTransactionPayable.sql" />
+    <Build Include="fin\Functions\FgetReportProductTransactionSummary.sql" />
+    <Build Include="fin\Functions\FgetReportProductSummaryDetails.sql" />
+    <Build Include="fin\Functions\FgetReportLoanTransaction.sql" />
+    <Build Include="fin\Functions\FGetReportLoanScheduleList.sql" />
+    <Build Include="fin\Functions\FGetReportLoanProductWiseInterestLog.sql" />
+    <Build Include="fin\Functions\FGETReportLoanBeforeAutoPayment.sql" />
+    <Build Include="fin\Functions\FGetReportLoanAccruedInterestListing.sql" />
+    <Build Include="fin\Functions\FGetReportInternalChequeDeposit.sql" />
+    <Build Include="fin\Functions\FGetReportInterestLogIndividual.sql" />
+    <Build Include="fin\Functions\FGetAccountNumberList.sql" />
+    <Build Include="fin\Functions\FGetReportInterestCapitalization.sql" />
+    <Build Include="fin\Functions\FGetReportGuarantor.sql" />
+    <Build Include="fin\Functions\FgetReportDurationWise.sql" />
+    <Build Include="fin\Functions\GetSingleHomeTransaction.sql" />
+    <Build Include="fin\Functions\FGetReportDepositTranx.sql" />
+    <Build Include="fin\Functions\GetRejectedOrAccepted.sql" />
+    <Build Include="fin\Functions\FGetReportDepositProductWiseInterestLog.sql" />
+    <Build Include="fin\Functions\FGetReportDepositBalanceTillDate.sql" />
+    <Build Include="fin\Functions\FGetReportDenoTransactionHistory.sql" />
+    <Build Include="fin\Functions\FGetReportDenoTransactionByUser.sql" />
+    <Build Include="fin\Functions\FGetReportDenoByUserAndTransactionNo.sql" />
+    <Build Include="fin\Functions\FgetReportChequeWithdraw.sql" />
+    <Build Include="fin\Functions\FGetReportChequeGoodForPaymentReport.sql" />
+    <Build Include="fin\Functions\FGetAccountUnverifiedDetails.sql" />
+    <Build Include="fin\Functions\FgetReportChequeClearence.sql" />
+    <Build Include="fin\Functions\FGetReportChequeBounce.sql" />
+    <Build Include="fin\Functions\FGetReportChequeBookIssue.sql" />
+    <Build Include="fin\Functions\FGetReportChequeBookBlocked.sql" />
+    <Build Include="fin\Functions\FGetReportInterestDetailsByIAccNo.sql" />
+    <Build Include="fin\Functions\FgetReportBalancePayable.sql" />
+    <Build Include="fin\Functions\FGetReportAccountWiseCollection.sql" />
+    <Build Include="fin\Functions\FGetReportAccountOpeningDetails.sql" />
+    <Build Include="fin\Functions\FGetProdFinLedger.sql" />
+    <Build Include="fin\Functions\FGetPreviousScheduleData.sql" />
+    <Build Include="fin\Functions\FgetLoanTransactionAmount.sql" />
+    <Build Include="fin\Functions\FGetLoanDisplay.sql" />
+    <Build Include="fin\Functions\FGetLoanAccountDetailsOnlyByIaccno.sql" />
+    <Build Include="fin\Functions\FGetShareUnverifiedDetailsDisplay.sql" />
+    <Build Include="fin\Functions\FGetCompanyList.sql" />
+    <Build Include="fin\Functions\FGetCollateralList.sql" />
+    <Build Include="fin\Functions\FGetAllVault.sql" />
+    <Build Include="fin\Functions\FGETSHARERETURNDISPLAY.sql" />
+    <Build Include="fin\Functions\FGetAllTeller.sql" />
+    <Build Include="fin\Functions\FGetAllCashier.sql" />
+    <Build Include="fin\Functions\FgetAccountOpenByCollectorDetails.sql" />
+    <Build Include="fin\Functions\FGetReportShareStatement.sql" />
+    <Build Include="fin\Functions\FGetReportOverdraftInterestCapitalization.sql" />
+    <Build Include="fin\Functions\FGetReportOverdraftBalance.sql" />
+    <Build Include="fin\Functions\FGetPreviousScheduleDataRenew.sql" />
+    <Build Include="fin\Functions\FGetReportShareReturnDetails.sql" />
+    <Build Include="fin\Functions\FGetReportSharePurchaseDetails.sql" />
+    <Build Include="fin\Functions\FGetReportShareHolderList.sql" />
+    <Build Include="fin\Functions\FGetReportShareTransactionByDate.sql" />
+    <Build Include="fin\Functions\FGetIndividualTotalLoanAccountBalance.sql" />
+    <Build Include="fin\Functions\GetLoanDetails.sql" />
+    <Build Include="fin\Functions\FGetReportLoanAccountDetails.sql" />
+    <Build Include="fin\Functions\FGetReportLoanOutStanding.sql" />
+    <Build Include="fin\Functions\FGetLoanPaymentDetails.sql" />
+    <Build Include="fin\Functions\FGetCustomerNameVsAccountId.sql" />
+    <Build Include="fin\Functions\FGetReportLoanschedule.sql" />
+    <Build Include="fin\Functions\FGetReportLoanAfterAutoPayment.sql" />
+    <Build Include="fin\Functions\FGetUserCashReceivedRejectedList.sql" />
+    <Build Include="fin\Functions\FGetReportCashFlow.sql" />
+    <Build Include="fin\Functions\FGetReportLoanBalanceTillDate.sql" />
+    <Build Include="fin\Functions\FGetReportDepostiStatementWithAccDetails.sql" />
+    <Build Include="fin\Functions\FGetReportAccountInterestDetails.sql" />
+    <Build Include="fin\Functions\FGetReportInterestDetails.sql" />
+    <Build Include="fin\Functions\FGetReportAccOpnByCollectorSummary.sql" />
+    <Build Include="fin\Functions\FGetReportAllTotalLoanBalanceByTransDate.sql" />
+    <Build Include="fin\Functions\FGetReportAccountWiseCollectionSummary.sql" />
+    <Build Include="fin\Functions\FGetReportLoanMatured.sql" />
+    <Build Include="fin\Functions\FGetAccType.sql" />
+    <Build Include="fin\Functions\FGetReportProductWiseCollection.sql" />
+    <Build Include="fin\Functions\FGetReportCollectionSheet.sql" />
+    <Build Include="fin\Functions\FGetLoanRegisteredVerifiedList.sql" />
+    <Build Include="fin\Functions\FGetCashLimitSList.sql" />
+    <Build Include="fin\Functions\FGetAllUsersWithDesignation.sql" />
+    <Build Include="fin\Functions\FGetAccountNumberListA.sql" />
+    <Build Include="fin\Functions\FGetShareVerifiedDetails.sql" />
+    <Build Include="fin\Functions\FGetShareUnverifiedDetails.sql" />
+    <Build Include="fin\Functions\FGetShareReturnVerifyList.sql" />
+    <Build Include="fin\Functions\FGETSHARERETURN.sql" />
+    <Build Include="fin\Functions\FGetLoanShareDisbursement.sql" />
+    <Build Include="fin\Functions\FGetVWADStmnt2.sql" />
+    <Build Include="fin\Functions\FGetCustomerNameByIaccno.sql" />
+    <Build Include="fin\Functions\FGetVWADStmnt1.sql" />
+    <Build Include="fin\Functions\FGetProductNameByChargeId.sql" />
+    <Build Include="cust\Functions\FGetCustLocation.sql" />
+    <Build Include="cust\Functions\FGetCustContact.sql" />
+    <Build Include="cust\Functions\FGetCustList.sql" />
+    <Build Include="cust\Functions\FGetCustListForSearch.sql" />
+    <Build Include="cust\Functions\FGetDefaultCustContact.sql" />
+    <Build Include="cust\Functions\FGetCustContactLocation.sql" />
+    <Build Include="cust\Functions\FGetCustName.sql" />
+    <Build Include="CTrans\Functions\FgetLoanTransactionDetais.sql" />
+    <Build Include="acc\Functions\FgetUserDetailByVoucherAndBatch.sql" />
+    <Build Include="acc\Functions\GetLedgerReport.sql" />
+    <Build Include="acc\Functions\GetBatchListByVoucherNo.sql" />
+    <Build Include="acc\Functions\FGetBatchTypeOfUser.sql" />
+    <Build Include="acc\Functions\FGetVoucherTypeOfUser.sql" />
+    <Build Include="dbo\Stored Procedures\PSetToPermanentTableVoucher.sql" />
+    <Build Include="dbo\Stored Procedures\PSetCLosingBalanceBalance.sql" />
+    <Build Include="dbo\Stored Procedures\pset_updateinttocap.sql" />
+    <Build Include="dbo\Stored Procedures\pset_UpdateAdjustmentLD.sql" />
+    <Build Include="dbo\Stored Procedures\PGetInterestTOCapitalizeAccount.sql" />
+    <Build Include="Trans\Stored Procedures\PSetDepositWithdrawVerify.sql" />
+    <Build Include="Trans\Stored Procedures\PSetChargeVerify.sql" />
+    <Build Include="Trans\Stored Procedures\PSetRejectCollection.sql" />
+    <Build Include="Trans\Stored Procedures\PSetLoanDisburseVerify.sql" />
+    <Build Include="Trans\Stored Procedures\PSetCollection.sql" />
+    <Build Include="Trans\Stored Procedures\PDelManualCharge.sql" />
+    <Build Include="Trans\Stored Procedures\PDelLoanDisburseVerify.sql" />
+    <Build Include="Mast\Stored Procedures\GetTransno.sql" />
+    <Build Include="Mast\Stored Procedures\GetSheetNumber.sql" />
+    <Build Include="loc\Stored Procedures\PSetRemoveLocationByLvl.sql" />
+    <Build Include="loc\Stored Procedures\PSetLocationMove.sql" />
+    <Build Include="loc\Stored Procedures\PSetCreateLocationInSelectedLvl.sql" />
+    <Build Include="fin\Stored Procedures\PsetDisbursementVoucher.sql" />
+    <Build Include="fin\Stored Procedures\Share_Entry.sql" />
+    <Build Include="fin\Stored Procedures\PVerifyTran.sql" />
+    <Build Include="fin\Stored Procedures\PUpdateIOnBalOfAccBaseOnLoanTransaction.sql" />
+    <Build Include="fin\Stored Procedures\PUpdAdjustedAmt.sql" />
+    <Build Include="fin\Stored Procedures\PUIonbalOfIAcc.sql" />
+    <Build Include="fin\Stored Procedures\PSetShareReturnVerify.sql" />
+    <Build Include="fin\Stored Procedures\PsetInsertLoanScheduleVerify.sql" />
+    <Build Include="fin\Stored Procedures\PPymUpdPrinSch.sql" />
+    <Build Include="fin\Stored Procedures\PPymUpdIntSch.sql" />
+    <Build Include="fin\Stored Procedures\PODIonBalupd.sql" />
+    <Build Include="fin\Stored Procedures\PGetReportLoanFollowUp.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedWithdraw.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedShareReturn.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedShareReg.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedSharePurchase.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedLoanAccount.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedDepositAccount.sql" />
+    <Build Include="fin\Stored Procedures\PDelUnverifiedDeposit.sql" />
+    <Build Include="fin\Stored Procedures\PDelTellerExceedPayment.sql" />
+    <Build Include="fin\Stored Procedures\PAloanTraInsUpd.sql" />
+    <Build Include="fin\Stored Procedures\PAloanTraInsert.sql" />
+    <Build Include="fin\Stored Procedures\GetSchDetailOnPymnt.sql" />
+    <Build Include="fin\Stored Procedures\PSetAccountNumberListB.sql" />
+    <Build Include="fin\Stored Procedures\PSetAccountNumberListA.sql" />
+    <Build Include="acc\Stored Procedures\PSetOpeningBal.sql" />
+    <Build Include="acc\Stored Procedures\PUpdateVoucherNoOnFYClosing.sql" />
+    <Build Include="Security\Trans.sql" />
+    <Build Include="Security\mig.sql" />
+    <Build Include="Security\Mast.sql" />
+    <Build Include="Security\loc.sql" />
+    <Build Include="Security\lic.sql" />
+    <Build Include="Security\LG.sql" />
+    <Build Include="Security\fin.sql" />
+    <Build Include="Security\cust.sql" />
+    <Build Include="Security\CTrans.sql" />
+    <Build Include="Security\acc.sql" />
+    <Build Include="dbo\Tables\convertDate.sql" />
+    <PostDeploy Include="dbo\Scripts\convertDate.sql" />
+    <Build Include="fin\Tables\VWTblADIntDtls.sql" />
+    <Build Include="mig\Functions\chequeUseReport_1.sql" />
+    <Build Include="fin\Functions\FGetAllCashierBranch1.sql" />
+    <Build Include="fin\Functions\FCHECKISGUARANTORFORLOANACCOUNT.sql" />
+    <Build Include="fin\Functions\FCheckGurantor.sql" />
+    <Build Include="dbo\Functions\GetNormalTrialBalanceReportTest.sql" />
+    <Build Include="dbo\Functions\dbo.GetTotalBalanceOfPrevYear.sql" />
+    <Build Include="mig\Functions\ProductCalandCapRule_1.sql" />
+    <Build Include="mig\Functions\ProductAndDuration_1.sql" />
+    <Build Include="mig\Functions\FGetUsedChk_1.sql" />
+    <Build Include="mig\Functions\FgetDuration_1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Trans\Scripts\TType.sql" />
+    <None Include="mig\Scripts\MigFunctions.sql" />
+  </ItemGroup>
+</Project>

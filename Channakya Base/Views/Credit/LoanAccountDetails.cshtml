@@ -1,0 +1,427 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ADetail
+@using ChannakyaCustomeDatePicker.Helper;
+
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@{
+    CommonService commonService = new CommonService();
+    CreditService creditService = new CreditService();
+    ChannakyaBase.DAL.DatabaseModel.ADetail check = new ChannakyaBase.DAL.DatabaseModel.ADetail();
+    check = Model;
+    var ModelFrom = ViewBag.ModelFrom;
+}
+
+<script>
+    $(document).ready(function () {
+
+        $(".btn-event-id").on('click', function (e) {
+            debugger;
+            var id = $(this).attr('data-id');
+            // 2 indicate account number
+            var idtype = 2;
+            $.ajax({
+                type: 'GET',
+                url: "/Customer/EventMessage",
+                data: {
+                    id: id,
+                    idtype: idtype,
+                    formEventId: 4
+                },
+                success: function (result) {
+                    debugger;
+                    $('#message-pop-up-div2').html(result).modal({
+                        'show': true,
+                        'backdrop': 'static'
+                    });
+                }
+            })
+        });
+
+    })
+</script>
+<div id='message-pop-up-div2' class='modal fade' role='dialog'></div>
+<div class="box-header with-border no-padding">
+    <div class="box box-warning menu-create no-padding">
+        <div class="box-header with-border">
+            <h4 class="page-title">Details Of Loan Account</h4>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+            @if(ModelFrom != "Report" && ModelFrom!= "LoanReport")
+            {
+
+                @*<div class="btn col-md-6">
+                    <button type="button" style="float:left" class="btn btn-info btn-renew-account btn-sm glyphicon glyphicon-edit" data-id="@Model.IAccno">Re-Sanction</button>
+                </div>*@
+                <div class="btn col-md-6">
+                    <button type="button" style="float:right" class="btn btn-info btn-event-id btn-sm glyphicon glyphicon-edit" data-id="@Model.IAccno">EventMessage</button>
+                </div>
+            }
+       
+            <div class="col-md-12 account-details">
+
+                <fieldset>
+                    <legend style="font-size:large;font-weight:bold">Account-Details</legend>
+
+                    <div class="box-body ">
+                        <span class="control-label">Registered Date:@commonService.GetNepaliDate(Model.RDate)</span>
+                        @* @Html.DatePicker(x => x.RDate)*@
+                    </div>
+                    @Html.HiddenFor(x => x.IAccno)
+
+                    <div class="table table-responsive table-hover ">
+                        <table class="table table-responsive table-hover table-striped table-bordered">
+                            <tr>
+                                <th> Account Name </th>
+                                <th> Account Number </th>
+                                <th>Scheme Name </th>
+                                <th>Product Name </th>
+                                <th>Currency Name </th>
+                            </tr>
+                            <tr>
+                                <td><span class="control-label">@Model.Aname</span></td>
+                                <td><span class="control-label">@Model.Accno</span></td>
+
+                                <td>
+                                    <span class="control-label"> @Model.ProductDetail.SchmDetail.SDName</span>
+                                </td>
+                                <td> <span class="control-label">@Model.ProductDetail.PName </span></td>
+                                <td>
+                                    <span class="control-label">@Model.CurrencyType.CurrencyName</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="table table-responsive table-hover ">
+                        <table class="table table-responsive table-hover table-striped table-bordered">
+                            <tr>
+                                <th>Quation Amount</th>
+                                <th>Approved Amount</th>
+                            </tr>
+                            <tr></tr>
+                            <tr>
+                                <td>
+                                    @if (Model.ADrLimit != null)
+                                    {
+                                        <span class="control-label">@Convert.ToDecimal(Model.ADrLimit.QuotAmt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (Model.ADrLimit != null)
+                                    {
+                                        <span class="control-label">@Model.ADrLimit.AppAmt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+
+                @Html.Partial("~/Views/Teller/_AccountsWiseCustomerDetails.cshtml", Model.AccountsWiseCustomer)
+                <div class="customer-details-div" id="customer-details">
+
+                </div>
+
+
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Link-Accounts-Description</legend>
+                    <div class="link-accounts">
+                        <div class="content-table" id="content-link-account">
+                            <div class="link-account-table-div">
+                                <table class="table table-bordered table-striped table-hover" id="link-account-table-div">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.Label("Account Name")</th>
+                                            <th>@Html.Label("Account Number")</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.ALinkloans)
+                                    {
+                                        @Html.Action("_LinkAccountDetails", "Credit", new { iaccno = item.ILinkAc, isDetailView = true })
+                                    }
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+
+                    <legend style="font-size:large;font-weight:bold">Interest-Details</legend>
+                    <div class="form-horizontal table-responsive">
+                        <table class="table table-striped table-bordered table-responsive">
+                            <tr>
+                                <th>
+                                    Interest Calculation Rule
+                                </th>
+                                <th>Penalty Calculation Rule </th>
+
+                                <th>
+                                    Payment Schedule
+                                </th>
+
+                            </tr>
+                            <tr>
+
+
+
+
+                                @if (Model.ProductDetail.SchmDetail.IsFDLoan == false)
+                                {
+                                    <td>
+                                        <span class="control-label">@creditService.GetAllRuleCalculation(0, Model.APolicyInterest.PSID).FirstOrDefault().InterestCalRule</span>
+                                    </td>
+                                    <td>
+                                        <span class="control-label">@creditService.GetAllPenalty(0, Model.APolPen.PCID).FirstOrDefault().PCNAME</span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @if (Model.APolicyInterest.PSID != 0 && Model.APolicyInterest != null)
+                                        {
+
+                                            <span class="control-label">@creditService.GetAllRuleCalculation(0, Model.APolicyInterest.PSID).FirstOrDefault().InterestCalRule</span>
+
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="control-label">@creditService.GetAllPenalty(0, Model.APolPen.PCID).FirstOrDefault().PCNAME</span>
+                                    </td>
+                                }
+
+                                <td>
+                                    <span class="control-label">@creditService.GetAllRuleSchedule(Model.ALoan.PAYSID).FirstOrDefault().schType</span>
+                                </td>
+                                @*
+                        <td>
+                            <span class="control-label">@creditService.GetAllPaymentMode(0,Model.ALoan.PAYID).FirstOrDefault().PRule</span>
+                        </td>*@
+
+
+                            </tr>
+
+                            <tr></tr>
+                        </table>
+                    </div>
+                    <div class="form-horizontal table-responsive">
+
+                        <div class="col-md-8">
+                            @if (@Model.ADur != null)
+                            {
+                                if (@Model.ADur.MatDat != null)
+                                {
+                                    <span class="control-label">Maturity Date:@commonService.GetNepaliDate(Model.ADur.MatDat.Value)</span>
+                                }
+                            }
+                            @*  @Html.DatePicker(x => x.ADur.MatDat)*@
+                        </div>
+
+
+
+                        <table class="table table-striped table-bordered table-responsive">
+                            <tr>
+                                <th>
+                                    Interest Rate(%)
+                                </th>
+                                <th>Granted Duration </th>
+
+                                <th>
+                                    Interest Penalty Rate(%)
+                                </th>
+                                <th>
+                                    Principal Penalty Rate(%)
+                                </th>
+                                <th>
+                                    Principal GraceDays
+                                </th>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    <span class="control-label"> @Model.IRate</span>
+                                </td>
+                                <td>
+                                    @if (Model.ADur != null)
+                                    {
+                                        if (Model.ADur.DurType == 0)
+                                        {
+
+                                            <span class="control-label">@Model.ADur.Days Days</span>
+                                        }
+                                        if (Model.ADur.DurType == 1)
+                                        {
+
+                                            <span class="control-label">@Model.ADur.Month Months</span>
+                                        }
+                                    }
+
+                                </td>
+
+
+
+
+                                <td>
+                                    @if (@Model.APRate != null)
+                                    {
+                                        <span class="control-label">@Model.APRate.PIRate</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (@Model.APRate != null)
+                                    {
+                                        <span class="control-label">@Model.APRate.PPRate</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (@Model.ALoan != null)
+                                    {
+                                        <span class="control-label">@Model.ALoan.penGDys</span>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr></tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:Large;font-weight:bold">Status Change Log</legend>
+                    <table class="table table-responsive">
+                        <tr>
+                            <th> Status </th>
+                            <th>Change On</th>
+                            <th>Change By</th>
+                        </tr>
+
+                        @foreach (var item in Model.StatusLogList)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelitem => item.StatusName)</td>
+                                <td>@Html.DisplayFor(modelitem => item.ChangeOn)</td>
+                                <th>@commonService.EmployeeInfoUserId(item.UserID).EmployeeName</th>
+                            </tr>
+                        }
+                    </table>
+
+                </fieldset>
+            
+
+                </div>
+
+        </div>
+    </div><!-- /.box-body -->
+
+</div>
+@if (ModelFrom!= "AccountPopUp")
+{
+
+    <div class="box-footer">
+        <div class="form-group">
+
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Back To List" class="btn btn-info btn-details-back" buttonTab="@ViewBag.ModelFrom" />
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.account-details').on('click', '.view-account-details', function () {
+            debugger;
+            var thisVal = $(this).val();
+            var CID = $(this).data('id');
+            var me = $('#account-customers-details-tr-' + CID);
+            var modelFrom = "AccountOpen";
+            if (thisVal == "Hide Details") {
+                $(this).val("View Details")
+                $(this).addClass("btn-success")
+                $(this).removeClass("btn-warning")
+
+                me.addClass("hidden");
+            }
+            else {
+                $(this).val("Hide Details")
+                $(this).removeClass("btn-success")
+                $(this).addClass("btn-warning")
+                $.ajax({
+                    type: "GET",
+                    url: "/Customer/_CustomerDetails",
+                    datatype: "Json",
+                    data: { CID: CID, modelFrom: modelFrom },
+                    success: function (result) {
+                        debugger;
+                        me.removeClass("hidden");
+                        $(me).find('td').html("");
+                        $(me).find('td').html(result);
+                    }
+                })
+            }
+        })
+    });
+
+    $(document).ready(function () {
+
+        $('.btn-details-back').on('click', function () {
+            debugger;
+            var tabFrom = $(this).attr('buttonTab')
+            var url;
+            if (tabFrom == 'Report') {
+                url = '/Report/AccountopenDetailsReport'
+            } else if (tabFrom == "DepositReport") {
+                url = '/Report/MatureDurationWiseAccount'
+            } else if (tabFrom == "LoanReport") {
+                url = '/Report/MatureDurationWiseAccountLoan'
+            } else if (tabFrom == "indexReport") {
+                url = '/Teller/AccountOpenIndex'
+            }
+            else if (tabFrom == "Credit") {
+                url = '/Credit/LoanAccountIndex'
+            }
+            $.ajax({
+                type: "GET",
+                url: url,
+                datatype: "Json",
+                success: function (result) {
+                    debugger;
+                    $('section.content').html("");
+                    $('section.content').html(result);
+                }
+            })
+        })
+
+    });
+
+    $(".btn-renew-account").on('click', function (e) {
+        debugger;
+        var iaccno = $(this).data("id")
+
+        $.ajax({
+            type: 'GET',
+            url: "/Credit/LoanReSanction",
+            data: {
+                iAccno: iaccno,
+
+            },
+            success: function (result) {
+                debugger;
+                $('#message-pop-up-div2').html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+                });
+            },
+            error: function () {
+
+            }
+        });
+    });
+</script>

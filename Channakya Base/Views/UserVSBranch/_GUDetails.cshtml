@@ -1,0 +1,262 @@
+﻿@model List<Loader.Models.ApplicationUser>
+@using Loader.Helper
+
+@{
+    var test = Model;
+    var id = ViewBag.ViewType;
+    // string address = ViewBag.Address.ToString();
+    //var pGetUser() = ViewBag.ParentGetUser();
+}
+<div class="modal-dialog modal-lg get-details-user">
+    <div class="modal-content getUserDetails">
+        <div class="modal-header" style="background-color:dodgerblue">
+            <h4 class="modal-title pull-left" style="color:white" id="myModal-label">Select Users</h4>
+            <div class="input-group pull-right">
+                @if (ViewBag.Query != null)
+                {
+                    <input type="text" aria-describedby="search-addon" name="text-filter-tree" class="btn btn-box-tool txtSearch" value="@ViewBag.Query" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+                }
+                else
+                {
+                    <input type="text" aria-describedby="search-addon" name="text-filter-tree" class="btn btn-box-tool txtSearch" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+                }
+
+                <span class="close input-group-addon" style="background:none; border:none" data-dismiss="modal" aria-hidden="true" id="search-addon">&times;</span>
+            </div>
+        </div>
+        @*<input type="button" class="btn-default" value="Back" id="btnBack" />*@
+        <div class="modal-body bodycontent-and-paging">
+
+
+            @{var hasChild = Model.Count(); }
+            @if (hasChild == 0)
+            {
+                <b> No Childs found to Display</b>
+            }
+            else
+            {
+                <div class="listTable" style="max-height:400px;overflow:auto;">
+                    @Html.Partial("_GUListViewMain", Model)
+                </div>
+            }
+
+
+            @if (ViewBag.CountPager > 0)
+            {
+                <ul class="pagination Userpagination" style="float:left;margin-right:20px;">
+                    <li class="previous"><a href="#">Previous</a></li>
+                    @for (int i = 1; i <= ViewBag.CountPager; i++)
+                    {
+                        if (i > 4)
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i >= (ViewBag.ActivePager - 2))
+                                {
+
+                                    if (i > ViewBag.ActivePager)
+                                    {
+                                        if (i - ViewBag.ActivePager <= 2)
+                                        {
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+                                        else
+                                        {
+                                            if (i == ViewBag.CountPager)
+                                            {
+                                                if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                {
+                                                    <li class=""><a>.......</a> </li>
+                                                }
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i >= (ViewBag.ActivePager - 2))
+                                {
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                        }
+                    }
+                    <li class="next"><a href="#">Next</a></li>
+
+                </ul>
+            }
+            <div style="margin-top:20px;margin-left:20px; margin-bottom:10px" class="search-container">
+                @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+            </div>
+        </div>
+
+    </div><!-- /.box-header -->
+</div>
+<script>
+    $(document).ready(function () {
+        var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        var strLength = searchInput.val().length * 2;
+        searchInput.focus();
+        searchInput[0].setSelectionRange(strLength, strLength);
+        var Search = $('.txtSearch').val();
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Userpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.UserVSBranch-explore').find('.panel-create').find('#getUserDetails').find('.bodycontent-and-paging');
+                    var listType = 2;
+                    $(container).load("/UserVSBranch/_GUDetailPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Userpagination').find('li#' + finalId)
+                var listType = 2;
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.UserVSBranch-explore').find('.panel-create').find('#getUserDetails').find('.bodycontent-and-paging');
+                    $(container).load("/UserVSBranch/_GUDetailPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var Search = $('.txtSearch').val();
+            var container = $(this).closest('.UserVSBranch-explore').find('.panel-create').find('#getUserDetails').find('.bodycontent-and-paging');
+            var listType = 2;
+            $(container).load("/UserVSBranch/_GUDetailPartial", { page: pagingData, ViewType: listType, query: Search });
+            var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Userpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Userpagination').find('li#' + pagingData).addClass('active');
+
+        });
+        $('.panel-create').on('keyup', ".txtSearch", function (e) {
+            debugger;
+            var query = $('input.txtSearch').val();
+            var listType =2;
+            var container = $(this).closest('.UserVSBranch-explore').find('.panel-create').find('#getUserDetails');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("_GUDetails", "UserVSBranch")',
+                data: {
+                    query: query
+                   
+                    
+                },
+                success: function (data) {
+                    debugger;
+                    $(container).html(data);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var Search = $('.txtSearch').val();
+            //var pagingData = $(this).val();
+            var container = $(this).closest('.UserVSBranch-explore').find('.panel-create').find('#getUserDetails').find('.bodycontent-and-paging');
+            var listType = 2;
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/UserVSBranch/_GUDetailPartial",
+                    type: "POST",
+                    data: {
+                        query: Search,
+                        ViewType: listType,
+                        page: finalId
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                    }
+
+                });
+            }
+
+        });
+        $('.bodycontent-and-paging').on('click', '#myGUtable tr', function () {
+            debugger;
+            var id = $(this).attr('id');
+            var name = $(this).attr('user-name');
+            var userId = $('#createUserVSBranch').find('.user-Id');
+            var userText = $('#createUserVSBranch').find('.user-name-in-brnch');
+
+            $("div#getUserDetails").modal('hide');
+            $(userId).val(id);
+            $(userText).val(name);
+        });
+
+    });
+</script>
+
+
+<style>
+    .details {
+        width: 30%;
+        max-height: 129px;
+    }
+
+    input.btn.btn-box-tool.txtSearch {
+        cursor: text;
+    }
+</style>
+
+

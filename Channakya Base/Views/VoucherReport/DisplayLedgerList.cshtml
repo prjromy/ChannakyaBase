@@ -1,0 +1,395 @@
+﻿
+@model IEnumerable<ChannakyaAccounting.Models.Models.FinAcc>
+
+@{
+    Layout = null;
+    var count = 0;
+    var test = Model;
+}
+
+
+<div class="modal-dialog  add-ledger-finacc" style="width: 100%; padding: 0 5px 0 235px;top:20px; position:fixed;">
+    <div class="modal-content addledgerDetails">
+        <div class="modal-header">
+
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">Ledger Details</h4>
+
+
+        </div>
+        <div class="modal-body" style="padding:20px 50px; ">
+            <div class="col-md-11">
+                <input type="text" name="Search" placeholder="Search By Ledger name or Code..." class="Search form-control">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-default" name='btnsearch' id='btnsearch-voucher' type="button"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+            <div class="bodycontent-and-paging">
+                <div class="container ledger-list-model">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+
+                                <table id="mytable" class="table table-bordred" style="max-width:85%;position:relative;">
+
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                S.N
+                                            </th>
+                                            <th>
+                                                LedgerName
+                                            </th>
+                                            <th>
+                                                Code
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+            {
+                                            <tr class="ledger-details" cursor:pointer;">
+
+                                                <td>@(count += 1)</td>
+
+                                                @*<td class="fname1" data-dismiss="modal">*@
+                                                <td class="ledgername-voucher" id="@item.Fid" ledgername="@item.Fname" style="cursor:pointer;">
+                                                    @item.Fname @Html.HiddenFor(modelItem => item.Fid, new { @id = item.Fid })
+                                                </td>
+                                                @if (item.Code == null)
+                                                {
+                                                    <td class="">
+                                                        ------
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Code)
+                                                    </td>
+                                                }
+
+
+                                                @*<button class="btn btn-default ledgerload" , onclick="location.href='@Url.Action("GetLedger", "Helper", new { ledgername = item.Fname })';return true;">Select</button>*@
+
+
+
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="padding:0px 15px 0px 15px;">
+                    @*  *@
+                    @*<input type="submit" class="btn btn-success" value="Save" />
+                        <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>*@
+
+                    <ul class="pagination ledgerpagination" style="float:left;margin-right:20px;">
+                        <li class="previous"><a href="#">Previous</a></li>
+                        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                        {
+                            if (i > 4)
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+
+                                        if (i > ViewBag.ActivePager)
+                                        {
+                                            if (i - ViewBag.ActivePager <= 2)
+                                            {
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                            else
+                                            {
+                                                if (i == ViewBag.CountPager)
+                                                {
+                                                    if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                    {
+                                                        <li class=""><a>.......</a> </li>
+                                                    }
+                                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                }
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (i == ViewBag.ActivePager)
+                                {
+                                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i >= (ViewBag.ActivePager - 2))
+                                    {
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    else
+                                    {
+                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                    }
+                                }
+                            }
+                        }
+                        <li class="next"><a href="#">Next</a></li>
+                    </ul>
+                    <div style="margin-top:20px;margin-left:20px" class="search-container">
+                        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var query = $('#getVoucherDetails').find('.Search').val();
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.ledgerpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.ledgerpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('#getVoucherDetails').find('.modal-body').find('.bodycontent-and-paging');
+                    $('.bodycontent-and-paging').load("/VoucherReport/SearchLedgerList", { query: query, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.ledgerpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.ledgerpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.ledgerpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.ledgerpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.ledgerpagination').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('#getVoucherDetails').find('.modal-body').find('.bodycontent-and-paging');
+                    $('.bodycontent-and-paging').load("/VoucherReport/SearchLedgerList", { query: query, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.ledgerpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.ledgerpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.ledgerpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.search-container').on('blur', '.searchPager', function () {
+            debugger;
+            var query = $('#getVoucherDetails').find('.Search').val();
+            var finalId = $(this).val();
+            var container = $(this).closest('#getVoucherDetails').find('.modal-body').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/VoucherReport/SearchLedgerList",
+                    type: "POST",
+                    data: { query: query, page: finalId },
+                    success: function (data) {
+                        debugger;
+                        $('.bodycontent-and-paging').html(data);
+                        $('.bodycontent-and-paging').focus();
+
+                    }
+
+                });
+            }
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+            var checkActive = $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+            }
+            $(mainContainer).find('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var query = $('#getVoucherDetails').find('.Search').val();
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('#getVoucherDetails').find('.modal-body').find('.bodycontent-and-paging');
+            $('.bodycontent-and-paging').load("/VoucherReport/SearchLedgerList", { query: query, page: pagingData });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.ledgerpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.ledgerpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.ledgerpagination').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+
+
+    $('td.ledgername-voucher').click(function () {
+        debugger;
+        var ledgerId = $(this).attr("id");
+        var ledgername = $(this).attr("ledgername");
+        var checkfordrop = $("#checkfordropdown").val();
+
+        var container = $(this).closest('#createLedgerReport').find('#getVoucherDetails');
+        $(this).closest('#createLedgerReport').find("#finaccId").val(ledgerId);
+        $(this).closest('#createLedgerReport').find(".LedgerName").val(ledgername);
+
+        //$.ajax({
+        //    url: '/Voucher1/EnterLedgerDetails/',
+        //    dataType: "html",
+        //    data: { ledgerId: ledgerId, type: type },
+        //    success: function (data) {
+        //        debugger;
+        //        $(container).show();
+        //        $(container).html(data);
+        //        $('#getVoucherDetails').modal('show');
+
+        //    }
+        //});
+        //$(container).load("/Voucher1/EnterLedgerDetails", { ledgerId: ledgerId });
+        $('#getVoucherDetails').modal('hide');
+        if (checkfordrop == "True") {
+            $.ajax({
+                url: "/VoucherReport/GetSubsiType",
+                type: "get",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { FID: ledgerId },
+                success: function (data) {
+                    debugger;
+                    var optionlist = '<option value=""> Select Subsi</option>';
+                    $.each(data, function (i, individualdata) {
+                        optionlist = optionlist + "<option value= '" + individualdata.Value + "'>" + individualdata.Text + "</option>"
+                    });
+                    $("#Subsi").html(optionlist);
+                }
+            })
+        }
+
+
+    });
+
+
+
+    $('button#btnsearch-voucher').click(function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        debugger;
+        //   $('.loaderContainer').show().find('.loader').css({ "top": "50%", "left": "50%" });
+        var text = $(this).closest(".add-ledger-finacc").find("input.Search.form-control").val();
+        $.ajax({
+            url: '/VoucherReport/SearchLedgerList/',
+            type: "POST",
+            data: { query: text },
+            async: false,
+
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $(".bodycontent-and-paging").html(data);
+                // $('.loaderContainer').hide();
+            }
+        });
+    });
+</script>
+<script>
+    $('.addledgerDetails').on('keydown', '.Search', function (event) {
+        debugger;
+        if (event.keyCode == 13 || event.keyCode == 9) {
+            $('#btnsearch-voucher').trigger('click');
+        }
+
+    });
+
+</script>
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .ledger-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>
+<style>
+    table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+
+        table tbody {
+            /* body takes all the remaining available space */
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: auto;
+            max-height: 50vh;
+            position:relative;
+        }
+
+            table tbody tr {
+                width: 100%;
+            }
+
+            table thead, table tbody tr {
+                display: table;
+                table-layout: fixed;
+            }
+</style>

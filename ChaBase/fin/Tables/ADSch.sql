@@ -1,0 +1,8 @@
+﻿CREATE TABLE [fin].[ADSch] (
+    [IAccno]  INT           NOT NULL,
+    [MDate]   SMALLDATETIME NOT NULL,
+    [AdschId] INT           IDENTITY (1, 1) NOT NULL,
+    CONSTRAINT [PK_ADSch] PRIMARY KEY CLUSTERED ([AdschId] ASC),
+    CONSTRAINT [FK_ADSch_ADetail] FOREIGN KEY ([IAccno]) REFERENCES [fin].[ADetail] ([IAccno]) ON DELETE CASCADE ON UPDATE CASCADE
+);
+

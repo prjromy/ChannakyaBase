@@ -1,0 +1,98 @@
+﻿@{ 
+    var value = ViewData["Value"] as string;
+}
+<div class="container col-md-12 interest-value-defined">
+    @Html.Label("Enter Value", new { @class = "control-label col-md-4" })
+    <div class="col-md-6">
+        @Html.TextBox("InterestValue", value, new { @class = "form-control col-md-12 interest-textbox",@required="required" })
+        @Html.ValidationMessage("InterestValue", "", new { @class = "text-danger" })
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-primary btn-sm deleteInterest">
+            <span class="glyphicon glyphicon-remove"></span> 
+        </a>
+
+        </div>
+
+</div>
+
+<script type="text/javascript">
+    $('a.btn.btn-primary.btn-sm.deleteInterest').click(function () {
+        debugger
+        var container = $(this).closest('.interest-value-defined');
+        $(container).remove();
+
+    });
+
+    //------below code is commented because of dublication of the on click event from _GetValueContribution.cshtml 
+    //$('.addInterestRate').click(function (e) {
+    //    debugger;
+    //    e.stopImmediatePropagation();
+    //    var container = $(this).closest('.interestValue-box').find('.interest-value-container');
+
+    //    $.ajax({
+    //        url: '/FinAcc/AddInterestValue/',
+    //        dataType: "html",
+    //        success: function (data) {
+    //            $(container).append(data);
+    //        }
+    //    });
+
+
+
+    //});
+    $('.useInterestValue').click(function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        $('ul.interest-tabs').empty();
+        var allValue = $('.interest-value-defined').find('.interest-textbox');
+        var productId = $(this).closest('.interest-main-container').attr('pid');
+        var valueList = "";
+        var tabcontainer = $('.interest-info-container');
+        var isZero = 0;
+
+        $(allValue).each(function (index, item) {
+            var value = $(item).val();
+            if(value == 0)
+            {
+                ErrorAlert("Value can't be 0", 5000);
+                isZero = isZero + 1;
+                return false;
+            }
+
+            valueList = valueList + "," + value;
+
+        });
+
+        if (isZero == 0)
+        {
+            $.ajax({
+                url: '/FinAcc/InterestValueList/',
+                data: { allValue: valueList, productId: productId },
+
+                dataType: "html",
+                success: function (data) {
+                    $('.interest-main-container').find('ul.interest-tabs').css("display", "block");
+                    $('.interest-main-container').show();
+                    $('.interest-list-container').html(data);
+                }
+            });
+            $('.interest-value-defined').each(function (index, item) {
+
+                var textboxValue = $(item).find('.interest-textbox').val();
+                var container = $('ul.interest-tabs');
+                if (index == 0) {
+                    $(container).append('<li class="active"><a class="tab-button active" id="' + textboxValue + '" data-toggle="pill" href="#depositBasisId-' + textboxValue + '">' + textboxValue + '</a></li>')
+                }
+                else {
+                    $(container).append('<li ><a class="tab-button active" id="' + textboxValue + '" data-toggle="pill" href="#depositBasisId-' + textboxValue + '">' + textboxValue + '</a></li>')
+                }
+
+
+            });
+
+        }
+
+
+    });
+</script>

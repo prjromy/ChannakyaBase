@@ -1,0 +1,81 @@
+﻿@model ChannakyaAccounting.Models.Models.FinSys2
+@{
+    var test = Model;
+    var FinSys2TypeClass = "background-color:indianred !important";
+    if (Model.FinSys1.IsGroup == true)
+    {
+        FinSys2TypeClass = "background-color:#00c0ef  !important";
+    }
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+<div class="small-box bg-aqua" style="@FinSys2TypeClass">
+    @if (Model.Pid != 0)
+    {
+    <span class="deleteNode" id="@Model.F2id" style="right:0px;position:absolute;cursor:pointer;"> <i class="glyphicon glyphicon-remove"></i></span>
+    }
+    <div class="inner" FinSys2-caption="@Model.F2Desc">
+        <p id="FinSys2Caption" data-toggle="tooltip" data-placement="top" title="@Model.F2Desc" style="cursor:pointer;"> @Model.F2Desc</p>
+
+        @*<p> @Model.Controler / @Model.Acton </p>*@
+        @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>*@
+    </div>
+    @if (Model.Pid != 0)
+    {
+    <div class="icon Finsys2Image" id="@Model.F2id">
+        @if (Model.Content != null)
+        {<span id="imagefix"><img src="data:image;base64,@System.Convert.ToBase64String(Model.Content)" id="imgide" width="20" height="20" class="image" /></span> }
+        else
+        {
+            <span id="imagefix">
+
+                <img id="imgide" width="20" height="20" class="image" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" />
+            </span>
+        }
+
+    </div>
+    }
+
+    @*<div class="icon">
+            @if (Model.Content != null)
+            {
+                <span class="FinSys2Image" id="@Model.Content"><img src="data:image;base64,@System.Convert.ToBase64String(Model.Content)])" id="imgide" width="20" height="20" class="image" /></span> }
+            @*<i class="fa fa-shopping-cart"></i>
+        </div>*@
+    <a class="small-box-footer">
+        @*<input type="button" value="drill" class="btndrill" id="" />*@
+
+        <span class="btndrill" id="@Model.F2id" data-toggle="tooltip" data-placement="top" title="Drill" ><i class="glyphicon glyphicon-screenshot drill"></i></span>
+
+
+        @*<span id="btndetails"><i class="glyphicon glyphicon-list-alt details" fid="@Model.Fid" did="@Model.Fname" pid="@Model.Pid"></i></span>*@
+    </a>
+</div>
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #FinSys2Caption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .small-box .icon {
+        -webkit-transition: all .3s linear;
+        -o-transition: all .3s linear;
+        transition: all .3s linear;
+        /* position: absolute; */
+        top: -42px;
+        right: 10px;
+        z-index: 0;
+        font-size: 90px;
+        color: rgba(0,0,0,0.15);
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

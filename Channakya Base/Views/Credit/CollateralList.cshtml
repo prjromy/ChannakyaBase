@@ -1,0 +1,78 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.ALCollModel
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <div class="row">
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="form-group">
+                       
+                        <div class="col-lg-offset-10 col-md-6">
+                            <div class='input-group-btn'>
+                                <button type='button' id='btn-collateral-add' class='btn btn-add'><i class='fa fa-plus'></i>Add collateral</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Account Number </label>
+                        <div class="col-md-4 collateral-account-number">
+                            @Html.TextBoxFor(x => x.AccountNumber, new { @class = "form-control" })
+
+                        </div>
+                        <div class="col-md-6">
+                            <div class='input-group-btn'>
+                                <button type='button' id='btn-collateral-entry' class='btn btn-default'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="collateral-registration-list">
+            @Html.Partial("_CollateralList", Model)
+        </div>
+    </div>
+</div>
+<script>
+    $('#btn-collateral-add').on('click', function () {
+        $.ajax({
+            type: "get",
+            url: '/credit/InsertUpdateCollateral',
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+               
+                $('section.content').html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        })
+    });
+    $('#btn-collateral-entry').on('click', function () {
+        var accountNumber=$('.collateral-account-number').find('#AccountNumber').val();
+        $.ajax({
+            type: "get",
+            url: '/credit/_CollateralList',
+            data:{
+                accountNumber:accountNumber
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+
+                $('#collateral-registration-list').html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        })
+    });
+</script>
+
+
+

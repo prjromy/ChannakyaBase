@@ -1,0 +1,18 @@
+﻿@model  ChannakyaBase.Model.ViewModel.TaskVerificationList
+@using ChannakyaBase.BLL.CustomHelper
+@using HtmlHelpers.BeginCollectionItem;
+@{
+
+}
+@using (Html.BeginCollectionItem("VerifierList"))
+{
+    <tr>
+        <td> @Model.UserName </td>
+        <td> @Model.EmployeeName</td>
+        <td class="hidden">  @Html.CheckBoxFor(x => x.IsSelected, new { @class = "IsSelected" })</td>
+        <td class="hidden">  @Html.HiddenFor(x => x.UserId, new { @class = "IsSelected" })</td>
+       
+</tr>
+}
+
+

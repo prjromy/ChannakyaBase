@@ -1,0 +1,20 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContactPerson
+@using ChannakyaBase.BLL.Service
+
+<tr>
+
+        @Html.HiddenFor(x => x.CPId, new { @class = "CPId" })
+        @Html.HiddenFor(x => x.CPDeleted, new { @class = "CPDeleted" })
+
+        <td>
+            <span class="control-label">@Model.CPName</span>
+           
+        </td>
+
+        <td>
+            <span class="control-label">@Model.CPCNo</span>
+           
+        </td>
+       
+
+</tr>

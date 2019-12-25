@@ -1,0 +1,102 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChqRqstModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    int eventId = 9;
+}
+
+<div class="box-body table-responsive no-padding  table-cheque-issue-registration" style="margin-top:10px;">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                Account No.
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Pics)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tdate)
+            </th>
+
+            <th>Action</th>
+
+        </tr>
+
+        @foreach (var item in Model.ChequeRequestList)
+        {
+            <tr>
+
+                <td>
+                    @item.AccountNo
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pics)
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetEnglishDate(item.Tdate)
+
+
+                </td>
+                <td>
+                    @if (commonService.IsAuthotityToVerify(Convert.ToInt64(item.Rno), eventId))
+                    {
+                        <a href="#" class="btn btn-adn" onclick="directToRead(@ChannakyaAccounting.Service.TaskVerificationAcc.TaskAccUtilityService.TaskIdByEventIdAndEventValue(eventId, item.Rno))"><i class="fa fa-check" aria-hidden="true"></i>Details</a>
+                    }
+                </td>
+
+            </tr>
+                        }
+
+    </table>
+    @Html.Paging("PaginationChequeIssueIndex", "Information", Model.ChequeRequestList.PageCount, Model.ChequeRequestList.PageNumber, Model.ChequeRequestList.PageSize)
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<div id="account-pop-up-div3" role="dialog" class="modal">
+
+
+</div>
+<script>
+    $("div.table-cheque-issue-registration").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $(".cheque-registration-create").find('#AccountNo').val();
+
+        var container = parentContainer.find(".table-cheque-issue-registration")
+        var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction(url, container, me)
+    });
+
+    $("div.table-cheque-issue-registration").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = parentContainer.find('#Iaccno').val();
+
+        var container = parentContainer.find(".table-cheque-issue-registration")
+        var url = "?accountNumber=" + accountNumber;
+        getPageNumberChangeData(url, container, me)
+    });
+
+    $("div.table-cheque-issue-registration").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var me = $(this);
+        var accountNumber = parentContainer.find('#Iaccno').val();
+
+        var container = parentContainer.find(".table-cheque-issue-registration")
+        var url = "?accountNumber=" + accountNumber;
+        getPageSizeChangeData(url, container, me)
+    });
+
+</script>

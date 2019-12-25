@@ -1,0 +1,43 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.RemittanceCustomer>
+
+<div class="box box-info">
+    <div class="box-header with-border">
+        <p>
+            <h4> Remittance Company List</h4>
+        </p>
+        <div class="box-body table-responsive no-padding">
+            <table class="table">
+                <tr>
+                    <th>
+                       @Html.DisplayText("ledger")
+                    </th>
+                   
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.CustCompany.CCName)
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+            {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FinAcc.Fname)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CustCompany.CCName)
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm btn-edit-RemitCustomer glyphicon glyphicon-edit" data-id="@item.RID" style=" visibility:hidden " ></button>
+                            <button type="button" class="btn btn-info btn-sm btn-sm btn-delete-RemitCustomer glyphicon glyphicon-trash danger" data-id="@item.RID" data-></button>
+                        </td>
+
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>

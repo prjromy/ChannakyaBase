@@ -1,0 +1,605 @@
+﻿@model  ChannakyaAccounting.Models.ViewModel.VoucherReportMainViewModel
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    var test = Model;
+    if (ViewBag.IsVerified == true)
+    {
+        ViewBag.Title = "Verified Voucher List from " + Model.StartDate.ToShortDateString() + " to " + Model.EndDate.ToShortDateString();
+    }
+    else
+    {
+        ViewBag.Title = "UnVerified Voucher List from " + Model.StartDate.ToShortDateString() + " to " + Model.EndDate.ToShortDateString();
+    }
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/DataTables/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/DataTables/js/dataTables.jqueryui.min.js"></script>
+<script src="~/Content/DataTables/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/DataTables/Buttons-1.4.2/js/buttons.jqueryui.min.js"></script>
+<script src="~/Content/DataTables/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+<script src="~/Content/DataTables/Buttons-1.4.2/js/buttons.colVis.min.js"></script>
+<script src="~/Content/DataTables/Buttons-1.4.2/js/buttons.print.min.js"></script>
+<script src="~/Content/DataTables/JSZip-2.5.0/jszip.min.js"></script>
+<script src="~/Content/DataTables/pdfmake-0.1.32/pdfmake.min.js"></script>
+<script src="~/Content/DataTables/pdfmake-0.1.32/vfs_fonts.js"></script>
+
+@*<head>
+        <h3>Verified Voucher</h3>
+    </head>*@
+<h4 style="text-align:center;">
+    @ViewBag.Title
+</h4>
+<div class="button-container" style="margin: -7px 6px 47px -1px;">
+    <button type="button" id="goBack" class="btn btn-info btn-sm pull-left" onclick="return goBackToIndex()" style="margin-bottom:5px;">
+        <span class="glyphicon glyphicon-backward"></span> Back
+    </button>
+</div>
+<div class="modal fade" id="getTaskVerficationLists" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true"></div>
+<table class="col-md-12 table table-striped tree mdl-data-table" id="transactionList-DataTable" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>
+                S.N
+            </th>
+
+            <th>
+                Voucher No
+            </th>
+            <th>
+                Transaction Date
+            </th>
+            <th>
+                Narration
+            </th>
+
+            <th style="text-align:right">
+                Amount
+            </th>
+            <th>
+                Posted By
+            </th>
+            <th>
+                Posted On
+            </th>
+            <th>
+                Approved By
+            </th>
+            <th>
+                Approved On
+            </th>
+        </tr>
+
+    </thead>
+    <tbody id="container-to-append">
+        @Html.Partial("_GetVoucherList", Model)
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>
+<div class="pagination-only col-md-12">
+    @if (Model.VoucherReport.TotalItemCount > 1)
+    {
+        <ul class="pagination pager-list" style="float:left;margin-right:20px;">
+            <li class="previous"><a href="#">Previous</a></li>
+            @*@for (int i = 1; i <= Model.VoucherReport.TotalItemCount; i++)
+                {
+                    if (i > 4)
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i == Model.VoucherReport.TotalItemCount)
+                            {
+                                <li class=""><a>.......</a> </li>
+                                <li id=@ViewBag.CountPager class="pagerClass"><a>@Model.VoucherReport.TotalItemCount</a> </li>
+
+                            }
+                            else
+                            {
+
+                                <li id=@i class="pagerClass" style="display:none;"><a>i</a> </li>
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                    }
+
+                }*@
+
+            @for (int i = 1; i <= ViewBag.PagerCount; i++)
+            {
+                if (i > 4)
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        if (i >= (ViewBag.ActivePager - 2))
+                        {
+
+                            if (i > ViewBag.ActivePager)
+                            {
+                                if (i - ViewBag.ActivePager <= 2)
+                                {
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i == ViewBag.PagerCount)
+                                    {
+                                        if (ViewBag.PagerCount - ViewBag.ActivePager > 3)
+                                        {
+                                            <li class=""><a>.......</a> </li>
+                                        }
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                            else
+                            {
+
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+
+                        }
+                        else
+                        {
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                }
+                else
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        if (i >= (ViewBag.ActivePager - 2))
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                }
+            }
+            <li class="next"><a href="#">Next</a></li>
+
+        </ul>
+        <div style="margin-top:20px;margin-left:20px" class="search-container">
+            @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+        </div>
+    }
+</div>
+
+<style>
+    tr.verified-voucher:hover {
+        background-color: #3c8dbc !important;
+        cursor: pointer;
+    }
+
+    #transactionList-DataTable_filter {
+        margin-left: 890px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        debugger;
+        //var formData = new FormData($(this)[0]); not used anywhere in scripts and is causing errors
+
+        //var voucherReportMainViewModel = [
+        //];
+        //javascript view model
+        var voucherReportViewModel = {};
+        voucherReportViewModel['StartDate']='@Model.StartDate';
+        voucherReportViewModel['EndDate']='@Model.EndDate';
+        voucherReportViewModel['VType'] ='@Model.VType';
+        voucherReportViewModel['BatchNo'] ='@Model.BatchNo';
+        voucherReportViewModel['PostedBy'] ='@Model.PostedBy';
+        voucherReportViewModel['BranchId'] ='@Model.BranchId';
+        voucherReportViewModel['VerifiedVoucher'] ='@Model.VerifiedVoucher';
+
+        //voucherReportMainViewModel.push(voucherReportViewModel);
+        var data = JSON.stringify({ voucherMainReport: voucherReportViewModel });
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.pager-list').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    $.ajax({
+                        url: '/VoucherReport/_GetVoucherList',
+                        type: 'POST',
+                        data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/TransReportPagination',
+                                type: 'POST',
+                                data: JSON.stringify({ voucherMainReport:voucherReportViewModel,totalPage:@ViewBag.PagerCount, pageno: finalId }),
+                                contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+
+
+                }
+            }
+            else {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.pager-list').find('li#' + finalId)
+                var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    $.ajax({
+                        url: '/VoucherReport/_GetVoucherList',
+                        type: 'POST',
+                        data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/TransReportPagination',
+                                type: 'POST',
+                                data: JSON.stringify({ voucherMainReport:voucherReportViewModel,totalPage:@ViewBag.PagerCount, pageno: finalId }),
+                                contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var pagingData = $(this).val();
+            var container = $(this).closest('.BankStatement-DataTable').find('#container-to-append');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: '/VoucherReport/_GetVoucherList',
+                    type: 'POST',
+                    data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: finalId }),
+                    contentType: 'application/json',
+                    dataType: 'html',
+                    success: function (data) {
+                        debugger;
+                        $('#container-to-append').html(data);
+                        $.ajax({
+                            url: '/VoucherReport/TransReportPagination',
+                            type: 'POST',
+                            data: JSON.stringify({ voucherMainReport:voucherReportViewModel,totalPage:@ViewBag.PagerCount, pageno: finalId }),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (pagination) {
+                                $('.pagination-only').html("");
+                                $('.pagination-only').html(pagination);
+                            }
+                        });
+                        var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.pager-list').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                });
+            }
+
+        });
+        function goBackToIndex() {
+            debugger;
+            jQuery.noConflict();
+            debugger;
+            $.ajax({
+                type: "get",
+                url: "/VoucherReport/VoucherIndex",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $('section.content').html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.ledgerReport-DataTable').find('#container-to-append');
+            // var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+            $.ajax({
+                url: '/VoucherReport/_GetVoucherList',
+                type: 'POST',
+                data: JSON.stringify({ voucherMainReport: voucherReportViewModel, pageno: pagingData }),
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    debugger;
+                    $('#container-to-append').html(data);
+                    $.ajax({
+                        url: '/VoucherReport/TransReportPagination',
+                        type: 'POST',
+                        data: JSON.stringify({voucherMainReport:voucherReportViewModel,totalPage:@ViewBag.PagerCount, pageno: pagingData }),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (pagination) {
+                            $('.pagination-only').html("");
+                            $('.pagination-only').html(pagination);
+                        }
+                    });
+                    var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.pager-list').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + pagingData).addClass('active');
+
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+
+
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    function goBackToIndex() {
+        //jQuery.noConflict();
+        debugger;
+        $.ajax({
+            type: "get",
+            url: "/VoucherReport/VoucherIndex",
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $('section.content').html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+    function directToRead(v1Id) {
+        debugger;
+        var urlToDirect;
+        urlToDirect = "/VoucherReport/_VerificationModal";
+        $.ajax({
+            type: "GET",
+            url: urlToDirect,
+            data: { v1Id: v1Id },
+            success: function (result) {
+
+                $('#getTaskVerficationLists').html(result).modal({
+                    'show': true,
+                    'backdrop': false
+                });
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $("#ConflictScript").val(true)
+        $("#ConflictScript").val(true)
+        var domain = window.location.protocol + "//";
+        domain += window.location.hostname + ":";
+        domain += window.location.port;
+
+        debugger;
+        var table = $('#transactionList-DataTable').DataTable({
+            "order": [],
+            "paging": false,
+            lengthChange: false,
+            buttons: [
+                    'copy',
+                    {
+                        extend: 'excel',
+                        messageTop: 'The information in this table is copyright to Sirius Cybernetics Corp.'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'legal',
+                        title: function () {
+                            return ' '
+                        },
+
+                        customize: function (doc) {
+                            debugger;
+                            //for pdf
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+
+                            var companyName = "@ViewBag.CompanyName";
+                            var companyAddress = "@ViewBag.CompanyAddress";
+                            var companyPhone = "@ViewBag.CompanyPhoneNo";
+                            var title = "@ViewBag.Title";
+                            var logo = "@ViewBag.Logo";
+
+                            //var brElement = document.createElement('br');
+                            function returnParagraph(text) {
+                                //var finalText = text + brElement;
+                                var paragraph = $(document.createElement('h4')).html(text);
+                                return paragraph.html();
+                            }
+                            //Right side: A document title
+                            doc['header'] = (function () {
+                                return {
+                                    columns: [
+                                        {
+                                            image: 'data:image/jpeg;base64,'+logo+'',
+                                            width: 100,
+                                            height: 50,
+                                            margin:[30,50,0,0]
+
+                                        },
+
+                                    ],
+                                    margin: 20
+                                }
+                            });
+                            debugger;
+                            doc.content.splice(1, 0, {
+                                margin: [0, 0, -5, 12],
+                                fontSize:15,
+                                text: returnParagraph(companyName),
+                                alignment: 'center'
+
+                            });
+
+                            doc.content.splice(2, 0, {
+                                margin: [0, 0, -5, 12],
+                                fontSize: 15,
+                                text: returnParagraph(companyAddress),
+                                alignment: 'center'
+                            });
+
+                            doc.content.splice(3, 0, {
+                                margin: [0, 0, -5, 12],
+                                fontSize: 15,
+                                text: returnParagraph(companyPhone),
+                                alignment: 'center'
+                            });
+                            doc.content.splice(4, 0, {
+                                margin: [0,20,-5,20],
+                                fontSize: 15,
+                                fontWeight:'bold',
+                                text: returnParagraph(title),
+                                alignment: 'center'
+                            });
+                        },
+                        messageTop: function () {
+                        },
+                        messageBottom: null
+                    },
+              {
+                  extend: 'print',
+                  title: function () {
+                      return ''
+                  },
+                  customize: function (win) {
+                          var logo = "@ViewBag.Logo";
+                      debugger;
+                      $(win.document.body).css('font-size', '10pt')
+                     .prepend(
+                         '<div style="float:left;margin-buttom:80px; "><img src="data:image/jpeg;base64,'+logo+'" style="height:100px; width:150px;margin:-10px 0px 0px 50px position:relative; z-index:999;"/></div>'
+                              );
+                      $(win.document.body).find('table')
+                       .addClass('compact')
+                       .css('font-size', 'inherit');
+                  },
+                  messageTop: function () { return '<h4 style="text-align:center;margin-button:15px;line-height:150%;margin-top:-10px">@ViewBag.CompanyName</br>@ViewBag.CompanyAddress</br>@ViewBag.CompanyPhoneNo<br/><div style="margin-top:18px;"><b >@ViewBag.Title </b></div></h4>' },
+                  messageBottom: null
+              },
+
+            ]
+        });
+        $("#transactionList-DataTable").css('width', '100%');
+        table.buttons().container()
+        .insertBefore('#transactionList-DataTable_filter');
+
+        //jQuery.noConflict();
+    });
+</script>
+<style>
+    table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+
+        table tbody {
+            /* body takes all the remaining available space */
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: scroll;
+            max-height: 60vh;
+        }
+
+            table tbody tr {
+                width: 100%;
+            }
+
+            table thead, table tbody tr {
+                display: table;
+                table-layout: fixed;
+            }
+</style>

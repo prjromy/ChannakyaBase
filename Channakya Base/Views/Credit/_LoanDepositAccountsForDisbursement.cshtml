@@ -1,0 +1,191 @@
+﻿@model ChannakyaBase.Model.ViewModel.DisburseDepositViewModel
+    @{ 
+
+     
+    }
+<fieldset>
+    <legend>Deposit Accounts</legend>
+
+    <div class="table table-responsive table-stripped table-bordered">
+        <table class="table table-responsive table-hover cust-contact-header-table">
+            <thead>
+                <tr>
+                    <th class="col-md-3">Account Name</th>
+                    <th class="col-md-3">Account Number</th>
+                    <th class="col-md-2">Balance</th>
+                    <th class="col-md-4">Amount</th>
+                </tr>
+            </thead>
+
+
+            @for (int i = 0; i < Model.DisburseDepositList.Count; i++)
+            {
+                <tr>
+                    @Html.HiddenFor(model => Model.DisburseDepositList[i].DepositIaccno)
+                    <td>
+                        @Html.DisplayFor(model => Model.DisburseDepositList[i].AccName, new { htmlAttributes = new { @class = "form-control" } })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => Model.DisburseDepositList[i].DepositAccounNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => Model.DisburseDepositList[i].GoodsBalance, new { htmlAttributes = new { @class = "form-control" } })
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => Model.DisburseDepositList[i].Amount, new { htmlAttributes = new { @class = "form-control total-amount-deposit" } })
+                    </td>
+
+                </tr>
+
+
+            }
+        </table>
+
+    </div>
+</fieldset>
+<script>
+   $('.total-amount-deposit').change(function () {
+        debugger;
+        var remainingamount=0;
+        if(@ViewBag.ModelFrom == OtherLoan){
+            remainingamount = $("#OtherLoan").val();
+        }
+        else{
+            remainingamount = $("#RemainingAmount").val();
+        }
+        var sum = 0;
+
+        $('.total-amount-deposit').each(function () {
+            debugger;
+            var item = parseInt($(this).val());
+            if (isNaN(item) === true) {
+                item = 0;
+            }
+           sum= sum+item;
+           if (sum > remainingamount ) {
+               ErrorAlert('Total Deposit Amount must be equal to: &nbsp;' + remainingamount, 3000);
+               return false;
+           }
+        });
+
+   })
+
+   $(document).ready(function () {
+       $("#SQty").val($(this).val() == 0 ? '' : $(this).val());
+   })
+
+    //$('.share-quantity').on('keyup', function () {
+   $('.loan-disburse-details').on("change", ".share-quantity", function () {
+       debugger;
+       var shareRate = $(".share-rate").val();
+
+       if (shareRate == "" || shareRate == "0") {
+           shareRate = 0;
+       }
+       var shareQuantity = $('.share-quantity').val();
+       if (shareQuantity == "" || shareQuantity == "0") {
+           shareQuantity = 0;
+       }
+       var shareTotalAmount = parseFloat(shareRate) * parseFloat(shareQuantity);
+       $('.share-amount').val(shareTotalAmount)
+       //$('.loan-disburse-details.share-amount').trigger('change');
+
+       ChangeShareAmount();
+       
+   })
+    //  $('.loan-disburse-details.share-amount').on('change', function () {
+   function ChangeShareAmount(){
+       debugger;
+       //var otherLoanDisbursement = $('#OtherLoan').val();
+       if (@ViewBag.ModelFrom == OtherLoan) {
+           var OtherLoan = $("#OtherLoan").val();
+           var shareAmount = $('.loan-disburse-details').find('.share-amount').val();
+           if (shareAmount == "NaN") {
+               shareAmount = 0;
+           }
+           if (shareAmount == undefined) {
+               shareAmount = 0;
+           }
+           $(".disburse-loan-index").find("#OtherLoan").val(OtherLoan - shareAmount)
+           $(".total-amount-deposit").first().val($("#OtherLoan").val());
+       }
+       else {
+           var disbursableAmount = $("#DisbursableAmount").val();
+           var container = $(this);
+           var totaldebit = 0;
+           var total = 0;
+
+           var IsOnSanction = $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked");
+
+           $('.total-debit-amount').each(function () {
+
+               totaldebit += parseFloat(this.value);
+
+           })
+
+           $('.total-amount').each(function () {
+
+               total += parseFloat(this.value) || 0// parseFloat(this.value) == NaN ? 0 : parseFloat(this.value)
+           })
+
+           var shareAmount = $('.loan-disburse-details').find('.share-amount').val();
+           if (shareAmount == "NaN") {
+               shareAmount = 0;
+           }
+           if (shareAmount == undefined) {
+               shareAmount = 0;
+           }
+
+
+           var totalcharge = 0;
+           var allTr = $('div.chargeDetails').find("table").find(".charge-autotriggered");
+           $.each(allTr, function (index, item) {
+               debugger;
+               var chargeType = $(item).find('.chargeType').val();
+               var currentCharge = $(item).find('input.IndCharge').val();
+               if (currentCharge == "NaN") {
+                   currentCharge = 0;
+               }
+               if (currentCharge == undefined) {
+                   currentCharge = 0;
+               }
+               if (chargeType == 1) {
+                   totalcharge += parseFloat(currentCharge)
+               }
+               else {
+                   if (chargeType == 2) {
+                       var regularAmnt = 0;
+                       if (IsOnSanction == true) {
+                           regularAmnt = $("#DisbursableAmount").val();
+                       }
+                       else {
+                           regularAmnt = $('.loan-disburse-details').find('input#RegularLoan').val();
+                       }
+                       currentCharge = (totalcharge + (regularAmnt * currentCharge / 100)).toFixed(2);
+
+                       totalcharge = Math.round(currentCharge);
+                   }
+               }
+           })
+
+           $(".disburse-loan-index").find("#RemainingAmount").val(totaldebit - shareAmount - total - totalcharge)
+           $(".total-amount-deposit").first().val($('#RemainingAmount').val());
+
+           if (total > totaldebit) {
+               $.MessageBox({
+                   buttonDone: "OK",
+                   message: "Regular Loan Amount Exceeds !!!"
+               }).done(function () {
+                   $(container).focus();
+                   return false;
+               }).fail(function () {
+               })
+           }
+       }
+      
+
+
+   }
+  
+
+</script>

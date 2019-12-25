@@ -1,0 +1,285 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustomerPhotoViewModel
+
+@using ChannakyaBase.BLL.CustomHelper
+
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.multiselect.customer.js"></script>
+<script>
+
+
+    $(".multiselectCustomer").chosen({
+        single_backstroke_delete: true,
+        placeholder_text_multiple: "Customer"
+    });
+</script>
+<style>
+    .chosen-drop {
+        display: none;
+    }
+
+    .chosen-container {
+        overflow: auto;
+        max-height: 100px;
+    }
+</style>
+
+
+@using (@Html.BeginForm(new {id= "CustomerPhoto-form" }))
+{
+
+    <h3 class="box-title customer-photo-title" style="padding: 5px 12px;">Member Photo</h3>
+    <div class="row">
+        <div class="col-md-12 customer-photo">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.HiddenFor(x => x.PID)
+            
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="col-md-6">
+                    <div class="form-group">
+
+                        @Html.LabelFor(model => model.CustomerName, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9 Referred-By">
+
+                            @Html.CustomerSearch(x => x.CustomerName, ECustomerSearchType.SingleType)
+                            @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div class="form-group ">
+                        @Html.LabelFor(model => model.Image, new { @class = "control-label col-md-3" })
+                        <div class="col-md-offset-3 col-md-10">
+
+
+                    
+
+                            <div id="signatureImageDiv" class="addsignatureimage" style="border:1px dashed;border-color:black; width:500px;height:200px;">
+                                <center class="center-text">Click Here to upload </center>
+                                
+                                </div>
+                            <input name="file" id="SigImage" type="file" style="display:none" />
+                            <div class="dz-default dz-message" data-dz-message="">
+                            </div>
+                            </div>
+                         
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="form-group">
+                        <div class="col-md-offset-10 col-md-12">
+                            
+
+                            <button id="submit-all" type="submit" class="btn btn-success" style="cursor: pointer">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+}
+
+
+
+
+
+
+<script type="text/javascript">
+    
+    $('form').on('click', '.addsignatureimage', function () {
+        
+        $("#SigImage").click();
+
+    });
+    var height;
+    var width;// variable to do rotation with
+    var rotation=0;
+    var temp;
+    $(document).ready(function () {
+        if (window.File && window.FileList && window.FileReader) {
+            $("#SigImage").on("change", function (e) {
+                debugger;
+                var files = e.target.files;
+                var filesLength = files.length;
+                    
+                    var img = files[0].name.split('.');
+                    var formats = img[img.length - 1];
+                    if ((files[0].size > 2000000 && (formats === "jpg" || formats === "png" || formats === "jpeg" || formats ==="pdf"))) {
+                        ErrorAlert("Image must be less than 2 MB.", 5000);
+                        //$("#errortech").html(alertmessage);
+                    } else {
+                        
+                        var fileReader = new FileReader();
+                        fileReader.readAsDataURL(files[0]);
+                        fileReader.onload = (function (e) {
+                            var file = e.target;
+                            var type = e.target.result.split(';');
+                            type = type[0].split(":");
+
+                            if (type[1] === "image/jpg" || type[1] === "image/png" || type[1] === "image/jpeg"||type[1]==="image/pdf") {
+                                var em = '';
+                                em += `<div class="signatureclass"><img  style="max-width:700px; width:100%;" id="getCustomerImage" src="${file.result}" alt="${files[0].name}" title="${files[0].name}"/>`;
+                                em += `<br/><span class="remove">x</span></div>`;
+                              
+                                debugger;
+                                $(em).insertAfter("#signatureImageDiv");
+                                $("#signatureImageDiv").hide();
+                                //$(".rotate-block").hide();
+                                //$("#signatureImageDiv").html(em);
+                            } else {
+                                //alertmessage += 'This Format is not Supported.</div>';
+                                //$("#errortech").html(alertmessage);                               
+                                ErrorAlert("This Format is not Supported.", 5000);
+                            }
+
+                            
+                         
+                            $(".remove").click(function () {
+                                $(this).parent(".signatureclass").remove();
+                                $("#signatureImageDiv").show();
+                                $(".rotate-block").hide();
+                                rotation = 0;
+                                var $el = $('#SigImage');
+                               
+                                    $el.wrap('<form>').closest('form').get(0).reset();
+                                    $el.unwrap();
+                                
+                            });
+                        });
+                    }
+            });
+        }
+        else {
+            //var alertmessage = '<div class="alert bg-red alert-dismissible text-center" role="alert">';
+            //alertmessage += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+            //alertmessage += "'Your browser doesn't support to File API</div>";
+           // $("#errortech").html(alertmessage);
+            alert("Your browser doesn't support to File API", 5000);
+        }
+    });
+  
+
+    $("#submit-all").on("click", function (event) {
+        event.stopImmediatePropagation();
+        event.preventDefault();
+        debugger;
+        var imgbase = $("#getCustomerImage").attr("src");
+        var id = $('.customer-photo').find('.multiselectCustomer').find('option:selected').val();
+
+        if ((id == "0" && imgbase == null) || (id == "0") || (imgbase == null)) {
+            ErrorAlert("Please fill out form!!", 5000);
+            return false;
+
+        }
+
+     
+
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $.ajax({
+                url: "/Signature/CustomerPhoto",
+                type: 'POST',
+
+                data: {
+                    'CustomerName': id,
+                    'Image': imgbase
+
+                },
+                dataType: 'JSON',
+                success: function (result) {
+
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/Signature/SignatureIndex",
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                $('section.content').html(result);
+                            }
+                        })
+                        //window.location.pathname = "/Signature/SignatureIndex";
+
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+                    }
+                    else {
+                        debugger;
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+
+
+
+                },
+
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    });
+
+     
+</script>
+
+
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+
+<style>
+    .center-text {
+        margin: 40px 0;
+    }
+    .signatureclass {
+        position: relative;
+    }
+    span.remove {
+        position: absolute;
+        padding: 1px 7px;
+        /* border-radius: 100%; */
+        background: #333;
+        color: #f4f4f4;
+        cursor: pointer;
+        top: -10px;
+        right: -10px;
+        /*float:right;*/
+        border-radius: 100%;
+        opacity: 0.7;
+    }
+
+        span.remove:hover, span.remove:active {
+            background: #f44336;
+            opacity: 0.9;
+        }
+
+
+    #getCustomerImage:hover {
+        z-index: 2;
+        -webkit-transition: all 200ms ease-in;
+        -webkit-transform: scale(1.5);
+        -ms-transition: all 200ms ease-in;
+        -ms-transform: scale(1.5);
+        -moz-transition: all 200ms ease-in;
+        -moz-transform: scale(1.5);
+        transition: all 200ms ease-in;
+        transform: scale(1.5);
+        position: relative;
+    }
+
+    .customer-photo-title {
+        text-align: center;
+        color: #00a65a;
+    }
+
+   
+    /*.signatureclass img {
+        position: absolute;
+    }*/
+</style>
+

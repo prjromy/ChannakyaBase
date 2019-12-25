@@ -1,0 +1,77 @@
+﻿@model PagedList.IPagedList<ChannakyaAccounting.Models.ViewModel.SubsiBalanceViewModel>
+@using PagedList.Mvc;
+
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            <div style="text-align: center;">
+                @item.AccNo
+            </div>
+        </td>
+        <td>
+         <div style="text-align: center;">
+                @item.SubsiName
+            </div>
+        </td>
+        <td>
+            @if (item.OpBal < 0)
+            {
+
+            
+                <div style="float:right;">
+                    @Convert.ToDecimal(Convert.ToDecimal(item.OpBal * -1)).ToString("#,##0.00")
+                </div>
+
+
+            }
+            else
+            {
+                <div style="float:right;">
+                    @Convert.ToDecimal(item.OpBal).ToString("#,##0.00")
+                </div>
+            }
+        </td>
+        <td>
+           
+            <div style="float:right;">
+                @Convert.ToDecimal(item.DebitAmount).ToString("#,##0.00")
+            </div>
+        </td>
+        <td>
+            <div style="float:right;">
+                @Convert.ToDecimal(item.CreditAmount).ToString("#,##0.00")
+            </div>
+        </td>
+        <td>
+            @if (item.ClBal < 0)
+            {
+
+                @*  @Convert.ToDecimal(item.Balance * -1)*@
+                <div style="float:right;">
+                    @Convert.ToDecimal(Convert.ToDecimal(item.ClBal * -1)).ToString("#,##0.00")
+                </div>
+
+
+            }
+            else
+            {
+                <div style="float:right;">
+                    @Convert.ToDecimal(item.ClBal).ToString("#,##0.00")
+                </div>
+            }
+        </td>  
+        <td>
+            @if (item.ClBal < 0)
+            {
+             <b>Cr</b>
+            }
+            else
+            {
+                <b>Dr</b>
+            }
+        </td>
+    </tr>
+           }
+

@@ -1,0 +1,27 @@
+﻿CREATE TABLE [fin].[AMClearanceHR] (
+    [rno]         INT            NOT NULL,
+    [IAccno]      INT            NOT NULL,
+    [BrchID]      SMALLINT       NULL,
+    [Bankcode]    SMALLINT       NOT NULL,
+    [Brnhcode]    SMALLINT       NOT NULL,
+    [chqno]       NVARCHAR (15)  NOT NULL,
+    [payee]       NVARCHAR (50)  NULL,
+    [tdate]       SMALLDATETIME  NOT NULL,
+    [camount]     MONEY          NOT NULL,
+    [remarks]     NVARCHAR (500) NULL,
+    [chqpriority] TINYINT        NOT NULL,
+    [postedby]    SMALLINT       NOT NULL,
+    [verifiedby]  SMALLINT       NOT NULL,
+    [chqstate]    TINYINT        NULL,
+    [passedby]    SMALLINT       NULL,
+    [collectedby] SMALLINT       NULL,
+    [cdate]       SMALLDATETIME  NULL,
+    [finalizedby] SMALLINT       NULL,
+    [fdate]       SMALLDATETIME  NULL,
+    [remarks2]    NVARCHAR (200) NULL,
+    [AVno]        INT            NULL,
+    [RVno]        INT            NULL,
+    [tno]         NUMERIC (18)   NULL,
+    [ACCNO]       NVARCHAR (50)  NULL
+);
+

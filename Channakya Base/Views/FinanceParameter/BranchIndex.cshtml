@@ -1,0 +1,241 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.LicenseBranch
+
+@*<script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "InterestPolicyIndex";
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Branch Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="BranchSetup">
+        <div id="BranchSetup-create" class="BranchSetupCreate">
+            @{Html.RenderAction("_BranchCreate", "FinanceParameter");}
+        </div>
+        <div id="BranchSetup-list" class="BranchSetupList">
+            @{Html.RenderAction("_BranchList", "FinanceParameter");}
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse('#BranchSubmitForm');
+        $('.BranchSetup').on('click', '#btn-save-branch', function () {
+            debugger
+            var Tdate = $("#TDate").val();
+            var MigDate = $('#MigDate').val();
+            if (new Date(Tdate) < new Date(MigDate)) {
+                ErrorAlert("Migration Date can't be greater than Transaction Date", 5000);
+                return false;
+            }
+
+            $('#BranchSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#BranchSubmitForm'));
+            if ($('#BranchSubmitForm').valid() == false) {
+
+                InfoAlert('Please Fill out the form', 5000);
+                return false;
+            }
+            var branchId = $("#BrnhID").val();
+            var BrnhNam = $('#BrnhNam').val();
+            debugger;
+
+            $.ajax({
+                url: "/FinanceParameter/IsBranchNameExist",
+                type: 'GET',
+                async: false,
+                data: { BrnhID: branchId, BrnhNam: BrnhNam },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert("Please fill the form correctly", 5000);
+                        return false;
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#BranchSubmitForm").ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result) {
+                                    debugger;
+                                    if (result.Success) {
+                                        $.ajax({
+                                            type: "GET",
+                                            url: "/FinanceParameter/BranchIndex/",
+                                            success: function (data) {
+                                                $(".content").html(data);
+
+
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+
+                                    } else {
+                                        debugger;
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            });
+                        }).fail(function () {
+
+                        });
+                    }
+                }
+            });
+        });
+
+
+
+
+        $('.BranchSetup').on('click', '.btn-edit-branch', function () {
+            debugger;
+
+
+            var BrnhID = $(this).data('id');
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/_BranchCreate/",
+                data: { BrnhID: BrnhID },
+                success: function (data) {
+                    // $(".section-create").show();
+                    //  $('.InterestPolicyCreate').html(data);
+
+                    $('.BranchSetupCreate').html(data).find('.focusdiv').focus();
+                    //SuccessAlert("Succesfully checl. ", 8000);
+
+                }
+            })
+
+        });
+        $('.BranchSetup').on('click', '#btn-Cancel-branch', function () {
+
+            var container = $(this).closest('.BranchSetup').find(".BranchSetupCreate");
+            $(this).closest('.BranchSetup').find(".BranchSetupCreate").find('#btn-cancel-branch').hide();
+            $(container).html("");
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/_BranchCreate/",
+                success: function (data) {
+                    $(container).html(data);
+
+
+                }
+            })
+        });
+        $('.BranchSetup').on('click', '.btn-delete-branch', function () {
+            debugger;
+
+            BrnhID = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("BranchDelete", "FinanceParameter")',
+                data: { BrnhID: BrnhID },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "Are you sure  want to Delete ?"
+                    }).done(function () {
+                        //alert(result)
+
+
+                        debugger;
+                        if (result == "true") {
+                            debugger;
+                            deleteBranch(BrnhID);
+                        }
+                        else {
+                            ErrorAlert("Cannot Be deleted, is in use. ", 5000);
+                        }
+                    })
+                }, error: function () {
+                    alert("error");
+                }
+            });
+
+
+        });
+        function deleteBranch(BrnhID) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("BranchDeleteConfirm", "FinanceParameter")',
+                data: { BrnhID: BrnhID },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert("Sucessfully Deleted", 5000);
+                    $("#BranchSetup-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+    });
+
+    function createSuccess() {
+        debugger
+        SuccessAlert(" Check process 2  ", 8000); //not reached here
+        $.ajax({
+            url: '@Url.Action("_BranchList", "FinanceParameter")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".BranchSetupList").html(data);
+                console.log(data)
+                $.ajax({
+                    url: '@Url.Action("_BranchCreate", "FinanceParameter")',
+                    type: 'GET',
+                    processData: false,
+                    success: function (data) {
+                        debugger
+                        SuccessAlert("Check process 3 ", 9000);
+                        $(".BranchSetupCreate").html(data);
+                        console.log(data)
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    }
+
+
+</script>

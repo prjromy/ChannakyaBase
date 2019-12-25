@@ -1,0 +1,7 @@
+﻿@model  Loader.Models.Param
+
+@{ 
+    var paramVal = (SelectList)ViewBag.DataTypeList;
+}
+@Html.EditorFor(x => x.paramValue, new ViewDataDictionary { { "param", paramVal } })
+

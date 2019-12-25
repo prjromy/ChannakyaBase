@@ -1,0 +1,14 @@
+﻿
+@model  List<ChannakyaBase.Model.ViewModel.GuarantorModel>
+
+
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.AccountNumber</td>
+            <td>@item.BlockedAmt</td>
+        </tr>
+    }
+
+

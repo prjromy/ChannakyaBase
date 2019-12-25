@@ -1,0 +1,237 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ProductTID
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "InterestPolicyIndex";
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Product Floating Interest Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="ProductFloatingInterest">
+        @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+        <div id="ProductFloatingInterest-create" class="ProductFloatingInterestCreate">
+            @{Html.RenderAction("_ProductFloatingInterestCreate", "FinanceParameter");}
+        </div>
+        <div id="ProductFloatingInterest-list" class="ProductFloatingInterestList">
+            @{Html.RenderAction("_ProductFloatingInterestList", "FinanceParameter");}
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //window.onbeforeunload = null;
+    function onfailure(errormesg) {
+        debugger;
+        erroralert(errormesg);
+    }
+
+
+    $(document).ready(function () {
+
+        $('.ProductFloatingInterest').on('click', '#btn-save-ProductFloatingInterest', function () {
+            debugger;
+            $.validator.unobtrusive.parse('#ProductFloatingInterestSubmitForm');
+            $('#ProductFloatingInterestSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#ProductFloatingInterestSubmitForm'));
+            if ($('#ProductFloatingInterestSubmitForm').valid() == false) {
+                InfoAlert("Please fill out the form!!", 6000)
+                return false;
+            }
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+
+                $("#ProductFloatingInterestSubmitForm").ajaxSubmit({
+                    beforeSubmit: function () {
+
+
+                    },
+
+                    success: function (result) {
+                        if (result.Success) {
+                            $.ajax({
+                                url: "/FinanceParameter/ProductFloatingInterestIndex",
+                                type: 'GET',
+                                async: false,
+                                success: function (result) {
+                                    debugger;
+                                    $('section.content').html(result);
+                                }
+                            })
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+                        }
+                        else {
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+
+
+                })
+                //.fail(function () {
+            });
+        });
+                $("#ProductFloatingInterest-create").on("change", "#PID", function () {
+                    debugger;
+                    var PID = $(this).val();
+                    $.ajax({
+                        type: 'GET',
+                        url: "/FinanceParameter/_ProductFloatingInterestList",
+                        data: { PID: PID },
+                        success: function (data) {
+                            $("#ProductFloatingInterest-list").html("");
+
+                            $("#ProductFloatingInterest-list").html(data);
+                            //$("#TID").val(0);
+                            $("#TID").get(0).selectedIndex = 0;
+
+                        }
+                    })
+                });
+                //edit 
+                $('.ProductFloatingInterest').on('click', '.btn-edit-floatinginterest', function () {
+                    debugger
+
+                    var PFIID = $(this).data('id');
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/FinanceParameter/_ProductFloatingInterestCreate/",
+                        data: { PFIID: PFIID },
+                        success: function (data) {
+                            // $(".section-create").show();
+                            //  $('.InterestPolicyCreate').html(data);
+                            $('.ProductFloatingInterestCreate').html(data).find('.focusdiv').focus();
+                            $.ajax({
+                                type: "GET",
+                                url: "/FinanceParameter/_ProductFloatingInterestList/",
+                                success: function (data) {
+                                    // $(".section-create").show();
+                                    //  $('.InterestPolicyCreate').html(data);
+                                    $('.ProductFloatingInterestList').html(data).find('.focusdiv').focus()
+                                }
+                            })
+                        }
+                    })
+
+
+                });
+                $('.ProductFloatingInterest').on('click', '#btn-Cancel-ProductFloatingInterest', function () {
+
+                    var container = $(this).closest('.ProductFloatingInterest').find(".ProductFloatingInterestCreate");
+                    $(this).closest('.ProductFloatingInterest').find(".ProductFloatingInterestCreate").find('#btn-cancel-ProductFloatingInterest').hide();
+                    $(container).html("");
+                    $.ajax({
+                        type: "get",
+                        url: "/FinanceParameter/_ProductFloatingInterestCreate/",
+                        success: function (data) {
+                            $(container).html(data);
+                        }
+                    })
+                });
+                $('.ProductFloatingInterest').on('click', '.btn-delete-floatinginterest', function () {
+                    debugger;
+
+                    PFIID = $(this).attr("data-id");
+                    $.ajax({
+                        type: "get",
+                        url: '@Url.Action("ProductFloatingInterestDelete", "FinanceParameter")',
+                        data: { PFIID: PFIID },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "html",
+                        success: function (result) {
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure you want to Delete ?"
+                            }).done(function () {
+                                //alert(result)
+                                debugger;
+                                if (result == "true") {
+                                    debugger;
+                                    deleteProductFloatingInterest(PFIID);
+                                }
+                                else {
+                                    ErrorAlert("Cannot Be deleted, is in use. ", 5000);
+                                }
+                            })
+                        }, error: function () {
+                            alert("error");
+                        }
+                    });
+
+
+                });
+                function deleteProductFloatingInterest(PFIID) {
+                    debugger;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ProductFloatingInterestDeleteConfirm", "FinanceParameter")',
+                        data: { PFIID: PFIID },
+                        success: function (result) {
+
+                            //if (result == "true") {
+
+                            SuccessAlert("Sucessfully Deleted", 5000);
+                            $("#ProductFloatingInterest-list").html(result);
+
+                            //}
+
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
+
+                }
+
+                function createProductFloatingInterestSuccess() {
+                    debugger;
+                    //SuccessAlert("Succesfully Saved. ", 5000);
+                    $.ajax({
+                        url: '@Url.Action("_ProductFloatingInterestList", "FinanceParameter")',
+                        type: 'GET',
+                        processData: false,
+                        success: function (data) {
+                            $(".ProductFloatingInterestList").html(data);
+                            console.log(data)
+                            $.ajax({
+                                url: '@Url.Action("_ProductFloatingInterestCreate", "FinanceParameter")',
+                                type: 'GET',
+                                processData: false,
+                                success: function (data) {
+                                    $(".ProductFloatingInterestCreate").html(data);
+                                    console.log(data)
+                                },
+                                error: function () {
+                                    alert('error');
+                                }
+                            });
+                        },
+                        error: function () {
+                            alert('error');
+                        }
+                    });
+                }
+
+     }); 
+
+
+</script>
+
+

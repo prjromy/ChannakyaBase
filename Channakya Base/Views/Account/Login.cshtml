@@ -1,0 +1,185 @@
+﻿@using Loader.Models
+@model LoginViewModel
+@{
+    Layout = null;
+    var test = Model;
+
+    string logo = @ViewBag.logo;
+
+}
+<link href="~/Content/assets/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+<link href="~/Content/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/ch-dialog.css" rel="stylesheet" />
+<link href="~/Content/messagebox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+@*@Styles.Render("~/AdminLTE/css")
+    @Styles.Render("~/Content/css")*@
+
+
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header img-load" align="center">
+                <img class="" id="img_logo" src="data:image/png;base64, @logo">
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                var message = Html.ValidationMessage("Error");
+                if (message.Equals(""))
+                {
+                    <div class="alert alert-danger login"> @Html.ValidationMessage("Error")</div>
+                }
+                else
+                {
+                    <div class="alert alert-danger login"> @Html.ValidationMessage("Error")</div>
+                }
+            }
+            <!-- Begin # DIV Form -->
+            <div id="div-forms">
+
+                <!-- Begin # Login Form -->
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "login-form" }))
+                {
+                    @Html.AntiForgeryToken();
+                    <div class="modal-body">
+                        <div id="div-login-msg">
+                            <div id="icon-login-msg" class="glyphicon glyphicon-chevron-right"></div>
+                            <span id="text-login-msg">Type your Email and password.</span>
+                        </div>
+
+                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @placeholder = "Email", @autocomplete = "off" })
+
+                        @Html.TextBoxFor(x => x.Password, new { @class = "form-control", @placeholder = "Password", @type = "password", @autocomplete = "off" })
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(x => x.RememberMe) Remember me
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                        </div>
+                        <div>
+                            <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
+                        </div>
+                    </div>
+                }
+                <!-- End | Register Form -->
+            </div>
+            <!-- End # DIV Form -->
+        </div>
+    </div>
+</div>
+<!-- END # MODAL LOGIN -->
+<style>
+    .login > span.field-validation-error {
+        margin-left: 100px;
+    }
+    .img-load{
+        min-height: 150px;
+        min-width: 200px;
+    }
+    #img_logo
+    {
+         min-height: 100px;
+        min-width: 300px;
+    }
+</style>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/scripts")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#login-modal').modal('show');
+    })
+
+    $("#login-form").submit(function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var form = $(this);
+        form.validate();
+        if (form.valid() == false) {
+            InfoAlert("The Required Feild is Empty");
+            return false;
+        }
+
+        @*//var container = $(this).closest('.panel-create');
+        var formData = new FormData($(this)[0]);
+        //var nodeId = $(this).find('.section-treeview#PMenuId').find('.internal-value').val()
+
+        $.ajax({
+            url: '@Url.Action("Login", "Account")',
+            type: 'POST',
+            data: formData,
+            async: true,
+            error: function (data) {
+
+                ErrorAlert(data.responseText, 15000)
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });*@        
+    });
+
+
+
+    $(".submit-fwpwd").click(function () {
+        debugger;
+        var elementId = document.getElementById('forgotpw');
+        document.getElementById('forgotpw').submit();
+    });
+
+
+    $(function () {
+
+        var $formLogin = $('form#login-form');
+        var $formLost = $('form#lost-form');
+        var $forgtpw = $('form#forgotpw')
+        var $formRegister = $('#register-form');
+        var $divForms = $('#div-forms');
+        var $modalAnimateTime = 300;
+        var $msgAnimateTime = 150;
+        var $msgShowTime = 2000;
+
+
+
+        $('#login_register_btn').click(function () {
+            modalAnimate($formLogin, $forgtpw)
+        });
+        $('#register_login_btn').click(function () { modalAnimate($formRegister, $formLogin); });
+        $('#login_lost_btn').click(function () {
+            //$('form#login-form').hide();
+            //$('form#forgotpw').show();
+            modalAnimate($formLogin, $forgtpw);
+        });
+        $('#lost_login_btn').click(function () {
+
+            modalAnimate($forgtpw, $formLogin);
+        });
+        $('#lost_register_btn').click(function () { modalAnimate($formLost, $formRegister); });
+        $('#register_lost_btn').click(function () { modalAnimate($formRegister, $formLost); });
+
+        function modalAnimate($oldForm, $newForm) {
+            var $oldH = $oldForm.height();
+            var $newH = $newForm.height();
+            $divForms.css("height", $oldH);
+            $oldForm.fadeToggle($modalAnimateTime, function () {
+                $divForms.animate({ height: $newH }, $modalAnimateTime, function () {
+                    $newForm.fadeToggle($modalAnimateTime);
+                });
+            });
+        }
+    });
+
+
+
+</script>
+
+
+

@@ -1,0 +1,95 @@
+﻿@model Loader.Helper.SendEmail
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> Email </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="email-explore">
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create" id="create">
+
+
+                    <div class="box box-warning menu-create">
+                        <div class="box-header with-border">
+
+                            <h3 class="box-title">Send Email </h3>
+
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div><!-- /.box-tools -->
+                        </div><!-- /.box-header -->
+
+                        @using (Html.BeginForm("Index", "SendEmail", FormMethod.Post, new { @id = "createMenu" }))
+                        {
+                            <div class="box-body">
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+
+                                    <div class="form-group col-md-12">
+                                        @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            @Html.TextBoxFor(model => model.To, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group col-md-12">
+                                        @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group col-md-12">
+                                        @Html.Label("Attachment", null, htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            <input name="fileUploader" type="file" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-12">
+                                        @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            @Html.TextAreaFor(model => model.Body, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                            </div><!-- /.box-body -->
+                            <div class="box-footer">
+
+                                <div class="col-md-offset-11">
+                                    <input type="submit" id="btnSubmit" value="Send" class="btn btn-default" />
+                                </div>
+
+                            </div><!-- box-footer -->
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+

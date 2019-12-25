@@ -1,0 +1,53 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustIndividual
+@using ChannakyaBase.BLL.Service
+@{ 
+    var  abc = Model;
+}
+<fieldset>
+    <legend style="font-size:large">Personal Details</legend>
+    <div class="form-horizontal">
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>Full Name </th>
+                    <td><span class="control-label"> @Model.Fname  @Model.Mname @Model.Lname</span></td>
+                    <th> Gender </th>
+
+                    <td>
+                        @if (Model.Gender == 0)
+                        {
+                            <span class="control-label"> Male </span>
+                        }
+                        else if (Model.Gender == 1)
+                        {
+                            <span class="control-label"> Female </span>
+                        }
+                        else if (Model.Gender == 2)
+                        {
+                            <span class="control-label"> Other </span>
+                        }
+                    </td>
+                  
+                </tr>
+                <tr>
+                    <th>Grand Father's Name</th>
+                    <td><span class="control-label"> @Model.GFatherName</span></td>
+                    <th>Father's Name</th>
+                    <td><span class="control-label"> @Model.FatherName</span></td>
+                 
+                </tr>
+                <tr>
+                    <th>Occupation </th>
+                    <td><span class="control-label"> @Model.OccupationDef.occupation</span></td>
+                    <th>Spouse Name</th>
+                    <td><span class="control-label"> @Model.SpouseName</span></td>
+                </tr>
+
+</table>
+
+        </div>
+    </div>
+    </fieldset>
+<br />
+<br />
+   

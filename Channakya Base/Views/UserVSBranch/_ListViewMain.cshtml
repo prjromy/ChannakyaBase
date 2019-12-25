@@ -1,0 +1,54 @@
+﻿@model  List<Loader.Models.UserVSBranch>
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+                        <tr>
+                            <th class="col-md-2">
+                                User Name
+                            </th>
+                            <th class="col-md-2">
+                                Branch Name
+                            </th>
+
+                            <th class="col-md-2">
+                                From
+                            </th>
+                            <th class="col-md-2">
+                                To
+                            </th>
+                            <th class="col-md-2">
+                                Assigned Role
+                            </th>
+                            <th class="col-md-2">
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            @*if (item.RoleId != 1)
+                                {
+                                    @Html.Partial("_ListView", item)
+                                }*@
+
+
+                            @Html.Partial("_ListView", item)
+
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

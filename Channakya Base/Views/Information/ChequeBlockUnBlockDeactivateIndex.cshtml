@@ -1,0 +1,74 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Block Active Deactive Cheque</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @*<div class="col-md-12">*@
+    <div class="box box-body">
+        <div class="row">
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Account Number</label>
+                        <div class="col-md-4">
+
+
+                            @Html.TextBoxFor(x => x.AccountNumber, new { @class = "form-control" })
+
+                        </div>
+                        <div class="col-md-2">
+                            <div class='input-group-btn'>
+                                <button type='button' id='btn-cheque-transaction-registration' class='btn btn-default'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class='input-group-btn'>
+                                <button type='button' id='btn-cheque-transaction-registration-change-status' class='btn btn-primary pull-right'>Change Status</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.Partial("_ChequeBlockUnBlockDeactivateIndex", Model)
+
+    </div>
+</div>
+@*</div>*@
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script>
+    $('#btn-cheque-transaction-registration').on('click', function () {
+
+        var accountNumber = $('#AccountNumber').val();
+        $.ajax({
+            type: 'GET',
+            url: '/Information/_ChequeBlockUnBlockDeactivateIndex',
+            data: {
+                accNo: accountNumber,
+
+            },
+            success: function (result) {
+                $('.table-cheque-block-unblock-deactive').html(result);
+
+            },
+        });
+    })
+    $('#btn-cheque-transaction-registration-change-status').on('click', function () {     
+        $.ajax({
+            type: 'GET',
+            url: '/Information/ChequeChangeStatus',           
+            success: function (result) {
+                $('section.content').html(result);
+
+            },
+        });
+    })
+
+   
+</script>

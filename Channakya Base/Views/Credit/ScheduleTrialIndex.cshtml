@@ -1,0 +1,505 @@
+﻿@model ChannakyaBase.Model.ViewModel.ScheduleModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Schedule Trial</h3>
+        <hr />
+        <div class="box-tools pull-right">
+
+        </div><!-- /.box-tools -->
+        <div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+        @using (Html.BeginForm("PreviewScheduleTrial", "Credit", FormMethod.Post, new { id = "PreviewScheduleTrial-form" }))
+        {
+            <div class="form-horizontal">
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Schedule</legend>
+                    <fieldset>
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.ValueDate, new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(x => x.ValueDate)
+                            </div>
+                            @Html.LabelFor(model => model.Revolving, new { @class = "control-label col-md-1" })
+                            <div class="col-md-2">
+                                @Html.CheckBoxFor(x => x.Revolving)
+                            </div>
+                            @Html.LabelFor(model => model.Flat, new { @class = "control-label col-md-1" })
+                            <div class="col-md-2">
+                                @Html.CheckBoxFor(x => x.Flat)
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ScheduleType, new { @class = "control-label col-md-2" })
+                            <div class="col-md-6">
+                                @Html.DropDownListFor(model => model.ScheduleType, CreditUtilityService.GetAllRulePaySchedule(), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ScheduleType, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="day-custome">
+                                @Html.LabelFor(model => model.Day, new { @class = "control-label col-md-2" })
+                                <div class="col-md-2">
+                                    @Html.TextBoxFor(model => model.Day, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Amount, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-4">
+                                @Html.TextBoxFor(model => model.Amount, new { @class = "form-control" })
+
+                            </div>
+                            @Html.LabelFor(model => model.Duration, new { @class = "control-label  col-md-1" })
+                            <div class="col-md-2">
+                                @Html.TextBoxFor(model => model.Duration, new { @class = "form-control" })
+                            </div>
+                            @Html.LabelFor(model => model.Rate, new { @class = "control-label  col-md-1" })
+                            <div class="col-md-2">
+
+                                @Html.TextBoxFor(model => model.Rate, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.PaymentMode, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.PaymentMode, CreditUtilityService.PaymentModeList(), new { @class = "form-control principal-interest-payment-mode" })
+                            </div>
+
+                            @Html.LabelFor(model => model.PrincipalFrequency, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-1">
+
+                                @Html.TextBoxFor(model => model.PrincipalFrequency, new { @class = "form-control principal-frequency" })
+                            </div>
+
+
+                            @Html.LabelFor(model => model.InterestFrequency, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-1">
+
+                                @Html.TextBoxFor(model => model.InterestFrequency, new { @class = "form-control interest-frequency" })
+                            </div>
+
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GraceOption, new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(model => model.GraceOption, CreditUtilityService.GraceOption(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="grace-in-day-month">
+                                <div class="">
+                                    @Html.LabelFor(model => model.Principal, new { @class = "control-label col-md-1" })
+                                    <div class="col-md-2">
+                                        @Html.TextBoxFor(model => model.Principal, new { @class = "form-control Principal-day", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                @Html.LabelFor(model => model.PrincipalDate, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(x => x.PrincipalDate, true)
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group grace-month-day-date">
+                            <div class="">
+                                @Html.LabelFor(model => model.Interest, new { @class = "control-label col-md-1" })
+                                <div class="col-md-2">
+                                    @Html.TextBoxFor(model => model.Interest, new { @class = "form-control Interest-day", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.LabelFor(model => model.InterestDate, new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(x => x.InterestDate, true)
+                            </div>
+                        </div>
+                    </fieldset>
+                </fieldset>
+                <div class="box-footer">
+                    <div class="form-group">
+                        <input type="button" value="Preview Trial Schedule" class="btn btn-success btn-Preview-Trial-Schedule " style="float:right;margin-left: 5px" />
+                    </div><!-- box-footer -->
+                </div>
+                
+            </div>
+        }
+        <div id="Preview-trial-list">
+
+        </div>
+    </div>
+</div>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+    $('.btn-Preview-Trial-Schedule').on('click', function () {
+        previewScheduleTrial()
+    })
+    function previewScheduleTrial() {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#PreviewScheduleTrial-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                  
+                    if (result.Status)
+                    {
+                        $('#Preview-trial-list').html(result.htmlToShow);
+                    } else {
+                        $('#Preview-trial-list').html("");
+                        ErrorAlert(result.Message, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                    
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+    $('#Principal').on('change', function () {
+        debugger;
+        var interestDay  = parseInt($(".Interest-day").val())
+        var principalDay = parseInt($(this).val())
+        if (principalDay < interestDay) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal day cann't be less than interest day.!!! "
+            }).done(function () {
+              
+            }).fail(function () {
+
+            });
+            $(this).focus()
+            $(this).val(1)
+            return
+        }
+        var graceOption = $('#GraceOption option:selected').val();
+        var pinVal = $(this).val();
+        var currentDate = $('#ValueDate').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        if (graceOption == 1) {
+            pinVal = 0;
+            $('#Principal').val(0);
+        }
+        if (graceOption != 4) {
+            $.ajax({
+                url: "/Credit/GetGraceDate",
+                type: "Get",
+                data: { graceOption: graceOption, dayMonth: pinVal, date: currentDate },
+                dataType: "json",
+                success: function (result) {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.Date);
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.EnglishDate)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.NepaliDate)
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+                }
+            })
+        }
+    })
+    $('#Duration').on('change', function () {
+        if ($('#Revolving').prop("checked")) {
+            $('.principal-frequency').val($(this).val())
+        }
+    })
+    $('#Interest').on('change', function () {
+        debugger;
+        var graceOption = $('#GraceOption option:selected').val();
+        var principalDay = parseInt($("#Principal").val())
+        var interestDay = parseInt($(".Interest-day").val())
+        if (principalDay < interestDay) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal day cann't be less than interest day.!!! "
+            }).done(function () {
+                $(this).focus()
+                $(this).val(1)
+            }).fail(function () {
+
+            });
+
+            return
+        }
+        var intVal = $(this).val();
+        if (graceOption == 1) {
+            intVal = 0;
+            $('#Interest').val(0);
+        }
+        var currentDate = $('#ValueDate').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        if (graceOption != 4) {
+            $.ajax({
+                url: "/Credit/GetGraceDate",
+                type: "Get",
+                data: { graceOption: graceOption, dayMonth: intVal, date: currentDate },
+                dataType: "json",
+                success: function (result) {
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.Date);
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.EnglishDate)
+                    $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.NepaliDate)
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    ErrorAlert("An error has occured:\n" + xhr.status + "\n" + ajaxOptions + "\n" + thrownError, 5000);
+                }
+            })
+        }
+    })
+
+
+    $('#ValueDate').on('change', function () {
+
+        var englistDate = $(this).closest('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val()
+        var nepaliDate = $(this).closest('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val()
+        var date = $(this).closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val()
+
+        var edate1 = $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD");
+        var ndate2 = $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS")
+
+        $(edate1).val(englistDate);
+        $(ndate2).val(nepaliDate);
+        $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(date);
+        var edate3 = $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD");
+        var ndate4 = $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS");
+        $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(date);
+        $(edate3).val(englistDate);
+        $(ndate4).val(nepaliDate);
+    })
+
+    $("#Revolving").on("click", function () {
+      
+        if ($('#Revolving').prop("checked")) {
+            var duration = $('#Duration').val();
+            $('#PaymentMode').val(1);
+            $('.principal-interest-payment-mode').css('pointer-events', 'none')
+            $('.principal-frequency').val(duration)
+            $('.principal-frequency').prop('readonly', true)
+            $('.grace-in-day-month').prop('readonly', true)
+            $('.interest-frequency').prop('readonly', false)
+
+        } else {
+            $('.principal-frequency').val(1)
+            $('.principal-interest-payment-mode').css('pointer-events', 'auto')
+            $('.principal-frequency').prop('readonly', false)
+
+        }
+        changeGraceDayOption()
+    })
+    $('#PrincipalFrequency').on('change', function () {
+        debugger;
+        var principalfreq = $(this).val();
+        var duration = $('#Duration').val();
+        var interestfreq = $('.interest-frequency').val();
+        if (principalfreq == "" || principalfreq == "0") {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "Principal frequency cann't be less than 1.!!! "
+            }).done(function () {
+                $(this).val(1)
+            }).fail(function () {
+
+            });
+           
+            return
+        }
+        var divideResult = parseFloat(duration) % parseFloat(principalfreq)
+       
+        if (divideResult != 0 ) {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "Principal frequency must be factor of duration.!!! "
+            }).done(function () {
+                $('.principal-frequency').focus()
+                $('.principal-frequency').val(1)
+            }).fail(function () {
+
+            });
+           
+            return
+        }
+
+        if (parseInt(principalfreq) < parseInt(interestfreq)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal frequency cann't be less than interest frequency.!!! "
+            }).done(function () {
+                $('.principal-frequency').focus()
+                $('.principal-frequency').val(1)
+            }).fail(function () {
+
+            });
+           
+            return
+        }
+    })
+    $('#InterestFrequency').on('change', function () {
+        debugger;
+        var duration = $('#Duration').val();
+        var interestfrequency = $(this).val();
+        var PaymentMode = $('#PaymentMode option:selected').val();
+       
+        if (interestfrequency == "" || interestfrequency == "0") {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Principal frequency cann't be less than 1.!!! "
+            }).done(function () {
+                $(this).val(1)
+            }).fail(function () {
+
+            });
+           
+            return
+        }
+        var principalfreq = $('.principal-frequency').val()
+
+        var interestfreq = $('.interest-frequency').val();
+        if (PaymentMode != 2) {
+            if (parseInt(principalfreq) < parseInt(interestfreq)) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Principal frequency cann't be less than interest frequency.!!! "
+                }).done(function () {
+                    $('.interest-frequency').focus()
+                    $('.interest-frequency').val(1)
+                }).fail(function () {
+
+                });
+
+                return
+            }
+        } else
+        {
+            $('.principal-frequency').val(interestfreq)
+        }
+       
+        var divideIntResult =parseFloat(duration)% parseFloat(interestfreq)
+        if (divideIntResult != 0) {
+            $.MessageBox({
+                buttonDone: "OK",
+
+                message: "interest frequency must be factor of duration.!!! "
+            }).done(function () {
+                $('.interest-frequency').focus()
+                $('.interest-frequency').val(1);
+            }).fail(function () {
+
+            });
+           
+            return
+        }
+    })
+
+    $('#ScheduleType').on('change', function () {
+        var value = $(this).val();
+        if (value == 5 || value == 6) {
+            $('#Day').prop('readonly', false)
+        } else {
+            $('#Day').prop('readonly', true)
+            $('#Day').val(0);
+        }
+    })
+    $('#PaymentMode').on('change', function () {
+        var value = $(this).val();
+        if (value == 1) {
+            $('.principal-frequency').prop('readonly', false)
+            $('.interest-frequency').prop('readonly', false)
+        } else if (value == 2) {
+            $('.principal-frequency').prop('readonly', true)
+            $('.interest-frequency').prop('readonly', false)
+        } else {
+            $('.principal-frequency').prop('readonly', true)
+            $('.interest-frequency').prop('readonly', true)
+        }
+
+    })
+   
+    
+    function changeGraceDayOption() {
+
+        var value = $('#GraceOption').val();
+        if (value != 1) {
+
+            $(".Principal-day").prop('readonly', false)
+            $(".Interest-day").prop('readonly', false)
+
+            if (value == 4) {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+
+                if ($('#Revolving').prop("checked")) {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+                } else {
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "False")
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', false)
+                    $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', false)
+                }
+                $(".Principal-day").prop('readonly', true)
+                $(".Interest-day").prop('readonly', true)
+
+            } else {
+
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+                $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+                if ($('#Revolving').prop("checked")) {
+                    $(".Principal-day").prop('readonly', true)
+                } else {
+                    $(".Principal-day").prop('readonly', false)
+                }
+
+                $(".Interest-day").prop('readonly', false)
+            }
+
+        }
+        else {
+            $(".Principal-day").prop('readonly', true)
+            $(".Interest-day").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").attr("readonlytag", "True")
+
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").prop('readonly', true)
+            $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").prop('readonly', true)
+        }
+    }
+    $('#GraceOption').on('change', function () {
+        $('#Principal').trigger('change')
+        $('#Interest').trigger('change')
+        changeGraceDayOption()
+        //if($(this).val()==1)
+        //{
+        //    $('#Principal').val(0);
+
+        //    $('#ValueDate').change();
+        //}
+    })
+</script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>

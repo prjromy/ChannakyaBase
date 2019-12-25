@@ -1,0 +1,6 @@
+﻿CREATE TABLE [LG].[DataType] (
+    [DTId]  TINYINT       NOT NULL,
+    [DType] NVARCHAR (50) NOT NULL,
+    CONSTRAINT [PK_LG.DataType] PRIMARY KEY CLUSTERED ([DTId] ASC)
+);
+

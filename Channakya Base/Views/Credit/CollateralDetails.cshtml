@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.ALCollModel>
+@{
+    decimal sum = 0;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <div class="row">
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        <div class="col-md-12">
+                            <label>Account Name:- @Model.Select(x => x.AccountName).FirstOrDefault()</label><br />
+                            <label>Account Number:- @Model.Select(x => x.AccountNumber).FirstOrDefault()</label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="box-body table-responsive no-padding table-collateral-entery-list-partial">
+            <table class="table table-bordered table-striped table-hover">
+                <tr>
+                    <th>
+                        Collateral Name
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OAdd)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.contactNo)
+
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CValue)
+                    </th>
+
+
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CollateralName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OAdd)
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.contactNo)
+                        </td>
+                        <td style="text-align:right">
+                            @Html.DisplayFor(modelItem => item.CValue)
+                        </td>
+                    </tr>
+                    sum = sum + item.CValue;
+                }
+                <tr>
+                    <th colspan="4" style="text-align:right">Total</th>
+                    <th style="text-align:right">@sum</th>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</div>

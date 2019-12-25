@@ -1,0 +1,341 @@
+﻿@model ChannakyaBase.Model.ViewModel.CollectionSheetViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    Layout = null;
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    CommonService cs = new CommonService();
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Collection Sheet</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+        @using (Html.BeginForm("_CollectionSheetVerifyPost", "Teller", FormMethod.Post, new { id = "CollectionSheetVerify-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div id='rejected-message' class='modal rejected-Message' role='dialog'>
+            </div>
+            <div class="form-horizontal collection-sheet-verify">
+
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                @Html.HiddenFor(x => x.CollSheetId)
+                @Html.HiddenFor(x => x.SheetNo)
+                @Html.HiddenFor(x => x.RejectedRemarks)
+                <fieldset>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-hover table-striped table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th>Collector Name</th>
+                                        <th>Collection Amount</th>
+                                        <th>Transaction Date </th>
+                                        <th>Value Date </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="control-label">  @cs.EmployeeUserInfoEmployeeId(Convert.ToInt16(Model.CollectorId)).EmployeeName</span>
+                                        </td>
+                                        <td>
+                                            <span class="control-label">@Model.TotalAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                            @Html.HiddenFor(x => x.TotalAmount, new { @class = "TotalCollectedAmount" })
+                                        </td>
+
+                                        <td>
+                                            <span class="control-label">@Convert.ToDateTime(Model.TDate).ToShortDateString()</span>
+                                        </td>
+                                        <td>
+                                            <span class="control-label">@Convert.ToDateTime(Model.VDate).ToShortDateString()</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="box-tools col-md-6  form-group" id="search-Account-Number">
+                                @Html.TextBox("AccountNumber", "", htmlAttributes: new { @class = "form-control", @id = "txtAccountNumber", @placeholder = "Account Number/Name" })
+                            </div>
+                            <div class="accountCollected-table-div">
+                                @{Html.RenderAction("_CollectedSheetVerifyAcoountsList", new { collSheetId = Model.CollSheetId });
+                                }
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <b> Overall Description : </b>
+                                    </td>
+                                    <td>
+                                        <span class="control-label">@Model.note</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        @if (IsTransactionWithDeno)
+                        {
+                            <div class="col-md-6 transaction-with-deno">
+                                @{Html.RenderAction("DenoTransaction", "Teller", new
+                                    {
+                                        currencyId = new CommonService().DefultCurrency(),
+                                        denoInOut = @EDeno.DenoIn.GetDescription()
+                                    });
+                                }
+                            </div>
+                                    }
+                    </div>
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-9 col-md-10" style="float:right">
+                                <input type="button" value="Pass" class="btn btn-default btn-collection-sheet-verify-confirm" data-id="@Model.CollSheetId" style="float:right; float:right;margin-left: 5px" />
+                                <input type="button" value="Reject" class="btn btn-default btn-collection-sheet-verify-cancel" style="float:right">
+                            </div>
+                        </div>
+
+                    </div><!-- box-footer -->
+                </fieldset>
+            </div>
+                                    }
+    </div>
+</div>
+
+
+<script>
+
+    $(".collection-sheet-verify").on("click", ".btn-collection-sheet-verify-confirm", function () {
+        debugger
+        var collSheetId = $(this).attr("data-id");
+        var IsDenoTransaction = $('.collection-sheet-verify').find('#transactionDeno').prop('checked');
+
+        if (IsDenoTransaction == true) {
+
+            var amount = parseFloat($(".collection-sheet-verify").find(".TotalCollectedAmount").val()).toFixed(2);
+            var balanceInDeno = parseFloat($('.balance-deno-div').find("#Balance").val()).toFixed(2);
+            if (parseFloat(amount) != parseFloat(balanceInDeno)) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Collected amount does not match with deno balance!!"
+                }).done(function () {
+                    //$(balanceDiv).find("#Balance").focus();
+                    return false;
+                }).fail(function () {
+                    //return false;
+                })
+                return;
+            }
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+                $('#CollectionSheetVerify-form').ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (result) {
+                        if (result.Success) {
+
+                            $.ajax({
+                                url: "/Teller/_CollectionSheetUnverifiedList",
+                                type: 'GET',
+                                async: false,
+                                success: function (abc) {
+
+                                    if (result.Success) {
+                                        $(".content").html(abc)
+                                        //SuccessAlert("Collection Sheet " + result.Msg + " With Sheet No : " + result.ReturnId);
+                                        SuccessAlert("Collection Sheet " + result.Msg, 5000);
+
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                }
+                            })
+                        }
+                        else {
+
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                });
+            }).fail(function () {
+
+            });
+        }
+
+    })
+
+    $(".collection-sheet-verify").on("click", ".btn-collection-sheet-verify-cancel", function () {
+        $.ajax({
+            type: 'GET',
+            url: "/Teller/_RejectCollectionSheetRemarks",
+            success: function (result) {
+                debugger
+                //$('.rejected-Message').html(result).modal({
+                //    'show': true,
+                //    'backdrop': 'static'
+                //});
+                $('.rejected-Message').html(result).modal({
+                    'show': true
+                });
+
+            },
+            error: function () {
+            }
+        })
+    })
+
+    $("form#CollectionSheetVerify-form").on("click", ".btn-collection-verify-confirm-reject", function () {
+        debugger;
+
+        var rejectRemarks = $(this).closest(".modal-dialog").find("#RejectedRemarks").val();
+        $(".collection-sheet-verify").find(".collection-sheet-verify").find("#RejectedRemarks").val(rejectRemarks);
+        var sheetNo = $(".collection-sheet-verify").find("#SheetNo").val();
+
+        $.ajax({
+            type: 'Post',
+            url: "/Teller/_CollectionSheetRejectPost",
+            data: { sheetNo: sheetNo, rejectRemarks: rejectRemarks },
+            success: function (result) {
+                debugger
+                //$('.rejected-Message').html(result).modal({
+                //    'show': false,
+                //    'backdrop': 'static'
+                //});
+                if (result.Success) {
+                    $.ajax({
+                        type: 'Post',
+                        url: "/Teller/_CollectionSheetUnverifiedList",
+                        success: function (html) {
+                            debugger
+                            $('#rejected-message').modal('hide');
+
+                            $('section.content').html(html);
+
+                            SuccessAlert(result.Msg, 5000);
+                        },
+                        error: function () {
+                            alert('error in calling ajax !!')
+                        }
+                    });
+                }
+                else {
+                    ErrorAlert(result.Msg)
+                }
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        })
+    })
+
+    $(".collection-sheet-verify").on('change', '#txtAccountNumber', function (e) {
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = parentContainer.find("#search-Account-Number").find("#txtAccountNumber").val();
+        var collSheetId = parentContainer.find('.collection-sheet-verify').find("#CollSheetId").val();
+
+        $.ajax({
+            contentType: "html",
+            type: "Get",
+            url: "/teller/_CollectedSheetVerifyAcoountsList",
+            data: { collSheetId: collSheetId, accountNumber: accountNumber },
+            success: function (data) {
+                $(".collection-sheet-verify").find(".accountCollected-table-div").html("");
+                $(".collection-sheet-verify").find(".accountCollected-table-div").html(data);
+            }
+        })
+    });
+
+</script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+
+@*var balanceDiv = $(this).parents().find("#dataTransaction")
+    var IsDenoTransaction = $(balanceDiv).find("#IsTransactionWithDeno").prop("checked");
+    if (IsDenoTransaction == true) {
+
+        var amount = $(".collection-sheet-verify").find(".TotalCollectedAmount").val();
+        var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+        if (parseFloat(amount) != parseFloat(balanceInDeno)) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Deposit amount is not match with deno balance!!"
+            }).done(function () {
+                $(balanceDiv).find("#Balance").focus();
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return;
+        }
+    }*@
+
+@*$(".collection-sheet-verify").on("click", ".btn-collection-sheet-verify-confirm", function () {
+        debugger;
+        var collSheetId = $(this).attr("data-id");
+        var balanceDiv = $(this).parents().find("#dataTransaction")
+        var IsDenoTransaction = $(balanceDiv).find("#IsTransactionWithDeno").prop("checked");
+        if (IsDenoTransaction == true) {
+
+            var amount =parseFloat($(".collection-sheet-verify").find(".TotalCollectedAmount").val()).toFixed(2);
+            var balanceInDeno =parseFloat($('.balance-deno-div').find("#Balance").val()).toFixed(2);
+            if (parseFloat(amount) != parseFloat(balanceInDeno)) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Collected amount does not match with deno balance!!"
+                }).done(function () {
+                    $(balanceDiv).find("#Balance").focus();
+
+                    return false;
+                }).fail(function () {
+                    //return false;
+                })
+                return;
+            }
+        }
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $(balanceDiv).find("#Balance").focus();
+            $('#HomeTransactionsCreate-form').ajaxSubmit({
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            url: "FinanceParameter/_CollectionSheetUnverifiedList",
+                            type: 'get',
+                            async: false,
+                            success: function (abc) {
+                                $(".content").html(abc)
+                                SuccessAlert("Collection Sheet " + result.Msg + " With Sheet No : " + result.ReturnId)
+                                document.getElementById('alert-success').scrollIntoView();
+                            }
+                        })
+
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+            return false;
+        }).fail(function () {
+            //return false;
+        })
+        return;
+    })*@

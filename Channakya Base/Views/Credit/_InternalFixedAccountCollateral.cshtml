@@ -1,0 +1,197 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALFixedDepositModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper
+@Html.HiddenFor(x => x.AlFixedId)
+@{
+    bool IsInternal = Model.IsInternalAccount;
+    var mod = Model;
+
+}
+@Html.HiddenFor(model => model.IsInternalAccount)
+
+@if (Model.IsInternalAccount == true)
+{
+
+    //for (int i = 0; i < Model.guarantorModel.Count(); i++)
+    //{
+
+
+        <fieldset>
+            <legend style="font-size:14px;font-weight:bold">More Info</legend>
+
+            @if (Model.AlFixedId == 0)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.fdAccno, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-10">
+                            @Html.AccountNumberSearch(model => model.fdAccno, EAccountDetailsShow.CollateralDisplay.GetDescription(), EAccountFilter.FixedAccountOnly.GetDescription(), EAccountType.Normal.GetDescription())
+                            @Html.ValidationMessageFor(model => model.fdAccno, "", new { @class = "text-danger" })
+                        </div>
+
+                    @*@Html.LabelFor(model => model.guarantorModel[i].GIaccno, new { @class = "control-label  col-md-2" })
+                    <div class="col-md-10">
+                        @Html.AccountNumberSearch(model => model.guarantorModel[i].GIaccno, EAccountDetailsShow.CollateralDisplay.GetDescription(), EAccountFilter.FixedAccountOnly.GetDescription(), EAccountType.Normal.GetDescription())
+                        @Html.ValidationMessageFor(model => model.guarantorModel[i].GIaccno, "", new { @class = "text-danger" })
+                    </div>*@
+
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.fdAccno, new { @class = "control-label  col-md-2" })
+                    <div class="col-md-10">
+                        @Html.AccountNumberSearch(model => model.fdAccno, EAccountDetailsShow.CollateralDisplay.GetDescription(), EAccountFilter.FixedAccountOnly.GetDescription(), EAccountType.Normal.GetDescription(), Model.AccountNumber)
+                        @Html.ValidationMessage("IAccno", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.QuationPer, new { @class = "control-label  col-md-2" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.QuationPer, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.QuationPer, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.matDt, new { @class = "control-label col-md-2" })
+                <div class="col-md-4  internal-account-mat">
+                    @Html.DatePicker(x => x.matDt, true)
+                    @Html.ValidationMessageFor(model => model.matDt, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Balance, new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.Balance, new { @class = "form-control internal-balance", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.amount, new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.amount, new { @class = "form-control Equivalent-Amount" })
+                    @Html.ValidationMessageFor(model => model.amount, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+        </fieldset>
+    
+
+
+
+
+
+}
+else
+{
+    <fieldset>
+
+        <legend style="font-size:14px;font-weight:bold">Organization Info</legend>
+        <div class="form-group">
+            @Html.LabelFor(model => model.fdAccno, new { @class = "control-label  col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.fdAccno, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.fdAccno, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.bank, new { @class = "control-label  col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.bank, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.bank, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.brnh, new { @class = "control-label  col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.brnh, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.brnh, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.Balance, new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.Balance, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.amount, new { @class = "control-label  col-md-2" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.amount, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.amount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.matDt, new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.DatePicker(x => x.matDt)
+                @Html.ValidationMessageFor(model => model.matDt, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.openDt, new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.DatePicker(x => x.openDt)
+                @Html.ValidationMessageFor(model => model.openDt, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    </fieldset>
+}
+
+@*<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>*@
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $('#QuationPer').on('blur', function () {
+
+        var per = parseFloat($(this).val());
+        if (per > 90) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "More than 90 percentage is not allowed!!"
+            }).done(function () {
+                $('#QuationPer').val(0);
+
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return
+        } else {
+            var amount = parseFloat($('#Balance').val());
+            if (amount == 0) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "There isn't enough balance to calculate!!"
+                }).done(function () {
+                    $(this).val(0);
+
+                    return false;
+                }).fail(function () {
+                    //return false;
+                })
+                return
+            }
+            var clculate = 0;
+            clculate = (amount * per) / 100;
+            $(".Equivalent-Amount").val(clculate);
+        }
+    })
+    $('.Equivalent-Amount').on('blur', function () {
+        var clculate = 0;
+        var amount = parseFloat($('#Balance').val());
+        clculate = (amount * per) / 100;
+        if ($(this).val() > clculate) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Equivalent Amount is more than 90% of balance!!"
+            }).done(function () {
+                $(this).val(0);
+
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return
+        }
+    })
+</script>
+
+

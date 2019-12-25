@@ -1,0 +1,242 @@
+﻿@model  ChannakyaAccounting.Models.ViewModel.VoucherReportMainViewModel
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    Loader.Service.ParameterService paramService = new Loader.Service.ParameterService();
+    ViewBag.Title = "Transaction Report";
+
+    ChannakyaAccounting.Service.VoucherReport.VoucherReportsService voucherReportObj = new ChannakyaAccounting.Service.VoucherReport.VoucherReportsService();
+    Model.StartDate = voucherReportObj.GetFromDate();
+    Model.EndDate = voucherReportObj.GetToDate();
+}
+
+
+
+<div class="box box-success" style="padding-bottom: 360px;">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+    @using (Html.BeginForm("_GetVerifiedVoucherList", "VoucherReport", FormMethod.Post, new { @id = "verifiedVoucherReport", @class = "form-horizontal" }))
+    {
+        <div class="box-body">
+            <div id="explorer" class="voucherVerified-explore">
+                <div id="explore-details" class="col-md-12 explore-details">
+                    <div class="panel-list" id="list">
+
+                        <div class="modal fade" id="getUserDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetUserDetailsForTrans", "VoucherReport")'></div>
+                        <div class="form-group">
+                            @Html.Label("VoucherType")
+                            @Html.DropDownListFor(x => x.VType, ViewData["VTypeList"] as List<SelectListItem>,"Please Select Voucher Type" ,new { @class = "form-control" })
+
+                        </div>
+                        <div class="form-group batch-list">
+                           @* @Html.DropDownListFor(x => x.BatchNo, ViewData["BatchList"] as List<SelectListItem>, new { @class = "form-control" })*@
+                        </div>
+               
+                        <div class="form-group">
+                            @Html.Label("From Date")
+                            @Html.DatePicker(x => x.StartDate)
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("To Date")
+                            @Html.DatePicker(x => x.EndDate)
+                        </div>
+                        @*<div class="form-group">
+                            @Html.HiddenFor(x => x.PostedBy, new { @id = "PostedBy" })
+                            @Html.Label("User")
+                            <div class="input-group add-on">
+                                @Html.TextBox("User", null, new { @class = "form-control", @placeholder = "Search", @id = "userName" })
+                                <div class="input-group-btn">
+                                    <button type="button" name="search" class="btn" id="btnUserSearch" style="background-color:#2aabd2!important;"><i class="fa fa-search"></i></button>
+
+                                </div>
+                            </div>
+                        </div>*@  
+                        <div class="form-group">
+                            @Html.Label("User")
+                            @Html.DropDownListFor(x => x.PostedBy,new List<SelectListItem>(), new { @class = "form-control PostedBy" })
+
+                        </div>
+                        <div class="form-group">
+                            @Html.RadioButtonFor(m => m.VerifiedVoucher, true, new {@class = "transaction-radio" }) Verified Voucher
+                            @Html.RadioButtonFor(m => m.VerifiedVoucher, false, new {@class= "transaction-radio" }) UnVerified Voucher
+                        </div>
+                        <input type="button" value="Submit" class="btn btn-success pull-right btn-voucher-trans-submit" />
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+        </div><!-- /.box-body -->
+    }
+</div><!-- /.box -->
+
+
+@*<script src="~/Scripts/jquery-1.11.1.min.js"></script>*@
+@*<script src="~/Scripts/bootstrap.min.js"></script>*@
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script type="text/javascript">
+    $('#StartDate, #EndDate').on('change', function () {
+        debugger; 
+        status = 1;
+    });
+    $(".btn-voucher-trans-submit").on('click', function (e) {
+        debugger;
+        var event=0;
+        e.stopImmediatePropagation();
+        var StartDate = $('#StartDate').val();
+        var EndDate = $('#EndDate').val();
+        var VType = $('#VType option:selected').val();
+        var PostedBy = $('#PostedBy').val();
+        var BatchNo = $('#BatchNo option:selected').val();
+        var BatchList = "";
+        $('.batch-list').find('.individual-check').each(function (index, obj) {
+            if ($(obj).prop('checked') == true) {
+                BatchList = BatchList + ($(obj).attr('Id') + ",");
+            }
+        })
+        BatchList = BatchList.substring(0, parseInt(BatchList.length) - 1);
+       // var VerifiedVoucher= $('#VerifiedVoucher').val();
+        var VerifiedVoucher = $('.transaction-radio:checked').val();
+        if (VType == "")
+        {
+            ErrorAlert("Voucher Type Is Not Selected", 5000);
+            return false;
+        }
+        if (BatchList == "") {
+            ErrorAlert("Voucher Type Is Not Selected", 5000);
+            return false;
+        }
+        if (PostedBy==undefined)
+        {
+            ErrorAlert("User Is Not Selected", 5000);
+            return false;
+        }
+        $.ajax({
+            url: '@Url.Action("GetVoucherList", "VoucherReport")',
+            type: 'GET',
+            data: {
+                StartDate: StartDate,
+                EndDate: EndDate,
+                VType: VType,
+                PostedBy: PostedBy,
+                BatchNo: BatchList,
+                VerifiedVoucher: VerifiedVoucher
+            },
+
+            success: function (data) {
+                debugger;
+                if (data == false)
+                    SuccessAlert("No Data Are Available", 5000);
+                else
+                $("div#explore-details").html(data);
+            },
+            error: function (data) {
+                debugger;
+                ErrorAlert(data.responseText, 15000)
+            },
+
+        });
+
+
+
+    });
+    $('#VType').on('change', function () {
+        debugger;
+        status = 1;
+        var VType = $(this).val();
+        $.ajax({
+            url: '@Url.Action("GetBatchForCheckBox", "VoucherReport")',
+            type: 'GET',
+            data: { VType: VType },
+            success: function (data)
+            {
+                debugger;
+                $('.batch-list').html("");
+                $('.batch-list').html(data);
+            },
+            error:function()
+            {
+                $('.batch-list').html("");
+            }
+        });
+
+    });
+</script>
+<script>
+    //$('#verifiedVoucherReport').on('keydown', '#userName', function (event) {
+    //    debugger;
+    //    if (event.keyCode == 13 || event.keyCode == 9) {
+    //        //$('#btnUserSearch').trigger('click');
+    //    }
+
+    //})
+    //.on('focusout', '#userName', function (event) {
+    //    debugger;    
+    //        $('#btnUserSearch').trigger('click');
+
+    //});
+    $('#verifiedVoucherReport').on('click', '.PostedBy', function (event) {
+        debugger;
+        if(status==1)
+        {
+            var query = $(this).closest('.input-group').find('input#userName').val();
+            var VoucherType = $('#VType').val();
+            var BatchList = "";
+            var FDate = $('#StartDate').val();
+            var TDate = $('#EndDate').val();
+            $('.batch-list').find('.individual-check').each(function (index, obj) {
+                if ($(obj).prop('checked') == true) {
+                    BatchList = BatchList + ($(obj).attr('Id') + ",");
+                }
+            })
+            BatchList = BatchList.substring(0, parseInt(BatchList.length) - 1);
+            if (VoucherType == "" || BatchList.length == 0) {
+                ErrorAlert("Please Enter Voucher Type", 5000);
+                return false;
+            }
+            $.ajax({
+                url: '/VoucherReport/GetUserDetailsForTrans',
+                method: 'GET',
+                data: {
+                    VoucherType: VoucherType,
+                    BatchList: BatchList,
+                    FDate: FDate,
+                    TDate: TDate
+                },
+
+                success: function (data) {
+                    debugger;
+                    var markup = "<option value='0'> -All UserName-</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $(".PostedBy").html(markup).show();
+                    //debugger;
+                    //$('#getUserDetails').html(data);
+                    //$('#getUserDetails').find('.user-search-text').val(query);
+                    //debugger;
+                    //$('#getUserDetails').modal('show');
+                },
+                error: function () {
+                    debugger;
+                    ErrorAlert("Data Not Available", 5000);
+                }
+            });
+        }
+        status = 0;
+       // alert(BatchList);
+
+    });
+
+</script>

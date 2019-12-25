@@ -1,0 +1,176 @@
+﻿@model ChannakyaBase.Model.ViewModel.CashLimitModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonService = new CommonService();
+
+    if (Model.cashLimitId != 0)
+    {
+
+        var employeeDesc = commonService.EmployeeInfoUserId(Model.stfid);
+        Model.EmployeeName = employeeDesc.EmployeeName;
+        Model.EmployeeId = employeeDesc.EmployeeId;
+    }
+    Layout = null;
+}
+@*@using (Html.BeginForm("InsertUpdateCashLimit", "FinanceParameter", FormMethod.Post, new { id = "cash-limit-form" }))*@
+@using (Ajax.BeginForm("InsertUpdateCashLimit", "FinanceParameter", new AjaxOptions
+{
+    UpdateTargetId = "TellerCashLimitList",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createSuccess"
+    //OnFailure = "errMessage"
+
+}, new { id = "cash-limit-form" }))
+{
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @Html.HiddenFor(x => x.cashLimitId)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EmployeeId, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.EmployeeSearch(x => x.EmployeeId, Model.EmployeeName, EEmployeeChange.UserChangeTeller.GetDescription())
+
+                            @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.stfid, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(x => x.stfid, FinanceParameterUtilityService.GetCashLimitUserList(Model.EmployeeId), "--Please Select--", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.stfid, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.dramt, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(x => x.dramt, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.dramt, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.cramt, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(x => x.cramt, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.cramt, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="box-footer">
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Save" class="btn btn-default btn-cheque-transaction-save" />
+            </div>
+        </div>
+    </div>
+
+}
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script>
+    $(function () {
+        $.validator.unobtrusive.parse('#cash-limit-form');
+        $(".btn-cheque-transaction-save").on("click", function () {
+            debugger
+            $('#cash-limit-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#cash-limit-form'));
+            if ($("#cash-limit-form").valid()) {
+            //    var alreadymsg = $(this).closest("form").find(".field-validation-error").text();
+            //    InfoAlert(alreadymsg, 6000);
+            //    return false;
+            //}
+
+                //tellerCashLimit();
+                debugger
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    $('#cash-limit-form').ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (result) {
+                            if (result.Success) {
+                                $.ajax({
+                                    url: "/FinanceParameter/CashLimitIndex",
+                                    type: 'GET',
+                                    async: false,
+                                    success: function (result) {
+                                        $('section.content').html(result);
+                                        //$('#cash-limit-list').html("");
+                                        //$('#cash-limit-list').html(result);
+                                    }
+                                })
+                                SuccessAlert(result.Msg, 5000);
+                                document.getElementById('alert-success').scrollIntoView();
+
+                            } else {
+
+                                ErrorAlert(result.Msg, 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                            }
+                        },
+                        error: function () {
+                            ErrorAlert(data.responseText, 15000)
+                        }
+                    });
+                }).fail(function () {
+
+                });
+
+            } else {
+                return false;
+            }
+
+        })
+
+    });
+
+    //function tellerCashLimit() {
+    //    debugger
+    //    $.MessageBox({
+    //        buttonDone: "Yes",
+    //        buttonFail: "No",
+    //        message: "Are you sure?"
+    //    }).done(function () {
+    //        $('#cash-limit-form').ajaxSubmit({
+    //            beforeSubmit: function () {
+    //            },
+    //            success: function (result) {
+    //                if (result.Success) {
+    //                    $.ajax({
+    //                        url: "/FinanceParameter/CashLimitIndex",
+    //                        type: 'GET',
+    //                        async: false,
+    //                        success: function (result) {
+    //                            $('section.content').html(result);
+    //                            //$('#cash-limit-list').html("");
+    //                            //$('#cash-limit-list').html(result);
+    //                        }
+    //                    })
+    //                    SuccessAlert(result.Msg, 5000);
+    //                    document.getElementById('alert-success').scrollIntoView();
+
+    //                } else {
+
+    //                    ErrorAlert(result.Msg, 5000);
+    //                    document.getElementById('alert-error').scrollIntoView();
+    //                }
+    //            },
+    //            error: function () {
+    //                ErrorAlert(data.responseText, 15000)
+    //            }
+    //        });
+    //    }).fail(function () {
+
+    //    });
+    //}
+</script>

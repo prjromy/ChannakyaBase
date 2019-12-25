@@ -1,0 +1,421 @@
+﻿@model ChannakyaAccounting.Models.Models.SubsiDetail
+@using ChannakyaAccounting.Helper
+@using ChannakyaAccounting.Models.Helper;
+@{
+    Layout = null;
+    var test = Model;
+
+    var selectedLedgerId = 0;
+    var title = "Map Subsi";
+    var custName = "";
+    if (Convert.ToString(ViewBag.CustomerName) != "")
+    {
+        custName = Convert.ToString(ViewBag.CustomerName);
+    }
+    if (Model.SDID != 0)
+    {
+        title = "Edit Subsi Map";
+    }
+    var valueSubmit = "Create";
+    if (Model.SDID != 0)
+    {
+        valueSubmit = "Update";
+    }
+    ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService subService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService();
+
+}
+<div class="box box-warning SubsiDetail-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "MapSubsi", FormMethod.Post, new { @id = "createSubsiDetail" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.SDID)
+
+                <div class="form-group col-md-12 append-subsiledger-list">
+                    @Html.Label("Ledger Name", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.FId, subService.GetSubsiLedger(0), "Select Ledger", new { @class = "form-control subsi-ledger" })
+                        @Html.ValidationMessageFor(model => model.FId, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+                
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.AccNo, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.AccNo, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.AccNo, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+                <div class="form-group col-md-12 search-type" style="display:none;">
+                    @Html.Label("Customer", htmlAttributes: new { @class = "control-label col-md-3 custLabelName" })
+                    <div class="col-md-9">
+                        <div id="search-container">
+                            @*@Html.EditorForCustomerSearch(m => m.CId, Model.CId, custName)*@
+                        </div>
+
+                        @Html.ValidationMessageFor(model => model.CId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+
+
+                    @Html.LabelFor(model => model.Enable, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @if (Model.Enable == null)
+                        {
+                            Model.Enable = false;
+                        }
+                        @Html.CheckBox("Enable", Model.Enable.Value)
+                        @Html.ValidationMessageFor(model => model.Enable.Value, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Debit Limit", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.DebitLimit, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DebitLimit, "", new { @class = "text-danger" })
+                    </div>
+
+                    @Html.Label("Credit Limit", htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.CreditLimit, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreditLimit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <div class="modal fade" id="getcustomerDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetCustomerDetails", "MapSubsi")'></div>
+    <div class="modal fade" id="getEmployeeDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetEmployeeDetails", "MapSubsi")'></div>
+    <div class="modal fade" id="getUserDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("GetUserDetails", "MapSubsi")'></div>
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('select#CId').change(function () {
+
+        //    debugger;
+        //    var custId = $(this).closest('form#createSubsiDetail').find('input.internal-value').val();
+        //    if(custId==0 || custId==null)
+        //    {
+        //        ErrorAlert("Please Select Type",5000)
+        //        return false;
+        //    }
+        //    var ledgerId = $(this).val();
+
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/MapSubsi/EditSubsiDetailDropDown/",
+        //        data:{ledgerId:ledgerId,customerId:custId},
+        //        dataType: "html",
+        //        success: function (data) {
+        //            debugger;
+        //            $('section.content').html(data);
+                 
+
+        //        }
+        //    })
+
+
+
+        //});
+        @*$('select#FId').change(function () {
+
+            @selectedLedgerId = $(this).val();
+            if(@ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId(selectedLedgerId)== @Convert.ToInt32(EnumValue.Subsi.Employee))
+
+                 var html = @Html.Raw(Html.EditorForCustomerSearch(m => m.CId, Model.CId, custName));
+            $("#search-container").html(html);
+
+
+        });*@
+
+        $('select#FId').change(function () {
+            debugger;
+            var ledgerId =$(this).val();
+            var employee = '@Convert.ToInt32(ChannakyaAccounting.EnumValue.Subsi.Employee)';
+            var user = '@Convert.ToInt32(ChannakyaAccounting.EnumValue.Subsi.User)';
+            $.getJSON("/MapSubsi/GetLedgerParentSubsiTable?ledgerId="+ledgerId,function(subsiTblId){
+                debugger;
+                $('.search-type').show();
+                if(subsiTblId==employee)
+                {
+                    var htmlContent = '@Html.Encode(Html.EditorForEmployeeSearch(m => m.CId, Model.CId, custName))';
+                    $('.custLabelName').text("Employee Name")
+                   appendtoSearch(htmlContent);
+                }
+
+                else if(subsiTblId== user)
+                {
+                    var htmlContent ='@Html.Encode(Html.EditorForUserSearch(m => m.CId, Model.CId, custName))';
+                    $('.custLabelName').text("UserName")
+                   appendtoSearch(htmlContent);
+                }
+                else
+                {
+                    var htmlContent = '@Html.Encode(Html.EditorForCustomerSearch(m => m.CId, Model.CId, custName))';
+                    $('.custLabelName').text("Customer Name")
+                   appendtoSearch(htmlContent);
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/MapSubsi/GenerateAccNumber/",
+                    data:{ledgerId:ledgerId},
+                    dataType: "html",
+                    success: function (accNo) {
+                        debugger;
+                        accNo=accNo.substring(1,accNo.length-1);
+                        $('input#AccNo').val(accNo);
+                    }
+                });
+                
+            });
+        });
+
+        function appendtoSearch(htmlContent)
+        {
+            $.ajax({
+                url:'/MapSubsi/GetDecodedHtml',
+                data:{htmlContent:htmlContent},
+                contentType: "application/x-www-form-urlencoded;charset=ISO-8859-15",
+                dataType:"JSON",
+                processData:'false',
+                success:function(decoded){
+                    debugger;
+                    
+                    $("#search-container").html(decoded);
+               
+                }
+                
+            });
+        }
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PSubsiDetailId").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+
+
+
+        $("#createSubsiDetail").submit(function (event) {
+            debugger;
+            if(event.keyCode == 13 || event.keyCode == 9)
+            {
+                return null;
+            }
+            else
+            {
+                var pid = $(this).closest('.box-body').find('.section-treeview').find('input.internal-value').val();
+                if(pid=="")
+                {
+                    InfoAlert("The Required Feild is Empty",1500);
+                    return false;
+                }
+                var CID = $('.display-txt').val();
+                if(CID=="")
+                {
+                    InfoAlert("The Required Feild Employee Name is Empty",1500);
+                    return false;
+                }
+                var form = $(this);
+                form.validate();
+                if (form.valid() == false) {
+                    InfoAlert("The Required Feild is Empty",1500);
+                    return false;
+                }
+
+                var container = $(this).closest('.panel-create');
+                var formData = new FormData($(this)[0]);
+                var nodeId = $(this).find('.section-treeview#PSubsiDetailId').find('.internal-value').val()
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+
+
+                    $.ajax({
+                        url: '@Url.Action("Create", "MapSubsi")',
+                        type: 'POST',
+                        data: formData,
+                        async: false,
+                        success: function (data) {
+                            $(container).html(data);
+                            //$.fn.updateTreeview('SubsiDetail', '_UpdateSubsiDetailTree', nodeId, -1)
+                            //$.fn.GetLayoutSubsiDetail();
+                            $('#createSubsiDetail')[0].reset();
+                            if (@Model.SDID == 0)
+                            {
+                                SuccessAlert("Subsi Detail Added Succesfully.",1500);
+                                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                            }
+                            else
+                            {
+                                SuccessAlert("Subsi Detail Edited Succesfully.",1500);
+                            }
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    });
+                }).fail(function () {
+                    //$.MessageBox("you clicked no");
+                });
+                return false;
+            }
+            
+
+           
+        });
+
+
+
+        $('#createSubsiDetail').on('click', '.btn-customer-popup', function (e, data) {
+            debugger;
+            var query = $(this).closest('.section-customer').find('input#CId').val();
+            var url = $('#getcustomerDetails').data('url');
+            var data = { "query": query };
+            $.get(url,data, function (data) {
+
+                $('#getcustomerDetails').html(data);
+                $('#getcustomerDetails').find('.Search').val(query);
+
+                debugger;
+
+                $('#getcustomerDetails').modal('show');
+            });
+
+
+        });
+
+        $('#createSubsiDetail').on('click', '.btn-employee-popup', function (e, data) {
+            debugger;
+            var query = $(this).closest('.section-customer').find('input#CId').val();
+            var url = $('#getEmployeeDetails').data('url');
+            var data = { "query": query };
+            $.get(url,data, function (data) {
+
+                $('#getEmployeeDetails').html(data);
+                $('#getEmployeeDetails').find('.Search').val(query);
+                debugger;
+
+                $('#getEmployeeDetails').modal('show');
+            });
+
+
+        });
+
+        $('#createSubsiDetail').on('click', '.btn-user-popup', function (e, data) {
+            debugger;
+            var query = $(this).closest('.section-customer').find('input#CId').val();
+            var url = $('#getUserDetails').data('url');
+            var data = { "query": query };
+            $.get(url,data, function (data) {
+
+                $('#getUserDetails').html(data);
+                debugger;
+                $('#getUserDetails').find('.Search').val(query);
+                $('#getUserDetails').modal('show');
+            });
+
+
+        });
+
+    });
+    $.fn.GetLayoutSubsiDetail = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/SubsiDetail/GetLayoutSubsiDetail/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+
+    $('input#CId').change(function () {
+
+        debugger;
+    });
+
+</script>
+<script>
+    $('#createSubsiDetail').on('keydown', '#CId', function (event) {
+        debugger;
+        if (event.keyCode == 13 || event.keyCode == 9) {
+            debugger;
+            var customer=$('#search-container').find('.display-text').val();
+            $('.btn-customer-popup').trigger('click');
+            $('.btn-employee-popup').trigger('click');
+            $('.btn-user-popup').trigger('click');
+            return false;
+        }
+
+    });
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+</style>

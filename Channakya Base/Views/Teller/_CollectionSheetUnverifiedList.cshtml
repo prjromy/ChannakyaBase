@@ -1,0 +1,75 @@
+﻿@model  IEnumerable<ChannakyaBase.Model.ViewModel.SmallCollectionSheetViewModel>
+@using ChannakyaBase.BLL
+@{CommonService cs = new CommonService();}
+
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <p>
+            <h3>Collection Sheet Verify</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayName("Sheet No")
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TotalAmount)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Collector")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Description")
+                    </th>
+                    <th></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SheetNo)
+                        </td>
+                        <td>
+                            @item.TotalAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        </td>
+                        <td>@cs.EmployeeUserInfoEmployeeId(Convert.ToInt16(item.CollectorId)).EmployeeName</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.note)
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-sm btn-collection-verify" onclick="CollectionSheetDetails(@item.CollSheetId)">Verify <i class="fa fa-check" aria-hidden="true"></i></button>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function CollectionSheetDetails(CollSheetId) {
+        debugger
+        $.ajax({
+            url: "/Teller/_CollectionSheetVerify",
+            data: { collSheetId: CollSheetId },
+            type: "Get",
+            contentType: "application/json;charset=utf-8",
+            datatype: "json",
+            success: function (result) {
+                debugger
+                $("section.content").html(result);
+            },
+            error: function () {
+                alert('error in calling ajax !!')
+            }
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">

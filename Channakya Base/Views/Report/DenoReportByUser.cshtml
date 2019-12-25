@@ -1,0 +1,90 @@
+﻿@model  ChannakyaBase.Model.ViewModel.DenoTransactionViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Deno Report By User</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+
+                <div class="form-group">
+
+                    <div class="col-md-3">
+                        <label> User Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.UserId, ReportUtilityService.VaultTellerAndCashierUser(), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label> Currency</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.CurrID, TellerUtilityService.GetAccountOpenCurrency(), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <input type="button" value="ExportToExcel" class="btn btn-info report-deno-export-to-excel pull-right" title="ExportToExcel" data-toggle="tooltip" />
+                        <button type="button" name="btn-account-holder-search" id="btn-report-deno-related" class="btn btn-primary pull-right" style="margin-left: 0px;" title="Search" data-toggle="tooltip">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border with-denoDetails-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script>
+
+
+    $('#btn-report-deno-related').on('click', function () {
+        var currencyId = $('#CurrID').val();
+        var userId = $('#UserId').val();
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_DenoReportByUser",
+            datatype: "HTML",
+            data: {
+                currencyId: currencyId,
+                userId: userId,
+            },
+            success: function (result) {
+                $('.with-denoDetails-Report-View').html("");
+                $('.with-denoDetails-Report-View').html(result);
+            }
+        });
+
+    });
+    $('.report-deno-export-to-excel').on('click', function () {
+        debugger;
+        var currencyId = $('#CurrID').val();
+        var currencyText = $('#CurrID option:selected').text();
+        var userId = $('#UserId').val();
+        var userText = $('#UserId option:selected').text();
+        window.open("/Report/DenoReportByUserExportToExcel?currencyId=" + currencyId + "&currencyText=" + currencyText + "&userId=" + userId + "&userText=" + userText);
+
+    });
+
+
+
+</script>
+

@@ -1,0 +1,259 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALCollModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    Layout = null;
+    var mod = Model;
+}
+@Html.HiddenFor(model=>model.Sno);
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Collateral Entry</h3>
+
+
+
+    </div>
+    @using (Html.BeginForm("InsertUpdateCollateral", "Credit", FormMethod.Post, new { id = "collateral-registration" }))
+    {
+        <div class="box-body cheque-registration-create">
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+                            @*@Html.Hidden("",)*@
+
+                        </div>
+                        @if (Model.IAccno != 0)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IAccno, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription(), Model.AccountNumber)
+                                    @Html.ValidationMessage("IAccno", "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IAccno, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                                    @Html.ValidationMessage("IAccno", "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NCID, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.NCID, CreditUtilityService.GetNCollateralDetail(), "--Select Collateral--", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.NCID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="customer-event-message">
+                        </div>
+                        @Html.Partial("_CollateralAllView")
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="button" value="Back To List" class="btn btn-info btn-cheque-registration-back" style="float:left" />
+
+                </div>
+                <div class="col-md-6">
+                    <input type="button" value="Save" class="btn btn-success btn-cheque-registration-save" style="float:right" />
+
+                </div>
+
+            </div>
+        </div>
+
+    }
+
+</div>
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+<script>
+    $(".btn-cheque-registration-back").on("click", function (e) {
+        debugger;
+        e.stopImmediatePropagation()
+
+        $.ajax({
+            url: "/credit/CollateralList",
+
+            type: 'GET',
+            async: false,
+            success: function (result) {
+                debugger;
+                $('section.content').html(result);
+            }
+        })
+    })
+
+    $('#NCID').on('change', function (e) {
+        debugger;
+        e.stopImmediatePropagation()
+
+        var value = $(this).val();
+
+
+        if (value == 5 || value == 6) {
+            var isInternal;
+            if (value == 5) {
+                isInternal = true
+            } else {
+                isInternal = false
+            }
+            $.ajax({
+                type: "GET",
+                url: "/Credit/_InternalFixedAccountCollateral",
+                datatype: "HTML",
+                data: { isInternal: isInternal },
+                success: function (result) {
+                    debugger;
+                    $('.Collateral-view').html(result)
+
+                }
+            })
+
+
+        } else if (value == 14 || value == 17) {
+            var url = "";
+            if (value == 14) {
+                url = "/Credit/_LandAndBuilding"
+            } else if (value == 17) {
+                url = "/Credit/_Vehicles"
+            }
+            $.ajax({
+                type: "GET",
+                url: url,
+                datatype: "HTML",
+
+                success: function (result) {
+                    debugger;
+                    $('.collateral-main-view').find('.account-loan-cvalue').addClass('hidden');
+                    $('.Collateral-view').html(result);
+
+                }
+            })
+
+        } else {
+            $('.Collateral-view').html("")
+
+
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/Credit/_AccountLoanCollateral",
+            datatype: "HTML",
+
+            success: function (result) {
+                debugger;
+                $('.collateral-main-view').html(result)
+                if (value != "5" && value != "6" && value != "14" && value != "17") {
+                    $('.collateral-main-view').find('.account-loan-cvalue').removeClass('hidden')
+                } else {
+                    $('.collateral-main-view').find('.account-loan-cvalue').addClass('hidden')
+                }
+            }
+        })
+
+    })
+    $(function () {
+        $.validator.unobtrusive.parse('#collateral-registration');
+        $(".btn-cheque-registration-save").on("click", function (e) {
+            debugger;
+            e.stopImmediatePropagation()
+
+            $('#collateral-registration').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#collateral-registration'));
+           
+
+            if ($("#collateral-registration").valid()) {
+                var accountvalue = $('#IAccno').val();
+                if (accountvalue == "") {
+                    InfoAlert('Please fill Account Number',3000);
+                    return false;
+                }
+                var cvalue = $('#CValue').val();
+                
+
+                //if (cvalue == 0)
+                //{
+                //    InfoAlert('Please fill Acceptable Value',3000);
+                //    return false;
+                //}
+               
+                Collateralregistrationform();
+            } else {
+                return false;
+            }
+
+        })
+
+    });
+
+    function Collateralregistrationform() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#collateral-registration').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            url: "/credit/InsertUpdateCollateral",
+
+                            type: 'GET',
+                            async: false,
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+                            }
+                        })
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>

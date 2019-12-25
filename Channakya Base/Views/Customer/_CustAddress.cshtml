@@ -1,0 +1,48 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustAddress
+@using ChannakyaBase.BLL.CustomHelper
+@using HtmlHelpers.BeginCollectionItem
+@{
+    var test = Model;
+}
+@using (Html.BeginCollectionItem("CustAddressList"))
+{
+    <tr>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.CID)
+        @Html.HiddenFor(x=>x.AddressTypeId)
+        @Html.HiddenFor(x => x.CAId)
+        <td>
+            @Model.LType
+            @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+        </td>
+        <td>
+            @Html.LocationSearch(x => x.LId)
+            @Html.ValidationMessageFor(model => model.LId, "", new { @class = "text-danger" })
+
+        </td>
+        <td>
+            @Html.EditorFor(model => model.StreetNo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.StreetNo, "", new { @class = "text-danger" })
+        </td>
+        <td>
+            @Html.EditorFor(model => model.BlockNo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.BlockNo, "", new { @class = "text-danger" })
+        </td>
+       
+        @if (Model.AddressTypeId == 2)
+        {
+            <td>
+                @Html.EditorFor(model => model.OName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.OName, "", new { @class = "text-danger" })
+            </td>
+        }
+        else
+        {
+            <td></td>
+        }
+
+
+
+    </tr>
+}
+<script src="~/Scripts/Paging.js"></script>

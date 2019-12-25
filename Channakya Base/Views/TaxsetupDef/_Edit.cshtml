@@ -1,0 +1,58 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.TaxsetupDef
+@{
+    var myId = Model.TaxID;
+}
+<div class="edit-section">
+    @using (Ajax.BeginForm("_Edit", "TaxsetupDef", FormMethod.Post
+            , new AjaxOptions
+            {
+                UpdateTargetId = "tax-list",
+                InsertionMode = InsertionMode.Replace,
+                HttpMethod = "Post",
+                OnSuccess = "editSuccess"
+            }
+            , new { id = "editSubmitForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            <fieldset>
+                <legend> Edit Tax Type </legend>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.TaxID)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-5">
+                        @Html.EditorFor(model => model.TaxName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TaxName, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => myId)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxRate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-5">
+                        @Html.EditorFor(model => model.TaxRate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TaxRate, "", new { @class = "text-danger" })
+
+                        <br />
+                        <input type="button" value="Save" id="btn-edit-submit" class="btn btn-default btnedit" />
+                        <input type="button" value="Cancel" id="btn-cancel" class="btn btn-default btn-cancel" />
+                    </div>
+                </div>
+            </fieldset>
+            </div>
+            }
+        </div>
+
+        <script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+        <script>
+            function editSuccess() {
+                SuccessAlert("Tax Type Succesfully Edited. ", 15000);
+                debugger;
+                $('.ProductFloatingInterest').find('.edit-section').empty();
+                $('.ProductFloatingInterest').find(".btn-create").val('New Tax Type');
+            }
+        </script>
+

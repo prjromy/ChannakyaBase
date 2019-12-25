@@ -1,0 +1,817 @@
+﻿@model  ChannakyaBase.Model.ViewModel.LoanPaymentModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = null;
+
+    bool Other = false;
+    bool Penalty = false;
+    bool Interest = false;
+    if (Model.IonCA != 0 || Model.IonCR != 0 || Model.OthrBal != 0)
+    {
+
+        Other = true;
+    }
+    if (Model.PonIR != 0 || Model.PonIA != 0 || Model.PonPrA != 0 || Model.IonIA != 0 || Model.PonPrR != 0 || Model.IonIR != 0)
+    {
+        Penalty = true;
+    }
+    if (Model.IonPR != 0 || Model.IonPA != 0)
+    {
+        Interest = true;
+    }
+
+}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover table-payment-input-list">
+        <thead>
+            <tr>
+
+                <th>
+
+                </th>
+                <th>
+                    Balance
+                </th>
+
+                <th class="hidden">
+                    Total
+                </th>
+                <th>
+                    Payment
+                </th>
+                @*<th>
+                    Rebate
+                </th>*@
+                <th>
+                    Remaining
+                </th>
+                @*<th>
+                        PrePaymet
+                    </th>*@
+            </tr>
+        </thead>
+        <tr style="background-color:#d4ebf6">
+            <td>Payment Details</td>
+            <td>
+
+              
+                Mature Interest @Html.CheckBoxFor(model => model.IsMature, new { @class = "mature-amount-or-not" })
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Payment, new { @class = "form-control custome-control text-right loan-total-amount-payment" })
+                @Html.Hidden("ActualPayment", null, new { @class = "form-control text-right loan-total-amount-ActualPayment" })
+                @Html.ValidationMessageFor(model => model.Payment, "", new { @class = "text-danger" })
+            </td>
+            @*<td>
+                @Html.TextBoxFor(model => model.Rebate, new { @class = "form-control custome-control text-right Rebate-loan-payment" })
+                @Html.ValidationMessageFor(model => model.Rebate, "", new { @class = "text-danger" })
+            </td>*@
+            <td>  Manual Distribute  @Html.CheckBoxFor(model => model.ManualDistribute)</td>
+        </tr>
+        <tbody>
+            @if (Other)
+            {
+                bool IsIonCA = false;
+
+                if (Model.IonCA != 0)
+                {
+                    IsIonCA = true;
+                }
+                bool IsIonCR = false;
+                if (Model.IonCR != 0)
+                {
+                    IsIonCR = true;
+                }
+                bool isOthrBal = false;
+                if (Model.OthrBal != 0)
+                {
+                    isOthrBal = true;
+                }
+
+
+                if (IsIonCR == true)
+                {
+                    <tr>
+                        <td>Other ABNR Interest</td>
+                        <td>@Html.TextBoxFor(x => x.IonCA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherIonCAPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherIonCARebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("OtherBalanceIonCA", null, new { @class = "form-control custome-control TotalPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.RemainingIonCA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (IsIonCA == true)
+                {
+                    <tr>
+                        <td>Other Income Interest</td>
+                        <td>@Html.TextBoxFor(x => x.IonCR, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherIonCRPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherIonCRRebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("OtherBalanceIonCR", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingIonCR, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (isOthrBal == true)
+                {
+                    <tr>
+                        <td>Other OutStanding</td>
+                        <td>@Html.TextBoxFor(x => x.OthrBal, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherOthrBalPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.OtherOthrBalRebate, new { @class = "form-control custome-control ", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("OtherBalanceOthrBal", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingOthrBal, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+
+            }
+            @if (Penalty)
+            {
+                bool IsPonIR = false;
+                if (Model.PonIR != 0)
+                {
+                    IsPonIR = true;
+
+                }
+                bool IsPonPrR = false;
+                if (Model.PonPrR != 0)
+                {
+                    IsPonPrR = true;
+
+                }
+                bool isIonIR = false;
+                if (Model.IonIR != 0)
+                {
+                    isIonIR = true;
+
+                }
+
+                bool IsPonIA = false;
+                if (Model.PonIA != 0)
+                {
+                    IsPonIA = true;
+
+                }
+                bool IsPonPrA = false;
+                if (Model.PonPrA != 0)
+                {
+                    IsPonPrA = true;
+
+                }
+                bool isIonIA = false;
+                if (Model.IonIA != 0)
+                {
+                    isIonIA = true;
+
+                }
+
+                if (IsPonIR == true)
+                {
+                    <tr>
+                        <td>Penalty ABNR Interest</td>
+                        <td>@Html.TextBoxFor(x => x.PonIR, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrPonIRPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrPonIRRebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalancePonPrR", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingPonIR, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (IsPonPrR == true)
+                {
+                    <tr>
+                        <td>Penalty ABNR Principal</td>
+                        <td>@Html.TextBoxFor(x => x.PonPrR, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrPonPrRPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrPonPrRRebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalancePonPrR", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingPonPrR, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (isIonIR == true)
+                {
+                    <tr>
+                        <td>Penalty ABNR IntOnInt</td>
+                        <td>@Html.TextBoxFor(x => x.IonIR, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrIonIRPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyAnbrIonIRRebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalanceIonIR", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.RemainingIonIR, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+
+                if (IsPonIA == true)
+                {
+                    <tr>
+                        <td>Penalty Income Interest</td>
+                        <td>@Html.TextBoxFor(x => x.PonIA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomePonIAPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomePonIARebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalancePonIA", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingPonIA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (IsPonPrA)
+                {
+                    <tr>
+                        <td>Penalty Income Principal</td>
+                        <td>@Html.TextBoxFor(x => x.PonPrA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomePonPrAPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomePonPrARebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalancePonPrA", null, new { @class = "form-control custome-control TotalPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.RemainingPonPrA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                if (isIonIA)
+                {
+                    <tr>
+                        <td>Penalty Income IntOnInt</td>
+                        <td>@Html.TextBoxFor(x => x.IonIA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomeIonIAPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.PenaltyIncomeIonIARebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("PenaltyBalanceIonIA", null, new { @class = "form-control custome-control TotalPayment", @readonly = "readonly" })</td>
+
+                        <td>@Html.TextBoxFor(x => x.RemainingIonIA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+
+
+            }
+            @if (Interest)
+            {
+                bool IsIonPR = false;
+                if (Model.IonPR != 0)
+                {
+                    IsIonPR = true;
+
+                }
+                bool isIonPA = false;
+                if (Model.IonPA != 0)
+                {
+                    isIonPA = true;
+
+                }
+
+                if (IsIonPR)
+                {
+                    <tr>
+                        <td>Interest ABNR Principal</td>
+                        <td>@Html.TextBoxFor(x => x.IonPR, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.InterestIonPRPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.InterestIonPRRebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>
+                        <td class="hidden">@Html.TextBox("BalanceIonPR", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+                        <td>@Html.TextBoxFor(x => x.RemainingIonPR, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+                    </tr>
+                }
+                //if (isIonPA)
+                //{
+
+                //}
+
+
+
+            }
+            <tr>
+                <td>Interest Income Principal</td>
+                <td>@Html.TextBoxFor(x => x.IonPA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                <td>@Html.TextBoxFor(x => x.InterestIonPAPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+               @* <td>@Html.TextBoxFor(x => x.InterestIonPARebate, new { @class = "form-control custome-control RebatePayment", @readonly = "readonly" })</td>*@
+                <td class="hidden">@Html.TextBox("BalanceIonPA", null, new { @class = "form-control custome-control TotalPayment hidden", @readonly = "readonly" })</td>
+
+                <td>@Html.TextBoxFor(x => x.RemainingIonPA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+
+            </tr>
+            <tr>
+                <td>Principal Total</td>
+                <td>@Html.TextBoxFor(x => x.MaturePA, new { @class = "form-control custome-control PaymentBalance", @readonly = "readonly" })</td>
+                <td>@Html.TextBoxFor(x => x.PrincipalMaturPayment, new { @class = "form-control custome-control AllRemainingPayment", @readonly = "readonly" })</td>
+               @* <td>@Html.TextBoxFor(x => x.PrincipalMaturRebate, new { @class = "form-control custome-control", @readonly = "readonly" })</td>*@
+                <td class="hidden">@Html.TextBox("BalanceMaturePA", null, new { @class = "form-control custome-control TotalPayment TotalPayment hidden", @readonly = "readonly" })</td>
+                <td>@Html.TextBoxFor(x => x.RemainingMaturePA, new { @class = "form-control custome-control RemainingPayment", @readonly = "readonly" })</td>
+
+            </tr>
+
+
+        </tbody>
+
+        <tr style="background-color:#d4ebf6">
+            <td>
+                @Html.Label("Pre-Paid Mode")
+                @Html.DropDownListFor(model => model.PrePaymentMode, CreditUtilityService.PrePaymentMode(), new { @class = "form-control custome-control" })
+              
+                @Html.TextBoxFor(model => model.ExtraInterest, new { @class = "form-control custome-control text-right", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.ExtraInterest, "", new { @class = "text-danger" })
+            </td>
+
+
+            <td class="loan-payment-date">
+                @Html.LabelFor(model => model.Date)
+                @Html.DatePicker(x => x.Date)
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                @Html.LabelFor(model => model.PaymentInterest)
+                @Html.TextBoxFor(model => model.PaymentInterest, new { @class = "form-control custome-control text-right" })
+                @Html.ValidationMessageFor(model => model.PaymentInterest, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                
+            </td>
+            <td></td>
+        </tr>
+
+        <thead>
+            <tr>
+
+                <th>
+
+                </th>
+                <th style="text-align:right">
+                    <span class="Balance-total" style="text-align:right">@Model.TotalBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                </th>
+                <th style="text-align:right">
+                    <span class="Payment-total" style="text-align:right"></span>
+                </th>
+                <th style="text-align:right">
+                    <span class="Rebate-total" style="text-align:right"></span>
+                </th>
+                <th style="text-align:right" class="hidden">
+                    <span class="Total-total" style="text-align:right"></span>
+                </th>
+
+                <th style="text-align:right">
+                    <span class="Remaining-total" style="text-align:right"></span>
+                </th>
+                @*<th style="text-align:right">
+                        <span class="PrePaymet-total" style="text-align:right"></span>
+                    </th>*@
+            </tr>
+        </thead>
+
+    </table>
+
+</div>
+<style>
+    .custome-control {
+        height: 28px;
+        border-radius: 0;
+        text-align: right;
+    }
+    /*td {
+        width: 13%;
+    }*/
+</style>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+    $(document).ready(function () {
+
+        $('.mature-amount-or-not').on('click', function () {
+            debugger
+            if ($(this).prop('checked')) {
+                var matureAmt = $('.mature-2').html();
+                matureAmt =matureAmt.replace(/\,/g, '')
+                $('#IonPA').val(parseFloat(matureAmt));
+            } else {
+                var matureAmt = $('.Outstanding-Interest').html();
+                matureAmt = matureAmt.replace(/\,/g, '')
+                $('#IonPA').val(parseFloat(matureAmt));
+            }
+            var payment = parseFloat($('.loan-total-amount-payment').val());
+            if (payment > 0) {
+                $('.loan-total-amount-payment').trigger('change');
+            }
+            var totalPaymentBalance = $('.PaymentBalance');
+            var grandTotal = 0;
+            $(totalPaymentBalance).map(function () {
+                grandTotal += parseFloat($(this).val());
+            })
+            $('.Balance-total').html(grandTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        })
+        $('#ManualDistribute').on('change', function () {
+            debugger;
+            if ($(this).prop('checked')) {
+                $('.AllRemainingPayment').prop('readonly', false)
+                $('.RebatePayment').prop('readonly', false)
+                //$('.Rebate-loan-payment').prop('readonly', true)
+                $('.loan-total-amount-payment').prop('readonly', true)
+                $('.loan-total-amount-payment').val(0);
+            } else {
+                $('.AllRemainingPayment').prop('readonly', true)
+                $('.RebatePayment').prop('readonly', true)
+                //$('.Rebate-loan-payment').prop('readonly', false)
+                $('.loan-total-amount-payment').prop('readonly', false)
+            }
+
+
+        })
+
+        $('#PaymentInterest').on('change', function () {
+            debugger;
+            var PayMode = $('#PrePaymentMode option:selected').val();
+            if (PayMode == "" || PayMode == "-1") {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Please select PayMode!!"
+                }).done(function () {
+                    $(this).val("");
+                    $(this).focusin();
+                    return false
+                }).fail(function () {
+                    //return false;
+
+                })
+
+                return;
+            }
+            var ActualAmount = parseFloat($('.loan-total-amount-ActualPayment').val());
+
+            var interestPrePaid = parseFloat($(this).val());
+            if (isNaN(ActualAmount) == true) {
+                ActualAmount = 0;
+            }
+            if (isNaN(interestPrePaid) == true) {
+                interestPrePaid = 0;
+            }
+            var loantotalPay = ActualAmount + interestPrePaid;
+            $('.loan-total-amount-payment').val(loantotalPay)
+            $('.Payment-total').html(loantotalPay.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+            //$('.PrePaymet-total').html(interestPrePaid);
+            
+
+        })
+
+        $('.RebatePayment').on('change', function () {
+            if ($('#ManualDistribute').prop('checked')) {
+                var closeTr = $(this).closest('tr')
+                var rebatPay = parseFloat($(this).val());
+                var payment = parseFloat($(closeTr).find('.AllRemainingPayment').val());
+
+                var balance = parseFloat($(closeTr).find('.PaymentBalance').val());
+
+
+                if (isNaN(rebatPay) == true) {
+                    rebatPay = 0;
+                }
+                var chkBalance = balance - rebatPay;
+
+                if (chkBalance < rebatPay) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "Rebate amount is more than balance.!!!!"
+                    }).done(function () {
+                        $(this).val(balance.toFixed(2))
+                        $(closeTr).find('.RemainingPayment').val(0)
+
+                        return false;
+                    }).fail(function () {
+
+                        //return false;
+                    })
+                    $(this).focusin();
+                    return
+                }
+                if (balance != 0) {
+                    var total = balance - rebatPay - payment;;
+                    var rebTotal = balance - rebatPay
+                    $(closeTr).find('.TotalPayment').val(rebTotal.toFixed(2))
+                    $(closeTr).find('.RemainingPayment').val(total.toFixed(2))
+                }
+                var totalReb = $('.TotalPayment');
+                var rebDiscountOne = 0;
+                $(totalReb).map(function () {
+                    rebDiscountOne += parseFloat($(this).val());
+                })
+                var rebatPayTotal = 0;
+                var rbtAmount = $(".RebatePayment");
+                $(rbtAmount).map(function () {
+                    rebatPayTotal += parseFloat($(this).val());
+                })
+                $('.Rebate-loan-payment').val(rebatPayTotal.toFixed(2))
+                $('.Rebate-total').html(rebatPayTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('.Total-total').html(rebDiscountOne.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            }
+        })
+
+        $('.AllRemainingPayment').on('change', function () {
+            debugger;
+            if ($('#ManualDistribute').prop('checked')) {
+                var payment = parseFloat($(this).val());
+                var closeTr = $(this).closest('tr')
+                var balance = parseFloat($(closeTr).find('.PaymentBalance').val());
+               // var rebatPay = parseFloat($(closeTr).find('.RebatePayment').val());
+
+                //if (isNaN(rebatPay) == true) {
+                //    rebatPay = 0;
+                //}
+                //var chkBalance = balance - rebatPay;
+                var chkBalance = balance;
+                if (chkBalance < payment) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "payment amount is more than balance.!!!!"
+                    }).done(function () {
+                        $(closeTr).find('.AllRemainingPayment').val(chkBalance.toFixed(2))
+                        $(closeTr).find('.RemainingPayment').val(0);
+                        $(closeTr).find('.AllRemainingPayment').focusin();
+                        return false
+                    }).fail(function () {
+                        //return false;
+
+                    })
+                    $(closeTr).find('.AllRemainingPayment').focusin();
+                    return
+
+                }
+
+                if (balance != 0) {
+                    var total = balance - rebatPay - payment;
+
+                    $(closeTr).find('.RemainingPayment').val(total.toFixed(2))
+                }
+                var Remaining = $('.RemainingPayment');
+                var RemainuingTotal = 0;
+                $(RemainuingTotal).map(function () {
+                    RemainuingTotal += parseFloat($(this).val());
+                })
+                var remainingPayTotal = 0;
+                var remAmount = $(".AllRemainingPayment");
+                $(remAmount).map(function () {
+                    remainingPayTotal += parseFloat($(this).val());
+                })
+                var prePaymentAmount = parseFloat($('input#PaymentInterest').val());
+                $('.loan-total-amount-payment').val(remainingPayTotal.toFixed(2));
+                $('.loan-total-amount-ActualPayment').val(remainingPayTotal.toFixed(2));
+                $('.Payment-total').html((remainingPayTotal.toFixed(2) + prePaymentAmount.toFixed(2)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('.Remaining-total').html(RemainuingTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            }
+        })
+
+        $('.loan-total-amount-payment').on('change', function (e) {
+            e.stopImmediatePropagation();
+            debugger;
+            var accountId = $('.account-number-div').find('.account-id').val();
+            var balance = parseFloat($('.loan-total-amount-payment').val()) - parseFloat($('#PaymentInterest').val());
+            var isMatInterest = $(".mature-amount-or-not").prop('checked');
+            var interestPayment = parseFloat($('#PaymentInterest').val());
+            if (isNaN(interestPayment) == true) {
+                interestPayment = 0;
+            }
+            $('.loan-total-amount-ActualPayment').val(balance)
+            var discount = parseFloat($('.Rebate-loan-payment').val());
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/CheckTotalAmountPaid',
+                data: {
+                    accountId: accountId,
+                    balance: balance,
+                    discount: discount,
+                    isMatInterest: isMatInterest
+                },
+                success: function (payment) {
+                    var remainingBal = 0;
+                    if (payment.Success) {
+                        remainingBal = balance;
+                    } else {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: payment.Msg
+                        }).done(function () {
+                            $('.loan-total-amount-payment').val(payment.ValueOne.toFixed(2))
+                            remainingBal = payment.ValueOne;
+                            $('.loan-total-amount-payment').focusin();
+                            //return false
+                        }).fail(function () {
+                            //return false;
+
+                        })
+                        remainingBal = payment.ValueOne;
+                    }
+                    var TotalPaymentLoan = 0;
+                    var TotalRemainingPaymentLoan = 0;
+                    $('.table-payment-input-list > tbody  > tr').each(function (index, item) {
+                        var rebate = parseFloat($(item).find('.RebatePayment').val())
+                        if (isNaN(rebate) == true) {
+                            rebate = 0;
+                        }
+                        var balanceAmount = parseFloat($(item).find('.PaymentBalance').val());
+                        var finalBalanceAfterRebet = balanceAmount - rebate;
+                        if (remainingBal > 0 && finalBalanceAfterRebet > 0) {
+                            if (remainingBal >= balanceAmount) {
+
+                                $(item).find('.AllRemainingPayment').val(finalBalanceAfterRebet.toFixed(2));
+
+                                $(item).find('.RemainingPayment').val(0)
+
+                                remainingBal = remainingBal - finalBalanceAfterRebet;
+                            } else {
+                                $(item).find('.AllRemainingPayment').val(remainingBal.toFixed(2));
+                                var RemaingPay = finalBalanceAfterRebet - remainingBal;
+                                $(item).find('.RemainingPayment').val(RemaingPay.toFixed(2))
+
+                                remainingBal = 0;
+                            }
+                        } else {
+                            var Allremaining = $(item).find('.AllRemainingPayment').val(0);
+                            $(item).find('.RemainingPayment').val(finalBalanceAfterRebet);
+                        }
+                        var PaymentOne = parseFloat($(item).find('.AllRemainingPayment').val());
+                        var RemainingPaymentOne = parseFloat($(item).find('.RemainingPayment').val());
+                        if (isNaN(PaymentOne) == true) {
+                            PaymentOne = 0;
+                        }
+                        if (isNaN(RemainingPaymentOne) == true) {
+                            RemainingPaymentOne = 0;
+                        }
+
+                        TotalPaymentLoan += PaymentOne;
+                        TotalRemainingPaymentLoan += RemainingPaymentOne;
+                    });
+                    var prePaymentAmount = parseFloat($('input#PaymentInterest').val());
+                    var totalPaymentFinal = TotalPaymentLoan + prePaymentAmount
+                    $('.Payment-total').html(totalPaymentFinal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $('.Remaining-total').html(TotalRemainingPaymentLoan.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+                },
+            });
+            $('.loan-total-amount-payment').val(balance + interestPayment)
+        })
+
+        $('.Rebate-loan-payment').on('change', function (e) {
+            e.stopImmediatePropagation();
+
+            var accountId = $('.account-number-div').find('.account-id').val();
+
+            var discount = parseFloat($('.Rebate-loan-payment').val());
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/CheckTotalRebateAmount',
+                data: {
+                    accountId: accountId,
+
+                    discount: discount
+                },
+                success: function (payment) {
+                    var remainingBal = 0;
+                    if (payment.Success) {
+                        remainingBal = discount;
+                    } else {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: payment.Msg
+                        }).done(function () {
+                            $('.Rebate-loan-payment').val(payment.ValueOne.toFixed(2))
+                            $('.Rebate-loan-payment').focusin();
+                            return false
+                        }).fail(function () {
+                            //return false;
+
+                        })
+                        remainingBal = payment.ValueOne;
+                    }
+                    var givenRebateTotal = 0;
+                    var RemaingAfterRebateTotal = 0;
+                    $('.table-payment-input-list > tbody  > tr').each(function (index, item) {
+
+                        var balanceAmount = parseFloat($(item).find('.PaymentBalance').val());
+                        if (isNaN(balanceAmount) == true) {
+                            balanceAmount = 0;
+                        }
+
+                        if (remainingBal > 0 && balanceAmount > 0) {
+                            if (remainingBal >= balanceAmount) {
+                                ;
+                                if ($(item).find('.RebatePayment') != undefined) {
+                                    $(item).find('.RebatePayment').val(balanceAmount.toFixed(2))
+
+                                    $(item).find('.TotalPayment').val(0);
+
+                                    $(item).find('.RemainingPayment').val(0)
+                                    $(item).find('.AllRemainingPayment').val(0)
+                                    remainingBal = remainingBal - balanceAmount;
+                                }
+
+                            } else {
+
+                                if ($(item).find('.RebatePayment') != undefined) {
+
+                                    $(item).find('.RebatePayment').val(remainingBal.toFixed(2));
+
+                                    var RemaingPay = balanceAmount - remainingBal
+                                    $(item).find('.TotalPayment').val(RemaingPay);
+
+                                    $(item).find('.RemainingPayment').val(balanceAmount - parseFloat($(item).find('.RebatePayment').val()));
+                                    //  $(item).find('.AllRemainingPayment').val(balanceAmount - parseFloat($(item).find('.RebatePayment').val()) - parseFloat($(item).find('.AllRemainingPayment').val()))
+                                    remainingBal = 0;
+                                }
+                            }
+                        } else {
+                            $(item).find('.RebatePayment').val(0);
+
+                            $(item).find('.AllRemainingPayment').val(0);
+                            $(item).find('.TotalPayment').val(0);
+                            $(item).find('.RemainingPayment').val(balanceAmount);
+                        }
+                        var RemainingAfter = parseFloat($(item).find('.TotalPayment').val());
+                        var givenRebt = parseFloat($(item).find('.RebatePayment').val());
+                        if (isNaN(RemainingAfter) == true) {
+                            RemainingAfter = 0;
+                        }
+                        if (isNaN(givenRebt) == true) {
+                            givenRebt = 0;
+                        }
+                        RemaingAfterRebateTotal += RemainingAfter;
+                        givenRebateTotal += givenRebt;
+                    });
+                    $('.Rebate-total').html(givenRebateTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $('.Total-total').html(RemaingAfterRebateTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $('.loan-total-amount-payment').trigger('change');
+                },
+            });
+        })
+
+        $('#PrePaymentMode').on('change', function () {
+            debugger;
+            var paymentMode = $('#PrePaymentMode option:selected').val();
+            if (paymentMode != "-1") {
+
+
+                var matDate = $('#Date').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+                var accountId = $('.account-number-div').find('.account-id').val();
+                var currentRemainingPrincipal = parseFloat($('input#RemainingMaturePA').val());
+                if (currentRemainingPrincipal == 0) {
+                    currentRemainingPrincipal = $('input#MaturePA').val();
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: '/Credit/GetCalculateExtraInterest',
+                    data: {
+                        accountId: accountId,
+                        paymentMode: paymentMode,
+                        currentRemainingPrincipal: currentRemainingPrincipal,
+                        matDate: matDate
+                    },
+                    success: function (result) {
+
+                        $('#ExtraInterest').val(result.calculateInterest);
+                        $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.duration.Date);
+                        $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.duration.EnglishDate)
+                        $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.duration.NepaliDate)
+                    }
+
+                })
+            }
+            else {
+                $('#ExtraInterest').val("0");
+            }
+        })
+
+        $('#Date').on('change', function () {
+
+            var paymentMode = $('#PrePaymentMode option:selected').val();
+            if (paymentMode != "4") {
+                return;
+            }
+            var matDate = $('#Date').closest('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+            var accountId = $('.account-number-div').find('.account-id').val();
+            var currentRemainingPrincipal = parseFloat($('input#RemainingMaturePA').val());
+            if (currentRemainingPrincipal == 0) {
+                currentRemainingPrincipal = $('input#MaturePA').val();
+            }
+            $.ajax({
+                type: 'GET',
+                url: '/Credit/GetCalculateExtraInterest',
+                data: {
+                    accountId: accountId,
+                    paymentMode: paymentMode,
+                    currentRemainingPrincipal: currentRemainingPrincipal,
+                    matDate: matDate
+                },
+                success: function (result) {
+
+                    $('#ExtraInterest').val(result.calculateInterest);
+                    $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val(result.duration.Date);
+                    $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateAD").val(result.duration.EnglishDate)
+                    $('.loan-payment-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateBS").val(result.duration.NepaliDate)
+                }
+            })
+        })
+    })
+</script>

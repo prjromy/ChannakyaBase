@@ -1,0 +1,15 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountDetailsViewModel
+@using ChannakyaBase.BLL.CustomHelper
+<div class="form-group">
+    @Html.HiddenFor(x=>x.ReferenceId)
+    @Html.LabelFor(model => model.ReferredBy, new { @class = "control-label col-md-2" })
+    <div class="col-md-4 Referred-By">
+        @Html.CustomerSearch(x => x.ReferredBy,ECustomerSearchType.SingleType)
+        @Html.ValidationMessageFor(model => model.ReferredBy, "", new { @class = "text-danger" })
+    </div>
+    @Html.LabelFor(model => model.BroughtBy, new { @class = "control-label col-md-2" })
+    <div class="col-md-4 Brought-By">
+        @Html.EmployeeSearch(x => x.BroughtBy)
+        @Html.ValidationMessageFor(model => model.BroughtBy, "", new { @class = "text-danger" })
+    </div>
+</div>

@@ -1,0 +1,35 @@
+﻿<link href="~/Content/ch-treeview.css" rel="stylesheet" />
+<script src="~/Scripts/ch-treeview.js"></script>
+
+@model  ChannakyaAccounting.Models.ViewModel.TreeView
+
+@{
+    var test = Model;
+    ChannakyaAccounting.Models.ViewModel.TreeViewParam param = (ChannakyaAccounting.Models.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+
+<div class="box box-warning ch-treeview box-solid" style="border-width:2px;">
+    <div class="box-header" style="background-color:cornflowerblue;">
+        <h3 class="box-title treeview-title">@param.Title</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="input-group" style="padding-top:2px;">
+        <input type="text" name="text-filter-tree" class="form-control text-filter-tree" id="text-filter-tree" placeholder="Search...">
+        <span class="input-group-btn">
+            <button type="button" name="search" class="btn btn-flat filter-btn">
+                <i class="fa fa-search"></i>
+            </button>
+        </span>
+    </div>
+    <div class="box-body treeview-area" id="treeview-area"
+         allowselectgroupnode="@Json.Encode(param.AllowSelectGroup)" withimageicon="@Json.Encode(param.WithImageIcon)"
+         withcheckbox="@Json.Encode(param.WithCheckBox)" withoutme="@Json.Encode(param.WithOutMe)" style=" overflow:auto;">
+        @Html.Partial("~/Views/Shared/_AccountingTreeViewBody.cshtml", Model,
+                                new ViewDataDictionary { { "param", param } })
+    </div><!-- /.box-body -->
+</div>
+

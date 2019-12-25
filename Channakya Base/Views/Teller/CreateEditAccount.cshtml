@@ -1,0 +1,474 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountDetailsViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+
+@{
+    CommonService cmService = new CommonService();
+    var y = Model;
+
+}
+
+<div class="box box-warning Employee-create account-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Deposit Account Open</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*<div class="verfier-list">
+
+        </div>*@
+    @using (Html.BeginForm("CreateEditAccount", "Teller", FormMethod.Post, new { id = "AccountOpen-form" }))
+    {
+        <div class="box-body">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @*Event message*@
+
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.HiddenFor(x => x.MovementAccId)
+                        @Html.HiddenFor(x => x.IRateMasterId)
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.Hidden("MessageEventID", 4)
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Client-Details</legend>
+                            <div class="account-open-customer">
+                                @Html.Partial("_CustomerAdd", Model)
+                            </div>
+
+                        </fieldset>
+                        <div id="customer-related-message">
+                        </div>
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Account-Details</legend>
+
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.RDate, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DatePicker(x => x.RDate, true)
+                                    @Html.ValidationMessageFor(model => model.RDate, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            @if (Model.IAccno != 0)
+                            {
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Aname, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(model => model.Aname, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Aname, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Accno, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(model => model.Accno, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Accno, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            }
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SchemeId, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.SchemeId, TellerUtilityService.GetAllDepositScheme(), "--select scheme--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SchemeId, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.LabelFor(model => model.PID, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.PID, new SelectList("", ""), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+
+                                @Html.LabelFor(model => model.CurrID, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CurrID, TellerUtilityService.GetCurrencyByProductId(Model.PID), new { @class = "form-control"})
+                                    @Html.ValidationMessageFor(model => model.CurrID, "", new { @class = "text-danger" })
+                                </div>
+                                <label class="control-label col-md-2">Change Date</label>
+                                <div class="col-md-4">
+                                    @*@if (cmService.DateType() == "1")
+                                        {
+                                            @Html.CheckBoxFor(x => x.DateType, new { @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+                                            @Html.CheckBoxFor(x => x.DateType)  <lable>apply for current account only</lable>
+                                        }*@
+                                    <form id="my-radio-button">
+
+                                        @Html.RadioButtonFor(model => model.DateType, 1, new { @checked = "true" }) AD
+
+                                        @Html.RadioButtonFor(model => model.DateType, 2) BS
+                                    </form>
+
+
+                                </div>
+                            </div>
+
+                        </fieldset>
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Interest-Details</legend>
+                            <div class="form-group">
+                                <div class="Duration">
+                                    @Html.LabelFor(model => model.Duration, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.DropDownListFor(model => model.Duration, new SelectList("", ""), "-Select Duration-", new { @class = "form-control", @disabled = "disabled" })
+                                        @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="MaturationDate">
+                                    @Html.LabelFor(model => model.MaturationDate, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4 MaturationDate">
+                                        @Html.DatePicker(x => x.MaturationDate,true )
+                                        @Html.ValidationMessageFor(model => model.MaturationDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.InterestCalRule, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.InterestCalRule, new SelectList("", ""), "-Select Calculation Rule -", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.InterestCalRule, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="AggrementForFixed">
+                                    @Html.LabelFor(model => model.AgreementAmount, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.Hidden("IsFiexedAggrAmt")
+                                        @Html.TextBoxFor(model => model.AgreementAmount, new { @class = "form-control text-right" })
+
+                                    </div>
+                                </div>
+                                <div class="ContributionAmountForRecurring hidden">
+                                    @Html.LabelFor(model => model.ContributionAmount, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.DropDownListFor(model => model.ContributionAmount, new SelectList("", ""), "-Select contribution Amount -", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ContributionAmount, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <div class="Basic">
+                                    @Html.LabelFor(model => model.Basic, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.DropDownListFor(model => model.Basic, new SelectList("", ""), "-Select Duration Basic -", new { @class = "form-control", @disabled = "disabled" })
+                                        @Html.ValidationMessageFor(model => model.Basic, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                @Html.LabelFor(model => model.InterestCapitalize, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.InterestCapitalize, new SelectList("", ""), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.InterestCapitalize, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.InterestRate, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.InterestRate, new { @class = "form-control text-right", @type = "number" })
+                                    @Html.ValidationMessageFor(model => model.InterestRate, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="MinimumBalance">
+                                    @Html.LabelFor(model => model.MinimumBalance, new { @class = "control-label MinimumBalance col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.MinimumBalance, new { @class = "form-control MinimumBalance text-right", @type = "number" })
+                                        @Html.ValidationMessageFor(model => model.MinimumBalance, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MovementAcc, new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.AccountNumberSearch(x => x.MovementAcc, EAccountDetailsShow.NoDisplay.GetDescription(), EAccountFilter.Nominee.GetDescription(), EAccountType.Normal.GetDescription())
+                                    @Html.ValidationMessage("accountNumber", "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend style="font-size:14px;font-weight:bold">Nominee-Details</legend>
+                            <div class="form-group">
+                                @Html.Label("Share%", new { @class = "control-label  col-md-1" })
+                                <div class="col-md-1">
+                                    <input class="form-control" id="calShare" name="calShare" type="text" readonly>
+                                </div>
+
+                            </div>
+                            <div class="content-table" id="content-Nominee">
+                                <div class="Nominee-table-div">
+                                    <table class="table table-bordered table-striped table-hover" id="Nominee-table-div">
+                                        <thead>
+                                            <tr>
+
+                                                <th>@Html.LabelFor(x => x.AccountNominee.NomNam)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.NomRel)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.ContactNo)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.ContactAddress)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.CCertno)</th>
+                                                <th>@Html.LabelFor(x => x.AccountNominee.Share)</th>
+                                                <th>@Html.Label("CertificateName")</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*@if (Model.IAccno == 0)
+                                                {
+                                                    @Html.Partial("_AccountNominee", Model.AccountNominee)
+                                                }*@
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="Nominee-table-div-Select">
+                                    <fieldset>
+                                        <div class="form-group">
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.NomNam, new { @class = "control-label NomineeName" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.NomNam, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.NomNam, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.NomRel, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.NomRel, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.NomRel, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.ContactNo, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.ContactNo, new { @class = "form-control", @type = "number" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.ContactNo, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.ContactAddress, new { @class = "control-label col-md-2" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.ContactAddress, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.ContactAddress, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.CCertID, new { @class = "control-label" })
+                                                @Html.DropDownListFor(model => model.AccountNominee.CCertID, TellerUtilityService.GetCertificateForNominee(), "--select--", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.CCertID, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.CCertno, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.CCertno, new { @class = "form-control", @type = "number" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.CCertno, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AccountNominee.Share, new { @class = "control-label" })
+                                                @Html.TextBoxFor(model => model.AccountNominee.Share, new { @class = "form-control text-right NomineeShare", onchange = "getTotalShare()", @type = "number" })
+                                                @Html.ValidationMessageFor(model => model.AccountNominee.Share, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                <br />
+                                                <button type="button" id="btn-Nominee" class="btn btn-success btn-add"><i class="fa fa-plus"></i>Add</button>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+
+                        <fieldset>
+
+                            @Html.Partial("_ReferenceInfoes", Model)
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+            <div class="chargeDetails  table-responsive table-hover table-striped">
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-9 col-md-12">
+                    @if (Model.IAccno != 0)
+                    {
+                        <input type="button" value="Save changes" class="btn btn-default btn-account-open-save" />
+                    }
+                    else
+                    {
+                        <input type="button" value="Save" class="btn btn-default btn-account-open-save" data-eventid="1" data-val="Account Opening" data-isMultiVerifier="false" />
+                        @*<input type="button" value="For Verify" class="btn btn-default btn-verifier-list" data-eventid="1" data-val="Account Opening" isMultiVerifier="true" />*@
+                    }
+
+                </div>
+            </div>
+        </div><!-- box-footer -->
+    }
+</div>
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/CustomerSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+<link href="~/Content/Custom/Customer.css" rel="stylesheet" />
+
+<script src="~/Scripts/ChannakyaBaseJs/EmployeeSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script>
+    //$(".btn-verifier-list").on('click', function (e) {
+
+    //    e.stopImmediatePropagation();
+
+    //    eventid = $(this).data('eventid');
+
+    //    ismultiVerify = $(this).attr('isMultiVerifier');
+    //    debugger;
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: "/TaskVerification/VerifierList",
+    //        data: { eventid: eventid, ismultiVerify: ismultiVerify },
+    //        success: function (result) {
+    //            $('.verfier-list').html(result).modal({
+    //                'show': true,
+    //                'backdrop': 'static'
+    //            });
+
+    //        },
+    //        error: function () {
+
+    //        }
+    //    });
+    //});
+    ////$(document).on('click', '.table-click-verifier table tr', function (e) {
+    ////    e.stopImmediatePropagation();
+    ////    var closestTr = $(this).closest('tr');
+    ////    var objCheck = $(closestTr).find('.IsSelected');
+    ////    var isChecked = $(closestTr).find('.IsSelected').prop("checked");
+    ////    var IsMultiVerifier = $(this).closest('.table-click-verifier').find("#IsMultiVerifier").val();
+    ////    //var IsMultiVerifier = false;
+    ////    var me = $(this);
+    ////    var count = 0;
+    ////    if (isChecked == true) {
+    ////        objCheck.prop('checked', false);
+    ////        $(closestTr).removeAttr('style');
+    ////    } else {
+
+
+    ////        if (IsMultiVerifier == false) {
+
+
+    ////            $(".table-click-verifier-list > tbody > tr").each(function (trCounttotal, obj) {
+
+    ////                if ($(obj).find('#IsSelected').prop("checked") == true) {
+    ////                    count = count + 1;
+    ////                }
+
+    ////            });
+
+
+    ////            if (count > 0) {
+    ////                ErrorAlert("Cannot be selected", 2000);
+    ////                document.getElementById('alert-error').scrollIntoView();
+    ////            }
+    ////            else {
+    ////                objCheck.prop('checked', true);
+    ////                $(closestTr).css('background-color', '#c1e9ea');
+    ////            }
+
+
+    ////        }
+
+    ////        else if (isChecked == false) {
+    ////            objCheck.prop('checked', true);
+    ////            $(closestTr).css('background-color', '#c1e9ea');
+    ////        }
+    ////    }
+    ////})
+
+
+
+    ////$(document).on('click', '.btn-account-verifier-save', function (e) {
+    ////    e.stopImmediatePropagation();
+
+    ////    var strictVerifiable = Boolean($('.account-create').find('#IsStrictly').val());
+    ////    CreateNewAccount(strictVerifiable);
+
+    ////})
+
+    $('#InterestRate').keyup(function (e) {
+        if (e.keyCode === 13) {
+            debugger;
+            e.stopImmediatePropagation();
+            var newinterestRate = $('#AccountOpen-form').find('#InterestRate').val();
+            var productId = $('#AccountOpen-form').find('#PID').val();
+            var captId = $('#InterestCapitalize').val();
+            var contrubAmount = $('#AgreementAmount').val();
+            var durationId = $('#Duration').val();
+            var basicId = $('#Basic').val();
+            $.ajax({
+                url: 'Teller/CheckInterestParam',
+                type: 'get',
+                data: { interestRate: newinterestRate, productId: productId, captId: captId, contrubAmount: contrubAmount, durationId: durationId, basicId: basicId },
+
+                success: function (returnCheckInterestParam) {
+                    if (returnCheckInterestParam.result == false) {
+                        InfoAlert("Interest Rate must not be greater than upper limit and lower than lower limit defined in user parameter interestupdown", 3000);
+                        $('#InterestRate').val(returnCheckInterestParam.OldInterestRate).focus();
+                        return false;
+
+                    }
+
+                    else {
+                        $('#InterestRate').val(newinterestRate).focus();
+
+
+                    }
+
+
+                }
+
+
+            });
+        }
+    });
+
+
+</script>

@@ -1,0 +1,92 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ProductTID
+@using ChannakyaBase.BLL.Service
+@{ 
+    var check = Model;
+}
+
+@using (Ajax.BeginForm("_ProductFloatingInterestCreate", "FinanceParameter", new AjaxOptions
+{
+    UpdateTargetId = "ProductFloatingInterest-list",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createProductFloatingInterestSuccess"
+    //OnFailure = "errMessage"
+
+}
+                                                             , new { id = "ProductFloatingInterestSubmitForm" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="box box-info">
+        <div class="box-header with-border">
+           @if (Model.PFIID == 0)
+           {
+            <h3 class="box-title">Create</h3>
+           }
+           else {
+            <h3 class="box-title">Edit</h3>
+           }
+            <div class="row">     
+                <div class="col-md-12">
+
+                    <div class="form-horizontal">
+                        <hr />
+                        @Html.HiddenFor(x=>x.PFIID)
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PID, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @*@Html.DropDownListFor(model => model.CID, FinanceParameterUtilityService.CustCompany(), htmlAttributes: new { @class = "form-control focusdiv" })*@
+                                @Html.DropDownListFor(model => model.PID, FinanceParameterUtilityService.ProductList(), "Please Select...", htmlAttributes: new { @class = "form-control focusdiv" })
+                                @Html.ValidationMessageFor(model => model.PID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TID, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.TID, FinanceParameterUtilityService.FloatingInterestList(), "Please Select...", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.TID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        @if (Model.PFIID == 0)
+                        {
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="button" value="Save" id="btn-save-ProductFloatingInterest" class="btn btn-default btn-save " />
+                            </div>
+                        </div>
+                        }
+                        else {
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="button" value="Save" id="btn-save-ProductFloatingInterest" class="btn btn-default btn-save " />
+                                <input type="button" value="Cancel" id="btn-Cancel-ProductFloatingInterest" class="btn btn-default btn-Cancel " />
+                            </div>                           
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    @*function createSuccess() {
+        SuccessAlert("Product Floating Type Succesfully created. ", 5000);
+        $.ajax({
+            url: '@Url.Action("_ProductFloatingInterestCreate", "FinanceParameter")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };*@
+</script>

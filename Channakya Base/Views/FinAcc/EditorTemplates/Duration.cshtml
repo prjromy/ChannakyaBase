@@ -1,0 +1,18 @@
+﻿@model ChannakyaAccounting.Models.Models.Duration
+
+@using ChannakyaAccounting.Helper
+@{
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var depositBasisList = depositProduct.AllDepositBasis();
+    var DurationList = depositProduct.AllDuration();
+
+}
+
+
+<tr class="DurationList">
+    <th scope="row" class="Duration" id="@Model.Id">@Model.Duration1</th>
+
+    @Html.EditorFor(x => x.DepositBasisList)
+
+
+</tr>

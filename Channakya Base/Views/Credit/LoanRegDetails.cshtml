@@ -1,0 +1,261 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanRegAccOpenViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+
+@{
+    Layout = null;
+    var durationType = Model.AccountDetailsViewModel.DateFormat == 1 ? "Month(s)" : "Day(s)";
+    var mod = Model;
+
+    if (Model.RegId!=0)
+    {
+        Model.isAfterRegistration = 1;
+    }
+
+}
+@Html.HiddenFor(x => x.isAfterRegistration)
+@if (Model.isAfterRegistration ==0)
+{
+    <div class="form-group">
+        @Html.HiddenFor(x => x.RegId)
+        @Html.Label("Registration Date", new { @class = "control-label col-md-3" })
+        <div class="col-md-4">
+            @Html.DatePicker(x => x.RegistrationDate, true)
+            @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountDetailsViewModel.SchemeId, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.AccountDetailsViewModel.SchemeId, CreditUtilityService.GetAllLoanScheme(), "--select scheme--", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.AccountDetailsViewModel.SchemeId, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.AccountDetailsViewModel.PID, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.PID, TellerUtilityService.GetAllProductBySchemeId(Model.AccountDetailsViewModel.SchemeId), new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.PID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group fdLoanAccount">
+        @Html.LabelFor(x=>x.FDLoanAcc, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.AccountNumberSearch(x => x.FDLoanAcc, EAccountDetailsShow.IsFDLoan.GetDescription(), EAccountFilter.FixedAccountOnly.GetDescription(), EAccountType.Normal.GetDescription(),Model.FDLoanAcc)
+            @*@Html.EditorFor(x => x.FDLoanAcc, EAccountDetailsShow.IsFDLoan.GetDescription(), EAccountFilter.FixedAccountOnly.GetDescription(), EAccountType.Normal.GetDescription())*@
+            @*@Html.TextBoxFor(model=>model.FDLoanAcc, new { @class = "form-control" });*@
+            @Html.ValidationMessage("accountNumber", "", new { @class = "text-danger" })
+        </div>
+    </div>
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        @Html.Label("Payment Schedule", new { @class = "control-label  col-md-2" })
+    <div class="col-md-4">
+        @Html.DropDownListFor(model => model.PAYSID, CreditUtilityService.GetAllRulePaySchedule(), new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.PAYSID, "", new { @class = "text-danger" })
+    </div>
+        @Html.Label("Granted Duration", htmlAttributes: new { @class = "control-label col-md-2 day-month" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.Duration, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+        </div>
+      
+        
+    </div>
+    
+<div class="form-group">
+    @Html.Label("Quotation Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-4">
+        @Html.EditorFor(model => model.LAmt, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.LAmt, "", new { @class = "text-danger" })
+    </div>
+    <div class="schedule-day hidden">
+        @Html.Label("Scheduled Day", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.cDay, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.cDay, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>
+
+}
+else
+{
+    <div class="form-group">
+        @Html.HiddenFor(x => x.RegId)
+        @Html.Label("Registration Date", new { @class = "control-label col-md-3" })
+        <div class="col-md-4">
+            @Html.DatePicker(x => x.RegistrationDate, true)
+            @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountDetailsViewModel.SchemeId, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.AccountDetailsViewModel.SchemeId, CreditUtilityService.GetAllLoanScheme(), "--select scheme--", new { @class = "form-control schemevalue" ,@disabled="disabled", @style = "pointer-events:none"})
+            @Html.ValidationMessageFor(model => model.AccountDetailsViewModel.SchemeId, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.AccountDetailsViewModel.PID, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.PID, TellerUtilityService.GetAllProductBySchemeId(Model.AccountDetailsViewModel.SchemeId), new { @class = "form-control", @disabled = "disabled", @style = "pointer-events:none"})
+            @Html.ValidationMessageFor(model => model.PID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        @Html.Label("Payment Schedule", new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.PAYSID, CreditUtilityService.GetAllRulePaySchedule(), new { @class = "form-control tab-disable", @disabled = "disabled", @style = "pointer-events:none" })
+            @Html.ValidationMessageFor(model => model.PAYSID, "", new { @class = "text-danger" })
+        </div>
+        @Html.Label("Duration", htmlAttributes: new { @class = "control-label col-md-2 day-month" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.Duration, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+        </div>
+
+
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Quotation Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.LAmt, new { htmlAttributes = new { @class = "form-control",@readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.LAmt, "", new { @class = "text-danger" })
+        </div>
+        <div class="schedule-day hidden">
+            @Html.Label("Scheduled Day", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.cDay, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                @Html.ValidationMessageFor(model => model.cDay, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    </div>
+}
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+<script>
+    //$(document).ready(function () {
+    //    $(".tab-disable").on('keydown', function (e) {
+    //        var keyCode = e.keyCode || e.which;
+
+    //        if (keyCode == 9) {
+    //            e.preventDefault();
+    //            $(".tab-disable .option").click();
+    //        }
+    //    });
+    //})
+
+
+    $(document).ready(function () {
+       // $("#FDLoanAcc").prop('disabled', true);
+        $(".fdLoanAccount").find(".btn-account-open-search").prop('disabled', true);
+    })
+
+
+    $('#AccountDetailsViewModel_SchemeId').on('change', function () {
+        debugger;
+        var schemId = $(this).val();
+        $(".fdLoanAccount").find("#FDLoanAcc").val(null);
+        
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetProductBySchemeId",
+            datatype: "Json",
+            data: { schemeId: schemId },
+            success: function (result) {
+                debugger;
+                if (result==false) {
+                    debugger;
+                    InfoAlert("Please create product at Financial Ledger > Product Setup", 10000);
+                    $('#PID').html("");
+                    $('#Duration').html(0);
+
+                }
+                else {
+                    var optionList = '';
+                    $.each(result.Product, function (index, item) {
+                        optionList = optionList + "<option value='" + item.ProductId + "'>" + item.ProductName + "</option>"
+                    })
+                    $('#PID').html(optionList);
+
+                    $('#PID').trigger('change');
+                }
+                }
+
+            
+        })
+    });
+  
+
+    $('#PAYSID').on('change', function () {
+        
+        debugger;
+        var paysid = $("#PAYSID option:selected").val();
+
+        if (paysid == 5 || paysid == 6) {
+
+            $(".schedule-day").removeClass('hidden');
+        }
+        else {
+            $(".schedule-day").addClass('hidden');
+        }
+
+    })
+
+    $('#Duration').on('change', function () {
+
+        debugger;
+        var currentduration = $(this).val();
+        var maxDuration = $('#GrantedDuration').val();
+        if (currentduration > maxDuration) {
+            InfoAlert("Duration cannot exceed", 5000);
+            $("#Duration").val(maxDuration);
+        }
+        //var pid = $("#PID option:selected").val();
+       // var duration;
+       
+        //$.ajax({
+        //    type: "GET",
+        //    url: "/Credit/GetProductDetails",
+        //    datatype: "Json",
+        //    data: { pid: pid },
+        //    success: function (result) {
+        //        debugger;
+        //        var dur=result.Duration;
+                
+        //        if (currentduration > dur)
+        //        {
+        //            InfoAlert("Duration cannot exceed",5000);
+        //            $("#Duration").val(dur);
+        //            //return false;
+        //        }
+                
+        //    }
+
+
+        //})
+    })
+
+
+
+
+</script>

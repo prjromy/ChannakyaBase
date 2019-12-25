@@ -1,0 +1,326 @@
+﻿
+@model List<Loader.Models.ApplicationUser>
+
+@{
+    Loader.Service.MenuTemplateService menuTemplate = new Loader.Service.MenuTemplateService();
+    var test = Model;
+    Loader.Service.UserVSBranchService uservsBranchService = new Loader.Service.UserVSBranchService();
+}
+<div class="modal-dialog modal-lg get-details-user">
+    <div class="modal-content getUserDetails">
+        <div class="modal-header">
+            <div class="input-group">
+
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">Select Users</h4>
+
+
+        </div>
+        <div class="modal-body" style="padding:40px 50px; ">
+            <table class="table table-bordered" id="TblUsers" border="1" style="width:100%; border-width: 1px; border-color: Silver;margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">User Id</th>
+                        <th style="text-align:center">User Name</th>
+                        <th style="text-align:center">Email</th>
+                        <th style="text-align:center">Employee Name</th>
+                        <th style="text-align:center">Current Branch</th>
+                    </tr>
+                </thead>
+
+
+                <tbody class="user-branch-container">
+
+                    @foreach (var item in Model.Where(x=>x.Id!=1))
+                    {
+                        <tr class="main-users-list" id="@item.Id" user-name="@item.UserName" style="cursor: pointer; ">
+                           <td>
+                               @item.Id
+                           </td>
+                            <td>
+                                @item.UserName
+                            </td>
+                            <td>
+                                @item.Email
+                            </td>
+
+                            <td>
+                                @if (item.Id != 1)
+                                {
+                                    <p> @uservsBranchService.GetEmployeeName((int)item.EmployeeId)</p>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Id != 1)
+                                {
+                                    <p> @uservsBranchService.GetCurrentBranchString(item.Id)</p>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="voucher-ledger-details-container" style="display:none"></td>
+                        @if (ViewBag.CountPager > 0)
+                        {
+                            <ul class="pagination Userpagination" style="float:left;margin-right:20px;">
+                                <li class="previous"><a href="#">Previous</a></li>
+                                @for (int i = 1; i <= ViewBag.CountPager; i++)
+                {
+                    if (i > 4)
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                        }
+                                        else
+                                        {
+                                            if (i >= (ViewBag.ActivePager - 2))
+                                            {
+
+                                                if (i > ViewBag.ActivePager)
+                                                {
+                                                    if (i - ViewBag.ActivePager <= 2)
+                                                    {
+                                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (i == ViewBag.CountPager)
+                                                        {
+                                                            if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                            {
+                                                                <li class=""><a>.......</a> </li>
+                                                            }
+                                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                        }
+                                                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                                    }
+                                                }
+                                                else
+                                                {
+
+                                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (i == ViewBag.ActivePager)
+                                        {
+                                            <li id=@i class="pagerClass active"><a>@i</a> </li>
+                                        }
+                                        else
+                                        {
+                                            if (i >= (ViewBag.ActivePager - 2))
+                                            {
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                            }
+                                            else
+                                            {
+                                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                            }
+                                        }
+                                    }
+                                }
+                                <li class="next"><a href="#">Next</a></li>
+
+                            </ul>
+                        }
+                        <div style="margin-top:20px;margin-left:20px" class="search-container">
+                            @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                        </div>
+
+                    </tr>
+                </tfoot>
+            </table>
+
+
+        </div>
+
+
+
+    
+
+    </div>
+
+</div>
+<style>
+    .main-users-list:hover
+    {
+        background-color:#3c8dbc;
+    }
+</style>
+<script>
+
+    $('.user-branch-container').on('click', '.main-users-list', function () {
+        debugger;
+        var id = $(this).attr('id');
+        var name = $(this).attr('user-name');
+        var userId = $('#createUserVSBranch').find('.user-Id');
+        var userText = $('#createUserVSBranch').find('.user-name-in-brnch');
+
+        $("div#getUserDetails").modal('hide');
+        $(userId).val(id);
+        $(userText).val(name);
+
+
+
+    });
+    $('tr.main-pending-list').click(function () {
+        debugger;
+        var modalMain = $(this).closest('div#getVoucherLogs');
+        var v1Id = $(this).attr('id');
+
+        $.ajax({
+            url: '/Voucher1/DisplayTemporaryLogsValue/',
+            data:{v1Id:v1Id},
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                //$('.main-voucher-table-container').html(data);
+                $('.panel-create ').html(data);
+                $(modalMain).modal('hide');
+
+                //$('.subsi-voucher-container').append(data);
+            },
+            error: function (data) {
+                debugger;
+            },
+        });
+
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        var strLength = searchInput.val().length * 2;
+        searchInput.focus();
+        searchInput[0].setSelectionRange(strLength, strLength);
+        var Search = $('.txtSearch').val();
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Userpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.Users-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    var listType = 2;
+                    $(container).load("/UserVSBranch/_GetUserDetailsPartial", { ViewType: listType, query: Search, page: finalId });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.Userpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Userpagination').find('li#' + finalId)
+                var listType = $(this).closest('.Users-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.Users-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    $(container).load("/UserVSBranch/_GetUserDetailsPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var Search = $('.txtSearch').val();
+            var container = $(this).closest('.Users-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.Users-explore').find('#viewType').val();
+            $(container).load("/UserVSBranch/_GetUserDetailsPartial", { page: pagingData, ViewType: listType, query: Search });
+            var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Userpagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Userpagination').find('li#' + pagingData).addClass('active');
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var Search = $('.txtSearch').val();
+            //var pagingData = $(this).val();
+            var container = $(this).closest('.Users-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.Users-explore').find('#viewType').val();
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/UserVSBranch/_GetUserDetailsPartial",
+                    type: "POST",
+                    data: {
+                        page: finalId,
+                        ViewType: listType,
+                        query: Search
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.Userpagination').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.Userpagination').find('li#' + finalId).addClass('active');
+                    }
+
+                });
+            }
+
+        });
+
+    });
+</script>
+
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .main-pending-list:hover {
+        background-color: #3c8dbc;
+    }
+
+    /*.modal-footer {
+        background-color: #f9f9f9;
+    }*/
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .ledger-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>

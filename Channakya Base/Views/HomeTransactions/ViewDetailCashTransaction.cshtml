@@ -1,0 +1,88 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.HomeTransactionsViewModel
+
+<div class="modal-dialog modal-lg view-detail-transaction-modal" id="view-modal-transaction">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">
+                <span>Recieve View Detail </span>
+            </h4>
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+
+               
+                <fieldset>
+
+                    <table class="table table-bordered table-striped tabble table-responsive">
+                        
+                        <tr>
+
+
+                            @*@Html.HiddenFor(x => x.TNO)*@
+                            <th>
+                                Recieved Amount
+                            </th>
+
+                            <th>From</th>
+                            <th>Designation</th>
+
+    
+                        </tr>
+
+
+                            <tr>
+
+
+                          
+
+                                @Html.AntiForgeryToken()
+                             
+                                @Html.HiddenFor(x => x.TNO)
+                         
+                                <td>
+                                    <span style="float:right"> @Model.Dramt.ToString("0.00")</span>
+                                </td>
+                                <td>
+                                    @Model.EmployeeName
+                                </td>
+                                <td>
+                                    @Model.DGName
+                                </td>
+                             
+                            </tr>
+                     
+                    
+
+                    </table>
+
+                </fieldset>
+                <fieldset>
+                    <legend style="font-size:large;font-weight:bold">Deno</legend>
+                
+                    @Html.Action("UseDenoList", "Teller", new { utno = Model.TNO })
+                </fieldset>
+                @if (Model.Status == 21)
+                {
+                <fieldset>
+                    <input type="button" value="Accept" class="btn btn-success btn-accept" onclick="Accept(@Model.TNO,1)" />
+                    <input type="button" value="Reject" class="btn btn-danger btn-reject" onclick="Accept(@Model.TNO,3)" />
+                   
+                </fieldset>
+
+                }
+                else
+                {
+                    <fieldset>
+                        <input type="button" value="Delete" class="btn btn-danger btn-delete" onclick="Accept(@Model.TNO,2)"/>
+                    </fieldset>
+                }
+            </div>
+
+            <div class="btn-groups modal-footer" style="padding:5px">
+                <button type="button" style="float:right" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

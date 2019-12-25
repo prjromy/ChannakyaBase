@@ -1,0 +1,63 @@
+﻿
+@{
+    string locationName = ViewBag.locationName;
+    string parentLocation = ViewBag.parentLocation;
+    int locationLevel = ViewBag.locationLevel;
+    string locationGroup = ViewBag.locationGroup;
+    int? locationMaxLevel = ViewBag.locationMaxLevel;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h3 class="modal-title">Location Detail</h3>
+</div>
+
+
+<div class="modal-body form-horizontal detail-location-body">
+    <div class="form-group">
+        <text class="control-label col-md-6"><b>Location Name :</b></text>
+
+        <div class="col-md-5" style="padding-top: 7px;">
+            <text class="control-label">@locationName</text>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <text class="control-label col-md-6"><b>Parent Location :</b></text>
+
+        <div class="col-md-5" style="padding-top: 7px;">
+            <text class="control-label">@parentLocation</text>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <text class="control-label col-md-6"><b>Level :</b></text>
+
+        <div class="col-md-5" style="padding-top: 7px;">
+            <text class="control-label">@locationLevel</text>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <text class="control-label col-md-6"><b>Group :</b></text>
+
+        <div class="col-md-5" style="padding-top: 7px;">
+            <text class="control-label">@locationGroup</text>
+        </div>
+    </div>
+
+    @if (locationLevel == 1)
+    {
+        <div class="form-group">
+            <text class="control-label col-md-6"><b>Max Level :</b></text>
+
+            <div class="col-md-5" style="padding-top: 7px;">
+                <text class="control-label">@locationMaxLevel</text>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default btn-cancel" style="float:right;">Close</button>
+</div>

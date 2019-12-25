@@ -1,0 +1,49 @@
+﻿
+@model  List<Loader.Models.ApplicationUser>
+
+<div class="container col-md-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+                    
+                    <thead>
+                        <tr>
+                            <th>
+                                User Name
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                IsUnlimited
+                            </th>
+                            <th>
+                                Menu Template
+                            </th>
+                      
+                        </tr>
+                    </thead>                   
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            if (item.Id == 1)
+                            {
+                                if (Loader.Models.Global.UserId == 1)
+                                {
+                                    @Html.Partial("_ListView", item)
+                                }
+                            }
+                            else
+                            {
+                                @Html.Partial("_ListView", item)
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

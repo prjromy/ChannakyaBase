@@ -1,0 +1,121 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Product wise Interest Log Report </h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Product Type</label>
+                        <div class="form-grop_padding">
+
+                            <select id="Productoption" class="form-control" name="option" data-val="true">
+                                <option value="1">Deposit Product</option>
+                                <option value="2">Loan Product</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Branch Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchWithOutAllList(Model.branchId), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>
+                            From Date
+                        </label>
+                        <div class="form-grop_padding">
+
+                            @Html.DatePicker(x => x.FromDate)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            To Date
+                        </label>
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.ToDate)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-productWise-interestlog-export-to-excel" />
+                    <button type="button" name="btn-account-holder-search" id="btn-report-od-summary-related" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border with-odintcap-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $('#btn-report-od-summary-related').on('click', function () {
+        var branchId = $('#branchId').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var productOption = $("#Productoption").val();
+        $.ajax({
+            type: "GET",
+            url: "/Report/_ProductWiseInterestLog",
+            datatype: "HTML",
+            contentType: "application/json",
+            data: {
+                branchId: branchId,
+                fromDate: fromDate,
+                toDate: toDate,
+                productOption:productOption
+            },
+            success: function (result) {
+                $('.with-odintcap-Report-View').html("");
+                $('.with-odintcap-Report-View').html(result);
+            }
+        })
+
+    });
+    $('.btn-productWise-interestlog-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var productId = $("#Productoption").val();
+        var productName = $('#Productoption option:selected').text();
+        var branchId = $("#branchId").val();
+        var branchName = $('#branchId option:selected').text();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        //  window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/ProductWiseInterestLogExportToExcel?productId=" + productId + "&productName=" + productName + "&branchId=" + branchId + "&branchName=" + branchName + " &fromDate=" + fromDate + " &toDate=" + toDate)
+
+    })
+
+
+
+</script>
+
+
+

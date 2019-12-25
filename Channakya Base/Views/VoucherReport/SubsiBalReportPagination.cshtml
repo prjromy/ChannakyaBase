@@ -1,0 +1,295 @@
+﻿@{
+    Nullable<int> totalPage = ViewBag.TotalPage as Nullable<int>;
+    //var fromDate = Convert.ToDateTime(ViewBag.FromDate).ToShortDateString();
+    //var toDate = Convert.ToDateTime(ViewBag.ToDate).ToShortDateString();
+    var tillDate = Convert.ToDateTime(ViewBag.TillDate).ToShortDateString();
+    var fId = ViewBag.FId;
+    //  ViewBag.ActivePager=ViewBag.
+
+}
+
+
+<ul class="pagination pager-list" style="float:left;margin-right:20px;">
+    <li class="previous"><a href="#">Previous</a></li>
+    @for (int i = 1; i <= totalPage; i++)
+            {
+                if (i > 4)
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+
+                    if (i > ViewBag.ActivePager)
+                    {
+                        if (i - ViewBag.ActivePager <= 2)
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i == totalPage)
+                            {
+                                if (totalPage - ViewBag.ActivePager > 3)
+                                {
+                                    <li class=""><a>.......</a> </li>
+                                }
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                    else
+                    {
+
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+        else
+        {
+            if (i == ViewBag.ActivePager)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+    }
+    <li class="next"><a href="#">Next</a></li>
+
+</ul>
+<div style="margin-top:20px;margin-left:20px" class="search-container">
+    @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        //var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        //var strLength = searchInput.val().length * 2;
+        //searchInput.focus();
+        //searchInput[0].setSelectionRange(strLength, strLength);
+        var fId = @fId;
+        //var date = new Date(Date.parse(myCSharpString));
+
+
+
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            var fId = '@fId';
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.pager-list').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.SubsiBalanceReport-DataTable').find('#container-to-append');
+                    //var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                   // $("#container-to-append").load("/VoucherReport/_SubsiBalanceReport", { FId: fId, page: finalId, tillDate: tillDate});
+                    $.ajax({
+                        url: '/VoucherReport/_SubsiBalanceReport',
+                            type: 'POST',
+                            data: JSON.stringify({  FId: fId, page: finalId, tillDate: '@tillDate'}),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (data) {
+                                debugger;
+                                $('#container-to-append').html(data);
+                                $.ajax({
+                                    url: '/VoucherReport/SubsiBalReportPagination',
+                                    type: 'POST',
+                                    data: {
+                                        totalPage:@totalPage,
+                                        page:finalId,
+                                        FId: fId,
+                                        tillDate: '@tillDate'
+                                        },
+                                    //contentType: 'application/json',
+                                    dataType: 'html',
+                                    success: function (pagination) {
+                                        $('.pagination-only').html("");
+                                        $('.pagination-only').html(pagination);
+                                    }
+                                });
+                                var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                                if (checkActive == true) {
+                                    $('ul.pagination.pager-list').find('.active').removeClass('active');
+                                }
+                                $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                            },
+                            error: function (data) {
+                                debugger;
+                                ErrorAlert(data.responseText, 15000)
+                            },
+                        });
+
+                }
+            }
+            else {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.pager-list').find('li#' + finalId)
+                var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                  //  var container = $(this).closest('.SubsiBalanceReport-DataTable').find('#container-to-append');
+                    $("#container-to-append").load("/VoucherReport/_SubsiBalanceReport", { FId: fid, page: finalId, tillDate: tillDate});
+                    $.ajax({
+                        url: '/VoucherReport/_SubsiBalanceReport',
+                            type: 'POST',
+                            data: JSON.stringify({  FId: fId, page: finalId, tillDate: '@tillDate'}),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (data) {
+                                debugger;
+                                $('#container-to-append').html(data);
+                                $.ajax({
+                                    url: '/VoucherReport/SubsiBalReportPagination',
+                                    type: 'POST',
+                                    data: {
+                                        totalPage:@totalPage,
+                                        page:finalId,
+                                        FId: fId,
+                                        tillDate: '@tillDate'
+                                        },
+                                    //contentType: 'application/json',
+                                    dataType: 'html',
+                                    success: function (pagination) {
+                                        $('.pagination-only').html("");
+                                        $('.pagination-only').html(pagination);
+                                    }
+                                });
+                                var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                                if (checkActive == true) {
+                                    $('ul.pagination.pager-list').find('.active').removeClass('active');
+                                }
+                                $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                            },
+                            error: function (data) {
+                                debugger;
+                                ErrorAlert(data.responseText, 15000)
+                            },
+                        });
+
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var pagingData = $(this).val();
+            var container = $(this).closest('.BankStatement-DataTable').find('#container-to-append');
+            if (isNaN(finalId) == false || finalId != 0) {
+                 $.ajax({
+                        url: '/VoucherReport/_SubsiBalanceReport',
+                            type: 'POST',
+                            data: JSON.stringify({  FId: fId, page: finalId, tillDate: '@tillDate'}),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (data) {
+                                debugger;
+                                $('#container-to-append').html(data);
+                                $.ajax({
+                                    url: '/VoucherReport/SubsiBalReportPagination',
+                                    type: 'POST',
+                                    data: {
+                                        totalPage:@totalPage,
+                                        page:finalId,
+                                        FId: fId,
+                                        tillDate: '@tillDate'
+                                        },
+                                    //contentType: 'application/json',
+                                    dataType: 'html',
+                                    success: function (pagination) {
+                                        $('.pagination-only').html("");
+                                        $('.pagination-only').html(pagination);
+                                    }
+                                });
+                                var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                                if (checkActive == true) {
+                                    $('ul.pagination.pager-list').find('.active').removeClass('active');
+                                }
+                                $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                            },
+                            error: function (data) {
+                                debugger;
+                                ErrorAlert(data.responseText, 15000)
+                            },
+                        });
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var finalId = $(this).attr('id');
+            var container = $(this).closest('.SubsiBalanceReport-DataTable').find('#container-to-append');
+            // var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+         //   $("#container-to-append").load("/VoucherReport/_SubsiBalanceReport", {FId:fId,page:pagingData,fromDate:fromDate,toDate:toDate});
+           $.ajax({
+                        url: '/VoucherReport/_SubsiBalanceReport',
+                            type: 'POST',
+                            data: JSON.stringify({  FId: fId, page: finalId, tillDate: '@tillDate'}),
+                            contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (data) {
+                                debugger;
+                                $('#container-to-append').html(data);
+                                $.ajax({
+                                    url: '/VoucherReport/SubsiBalReportPagination',
+                                    type: 'POST',
+                                    data: {
+                                        totalPage:@totalPage,
+                                        page:finalId,
+                                        FId: fId,
+                                        tillDate: '@tillDate'
+                                        },
+                                    //contentType: 'application/json',
+                                    dataType: 'html',
+                                    success: function (pagination) {
+                                        $('.pagination-only').html("");
+                                        $('.pagination-only').html(pagination);
+                                    }
+                                });
+                                var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                                if (checkActive == true) {
+                                    $('ul.pagination.pager-list').find('.active').removeClass('active');
+                                }
+                                $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                            },
+                            error: function (data) {
+                                debugger;
+                                ErrorAlert(data.responseText, 15000)
+                            },
+                        });
+
+
+        });
+
+    });
+</script>

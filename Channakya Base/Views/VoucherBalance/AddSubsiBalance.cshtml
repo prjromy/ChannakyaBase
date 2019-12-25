@@ -1,0 +1,188 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.OpeningBalanceViewModel>
+@{
+    var count = 0;
+    ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService subsiDetailService = new ChannakyaAccounting.Service.Subsi_Setup.SubsiDetailService();
+    ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService voucherBalanceService = new ChannakyaAccounting.Service.VoucherBalance.VoucherBalanceService();
+}
+<div class="col-md-12 ">
+    <div class="table-responsive scroll-bar">
+        <table class="table table-bordred">
+            <thead>
+                <tr>
+                    <th>
+                        S.N
+                    </th>
+                    <th>
+                        Account Name
+                    </th>
+                    <th>
+                        Account No.
+                    </th>
+                    <th>
+                        Opening Balance
+                    </th>
+                    <th>
+                        Balance Type
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    bool isSubsi = false;
+                    for (int j = 0; j < Model.ToList()[i].SubsiDetailOfLedger.Count(); j++)
+                    {
+                        <tr>
+                            <td>@(count += 1)</td>
+                            <td>
+                                @{
+                                    int? subsitableId = ViewData["SubsiTableId"] as Nullable<int>;
+                                    int? ledgerId = ViewData["LedgerId"] as Nullable<int>;
+
+                                    if (subsitableId != null)
+                                    {
+                                        <p>@ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName(Model.ToList()[i].SubsiDetailOfLedger[j].Id, (int)subsitableId)</p>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (ledgerId != null)
+                                {
+                                    if (voucherBalanceService.IsParentDepositOrLoanProduct((int)ledgerId) == true)
+                                    {
+                                        <p>@subsiDetailService.GenerateAccountNumber((int)ledgerId)</p>
+                                    }
+                                    else
+                                    {
+                                        <p>@subsiDetailService.GenerateAccountNumber((int)ledgerId)</p>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(x => Model.ToList()[i].SubsiDetailOfLedger[j].OpeningBalance)
+                            </td>
+                        </tr>
+                                        }
+                                    }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    .scroll-bar table {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        .scroll-bar table thead {
+            /* head takes the height it requires,
+    and it's not scaled when table is resized */
+            flex: 0 0 auto;
+            width: calc(100% - 0.9em);
+        }
+
+        .scroll-bar table tbody {
+            /* body takes all the remaining available space */
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: scroll;
+            max-height: 60vh;
+        }
+
+            .scroll-bar table tbody tr {
+                width: 100%;
+            }
+
+        .scroll-bar table thead, table tbody tr {
+            display: table;
+            table-layout: fixed;
+        }
+
+        .scroll-bar table tfoot tr {
+            width: 100%;
+            display: table;
+            table-layout: fixed;
+        }
+</style>
+
+
+@*<ul class="pagination subsibalpaginatoin">
+        <li class="previous"><a href="#">Previous</a></li>
+        @for (int i = 1; i <= ViewBag.CountPager; i++)
+        {
+            if (i == ViewBag.ActivePager)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                <li id=@i class="pagerClass"><a>@i</a> </li>
+            }
+
+        }
+        <li class="next"><a href="#">Next</a></li>
+
+    </ul>*@
+
+@*</div>*@
+@*<script>
+        $(document).ready(function () {
+            $('.pagination').on('click', 'li.next , li.previous', function () {
+                debugger;
+                var cls = $(this).attr('class');
+                if ($(this).attr('class') == 'next') {
+                    var pager = $('ul.pagination.subsibalpaginatoin').find('.active').attr('id');
+                    var finalId = parseInt(pager) + 1;
+                    var hasNext = $('ul.pagination.subsibalpaginatoin').find('li#' + finalId)
+                    if ($(hasNext).length > 0) {
+                        var container = $(this).closest('td.load-subsi-to-me');
+                        var ledgerId = $(container).attr('ledgerId');
+                        $(container).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+                        var checkActive = $('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+                    }
+                }
+                else {
+                    var pager = $('ul.pagination.subsibalpaginatoin').find('.active').attr('id');
+                    var finalId = parseInt(pager) - 1;
+                    var hasPrev = $('ul.pagination.subsibalpaginatoin').find('li#' + finalId)
+                    var listType = $(this).closest('.subsibal-explore').find('#viewType').val();
+                    if ($(hasPrev).length > 0) {
+                        var container = $(this).closest('td.load-subsi-to-me');
+
+                        var ledgerId = $(container).attr('ledgerId');
+                        $(container).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+                        var checkActive = $('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.subsibalpaginatoin').find('li#' + finalId).addClass('active');
+                    }
+                }
+
+            });
+            $('.pagination').on('click', '.pagerClass', function () {
+                debugger;
+                var pagingData = $(this).attr('id');
+                var container = $(this).closest('td.load-subsi-to-me');;
+                var ledgerId = $(container).attr('ledgerId');
+                $(container).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+                var checkActive = $('ul.pagination.subsibalpaginatoin').find('li').hasClass('active');
+                if (checkActive == true) {
+                    $('ul.pagination.subsibalpaginatoin').find('.active').removeClass('active');
+                }
+                $('ul.pagination.subsibalpaginatoin').find('li#' + pagingData).addClass('active');
+
+            });
+
+        });
+    </script>*@
+

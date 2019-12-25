@@ -1,0 +1,13 @@
+﻿
+@model ChannakyaAccounting.Models.Models.FinSys2
+    @{ 
+        
+    }
+<div class="form-group col-md-12">
+    @Html.LabelFor(model => model.F1Type, htmlAttributes: new { @class = "control-label col-md-3" })
+    <div class="col-md-9">
+
+        @Html.DropDownListFor(model => model.F1Type, (IEnumerable<SelectListItem>)ViewBag.TypeList, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.F1Type, "", new { @class = "text-danger" })
+    </div>
+</div>

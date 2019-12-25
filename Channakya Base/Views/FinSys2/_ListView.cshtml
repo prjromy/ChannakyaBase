@@ -1,0 +1,31 @@
+﻿@model ChannakyaAccounting.Models.Models.FinSys2
+@{
+    var test = Model;
+}
+
+
+
+
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.F2id" style="vertical-align:top;">
+        <a class="inner listDrill" FinSys2-caption="@Model.F2Desc" style="cursor:pointer;"> @Model.F2Desc</a>
+    </td>
+
+    <td>
+        @Model.FinSys1.IsGroup
+    </td>
+
+    <td>
+        @Model.FinSys1.IsEnable
+    </td>
+    
+    @if (Model.Pid != 0)
+    {
+
+    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs editList" id="@Model.F2id" data-title="Edit"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.F2id" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+    }
+
+</tr>
+
+

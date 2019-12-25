@@ -1,0 +1,31 @@
+﻿@model ChannakyaBase.Model.ViewModel.InterestPayableViewModel
+<div class="interest-payable-payment ">
+    <div class="form-group">
+       <label class="control-label  col-md-4">Payable Amount</label>
+        <div class="col-md-6">
+           <label class="payableamount"></label>
+        </div>
+    </div>
+    @Html.CheckBoxFor(model => model.IsActiveInterest, new { @class = "hidden" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.InterestSlipNo, new { @class = "control-label  col-md-3" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(model => model.InterestSlipNo, new { @class = "form-control text-right" })
+            @Html.ValidationMessageFor(model => model.InterestSlipNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.InterestPayee, new { @class = "control-label  col-md-3" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(model => model.InterestPayee, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.InterestPayee, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.InterestAmount, new { @class = "control-label  col-md-3" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(model => model.InterestAmount, new { @class = "form-control text-right" })
+            @Html.ValidationMessageFor(model => model.InterestAmount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>

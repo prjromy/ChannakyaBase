@@ -1,0 +1,19 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.VoucherNoViewModel
+@{
+    var test = Model;
+}
+<tr class="detailsList">
+    <td>
+        @Model.VoucherName
+    </td>
+    <td>
+        @Model.BType
+    </td>
+    <td>
+        @Model.FyName
+    </td>
+    <td>
+        @Model.CurrentNo
+    </td>
+    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.VNId" vType="@Model.VTypeId" bType="@Model.BId" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+</tr>

@@ -1,0 +1,87 @@
+﻿@model  ChannakyaBase.Model.ViewModel.TransactionPayableModel
+@using ChannakyaBase.BLL
+@using MoreLinq;
+@{
+
+    decimal SumIntPay = 0;
+    decimal SumIntCr = 0;
+    CommonService commonService = new CommonService();
+
+}
+<div class="box-body table-responsive no-padding" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>
+                    Account Number
+                </th>
+
+                <th>
+                    Name
+                </th>
+                <th>
+                    Transaction Date
+                </th>
+                
+                <th>
+                    Tax Rt
+                </th>
+                <th>Tax</th>
+                <th>Interest Amount</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+
+
+
+        @foreach (var item in Model.InterestList)
+        {
+
+
+            <tr>
+                <td>@item.PName</td>
+                <td>
+                    @item.Accno
+                </td>
+
+                <td>
+                  @item.AName
+                </td>
+                <td>
+                    @commonService.GetEnglishDate(item.Tdate)
+                </td>
+                 
+                <td style="text-align:right">@item.TaxRt</td>
+                <td style="text-align:right">@Convert.ToDecimal(item.Tax).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td style="text-align:right">@item.IntAmt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td style="text-align:right">@Convert.ToDecimal(item.Amount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            </tr>
+            SumIntPay += item.IntAmt;
+            SumIntCr += Convert.ToDecimal(item.Amount);
+        }
+        <tr>
+            <th colspan="6">Total</th>
+            <th style="text-align:right">@SumIntPay.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@SumIntCr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+
+
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

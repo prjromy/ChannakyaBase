@@ -1,0 +1,230 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.PolicyPenCalc
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "PenaltyPolicyIndex";
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Penalty Policy Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="PenaltyPolicy">
+        @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+        <div id="PenaltyPolicy-create" class="PenaltyPolicyCreate">
+            @{Html.RenderAction("_PenaltyPolicyCreate", "TransactionSetup");}
+        </div>
+        <div id="PenaltyPolicy-list" class="PenaltyPolicyList">
+            @{Html.RenderAction("_PenaltyPolicyList", "TransactionSetup");}
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $(document).ready(function () {
+
+        $.validator.unobtrusive.parse($("#PenaltyPolicyFormCreate"));
+        $('.PenaltyPolicy').on('click', '#btn-savePenaltyPolicy-submit', function () {
+            debugger;
+
+            $.validator.unobtrusive.parse('#PenaltyPolicyFormCreate');
+            $('#PenaltyPolicyFormCreate').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#PenaltyPolicyFormCreate'));
+            if ($('#PenaltyPolicyFormCreate').valid() == false) {
+
+                InfoAlert('Please Fill out the form', 6000);
+                return false;
+            }
+
+            var PCNAME = $('#PCNAME').val();
+            var PCID = $('#PCID').val();
+
+
+            $.ajax({
+                url: "/TransactionSetup/CheckPenaltyPolicyName",
+                type: 'GET',
+                async: false,
+                data: { PCID: PCID, PCNAME: PCNAME },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert("Please fill the form correctly", 5000);
+                        return false;
+
+                    }
+                    else {
+
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#PenaltyPolicyFormCreate").ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result) {
+                                    debugger;
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/TransactionSetup/PenaltyPolicyIndex",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (data) {
+                                                $('section.content').html(data);
+                                            }
+
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+
+                                }
+                            });
+                        }).fail(function () {
+                            //return false;
+                        })
+                    }
+                }
+                })
+        })
+
+
+          
+        $('.PenaltyPolicy').on('click', '.btn-edit-policy-penalty', function () {
+            debugger
+
+            var PCID = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/TransactionSetup/_PenaltyPolicyCreate/",
+                data: { PCID: PCID },
+                success: function (data) {
+                    // $(".section-create").show();
+                    //  $('.InterestPolicyCreate').html(data);
+                    $('.PenaltyPolicyCreate').html(data).find('.focusdiv').focus()
+                }
+            })
+
+        });
+        $('.PenaltyPolicy').on('click', '#btn-cancel-savePenaltyPolicy', function () {
+
+            var container = $(this).closest('.PenaltyPolicy').find(".PenaltyPolicyCreate");
+            $(this).closest('.PenaltyPolicy').find(".PenaltyPolicyCreate").find('#btn-cancel-savePenaltyPolicy').hide();
+            $(container).html("");
+            $.ajax({
+                type: "GET",
+                url: "/TransactionSetup/_PenaltyPolicyCreate/",
+                success: function (data) {
+                    $(container).html(data);
+                }
+            })
+        });
+        $('.PenaltyPolicy').on('click', '.btn-delete-policy-penalty', function () {
+            debugger;
+
+            PCID = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("PenaltyPolicyDelete", "TransactionSetup")',
+                data: { PCID: PCID },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    debugger;
+                    if (result=="false") {
+                            ErrorAlert("Cannot Be deleted, is in use. ", 5000);
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to Delete ?"
+                        }).done(function () {
+                            //alert(result)
+                          
+                                deletePenaltyPolicy(PCID);
+                           
+
+                        })
+                    }
+                  
+                }, error: function () {
+                    alert("error");
+                }
+            });
+        });
+        function deletePenaltyPolicy(PCID) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PenaltyPolicyDeleteConfirm", "TransactionSetup")',
+                data: { PCID: PCID },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert("Penalty Policy  Sucessfully Deleted", 5000);
+                    $("#PenaltyPolicy-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+    });
+    function PenaltyPolicySuccess() {
+        debugger;
+        SuccessAlert("PenaltyPolicy Succesfully Saved. ", 5000);
+        $.ajax({
+            url: '@Url.Action("_PenaltyPolicyList", "TransactionSetup")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".PenaltyPolicyList").html(data);
+                console.log(data)
+                $.ajax({
+                    url: '@Url.Action("_PenaltyPolicyCreate", "TransactionSetup")',
+                    type: 'GET',
+                    processData: false,
+                    success: function (data) {
+                        $(".PenaltyPolicyCreate").html(data);
+                        console.log(data)
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    }
+</script>

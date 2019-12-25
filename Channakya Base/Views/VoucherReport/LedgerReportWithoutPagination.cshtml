@@ -1,0 +1,107 @@
+﻿@model  PagedList.IPagedList<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel>
+@using PagedList.Mvc;
+@using ChannakyaAccounting.Helper
+
+@{
+    //  Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var fId = ViewBag.FId;
+    //if (fId == null)
+    //{
+    //    fId = ViewData["LedgerID"];
+    //    ViewBag.ActivePager = ViewData["ActivePager"];
+    //    ViewBag.PageSize = ViewData["pageSize"];
+    //    ViewBag.FromDate = Loader.Models.Global.TransactionDate.Value.AddDays(-30).ToShortDateString();
+    //    ViewBag.ToDate = Loader.Models.Global.TransactionDate.Value.ToShortDateString();
+    //}
+
+    var fromDate = Convert.ToDateTime(ViewBag.FromDate).ToShortDateString();
+    var toDate = Convert.ToDateTime(ViewBag.ToDate).ToShortDateString();
+    ViewBag.title = "Ledger Report from " + fromDate + " to " + toDate;
+    Nullable<Boolean> withPrevYr = ViewData["WithPrevYr"] as Nullable<Boolean>;
+    var totalCount = 0;
+    var imageprefix="";
+
+
+}
+
+@if (ViewData["LedgerID"] == null)
+{
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/TreeGrid-Jquery/jquery.treegrid.js"></script>
+    <link href="~/Scripts/TreeGrid-Jquery/jquery.treegrid.css" rel="stylesheet" />
+    <script src="~/Scripts/TreeGrid-Jquery/jquery.treegrid.bootstrap3.js"></script>
+    @*<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <link href = "~/Content/printstylesheet.css" rel = "stylesheet" media="print"/>
+}
+<div>
+    @Html.Hidden("domain")
+
+    <div style="float:left;margin-buttom:80px; "><img id="image-header" src="~/Images/Channakya-logo.png" style="height:100px; width:150px;margin:-10px 0px 0px 50px position:relative; z-index:999;" /></div> 
+
+    <h4 style="text-align:center;margin-button:15px;line-height:150%;margin-top:-10px">@ViewBag.CompanyName</br>@ViewBag.CompanyAddress</br>@ViewBag.CompanyPhoneNo<br /><div style="margin-top:18px;"><b>@ViewBag.Title</b></div></h4>
+</div>
+
+@{
+    //Loader.Service.ParameterService paramService = new Loader.Service.ParameterService();
+}
+<h4 style="text-align:center;"></h4>
+
+<table class="col-md-12 table table-striped tree mdl-data-table" id="ledgerReport-DataTable" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>
+                Transaction Date
+            </th>
+            <th>
+                Voucher No
+            </th>
+            <th>
+                Particulars
+            </th>
+
+            <th>
+                Dr Amount
+            </th>
+            <th>
+                Cr Amount
+            </th>
+            <th>
+                Balance
+            </th>
+            <th>
+
+            </th>
+
+
+        </tr>
+
+    </thead>
+
+    <tbody id="container-to-append">
+
+        @*@Html.EditorFor(x=>Model)*@
+        @Html.Partial("_LedgerReport", Model)
+
+
+    </tbody>
+
+
+
+    <tfoot>
+
+    </tfoot>
+
+
+</table>
+<div class="row">
+    <br/>
+    <a href="javascript:window.print()" class="no-print"> click to print</a>
+</div>
+
+
+
+

@@ -1,0 +1,60 @@
+﻿@model List<ChannakyaBase.Model.ViewModel.ProductViewModel>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+<h4>Products</h4>
+<input type="button" value="Check All" id="check-products-select-all" class="btn btn-default btn-sm btn-save" />
+<table class="table table-bordered table-striped">
+
+    <tr>
+
+        <th>
+            Product Name
+        </th>
+        <th>
+            Choose
+        </th>
+    </tr>
+    @for (int i = 0; i < Model.Count(); i++)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => Model[i].ProductName)
+
+                @Html.HiddenFor(modelItem => Model[i].ProductId)
+            </td>
+            <td>
+                @Html.CheckBoxFor(x => Model[i].HasDuration, new { @class = "products-checked" })
+                @* has duration is only used for taking any bool type of variable from the model for ischecked Property*@
+            </td>
+        </tr>
+    }
+
+</table>
+<script>
+            //$('#check-products-select-all1').on('click', function (control) {
+            //    debugger;
+            //    //var checked = $(this).prop("checked");
+
+            //    $('.product-div').find('input#item_HasDuration').prop('checked', true);
+            //    $(this).val('uncheck all');
+            //    //}, function () {
+            //    //    $('.product-div').find('input:checkbox').removeAttr('checked');
+            //    //    $(this).val('check all');
+            //});
+            var i = 0;
+            $('#check-products-select-all').click(function () {
+                debugger;
+                if (i == 0) {
+                    $('.product-div').find('input.products-checked').prop('checked', true);
+                    $(this).val('Uncheck All');
+                    i = 1 - i;
+                }
+                else {
+                    $('.product-div').find('input.products-checked').prop('checked', false);
+                    $(this).val('Check All');
+                    i = 1 - i;
+                }
+            });
+
+</script>

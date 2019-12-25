@@ -1,0 +1,308 @@
+﻿@model IEnumerable<Loader.Models.UserVSBranch>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "User Branch Setup";
+    var check = Loader.Models.Global.CurrentFYID;
+    var mod = Model;
+}
+<script src="~/Scripts/ch-treeview.js"></script>
+@{
+
+    var UserVSBranchTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="UserVSBranch-explore">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create" id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                    <div id="listCheckId"></div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+<script type="text/javascript">
+
+    $('.UserVSBranch-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.UserVSBranch-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pUserVSBranchId').val();
+
+        $('.UserVSBranch-treeview').SelectNode(nodeId);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null)
+        {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.UserVSBranch-explore').find('.panel-list');
+        var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "UserVSBranch")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.UserVSBranch-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.UserVSBranch-explore').find('.panel-list');
+        var listType = $(this).closest('.UserVSBranch-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "UserVSBranch")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+
+    $('.UserVSBranch-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.UserVSBranch-explore').find('.UserVSBranch-treeview').moveUp();
+        //$(this).closest('.UserVSBranch-explore').find('.UserVSBranch-treeview').updateTreeview("UserVSBranch", "_UpdateUserVSBranchTree", 1009,-1)
+    });
+
+    $('.UserVSBranch-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.UserVSBranch-explore').find('.UserVSBranch-treeview').SelectNode(id);
+    });
+
+    $('.UserVSBranch-explore').on('click', '.UserVSBranchImage, .editList, .btn-create-brnch', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.UserVSBranch-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.UserVSBranch-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.UserVSBranch-explore').find('.treeview-selected').attr('nodeid');
+        var UserVSBranchId = 0;
+        if ($(this).attr('class') == 'UserVSBranchImage' || 'editList') {
+            UserVSBranchId = $(this).attr('id');
+        }
+        var pUserVSBranchId = $('#pUserVSBranchId').val()
+        if (pUserVSBranchId == "") {
+            pUserVSBranchId = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "UserVSBranch")',
+            data: { activeText: activeElement, activeId: pUserVSBranchId, UserVSBranchId: UserVSBranchId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.UserVSBranch-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var UserVSBranchId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#pUserVSBranchId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "UserVSBranch")',
+            data: { id: UserVSBranchId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteUserVSBranch(UserVSBranchId, nodeId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes or Data Linked To Other Table First ", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteUserVSBranch(UserVSBranchId, nodeId) {
+        debugger;
+        var container = $('.UserVSBranch-explore').find('.panel-list');
+        $.ajax({
+
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "UserVSBranch")',
+            data: { UserVSBranchId: UserVSBranchId },
+            success: function (data) {
+                debugger;
+                SuccessAlert("UserVSBranch Sucessfully Deleted", 5000)
+                //$('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                container.html("");
+                debugger;
+                container.html($(data).find('.panel-list'));
+
+                    $.fn.updateTreeview('UserVSBranch', '_UpdateUserVSBranchTree', 1, -1)
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.UserVSBranch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/UserVSBranch/_GetUserVSBranchTree"
+        var container = $(this).closest('.UserVSBranch-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+    var countUserBranch = 0;
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        $("#listCheckId").html("");
+        countUserBranch = 0;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        //var checkUserVSBranch = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true) {
+                    $(item).css('display', 'table-row');
+                }
+                else {
+                    $(item).css('display', 'block');
+                }
+
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('UserVSBranch-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else {
+                    var text = $(item).find('.inner').attr('UserVSBranch-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                }
+                else {
+                    countUserBranch = countUserBranch + 1;
+                }
+
+
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+
+            if (countUserBranch == 0) {
+              //  $("table#mytable").text("No Data to display the matching record ");
+                $("#listCheckId").html("No UserBranch mapping found to be displayed");
+
+            }
+        }
+    });
+
+
+</script>
+
+
+<style>
+    #listCheckId {
+            text-align:center;
+            font-weight:bold;
+    }
+</style>
+
+
+

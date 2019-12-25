@@ -1,0 +1,23 @@
+﻿@model Loader.Models.Department
+@{
+    var test = Model;
+    Loader.Service.MenuTemplateService menuService = new Loader.Service.MenuTemplateService();
+}
+
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.DeptId" style="vertical-align:top;">
+        <a class="inner listDrill" Department-caption="@Model.DeptName" style="cursor:pointer;"> @Model.DeptName</a>
+    </td>
+    <td>
+        @menuService.GetUserName(Model.PostedBy)
+    </td>
+    <td>
+        @Model.PostedOn
+    </td>
+    <td>
+       <button class="btn btn-primary btn-xs editList" id="@Model.DeptId" data-title="Edit"><span class="glyphicon glyphicon-pencil"></span></button>
+        </td>
+    <td>
+       <button class="btn btn-danger btn-xs deleteNode" id="@Model.DeptId" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button>
+    </td>
+</tr>

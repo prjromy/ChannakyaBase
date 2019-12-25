@@ -1,0 +1,208 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountReportViewModel
+@using ChannakyaBase.BLL
+
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    decimal sumBalance = 0;
+    var mod = Model;
+}
+<div class="box-body table-responsive no-padding table-click-mature-duration-open" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AccountNumber)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AccountName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RegisterDate)
+                </th>
+
+                <th>
+                    Mature on
+                </th>
+                <th style="text-align:right">
+                    Balance
+                </th>
+
+            </tr>
+        </thead>
+        @foreach (var item in Model.AccountReportList)
+        {
+            <tr>
+
+                <td>
+                    <a href="#" onclick="ShowDetailsAccount('@item.AccountId')">@item.AccountNumber</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetDate(Convert.ToDateTime(item.RegisterDate))
+
+                </td>
+
+
+
+                <td>@commonService.GetDate(Convert.ToDateTime(item.MatureDate))</td>
+                <td style="text-align:right">
+                    @item.Balance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+
+            </tr>
+            sumBalance = sumBalance + item.Balance;
+        }
+        <tr>
+            <th colspan="5">Total</th>
+            <th style="text-align:right">@sumBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+
+    </table>
+    @Html.Paging("_MatureDurationWiseAccount", "Report", Model.AccountReportList.PageCount, Model.AccountReportList.PageNumber, Model.AccountReportList.PageSize)
+
+</div>
+
+
+
+<script>
+
+
+    $("div.table-click-mature-duration-open").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branch = parentContainer.find(".branch-Value").find("#BranchId").val();
+        var product = parentContainer.find(".product-Value").find("#PID").val();
+        var fromDate = parentContainer.find(".FromDate").find("#FromDate").val();
+        var toDate = parentContainer.find(".ToDate").find("#ToDate").val();      
+        var container = parentContainer.find("div.table-click-mature-duration-open")
+        //var sType = 0;
+        var sType = $('#SType').val();
+        var url = "?fromDate=" + fromDate + "&toDate=" + toDate + "&branch=" + branch + "&product=" + product + "&sType=" + sType;
+        getPageNumberBtnAction2(fromDate, toDate, branch, product, sType, container, me)
+
+
+    });
+    function getPageNumberBtnAction2(fromDate, toDate, branch, product, sType, container, me) {
+        debugger;
+        var parent = $(me).closest("#paging");
+        var id = $(me).attr('id');
+
+        var controller = $(parent).attr('controller');
+        var action = $(parent).attr('action');
+        var pageCount = $(parent).attr('pageCount');
+        var currentUrl = '/' + controller + '/' + action;
+        var elementCurrentPage = container.find("#pageNo");
+        var elementRowCount = container.find("#pageSize");
+        var currentPageNo = 1;
+        if (id == "btnNxt") {
+            currentPageNo = parseInt(elementCurrentPage.val()) + 1;
+
+        }
+        else if (id == "btnPrev") {
+            currentPageNo = parseInt(elementCurrentPage.val()) - 1;
+        }
+        else if (id == "btnFirst") {
+            currentPageNo = 1;
+        }
+        else if (id == "btnLast") {
+            currentPageNo = pageCount;
+        }
+        var pageSize = parseInt(elementRowCount.val())
+        //if (url != "") {
+        //    currentUrl = currentUrl + url + "&pageNo=" + currentPageNo + "&pageSize=" + pageSize;
+        //} else {
+        //    currentUrl = currentUrl + "?pageNo=" + currentPageNo + "&pageSize=" + pageSize;
+
+        //}
+      //  currentUrl = currentUrl + "?fromDate=" + fromDate + "&toDate=" + toDate + "&branch=" + branch + "&product=" + product + "&sType=" + sType+ "&pageNo=" + currentPageNo + "&pageSize=" + pageSize;
+
+        $.ajax({
+            type: "GET",
+            url: currentUrl,
+            data: {
+                fromDate: fromDate,
+                toDate: toDate,
+                branchid: branch,
+                productId: product,
+                sType: sType,
+                pageNo: currentPageNo,
+                pageSize: pageSize
+            },
+            dataType: "Html",
+            traditional: true,
+            success: function (data) { SuccessCall(data, container); },
+            error: function (xhr, status, error) { alert(error); },
+        });
+        function SuccessCall(data, container) {
+            $(container).html('');
+            $(container).append(data);
+            // $('#search').val(search);
+        }
+    }
+
+    $("div.table-click-mature-duration-open").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branch = parentContainer.find(".branch-Value").find("#BranchId").val();
+        var product = parentContainer.find(".product-Value").find("#PID").val();
+        var fromDate = parentContainer.find(".FromDate").find("#FromDate").val();
+        var toDate = parentContainer.find(".ToDate").find("#ToDate").val();
+        var sType = 0;
+        var container = parentContainer.find("div.table-click-mature-duration-open")
+        var url = "?fromDate=" + fromDate + "&toDate=" + toDate + "&branch=" + branch + "&product=" + product + "&sType=" + sType;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-mature-duration-open").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branch = parentContainer.find(".branch-Value").find("#BranchId").val();
+        var product = parentContainer.find(".product-Value").find("#PID").val();
+        var fromDate = parentContainer.find(".FromDate").find("#FromDate").val();
+        var toDate = parentContainer.find(".ToDate").find("#ToDate").val();
+        var container = parentContainer.find("div.table-click-mature-duration-open")
+        var sType = 0;
+        var url = "?fromDate=" + fromDate + "&toDate=" + toDate + "&branch=" + branch + "&product=" + product + "&sType=" + sType;
+        getPageSizeChangeData(url, container, me)
+    });
+    //$(".customer-main details").on('click', '.btn-searchCustomer', function (e) {
+    //    e.stopImmediatePropagation();
+    //    debugger;
+    //    var parentContainer = $(this).parents()
+    //    var me = $(this);
+    //    var name = parentContainer.find("#search-Employee-Name").find("#txtCustomerSearch").val();
+    //    var address = parentContainer.find("#search-Address").find("#txtAddress").val()
+    //    var contact = parentContainer.find("#search-contact").find("#txtContact").val();
+    //    var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+    //    var accNumber = parentContainer.find('#search-accountNumber').find('#txtaccountNumber').val();
+
+    //    $.ajax({
+    //        contentType: "html",
+    //        type: "Get",
+    //        url: "/Customer/_CustomerList",
+    //        data: { name: name, address: address, contact: contact, cType: cType, accNumber: accNumber },
+    //        success: function (data) {
+    //            $(".customer-list-index").find("div.Customer-List").html("");
+    //            $(".customer-list-index").find("div.Customer-List").html(data);
+    //        }
+    //    })
+    //});
+</script>

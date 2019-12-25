@@ -1,0 +1,255 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher2T
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service service = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    //var ledgerName = "";
+    var divStyle = "col-md-4";
+    if (Model.Voucher3T != null || Model.Voucher4T != null || Model.Voucher5T != null)
+    {
+        divStyle = "col-md-12";
+    }
+    if (ViewData["IsSaved"] != null)
+    {
+        divStyle = "col-md-4";
+    }
+}
+
+<td style="display:none;">
+    @Html.TextBoxFor(x => x.Fid, new { @style = "display:none", @id = "ledgerID-voucher" })
+</td>
+<td style="display:none;">
+    @Html.HiddenFor(x => x.V2TId, new { @class = "rowId" })
+</td>
+@if (ViewBag.WithButtons == null)
+{
+    if (Model.VoucherTransType == 0)
+    {
+        <td style="text-align:left">
+            @Html.Label("By", new { @class = "control-label" })
+        </td>
+    }
+    else
+    {
+        <td style="text-align:left">
+            @Html.Label("To", new { @class = "control-label" })
+        </td>
+    }
+}
+<td style="text-align:left" class="ledger-search-container readonly-row" id="append">
+
+    @Html.DisplayFor(x => x.LedgerName, new { @class = " form-control Particulars" })
+
+    @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+</td>
+<td style="text-align:left;" class="ledger-search-container @divStyle" id="append-description">
+    <div class="particulars-desc">@Html.DisplayFor(x => x.Particulars, new { @class = " form-control Particulars", @id = "particularsSearch" })</div>
+    <br />
+    @if (Model.Voucher5T != null)
+    {
+        if (Model.Voucher5T.Count() > 0)
+        {
+            foreach (var item in Model.Voucher5T)
+            {
+                <b class="headDesc" style="padding-right: 128px;">Bank Details</b>
+                <br />
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th class="col-md-5 ">
+                                Cheque/Slip No:
+                            </th>
+                            <th class="normal cheque-slip-no">
+                                @item.ChequeNo
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="col-md-5">
+                                Cheque/Slip Amount:
+                            </th>
+                            <th class="normal cheque-amount">
+                                @item.ChequeAmount
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="col-md-5">
+                                Cheque Date:
+                            </th>
+                            <th class="normal cheque-data">
+                                @item.ChequeDate.ToShortDateString()
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="col-md-5">
+                                Depositor/Payee:
+                            </th>
+                            <th class="normal cheque-payee">
+                                @item.Payees
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+
+                @*<input type="hidden" id="chequeAmountT" value="@item.ChequeAmount" />
+                <input type="hidden" id="chequeAmountD" value="@item.ChequeDate" />
+                <input type="hidden" id="chequeNoT" value="@item.ChequeNo" />
+                <input type="hidden" id="IdD" value="@item.Id" />
+                <input type="hidden" id="PayeesT" value="@item.Payees" />
+                <input type="hidden" id="V2TidD" value="@item.V2TId" />
+                <input type="hidden" id="V5TidT" value="@item.V5TId" />*@
+
+            }
+        }
+    }
+    @*<style>
+            body{
+                font-family:;
+            }
+        </style>*@
+    @if (Model.Voucher3T != null)
+    {
+        if (Model.Voucher3T.Count() > 0)
+        {
+            <b class="headDesc" style="padding-right: 128px; text-align:left;">Subsi Description: @Model.Voucher3T.ToList()[0].Description</b>
+            foreach (var item in Model.Voucher3T)
+            {
+                <table class="table table-bordered" style="background-color:whitesmoke;">
+                    <thead>
+                        <tr>
+                            <th>
+                                Subsi Name:
+                            </th>
+                            <th>
+                                @ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName(item.SId, item.SFId)
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Subsi Amount:
+                            </th>
+                            <th>
+                                @item.Amount
+                            </th>
+                        </tr>
+
+                    </thead>
+                </table>
+            }
+
+        }
+    }
+    @*@if (Model.Voucher4T != null)
+    {
+        if (Model.Voucher4T.Count() > 0)
+        {
+            //foreach (var item in Model.Voucher4T)
+            //{
+            <b class="headDesc" style="padding-right: 128px;">Dimension Details</b>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="col-md-5 ">
+                            Dimension
+                        </th>
+                        <th>
+                            Value
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Voucher4T)
+                    {
+                        <tr>
+                            <th class="col-md-5 normal">
+                                @if (item.DDID != 0)
+                                {
+                                    <p><strong>  @service.GetDimensionDefination(item.DDID) </strong></p>
+                                }
+                            </th>
+                            <th class="normal">
+                                @if (item.DVId != 0)
+                                {
+                                    <p> @service.GetDimensionValue(Convert.ToInt32(item.DVId))</p>
+                                }
+                            </th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }*@
+</td>
+<td style="text-align:right;" class="debit">
+    @Html.DisplayFor(x => x.DebitAmount, new { @class = "dbamnt form-control", @style = "width:100%" })
+</td>
+<td style="text-align:right;" class="credit">
+    @Html.DisplayFor(x => x.CreditAmount, new { @class = "crmamnt form-control", @style = "width:100%" })
+</td>
+<td style="text-align: center">
+    @if (ViewBag.WithButtons == null)
+    {
+        <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-disk ' id='btnSave' /> <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-save ' id='btnSaveandNext' /> <i class='btn btn-info btn-sm glyphicon glyphicon-trash' id='btnDelete' />
+    }
+</td>
+<script type="text/javascript">
+    if (@Model.V2TId != 0)
+    {
+        $(document).ready(function() {
+            var mainTempId = @Model.V2TId;
+            $('input#V1TId').val(mainTempId);
+        });
+    }
+
+    $("i#btnDelete").click(function () {
+        debugger;
+        var masterId = $('input.voucher-master-Id').val();
+        //if (masterId != 0 && masterId != null) {
+        //    $("#V1TId").val(masterId);
+        //}
+
+      
+        var finalDebitAmount =  parseFloat( $('.main-voucher-table-container').find('td.debit-total-amount b').html());
+        var finalCreditAmount = parseFloat( $('.main-voucher-table-container').find('td.credit-total-amount b').html());
+
+        var allAmounts = $('tbody.voucher2-container').find('tr.newrow');
+
+        $(allAmounts).each(function (index, item) {
+            debugger
+
+            var amountDebit = parseFloat($(item).find('.debit').text()).toFixed(2)
+
+            if (isNaN(amountDebit)) {
+                amountDebit = 0;
+            }
+            else {
+                finalDebitAmount = (parseFloat(finalDebitAmount) - parseFloat(amountDebit)).toFixed(2)
+            }
+
+            var amountCredit = parseFloat($(item).find('.credit').text()).toFixed(2)
+            if (isNaN(amountCredit)) {
+                amountCredit = 0;
+
+            }
+            else {
+                finalCreditAmount = (parseFloat(finalCreditAmount) - parseFloat(amountCredit)).toFixed(2)
+            }
+
+        });
+        if (isNaN(parseFloat(finalCreditAmount)) == false) {
+            $('.main-voucher-table-container').find('td.credit-total-amount').html("<b>" + finalCreditAmount + "<b>");
+        }
+        if (isNaN(parseFloat(finalDebitAmount)) == false) {
+            $('.main-voucher-table-container').find('td.debit-total-amount').html("<b>" + finalDebitAmount + "</b>");
+        }
+
+        $(this).closest('tr.newrow').remove();
+    });
+</script>
+<style>
+    .normal {
+        font-weight: normal;
+    }
+</style>

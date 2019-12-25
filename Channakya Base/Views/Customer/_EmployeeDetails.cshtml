@@ -1,0 +1,90 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    var model = @Model;
+}
+<div class="table-responsive table-click-Employee">
+    <table class="table table-bordered table-striped table-hove0r">
+        <thead>
+            <tr>
+                <th>@Html.LabelFor(x => x.EmployeeNo)</th>
+                <th>@Html.LabelFor(x => x.EmployeeName)</th>
+                @*@if (Model.LoadType == EEmployeeOrShare.Employee.GetDescription())
+                {
+                    <th>UserName</th>
+                    
+                }*@
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.EmployeeList)
+            {
+
+
+                <tr id="@item.EmployeeId" style="cursor: pointer" data-userid="@item.UserId">
+
+                    <td class="Customername">@item.EmployeeNo</td>
+
+                    <td>@item.EmployeeName</td>
+                    @*@if (Model.LoadType == EEmployeeOrShare.Employee.GetDescription())
+                    {
+                        <td>@item.UserName</td>
+                       
+                    }*@
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_EmployeeDetails", "Customer", Model.EmployeeList.PageCount, Model.EmployeeList.PageNumber, Model.EmployeeList.PageSize)
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script>
+    $("div.table-click-Employee").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branchId = parentContainer.find("#search-Employee-BranchId").find("#BranchId").val();
+        var searchOption = parentContainer.find('#EmployeeOption').val();
+        var searchParam = parentContainer.find('#SearchEmployee').val();
+        var container = parentContainer.find(".table-click-Employee")
+        var loadType = parentContainer.find('.register-user-show-type').val();
+        var searchType = parentContainer.find('.register-user-search-type').val();
+        var url = "?searchParam=" + searchParam + "&searchOption=" + searchOption + "&branchId=" + branchId + "&loadType=" + loadType + "&searchType=" + searchType;
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-click-Employee").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branchId = parentContainer.find("#search-Employee-BranchId").find("#BranchId").val();
+        var searchOption = parentContainer.find('#EmployeeOption').val();
+        var searchParam = parentContainer.find('#SearchEmployee').val();
+        var container = parentContainer.find(".table-click-Employee")
+        var loadType = parentContainer.find('.register-user-show-type').val();
+        var searchType = parentContainer.find('.register-user-search-type').val();
+        var url = "?searchParam=" + searchParam + "&searchOption=" + searchOption + "&branchId=" + branchId + "&loadType=" + loadType + "&searchType=" + searchType;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-Employee").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var branchId = parentContainer.find("#search-Employee-BranchId").find("#BranchId").val();
+        var searchOption = parentContainer.find('#EmployeeOption').val();
+        var searchParam = parentContainer.find('#SearchEmployee').val();
+        var container = parentContainer.find(".table-click-Employee")
+        var loadType = parentContainer.find('.register-user-show-type').val();
+        var searchType = parentContainer.find('.register-user-search-type').val();
+        var url = "?searchParam=" + searchParam + "&searchOption=" + searchOption + "&branchId=" + branchId + "&loadType=" + loadType + "&searchType=" + searchType;
+        getPageSizeChangeData(url, container, me)
+    });
+
+</script>

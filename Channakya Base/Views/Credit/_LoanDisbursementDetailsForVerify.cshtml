@@ -1,0 +1,277 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.DisbursementMain
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@using ChannakyaBase.DAL.DatabaseModel
+@{
+    CommonService commonService = new CommonService();
+    CreditService creditService = new CreditService();
+    ShrSPurchase ShareList = ViewData["ShareList"] as ShrSPurchase;
+}
+}
+
+@{
+    ViewBag.Title = "withdraw";
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    var mod = Model;
+}
+@using (Html.BeginForm("DisburseCashVerifyByTeller", "Credit", FormMethod.Post, new { id = "Disburse-Verify-By-Teller-form" }))
+{
+@Html.HiddenFor(x=>Model.DisburseId)
+<div style="padding:2px">
+    <div class="table table-responsive table-hover ">
+        <table class="table table-responsive table-hover table-striped table-bordered">
+            <tr>
+                <th> Account Name </th>
+                <th> Account Number </th>
+                <th>Scheme Name </th>
+                <th>Product Name </th>
+                <th>Currency Name </th>
+            </tr>
+            <tr>
+                <td><span class="control-label">@Model.ADetail.Aname</span></td>
+                <td><span class="control-label">@Model.ADetail.Accno</span></td>
+
+                <td>
+                    <span class="control-label"> @Model.ADetail.ProductDetail.SchmDetail.SDName</span>
+                </td>
+                <td> <span class="control-label">@Model.ADetail.ProductDetail.PName </span></td>
+                    <td>
+                        @*<span class="control-label">@Model.ADetail.CurrencyType1.CurrencyName</span>*@
+                    </td>
+            </tr>
+        </table>
+    </div>
+    <fieldset>
+        <legend>Loan Details</legend>
+
+        <div class="table table-responsive table-hover ">
+            <table class="table table-responsive table-hover table-striped table-bordered">
+                <tr>
+                    <th>Quatation Amount</th>
+                    <th>Approved Amount</th>
+                </tr>
+                <tr></tr>
+                <tr>
+                    <td>
+                        @if (@Model.ADetail.ADrLimit != null)
+                        {
+                                <span class="control-label">@Convert.ToDecimal(Model.ADetail.ADrLimit.QuotAmt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (@Model.ADetail.ADrLimit != null)
+                        {
+                                <span class="control-label">@Convert.ToDecimal(Model.ADetail.ADrLimit.AppAmt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </fieldset>
+    <fieldset>
+        <legend>Loan Debit Details</legend>
+
+        <div class="table table-responsive table-hover ">
+            <table class="table table-responsive table-hover table-striped table-bordered">
+                <tr>
+                    <th>Other Loan Amount</th>
+                    <th>Regular Disbursed Amount</th>
+                   
+                </tr>
+
+                <tr>
+                    @if (ViewBag.modelFrom == "OtherLoan")
+                    {
+                        foreach (var item in Model.DisburseVsPIDs)
+                    {
+
+                            <td>
+                                <span class="control-label">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                            </td>
+
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in Model.DisburseVsPIDs)
+                        {
+
+                            <td>
+                                <span class="control-label">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                            </td>
+
+                        }
+                    }
+
+                    </tr>
+
+            </table>
+        </div>
+
+    </fieldset>
+    @if (Model.DisburseDeposits.Count != 0)
+    {   <fieldset>
+        <legend>Nominee Accounts</legend>
+
+        <div class="table table-responsive table-hover ">
+            <table class="table table-responsive table-hover table-striped table-bordered">
+                <tr>
+                    <th> Account Name </th>
+                    <th> Account Number </th>
+                    <th>Scheme Name </th>
+                    <th>Product Name </th>
+                    <th>Currency Name </th>
+                </tr>
+                @foreach (var item in @Model.DisburseDeposits)
+                {
+
+
+                    <tr>
+                        <td><span class="control-label">@item.ADetail.Aname</span></td>
+                        <td><span class="control-label">@item.ADetail.Accno</span></td>
+
+                        <td>
+                            <span class="control-label">@item.ADetail.ProductDetail.SchmDetail.SDName</span>
+                        </td>
+                        <td> <span class="control-label">@item.ADetail.ProductDetail.PName </span></td>
+                        <td>
+                            @*<span class="control-label">@item.ADetail.CurrencyType1.CurrencyName</span>*@
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </fieldset>
+    }
+    @if (Model.DisburseCharges.Count != 0)
+    {
+        <fieldset>
+            <legend>Addtional Charges</legend>
+
+            <div class="table table-responsive table-hover ">
+                <table class="table table-responsive table-hover table-striped table-bordered">
+                    <tr>
+                        <th> Financial Ledger </th>
+                        <th> Amount</th>
+
+                    </tr>
+                    @foreach (var item in @Model.DisburseCharges)
+                    {
+
+
+                        <tr>
+                            <td> @FinanceParameterUtilityService.LedgerNameByFid(Convert.ToInt32(item.FID))</td>
+                                <td><span class="control-label">@Convert.ToDecimal(item.Amount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+        </fieldset>
+    }
+
+    @if (ShareList != null)
+    {
+        <fieldset>
+            <legend>Share Details</legend>
+
+            <div class="table table-responsive table-hover ">
+                <table class="table table-responsive table-hover table-striped table-bordered">
+                    <tr>
+                        @*<th>Name</th>*@
+
+                        <th>Purchase Date</th>
+                        <th>Share Quantity</th>
+
+                        <th>Amount</th>
+
+                    </tr>
+                   
+
+
+                        <tr>
+                            <td> @ShareList.Pdate</td>
+                            <td>@ShareList.SQty</td>
+                            <td>@ShareList.Amt</td>
+                        </tr>
+                    
+                </table>
+            </div>
+
+        </fieldset>
+    }
+
+    @if (Model.DisburseCheques.Count != 0)
+    {
+
+        <fieldset>
+            <legend>Bank Details</legend>
+
+            <div class="table table-responsive table-hover ">
+                <table class="table table-responsive table-hover table-striped table-bordered">
+                    <tr>
+                        <th> BankName Ledger </th>
+                        <th> Cheque No</th>
+                        <th> Amount</th>
+
+                    </tr>
+                    @foreach (var item in @Model.DisburseCheques)
+                    {
+
+
+                        <tr>
+                            <td> @creditService.GetAllBankList(item.BankId).FirstOrDefault().BankName</td>
+
+                            <td><span class="control-label">@item.ChequeNo</span></td>
+                                <td><span class="control-label">@Convert.ToDecimal(item.Amount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                        </tr>
+                    }
+                </table>
+
+            </div>
+        </fieldset>
+
+    }
+    @if (Model.DisburseCashes.Count != 0)
+    {
+                @Html.HiddenFor(x=>x.DisburseCashes.FirstOrDefault().Amount,new { @class = "disburse-cash-amount" })
+        <fieldset>
+            <legend>Cash Details</legend>
+
+
+            <div class="table table-responsive table-hover ">
+                <table class="table table-responsive table-hover table-striped table-bordered">
+                    <tr>
+                        <th> Teller</th>
+                        <th> Amount</th>
+                    </tr>
+                    @foreach (var item in @Model.DisburseCashes)
+                {
+                        <tr>
+                                <td><span class="control-label">@commonService.GetAllTeller(Convert.ToInt32(item.RecieveFrom)).Select(x=>x.EmployeeName).FirstOrDefault()</span></td>
+                                <td><span class="control-label">@Convert.ToDecimal(item.Amount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                                 
+                        </tr>
+                    }
+                </table>
+            </div>
+                @if (IsTransactionWithDeno)
+                {
+                    if (Model.ApprovedBy != null)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-12 transaction-with-deno">
+                                @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = new CommonService().DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription() });}
+
+                            </div>
+                        </div>
+                                        }
+                                    }
+        </fieldset>
+    }
+</div>
+                                    }                              

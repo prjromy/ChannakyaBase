@@ -1,0 +1,448 @@
+﻿@model Loader.Models.Employee
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+
+@*<script src="~/Scripts/DatePicker/CHDialog.js"></script>*@
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+@{
+    Layout = null;
+
+    var ab = new SelectListItem { Text = "1", Value = "2" };
+    var test = Model;
+    //var designationtreeData = (Loader.ViewModel.TreeView)ViewBag.DesignationTree;
+    //var departmenttreeData = (Loader.ViewModel.TreeView)ViewBag.DepartmentTree;
+    var treeobjBranch = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.BranchText, "Select Branch", "");
+
+    if (Model.EmployeeId == 0)
+    {
+
+    }
+    else
+    {
+
+        @Html.HiddenFor(x => x.ModifiedBy)
+        @Html.HiddenFor(x => x.ModifiedOn)
+        @Html.HiddenFor(x => x.DGId)
+        @Html.HiddenFor(x => x.DeptId)
+    }
+    if (Model.BranchId != null && Model.BranchId != 0)
+    {
+        treeobjBranch = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Convert.ToInt32(Model.BranchId), ViewBag.BranchText, "Select Branch", "");
+    }
+
+    var treeobjDesignation = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, "", "Select Designation", "");
+    if (Model.DGId != null && Model.DGId != 0)
+    {
+        treeobjDesignation = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Convert.ToInt32(Model.DGId), ViewBag.DesgText, "Select Designation", "");
+    }
+    var treeobjDepartment = new Loader.ViewModel.TreeViewParam(false, ViewBag.AllowDepartmentInGroup, true, 0, 0, "", "Select Department", "");
+    if (Model.DeptId != null && Model.DeptId != 0)
+    {
+        treeobjDepartment = new Loader.ViewModel.TreeViewParam(false, ViewBag.AllowDepartmentInGroup, true, 0, Convert.ToInt32(Model.DeptId), ViewBag.DeptText, "Select Department", "");
+    }
+    var title = "Create Employee";
+    if (Model.EmployeeId != 0)
+    {
+        title = "Edit Employee";
+    }
+    var valueSubmit = "Create";
+    if (Model.EmployeeId != 0)
+    {
+        valueSubmit = "Save";
+    }
+}
+<div class="box box-warning Employee-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "Employee", FormMethod.Post, new { @id = "createEmployee" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.EmployeeId)
+                @*@Html.HiddenFor(x => x.DateOfJoin)*@
+
+                @*@Html.HiddenFor(x => x.ModifiedBy)*@
+                @*@Html.HiddenFor(x => x.ModifiedOn)*@
+                @Html.HiddenFor(x => x.PostedBy)
+                @Html.HiddenFor(x => x.PostedOn)
+                @*@Html.HiddenFor(x => x.DeptId)*@
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.EmployeeNo, htmlAttributes: new { @class = "control-label col-md-3" })
+                    @if (ViewBag.messageToDisableEditBranchName == 1)
+                    {
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.EmployeeNo, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmployeeNo, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.EmployeeNo, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.EmployeeNo, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(model => model.Photo, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <input type="file" id="fileid1" name="file" class="file-picker-input exm" accept="image/x-png,image/gif,image/jpeg" style="display:none;" />
+                        <i class="glyphicon glyphicon-upload uploadicon upldimge"></i>
+
+                        @if (Model.EmployeeId != 0 && ViewBag.Image != null)
+                        {
+                            <div id="loadimage"><img id="employeeImage" src="data:image/gif;base64,@ViewBag.Image" style="max-height:100px;max-width:147px;object-fit:contain;margin-left: 4px;" alt=""></div>
+
+                        }
+                        @if (Model.EmployeeId != 0 && ViewBag.Image == null)
+                        {
+                            <div id="loadimage"><img id="employeeImage" style="max-height:100px;max-width:147px;object-fit:contain;margin-left: 4px;" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" alt=""></div>
+
+                        }
+                        @if (Model.EmployeeId == 0)
+                        {
+
+                            <div id="loadimage"></div>
+
+                        }
+
+
+
+                        @Html.ValidationMessageFor(model => model.Photo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+            
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.EmployeeName, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                
+
+                <div class="form-group col-md-12">
+
+                </div>
+                @if (ViewBag.WithDepartment == true)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.DeptId, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.DeptId, treeobjDepartment)
+                            @Html.ValidationMessageFor(model => model.DeptId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.Designation == true)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.DGId, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.DGId, treeobjDesignation)
+                            @Html.ValidationMessageFor(model => model.DGId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.PayrollParam == true)
+                {
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.Status, (IEnumerable<SelectListItem>)ViewBag.GetStatusOption, "Select Status", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+
+                        </div>
+                        @Html.LabelFor(model => model.BloodGroup, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+
+                            @Html.DropDownListFor(model => model.BloodGroup, (IEnumerable<SelectListItem>)ViewBag.GetBloodGroup, "Select Blood Group", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.BloodGroup, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(model => model.Nationality, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.Nationality, (IEnumerable<SelectListItem>)ViewBag.GetNationality, "Select Nationality", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Nationality, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.Religion, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.Religion, (IEnumerable<SelectListItem>)ViewBag.GetReligion, "Select Religion", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Religion, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(model => model.MaritialStatus, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.MaritialStatus, (IEnumerable<SelectListItem>)ViewBag.GetMaritialStatus, "Select Maritial Status", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MaritialStatus, "", new { @class = "text-danger" })
+                        </div>
+
+                        @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.Gender, (IEnumerable<SelectListItem>)ViewBag.GetGender, "Select Gender", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                }
+
+                <div class="form-group col-md-12">
+                    @if (ViewBag.messageToDisableEditBranchName == 1)
+                    {
+                        @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9" id="branch-readonly">
+
+                            @{
+                                var name = Loader.Service.UserVSBranchService.GetEmployeeBranchName(Model.BranchId);
+                            }
+
+                            @*@Html.EditorForTree(model => model.DGId, treeobjBranch)*@
+
+                            @Html.TextBox( "branch",name, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.BranchId)    
+                                                    
+                            @*@Html.TextBoxFor(model => model.BranchId, new { @disabled = "disabled" })*@
+
+                           @* @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })*@
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.BranchId, treeobjBranch)
+                            @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.DateOfJoin, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.DatePicker(x => x.DateOfJoin)
+                        @*@Html.TextBoxFor(model => model.DateOfJoin, new { @class = "form-control dt", @Value = DateTime.Now.ToShortDateString() })*@
+                        @Html.ValidationMessageFor(model => model.DateOfJoin, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PEmployeeId").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            if(imagecontent!=null)
+            {
+                form1.append('file', imagecontent);
+
+                Imageform.append('file', imagecontent)
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    url: "/Employee/DisplayImage",
+                    data: Imageform,
+                    success: function (ImageContent) {
+                        debugger;
+                        $('#loadimage').empty();
+                        $('#loadimage').append(' <img style="max-height:100px;max-width:147px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                        // $('#loadimage').attr("content", imagecontent);
+                    }
+                });
+            }
+        });
+
+
+        $("#createEmployee").submit(function () {
+            debugger;
+
+            var branchval = $("#BranchId").val();
+            var deptval = $("#DeptId").val();
+            var genderval = $("#Gender").val();
+            var DGIdval = $("#DGId").val();
+            var checkEmpno = $(this).closest('.Employee-create').find('input#EmployeeNo').val();
+            if($.isNumeric(checkEmpno)==false)
+            {
+                ErrorAlert("Employee Number Not Valid",1500);
+                return false;
+            }
+
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            //var nodeId = $(this).find('.section-treeview#PEmployeeId').find('.internal-value').val()
+            var nodeId = 1;
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Employee")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        if(@Model.EmployeeId!=0)
+                        {
+                            SuccessAlert("Employee Edited Succesfully.",2500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Employee Added Succesfully.",2500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+        $('.Employee-create').on('filterTree', 'div#BranchId', function (e, data) {
+            debugger;
+
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            if (data.fromPopUp == 'false') {
+                //Response.ApplyAppPathModifier("/Employee/_GetEmployeeTreePopup")
+                $dlg_dpicker.load("/Employee/_GetBranchTreePopUp", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Employee/_GetBranchTree", { param: data.param })
+
+            }
+
+
+        });
+
+
+        $('.Employee-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            if (data.fromPopUp == 'false') {
+                //Response.ApplyAppPathModifier("/Employee/_GetEmployeeTreePopup")
+                $dlg_dpicker.load("/Employee/_GetEmployeeTreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Employee/_GetEmployeeTree", { param: data.param })
+
+            }
+
+
+        });
+
+    });
+
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 102px;
+        width: 147px;
+        border: 1px solid;
+        /* padding-bottom: 99px; */
+        margin: -24px 0px -72px 119px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 23px;
+        top: 9px;
+        padding: 4px -1px -3px -4px;
+    }
+</style>
+<script>
+    $(function () {
+        $(".dt").datepicker();
+    });
+</script>
+<style>
+    div#ui-datepicker-div {
+        z-index: 2 !important;
+    }
+</style>

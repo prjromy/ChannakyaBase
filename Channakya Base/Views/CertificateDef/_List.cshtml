@@ -1,0 +1,78 @@
+﻿@model List<ChannakyaBase.DAL.DatabaseModel.CertificateDef>
+
+@using ChannakyaBase.BLL.CustomHelper
+@using PagedList.Mvc
+@using PagedList
+
+@{
+                /**/
+
+
+                var models = Model;
+                //Layout = null;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <div class="box-tools col-md-3" style="padding:5px">
+
+            <div class="input-group input-group-sm pull-right" @*style="width: 250px;"*@>
+
+                @Html.TextBox("Certificate-search", (string)ViewBag.searchedVal, htmlAttributes: new { @class = "form-control pull-right", @id = "txtsearch", @placeholder = "Search" })
+                <div class="input-group-btn">
+                    <button type="button" id="searchsubmit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <p>
+            <h3>Certificate List</h3>
+        </p>
+        <div class="box-body table-responsive no-padding">
+            <table class="table">
+                <tr>
+                    <th class=col-md-10>
+                        @Html.DisplayNameFor(model => model.First().CCCert)
+                    </th>
+                    <th class=col-md-2>
+                        Action
+                    </th>
+                </tr>
+                @if (Model.Count() == 0)
+                {
+                    <tr>
+
+                        <td>
+                            No Record Found
+                        </td>
+                        <td></td>
+                    </tr>
+                }
+
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CCCert)
+                            </td>
+                            <td>
+                                @{
+                                    var name = item.CCCert;
+                                    ViewBag.name = name;
+                                }
+                                <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.CCCertID" data-toggle="tooltip" title="Edit"></button>
+                                <button type="button" class="btn btn-info btn-sm btn-sm btn-delete glyphicon glyphicon-trash danger" data-id="@item.CCCertID" data-val="@item.CCCert" data-toggle="tooltip" title="Delete"></button>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        </div>
+    </div>
+    @*@Html.Paging("_List", "CertificateDef", @Model.PageCount, @Model.PageNumber, @Model.PageSize)*@
+</div>
+
+
+

@@ -1,0 +1,84 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CommonReportModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success Loan-account-schedule-main">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Schedule Detail</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+    
+            <fieldset>
+                <div class="col-md-12" id="report-account-details">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="form-group">
+
+                                <div class="col-md-4">
+                                    @Html.Label("Account No")
+                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+             
+
+            
+        
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-Loan-account-schedule-generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info btn-loaninstallmentdetails-export-to-excel" />
+
+            </div>
+        </div>
+    </div>
+
+    <div class="with-loan-Account-Schedule-details" id="with-loan-Account-Schedule-Details">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+
+    $(".Loan-account-schedule-main").on("click", '.btn-Loan-account-schedule-generate', function () {
+        var accountId = $('.account-number-div').find(".account-id").val()
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_LoanInstallmentDetails",
+            data: { accountId: accountId },
+            success: function (result) {
+
+                $(".with-loan-Account-Schedule-details").html("");
+                $(".with-loan-Account-Schedule-details").html(result)
+                $('.btn-rePreview-Schedule').hide();
+            }
+        })
+    }
+
+     );
+    $('.btn-loaninstallmentdetails-export-to-excel').on('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var accountId = $('.account-number-div').find(".account-id").val();
+
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/loaninstallmentdetailsExporttoExcel?accountId=" + accountId)
+    });
+
+</script>

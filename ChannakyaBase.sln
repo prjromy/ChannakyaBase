@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannakyaBase.Web", "Channakya Base\ChannakyaBase.Web.csproj", "{52215F3B-A484-4F88-803B-9CC501B094FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannakyaBase.DAL", "ChannakyaBase.DAL\ChannakyaBase.DAL.csproj", "{ED7D60F8-56C0-4F3B-A276-A945927076C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannakyaBase.BLL", "ChannakyaBase.BLL\ChannakyaBase.BLL.csproj", "{7D7F5BEB-11AA-4327-BDE9-FB307B4F5C42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannakyaBase.Model", "ChannakyaBase.Model\ChannakyaBase.Model.csproj", "{59827EC9-F61E-4A46-8704-3443AD334447}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ChaBase", "ChaBase\ChaBase.sqlproj", "{706D914F-BABE-42D4-B750-41A10E431AAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52215F3B-A484-4F88-803B-9CC501B094FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52215F3B-A484-4F88-803B-9CC501B094FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52215F3B-A484-4F88-803B-9CC501B094FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52215F3B-A484-4F88-803B-9CC501B094FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED7D60F8-56C0-4F3B-A276-A945927076C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED7D60F8-56C0-4F3B-A276-A945927076C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED7D60F8-56C0-4F3B-A276-A945927076C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED7D60F8-56C0-4F3B-A276-A945927076C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D7F5BEB-11AA-4327-BDE9-FB307B4F5C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D7F5BEB-11AA-4327-BDE9-FB307B4F5C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D7F5BEB-11AA-4327-BDE9-FB307B4F5C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D7F5BEB-11AA-4327-BDE9-FB307B4F5C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59827EC9-F61E-4A46-8704-3443AD334447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59827EC9-F61E-4A46-8704-3443AD334447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59827EC9-F61E-4A46-8704-3443AD334447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59827EC9-F61E-4A46-8704-3443AD334447}.Release|Any CPU.Build.0 = Release|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{706D914F-BABE-42D4-B750-41A10E431AAA}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5C72FAA-7828-479A-9FB1-282FA0B4F745}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://182.93.88.253:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Channakya\u0020Base\\ChannakyaBase.Web.csproj
+		SccProjectName1 = Channakya\u0020Base
+		SccLocalPath1 = Channakya\u0020Base
+		SccProjectUniqueName2 = ChannakyaBase.DAL\\ChannakyaBase.DAL.csproj
+		SccProjectName2 = ChannakyaBase.DAL
+		SccLocalPath2 = ChannakyaBase.DAL
+		SccProjectUniqueName3 = ChannakyaBase.BLL\\ChannakyaBase.BLL.csproj
+		SccProjectName3 = ChannakyaBase.BLL
+		SccLocalPath3 = ChannakyaBase.BLL
+		SccProjectUniqueName4 = ChannakyaBase.Model\\ChannakyaBase.Model.csproj
+		SccProjectName4 = ChannakyaBase.Model
+		SccLocalPath4 = ChannakyaBase.Model
+		SccProjectUniqueName5 = ChaBase\\ChaBase.sqlproj
+		SccProjectName5 = ChaBase
+		SccLocalPath5 = ChaBase
+	EndGlobalSection
+EndGlobal

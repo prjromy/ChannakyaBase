@@ -1,0 +1,18 @@
+﻿@model List<ChannakyaAccounting.Models.Models.Duration>
+@using ChannakyaAccounting.Helper
+
+
+@foreach (var item in Model)
+{
+    using (Html.BeginCollectionItem("DurationList"))
+    {
+    @Html.HiddenFor(x => item.Id)
+    <tr class="DurationList">
+        <th scope="row" class="Duration" id="@item.Id">@item.Duration1</th>
+        
+        @*@Html.EditorFor(x => x.DepositBasisList)*@
+        @Html.Partial("_BasisList", item.DepositBasisList)
+    </tr>
+    }
+
+}

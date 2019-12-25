@@ -1,0 +1,101 @@
+﻿@model  ChannakyaBase.Model.ViewModel.LoanPaymentInformationModel
+@using ChannakyaBase.BLL;
+@{
+    Layout = null;
+    int count = 1;
+    decimal Total = 0;
+    decimal cTota = 0;
+    CommonService commonService = new CommonService();
+}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+
+        <tbody>
+
+            <tr>
+                <td>Installment Amount</td>
+                <td>@Model.TotalInstallMentAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>A/C Balance</td>
+                <td>@Model.ToPay.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+
+            </tr>
+            <tr>
+                <td>Other</td>
+                <td>@Model.Other.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>Remaining Inst. Balance</td>
+                <td>@Model.Balance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+
+            </tr>
+            <tr>
+                <td>Outstanding Principal</td>
+                <td>@Model.OutstatdingPrincipal.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>Mature Date</td>
+                <td>@commonService.GetEnglishDate(Convert.ToDateTime(Model.MatureDate))</td>
+            </tr>
+
+            <tr>
+                <td>Per Day Interest</td>
+                <td>@Model.PerDayInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>Outstanding Interest</td>
+                <td class="Outstanding-Interest">@Model.CurrentInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+
+            </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+    <table class="table table-bordered table-striped table-hover">
+
+        <thead>
+            <tr>
+                <th>Heading</th>
+                <th>DueDate</th>
+                <th>Install Amount</th>
+                <th>Mat Amount</th>
+                <th>Immature Amt</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        @foreach (var item in Model.LoanPaymentList)
+            {
+            <tr>
+                @if (count == 1)
+                {
+                    <td>Principal</td>
+                    Total = item.Installment + item.Mature;
+                }
+                else
+                {
+                    <td>Interest</td>
+                    Total = item.Installment + item.Mature;
+                }
+
+                <td>
+                @if(item.DueDate!= null)
+                {
+                    <span>@commonService.GetEnglishDate(Convert.ToDateTime(item.DueDate))</span>
+                }
+                </td>
+                <td>@item.Installment.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td class="mature-@count">@item.Mature.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                @if (count == 1)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    cTota = Model.CurrentInterest - item.Mature;
+                    <td>@cTota.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+                }
+                <td>@((Total- cTota).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture))</td>
+
+
+            </tr>
+            count++;
+        }
+    </table>
+</div>

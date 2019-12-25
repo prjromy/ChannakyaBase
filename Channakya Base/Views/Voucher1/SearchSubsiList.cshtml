@@ -1,0 +1,192 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.SubsiViewModel>
+
+    @{
+    Layout = null;
+    var count = 0;
+    var test = Model;
+    }
+
+
+    <div class="container subsi-list-model">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="table-responsive">
+
+                    <table id="mytable" class="table table-bordred" style="max-width:46%;">
+
+                        <thead>
+                            <tr>
+                                <th>
+                                    S.N
+                                </th>
+                                <th>
+                                    Id
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr class="subsi-popup-details" id="@item.Id" subsiText="@item.Name" cursor:pointer;">
+
+                                <td>@(count += 1)</td>
+
+                                @*
+                                <td class="fname1" data-dismiss="modal">*@
+                                <td class="subsiname-voucher" id="@item.Id" style="cursor:pointer;">
+                                    @item.Id @Html.HiddenFor(modelItem => item.Id, new { @id = item.Id })
+                                </td>
+                                @if (item.Name == null)
+                                {
+                                <td class="">
+                                    ------
+                                </td>
+                                }
+                                else
+                                {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                }
+
+
+                                @*
+                                <button class="btn btn-default ledgerload" , onclick="location.href='@Url.Action(" GetLedger", "Helper" , new { ledgername=item.Fname })';return true;">Select</button>*@
+
+
+
+                            </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.Voucher1-explore').find('#getVoucherDetails');
+                    $(container).load("/Voucher1/AddVoucherDetails", { page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.Voucher1-explore').find('#getVoucherDetails');
+                    $(container).load("/Voucher1/AddVoucherDetails", { page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.Voucher1-explore').find('#getVoucherDetails');
+            $(container).load("/Voucher1/AddVoucherDetails", { page: pagingData });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.employeepaginatoin').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+
+
+
+    $('tr.subsi-popup-details').click(function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var subsiId = $(this).attr("id");
+        var subsiText = $(this).attr('subsitext');
+        $(subsiEvent).closest('.section-subsi').find('input.display-txt-subsi').val(subsiText);
+        $(subsiEvent).closest('.section-subsi').find('input.internal-value').val(subsiId)
+
+        $('#getSubsiDetailsList').modal('hide');
+
+
+    });
+
+
+
+    $('button#btnsearch-subsi-popup').click(function () {
+        debugger;
+        var text = $(this).closest('.add-voucher-subsi').find("input.Search.form-control").val();
+        $.ajax({
+            url: '/Voucher1/SearchSubsiList/',
+            type: "POST",
+            data: { query: text },
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $("div.subsi-list-model").html(data);
+
+            }
+        });
+    });
+
+
+    $('#getSubsiDetailsList').on('click', '.subsi-modal', function (e) {
+        e.stopImmediatePropagation()
+        debugger;
+        $('#getSubsiDetailsList').modal('hide');
+    });
+
+</script>
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .subsi-popup-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>

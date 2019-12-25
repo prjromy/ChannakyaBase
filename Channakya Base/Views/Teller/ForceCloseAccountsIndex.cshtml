@@ -1,0 +1,170 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountForceCloseViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@{
+    CommonService commonservice = new CommonService();
+    TellerService ts = new TellerService();
+}
+
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Force Close Accounts";
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Force Close Accounts</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="force-close-account">
+        @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+        <div id="account-list-force-close" class="account-list-force-close">
+
+            @using (Html.BeginForm("ForceCloseAccountsIndex", "Teller", FormMethod.Post, new { id = "forceCloseAccount-form" }))
+            {
+                <fieldset>
+                    <legend>Search Accounts</legend>
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(x => x.PID, new { @class = "hiddenPID" })
+                        @Html.HiddenFor(x => x.IsForceClosed)
+
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                @Html.Label("Account Number", htmlAttributes: new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.AccountClose.GetDescription(), EAccountFilter.AccountClose.GetDescription())
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div'></div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <input type="button" value="Close This Account" id="btn-submit-force-close-account" class="btn btn-default btn-save" style="display:none;float: right;" />
+                    </div>
+
+                </fieldset>
+            }
+        </div>
+        @*<div id="ChangeProductInterest-list" class="ChangeProductInterestList" >
+                @{Html.RenderAction("_ChangeProductInterestList", "TransactionSetup");}
+            </div>*@
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $("#btn-account-openSearch").on("click", function () {
+        debugger
+        $(".btn-submit-force-close-account").show();
+    })
+
+    $(function () {
+        $.validator.unobtrusive.parse('#forceCloseAccount-form');
+        $("#btn-submit-force-close-account").on("click", function (e) {
+
+            $('#forceCloseAccount-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#forceCloseAccount-form'));
+            if ($("#forceCloseAccount-form ").valid()) {
+                forceCloseAccountSumbit();
+            }
+        })
+    });
+
+    function forceCloseAccountSumbit() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure you want to close this account?"
+        }).done(function () {
+            $("#IsForceClosed").val(false);;
+            $('#forceCloseAccount-form').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (result) {
+                    debugger
+                    if (result.ReturnId == 1) {
+                        $("#IsForceClosed").val(true);
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to close this immature account?"
+                        }).done(function () {
+                            $('#forceCloseAccount-form').ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result1) {
+                                    if (result1.Success) {
+                                        $.ajax({
+                                            url: "/Teller/ForceCloseAccountsIndex",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result1.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+
+                                    } else {
+
+                                        ErrorAlert(result1.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            });
+                        }).fail(function () {
+
+                        });
+                    }
+                    else {
+                        if (result.Success) {
+                            debugger
+                            $.ajax({
+                                url: "/Teller/ForceCloseAccountsIndex",
+                                type: 'GET',
+                                async: false,
+                                success: function (result) {
+                                    $('section.content').html(result);
+                                }
+                            })
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+
+                        } else {
+
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    }
+
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+</script>
+

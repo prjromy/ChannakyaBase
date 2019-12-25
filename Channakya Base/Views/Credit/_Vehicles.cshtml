@@ -1,0 +1,101 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALCollVehicleModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+
+<fieldset>
+    <legend style="font-size:14px;font-weight:bold">Vechile Info</legend>
+    @Html.HiddenFor(x => x.ColVechicleId)
+    <div class="form-group">
+        @Html.LabelFor(model => model.LicNo, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.LicNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.LicNo, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.LicRight, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.LicRight, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.LicRight, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.IssueOff, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.IssueOff, new { @class = "form-control Equivalent-Amount" })
+            @Html.ValidationMessageFor(model => model.IssueOff, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.type, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(model => model.type, CreditUtilityService.VechileType(), "--select Vechile Type--", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MC, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.MC, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.MC, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.MD, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.DatePicker(x => x.MD)
+            @Html.ValidationMessageFor(model => model.MD, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ModNo, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.ModNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ModNo, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.EngNo, new { @class = "control-label  col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.EngNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.EngNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ChassisNo, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.ChassisNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ChassisNo, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Color, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Color, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Color, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.CC, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.CC, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.CC, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.VehicleNo, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.VehicleNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @Value = (@Model.Amount == 0) ? "" : @Model.Amount.ToString() })
+            @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.description, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextAreaFor(model => model.description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    </fieldset>
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+
+
+
+
+

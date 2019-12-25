@@ -1,0 +1,16 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.CollectedAccountSheet
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@{CommonService cs = new CommonService();}
+
+    <tr onclick="logDetails(@Model.RetId)">
+ 
+        <td>@Model.RetId </td>
+        <td>@cs.EmployeeUserInfoEmployeeId(Convert.ToInt16(Model.CollectorId)).EmployeeName</td>
+        <td> @Model.TotalAmount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+        @*<td>  @Html.CheckBoxFor(x => x.IsSelected, new { @class = "IsSelected" })</td>*@
+
+    </tr>
+
+

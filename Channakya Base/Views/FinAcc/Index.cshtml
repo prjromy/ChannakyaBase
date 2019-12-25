@@ -1,0 +1,288 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.Models.FinAcc>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Ledger Setup";
+    var test = Model;
+}
+@*
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
+@{
+
+    var FinAccTreeview = (ChannakyaAccounting.Models.ViewModel.TreeView)ViewBag.treeview;
+    ChannakyaAccounting.Models.ViewModel.TreeViewParam param = (ChannakyaAccounting.Models.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        
+        <div id="explorer" class="FinAcc-explore section-treeview">
+            @Html.Hidden("viewType", 1)
+            <div class="col-md-3 FinAcc-treeview">
+                @Html.Partial("~/Views/Shared/_AccountingTreeView.cshtml", FinAccTreeview, new ViewDataDictionary { { "param", param } })
+            </div>
+            <div id="explore-details" class="col-md-9 explore-details">
+                <div class="panel-create" id="create"style="max-height: 500px; overflow-x: hidden;">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    
+
+
+    function GetLedgerStatementPopUp(ledgerId)
+    {
+        
+        debugger;
+        var url = $("#getLedgerStatement").attr('url');
+        var data = { ledgerId: ledgerId };
+        $.get(url, data, function (data) {
+            debugger;
+            if (data == false) {
+                ErrorAlert("No Statement Is Avalable");
+            }
+            else {
+                $("#getLedgerStatement").html(data);
+                $("#getLedgerStatement").modal('show');
+            }
+           
+        });
+    }
+
+
+
+    $('.FinAcc-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.FinAcc-explore').find('#viewType')
+        if(viewId.val()==1)
+        {
+            viewId.val(2)
+        }
+        else
+        {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.box-tools').find('input#pFinAccId').val();
+
+        $('.FinAcc-treeview').SelectNode(nodeId);
+
+    });
+
+    $('.FinAcc-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.FinAcc-explore').find('.panel-list');
+        var listType = $(this).closest('.FinAcc-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "FinAcc")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.FinAcc-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.FinAcc-explore').find('.FinAcc-treeview').moveUp();
+        //$(this).closest('.FinAcc-explore').find('.FinAcc-treeview').updateTreeview("FinAcc", "_UpdateFinAccTree", 1009,-1)
+    });
+
+    $('.FinAcc-explore').on('click', " .btndrill , .listDrill", function (e) {
+        debugger;
+        var id = $(this).attr("id");
+        $(this).closest('.FinAcc-explore').find('.FinAcc-treeview').SelectNode(id);
+    });
+
+    $('.FinAcc-explore').on('click', '.FinAccImage, .editList,.btn-create-FinAcc', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.FinAcc-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.FinAcc-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.FinAcc-explore').find('.treeview-selected').attr('nodeid');
+        var FinAccId = 0;
+        if ($(this).attr('class') == 'FinAccImage' || 'editList') {
+            FinAccId = $(this).attr('id');
+        }
+        //var pFinAccId = $('#pFinAccId').val()
+        var pFinAccId = $(this).closest('.panel-list').find('input#pFinAccId').val();
+        if (pFinAccId == "") {
+            pFinAccId = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "FinAcc")',
+            data: { activeText: activeElement, activeId: pFinAccId, FinAccId: FinAccId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                //$.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.FinAcc-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var FinAccId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#pFinAccId').val();
+      
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "FinAcc")',
+            data: { id: FinAccId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                debugger;
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+                   
+                    debugger;
+                    if (deleteConfirm == "1") {
+                        debugger;
+                        deleteFinAcc(FinAccId,nodeId);
+                    }
+                    else if (deleteConfirm =="0") {
+                        ErrorAlert("Please Delete Child Nodes First", 5000);
+                    }
+                    else {
+                        ErrorAlert("Subsi Already Mapped", 5000);
+                    }
+                })
+                },
+                    // $(container).html(html);
+
+            error: function () {
+                debugger;
+                        alert("error");
+                    }
+            });
+
+
+    });
+    function deleteFinAcc(FinAccId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "FinAcc")',
+            data: { FinAccId: FinAccId },
+            success: function () {
+                SuccessAlert("Ledger Sucessfully Deleted",5000)
+                $.fn.updateTreeview('FinAcc', '_UpdateFinAccTree', nodeId, -1)
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.FinAcc-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/FinAcc/_GetFinAccTree"
+        var container = $(this).closest('.FinAcc-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        //var checkFinAcc = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true)
+                {
+                    $(item).css('display', 'table-row');
+                }
+                else
+                {
+                    $(item).css('display', 'block');
+                }
+
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('FinAcc-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else
+                {
+                    var text = $(item).find('.inner').attr('FinAcc-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                }
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+        }
+
+
+
+    });
+
+
+</script>
+

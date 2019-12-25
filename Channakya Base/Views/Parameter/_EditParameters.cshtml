@@ -1,0 +1,47 @@
+﻿@model Loader.Models.ParamValue
+@{ 
+
+    Loader.Service.ParameterService paramService = new Loader.Service.ParameterService();
+    var selectedId = Convert.ToInt32(ViewData["SelectedId"]);
+
+}
+
+
+@if (Model.DTId == 5)
+{
+    var options = paramService.GetOption(Model.paramScript.PScript,selectedId);
+    @Html.DropDownListFor(m => m.paramScript.PScript, options, new { @class = "editparamValue paramDropdown" })
+}
+else if (Model.PId == 8 && Model.DTId == 4)
+{
+    <input type="file" id="fileid1" name="file" accept="image/x-png,image/gif,image/jpeg" />
+}
+else if (Model.DTId == 4)
+{
+    @Html.TextBoxFor(x => x.PValue, new { @class = "editparamValue" })
+}
+else if (Model.DTId == 3)
+{
+    @Html.CheckBox("BitValue", Model.PValue == "true" ? true : false, new { @class = "editparamValue paramCheckbox" });
+}
+else if (Model.DTId == 2)
+{
+   @Html.TextBoxFor(model => model.PValue, Model.PValue, new { @type = "date", @class = "editparamValue" });
+}
+else if (Model.DTId == 1)
+{
+    @Html.TextBoxFor(model => model.PValue, new  { @class = "editparamValue" });
+}
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select#paramScript_PScript option').filter(function () {
+            debugger;
+    return ($(this).val() == '@selectedId'); //To select DropDown Value
+}).prop('selected', true);
+    });
+</script>

@@ -1,0 +1,577 @@
+﻿@model ChannakyaBase.Model.ViewModel.WithdrawViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "withdraw";
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    bool withDetails = true;//withDetails is used whether to display the details or not while accountnumber search, refer in AccountNumberSearch.js 
+}
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">withdraw</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("WithdrawTransaction", "Teller", FormMethod.Post, new { id = "withdraw-transaction-form" }))
+    {
+
+        <div class="box-body">
+
+            <div class="withdraw-transaction-create">
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.Hidden("MessageEventID", 3)
+                @Html.HiddenFor(x => x.UserTellerLimit)
+                @*end *@
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="col-md-12">
+                            <div class="form-group view-signature-div">
+
+                                <div class="col-md-6 ">
+                                    <i class="fa fa-eye view-trigger text-right" aria-hidden="true"> <a href="#" class="view-signature" style="text-decoration:none;color:cornflowerblue">View Signature</a></i>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+
+                                @Html.Label("Account", new { @class = "control-label  col-md-3" })
+                                <div class="col-md-9">
+
+                                    @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.WithdrawWithIntPay.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription(), "", withDetails)
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                            </div>
+
+
+                            @*<div class="form-group">
+            @Html.LabelFor(model => model.AmountCurrency, new { @class = "control-label  col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(model => model.AmountCurrency, TellerUtilityService.GetAccountOpenCurrency(), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AmountCurrency, "", new { @class = "text-danger" })
+            </div>
+
+
+        </div>*@
+                            @*<div class="form-group">
+            @Html.LabelFor(model => model.ExchangeRate, new { @class = "control-label  col-md-3" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.ExchangeRate, new { @class = "form-control text-right", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.ExchangeRate, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.Rate, new { @class = "control-label  col-md-1" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.Rate, new { @class = "form-control text-right", @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <ul class="nav nav-pills nav-justified">
+                                        <li class="active" tab-name="first"><a data-toggle="pill" href="#home">Withdraw</a></li>
+                                        <li tab-name="second"><a data-toggle="pill" href="#menu1" class="intPayable hidden">Payable Interest Payment</a></li>
+                                    </ul>
+                                </div>
+                                <div class="panel-body">
+
+                                    <div class="tab-content">
+                                        <div id="home" class="tab-pane fade in active">
+                                            <div id="firstTab">
+                                                @Html.CheckBoxFor(model => model.IsActiveWithdraw, new { @class = "hidden" })
+                                                <br />
+                                                <div class="form-group">
+                                                    <div class="col-md-12 col-md-offset-3">
+                                                        @Html.RadioButtonFor(m => m.withdraw, "Cheque", new { @checked = "checked", @class = "withdraw" }) <label>Cheque</label>
+                                                        @Html.RadioButtonFor(m => m.withdraw, "Withdrawslip", new { @class = "withdraw" })<label>Withdraw slip</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div id="chequehide">
+                                                        @Html.LabelFor(x => x.ChequeNumber, new { @class = "control-label  col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.TextBoxFor(model => model.ChequeNumber, new { @class = "form-control text-right" })
+                                                            @Html.ValidationMessageFor(model => model.ChequeNumber, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div id="SlipNohide" class="hidden">
+                                                        @Html.LabelFor(x => x.SlipNo, new { @class = "control-label  col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.TextBoxFor(model => model.SlipNo, new { @class = "form-control text-right" })
+                                                            @Html.ValidationMessageFor(model => model.SlipNo, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group activepayee">
+                                                    <label class="control-label  col-md-3">Payee</label>
+
+                                                    <div class="col-md-9">
+                                                        @Html.TextBoxFor(model => model.Payee, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.Payee, "", new { @class = "text-danger" })
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group activeAmount">
+                                                    @Html.LabelFor(model => model.Amount, new { @class = "control-label  col-md-3" })
+                                                    <div class="col-md-9">
+                                                        @Html.TextBoxFor(model => model.Amount, new { @class = "form-control text-right" })
+                                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="menu1" class="tab-pane fade">
+                                            <br />
+                                            <div id="second">
+                                                @{Html.RenderAction("PayableInterestPayment", "Teller");}
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    @*</div>*@
+                                </div>
+                                <div class="panel-footer"></div>
+                            </div>
+
+                        </div>
+                        <div class="customer-event-message">
+                        </div>
+                   
+                        @if (IsTransactionWithDeno)
+                        {
+                            <div class="form-group">
+                                <div class="col-md-6 transaction-with-deno">
+                                    @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = new CommonService().DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription() });}
+
+                                </div>
+                            </div>
+                        }
+                                        
+                        
+                    </div>
+                  
+                    <div class="disbursement-schedule-final">
+
+                    </div>
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-10 col-md-12">
+                                <input type="button" value="Save" class="btn btn-default btn-withdraw-transaction-save" data-eventid="3" data-val="withdraw transaction" isMultiVerifier="false" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @*@Html.HiddenFor(x => x.HasCustomisedSchedule)*@                                       }
+
+    <div class="disbursement-schedule" id="Preview-trial-list">
+
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $('a[data-toggle="pill"]').click(function (e) {
+        debugger;
+        e.preventDefault();
+        var tabname = $('ul.nav.nav-pills').find('li.active').attr('tab-name');
+        if (tabname == 'second') {
+            $('input#IsActiveWithdraw').prop('checked', true);
+            $('input#IsActiveInterest').prop('checked', false);
+        } else {
+            $('input#IsActiveWithdraw').prop('checked', false);
+            $('input#IsActiveInterest').prop('checked', true);
+        }
+        $('#firstTab :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+        $('.activepayee').find('#Payee').prop("readonly", false);
+        $('.activeAmount').find('#Amount').prop("readonly", false);
+    });
+
+    $('#ChequeNumber').on('change', function () {
+        debugger;
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        var chequeNumber = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: '/Teller/checkCheque',
+            data: {
+                chequeNumber: chequeNumber,
+                accId: accountId,
+            },
+            success: function (result) {
+                if (result.Success == false) {
+
+                    ErrorAlert(result.Msg, 5000);
+                    $('#firstTab :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+                    $('.activepayee').find('#Payee').prop("readonly", false);
+                    $('.activeAmount').find('#Amount').prop("readonly", false);
+                    $('#ChequeNumber').focus();
+                    document.getElementById('alert-error').scrollIntoView();
+                } else {
+                    if (result.TransactionType == "GoodForPayment") {
+                        $('.activepayee').find('#Payee').val(result.Value);
+                        $('.activeAmount').find('#Amount').val(result.ValueOne);
+                        $('.activepayee').find('#Payee').prop("readonly", true);
+                        $('.activeAmount').find('#Amount').prop("readonly", true);
+                        if (result.BoolValue) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "Teller Limit Exceed.!!!!"
+                            }).done(function () {
+
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                        }
+                        $('#UserTellerLimit').val(result.BoolValue)
+                    }
+
+                }
+
+            },
+        });
+    })
+
+    $("#Amount").on("change", function () {
+        debugger;
+        var amount = $("#Amount").val();
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        $.ajax({
+            type: 'GET',
+            url: '/Teller/TransactionLimit',
+            data: {
+                amount: amount,
+                accountId: accountId
+            },
+            success: function (result) {
+                debugger;
+                if (result.TellerLimit == true) {
+                    $.MessageBox({
+                        buttonDone: "OK",
+                        message: "Teller Limit Exceed.!!!!"
+                    }).done(function () {
+                        debugger;
+                        $("#denoHeader").hide();
+                        InfoAlert("Amount is out of limit", 5000);
+                        return false;
+                    }).fail(function () {
+                        //return false;
+                    })
+                    $('#UserTellerLimit').val(result.TellerLimit);
+
+                }
+                else {
+                    $("#denoHeader").show();
+                    $('#UserTellerLimit').val(result.TellerLimit);
+                    SuccessAlert("Amount is within the limit", 5000);
+                }
+               
+                //if(result.IsRevolving)
+                //{
+                //    var isCustomised = $('.loan-disburse-details').find('#HasCustomisedSchedule').val();
+                //    var accountId = $(".account-id").val();
+                //    if (amount != 0) {
+                //        debugger;
+                //        $.ajax({
+                //            type: 'get',
+                //            url: '/credit/_CustomisedLoanSchedule',
+                //            data: { regularLoan: amount, accountId: accountId },
+                //            success: function (data) {
+
+                //                if (result.HasCustomisedSchedule == true) {
+                //                    $(".disbursement-schedule-final").html("");
+                //                    $.MessageBox({
+                //                        buttonDone: "OK",
+                //                        message: "Please finalize customized schedule.!!!!"
+                //                    }).done(function () {
+
+                //                        return false;
+                //                    }).fail(function () {
+                //                        //return false;
+                //                    })
+                //                    $(".disbursement-schedule").html(data.htmlToShow);
+                //                }
+                //                else {
+                //                    $(".disbursement-schedule").html("")
+
+                //                    $(".disbursement-schedule-final").html(data.htmlToShow);
+                //                }
+
+                //            }
+                //        })
+                //    }
+
+                //}
+
+            },
+        });
+    })
+    //$('.intPayable').on('click', function () {
+    //
+    //    var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+    //    if (accountId == "") {
+    //        return;
+    //    }
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: '/Teller/InterestPayable',
+    //        data: {
+    //            accountId: accountId,
+    //        },
+    //        success: function (result) {
+
+    //            if (result.isNominee == true) {
+    //                if (result.Amount != 0) {
+
+    //                    $.MessageBox({
+    //                        buttonDone: "OK",
+    //                        message: "Available Interest Payable Amount=NRS." + intAmount
+    //                    }).done(function () {
+
+    //                    }).fail(function () {
+    //                        //return false;
+    //                    })
+    //                    $('div.interest-payable-payment').removeClass('hidden');
+    //                    $('a.intPayable').removeClass('hidden')
+    //                    $('.payableamount').html("NRS. " + intAmount);
+    //                }
+    //            }else
+    //            {
+    //                $('div.interest-payable-payment').addClass('hidden');
+    //            }
+    //        },
+    //    });
+
+    //})
+    $('.withdraw').on('click', function () {
+        debugger;
+        if ($("input[name='withdraw']:checked").val() == "Cheque") {
+            $('#chequehide').removeClass('hidden');
+            $('#SlipNohide').addClass('hidden');
+        }
+        else {
+            $('#chequehide').addClass('hidden');
+            $('#SlipNohide').removeClass('hidden');
+        }
+        $('#firstTab :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+        $('.activepayee').find('#Payee').prop("readonly", false);
+        $('.activeAmount').find('#Amount').prop("readonly", false);
+    })
+    @*$("#AmountCurrency").on("change", function () {
+        currencyId = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: '/Teller/GetCurrencyRateAndExchangeRate',
+            data: {
+                currencyId: currencyId,
+
+            },
+            success: function (result) {
+
+                $('#ExchangeRate').val(result.RatePerUnit + "@@PerUnit")
+                $('#Rate').val(result.BuyingRate)
+                if (result.IsTransWithDeno) {
+                    var denoInOut = '@EDeno.DenoOut.GetDescription()'
+                    $.ajax({
+                        type: 'GET',
+                        url: '/Teller/DenoTransaction',
+                        data: {
+                            currencyId: currencyId,
+                            denoInOut: denoInOut
+                        },
+                        success: function (result) {
+                            $('.transaction-with-deno').html(result);
+
+                        },
+                    });
+                }
+
+            },
+        });
+    }
+    )*@
+
+    $(function () {
+
+        //$("#AmountCurrency").trigger("change");
+        $.validator.unobtrusive.parse('#withdraw-transaction-form');
+        $(".btn-withdraw-transaction-save").on("click", function (e) {
+            debugger;
+            var strictVerifiable = $('.withdraw-transaction-create').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            var depositAmount = 0;
+            var tabname = $('ul.nav.nav-pills').find('li.active').attr('tab-name');
+            if (tabname == 'first') {
+                depositAmount = $('div#firstTab').find('input#Amount').val();
+            } else {
+                depositAmount = $('div#second').find('input#InterestAmount').val();
+            }
+            $('#withdraw-transaction-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#withdraw-transaction-form'));
+            if ($("#withdraw-transaction-form").valid()) {
+                var accountId = $('.account-number-div').find(".account-id").val()
+                if (accountId == 0) {
+                    ErrorAlert("Account Number is required!!", 5000);
+                    document.getElementById('alert-error').scrollIntoView();
+                    return false
+                }
+                if (depositAmount <= 0)
+                {
+                    ErrorAlert("Please insert valid Amount!!", 5000);
+                    document.getElementById('alert-error').scrollIntoView();
+                    return false
+                }
+                var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                //if ((balanceInDeno == undefined) || (balanceInDeno == 0) || (parseFloat(depositAmount) > parseFloat(Math.abs(balanceInDeno)))) {                 
+                //        return false;                 
+                //}
+                var IsTellerLimit = $('#UserTellerLimit').val();
+                var IsDenoTransaction = $('.withdraw-transaction-create').find('#transactionDeno').prop('checked');
+                if (IsDenoTransaction == true) {
+                    if (IsTellerLimit != "true") {
+
+                      
+                       var balanceDiv = $('.transaction-with-deno').find('.balance-deno-div').find('.deno-inout-balance')
+                        if (parseFloat(depositAmount) != parseFloat(Math.abs(balanceInDeno))) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "withdraw amount does not match with deno balance!!"
+                            }).done(function () {
+                                $(balanceDiv).find("#Balance").focus();
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+                    }
+                }
+
+                
+
+                if (strictVerifiable == true) {
+                    if (IsTellerLimit == "true") {
+                        IsUserCashLimitExceed(11, ismultiVerify);
+
+                    } else {
+                        taskVerifierList(eventid, ismultiVerify);
+                    }
+
+                }
+                else {
+                    WithdrawTransaction();
+                }
+
+
+            }
+        })
+
+    });
+
+    function WithdrawTransaction() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#withdraw-transaction-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Teller/WithdrawTransaction',
+
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+<script>
+    $('.view-signature-div').hide();
+    $('.view-signature').on('click', function () {
+        debugger;
+        var id = $('.Depost-transaction-create').find('.account-id').val();
+        $.ajax({
+            type: 'GET',
+            url: '/Signature/ImageModal',
+            data: {
+                flag: 1,
+                id: id
+            },
+            success: function (result) {
+
+                $('#account-pop-up-div1').html(result).modal({
+                    'show': true,
+                    'backdrop': 'static'
+
+                });
+            }
+
+        });
+    });
+
+
+</script>
+<style>
+    .view-trigger {
+        display: block;
+    }
+</style>

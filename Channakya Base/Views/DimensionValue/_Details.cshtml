@@ -1,0 +1,457 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.DimensionValueListViewModel>
+@using Loader.Helper
+
+
+
+@{
+    var test = Model;
+    var id = ViewBag.ViewType;
+    // string address = ViewBag.Address.ToString();
+    var pDimensionValueId = ViewBag.ParentDimensionValueId;
+
+
+
+    ChannakyaAccounting.Service.DimensionDefination.DimensionDefinationService dimService = new ChannakyaAccounting.Service.DimensionDefination.DimensionDefinationService();
+
+    var dimTypes = dimService.GetDimensionDefinationList();
+    //dimTypes[0].DefName = "background-color:#";
+    //var jscnjsn = "background-color:#00c0ef !important";
+    int a= 0;
+
+}
+
+
+<div class="box box-success">
+    <div class="box-header" style="background-color:cornflowerblue; color:white;">
+
+        <div class="col-md-9" style="margin:-5px; padding-left:0px;">
+            @if (ViewBag.ParentDimensionValueId != 0)
+                {
+                    <button type="button" id="btn-back" class="glyphicon glyphicon-backward" style="background-color:cornflowerblue;border:none;" value="Back"></button>
+                }
+            @*@Html.Label("address", @address)*@
+
+            <b>DimensionValues</b>
+        </div>
+
+        @*<input type="button" class="btn-default" value="Back" id="btnBack" />*@
+
+        <div class="box-tools" style="margin: -6px 0 0 0;">
+            @*<div class="listSearch"style="color:black;">
+
+
+                </div>*@
+            @*<input type="button" value="Create" id="btnCreateDimensionValue" class="btn-default" />*@
+            <div class="pDimensionValueId">@Html.HiddenFor(x => pDimensionValueId)</div>
+            @if (ViewBag.Query != null)
+            {
+                <input type="text" name="text-filter-tree" class="btn btn-box-tool txtSearch" value="@ViewBag.Query" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+            }
+            else
+            {
+                <input type="text" name="text-filter-tree" class="btn btn-box-tool txtSearch" placeholder="Search..." style="background-color:white;height:30px;margin-bottom: 4px">
+            }
+
+            @*<button type="button" name="search" class="btn btn-box-tool btnSearch" style="color:white;">
+                    <i class="fa fa-search"></i>
+                </button>*@
+
+            @*  <button class="btn btn-box-tool"> <i class="glyphicon glyphicon-pencil btn-create-DimensionValues" style="color:white;"></i></button>*@
+            <button class="btn btn-box-tool glyphicon glyphicon-pencil btn-create-DimensionValues" style="color:white;"> </button>
+
+            <button class="btn btn-box-tool listView" style="color:white;"> <i class="fa fa-list-ul"></i></button>
+
+            <button class="btn btn-box-tool" style="color:white;" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+
+
+        </div>
+    </div><!-- /.box-header -->
+<div class="dimtypes">
+    @if (Model.Count() > 0)
+    {
+        <div class="container">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @foreach (var item in @dimTypes)
+                        {
+                            
+                            if (a == 0)
+                            {
+                                a= 1;
+                            <button style="margin-bottom:10px" class="button button1 col-md-2 btn-xs selected-dim-val active" type="button" data-val="@item.DDId"   onclick="GetDimensionValue(@item.DDId)">@item.DefName</button>
+
+                        }
+
+                        else {
+                        <button style="margin-bottom:10px" class="button button1 col-md-2 btn-xs selected-dim-val" type="button" data-val="@item.DDId"  onclick="GetDimensionValue(@item.DDId)">@item.DefName</button>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+</div>
+    <div class="bodycontent-and-paging">
+        <div class="box-body">
+
+            @if (ViewBag.ViewType == 1)
+            {
+                var hasChild = Model.Count();
+                if (hasChild == 0)
+                {
+                    <b> No Childs found to Display</b>
+                }
+                else
+                {
+
+                    foreach (var item in Model)
+                    {
+
+                        <div class="col-md-3 col-xs-6 detailsList">
+                            <!-- small box -->
+                            @Html.Partial("_GridView", item)
+                        </div><!-- ./col -->
+                    }
+                }
+            }
+            else
+            {
+
+                var hasChild = Model.Count();
+                if (hasChild == 0)
+                {
+                    <b> No Childs found to Display</b>
+                }
+                else
+                {
+                    <div class="listTable" style="max-height:400px;overflow:auto;">
+                        @Html.Partial("_ListViewMain", Model)
+                    </div>
+                }
+            }
+
+        </div><!-- /.box-body -->
+
+        <ul class="pagination DimensionValuepaginatoin" style="float:left;margin-right:20px;">
+            <li class="previous"><a href="#">Previous</a></li>
+
+            @for (int i = 1; i <= ViewBag.CountPager; i++)
+            {
+                if (i > 4)
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        if (i >= (ViewBag.ActivePager - 2))
+                        {
+
+                            if (i > ViewBag.ActivePager)
+                            {
+                                if (i - ViewBag.ActivePager <= 2)
+                                {
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                else
+                                {
+                                    if (i == ViewBag.CountPager)
+                                    {
+                                        if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                        {
+                                            <li class=""><a>.......</a> </li>
+                                        }
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                    }
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                }
+                            }
+                            else
+                            {
+
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+
+                        }
+                        else
+                        {
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                }
+                else
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                        <li id=@i class="pagerClass active"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        if (i >= (ViewBag.ActivePager - 2))
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                }
+            }
+            <li class="next"><a href="#">Next</a></li>
+
+        </ul>
+        <div style="margin-top:20px;margin-left:20px" class="search-container">
+            @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var Search = $('.txtSearch').val();
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            //var dimvalue = $('.dimtypes').find('.active');
+            var cls = $(this).attr('class');
+            var DDId;
+            var dimcontainer = $('.selected-dim-val');
+            $.each(dimcontainer, function (index, value) {
+                debugger;
+                if ($(value).hasClass('active') == true) {
+                    DDId = $(value).data('val');
+                }
+               
+            });
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.DimensionValuepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.DimensionValue-explore').find('.panel-list').find('.bodycontent-and-paging');
+                    var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+
+                    $(container).load("/DimensionValue/_DetailPartial", { page: finalId, ViewType: listType, query: Search, DDId: DDId });
+
+                    var checkActive = $('ul.pagination.DimensionValuepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.DimensionValuepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.DimensionValuepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId)
+                var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.DimensionValue-explore').find('.panel-list').find('.bodycontent-and-paging');
+
+
+                    $(container).load("/DimensionValue/_DetailPartial", { page: finalId, ViewType: listType, query: Search, DDId: DDId });
+
+                    var checkActive = $('ul.pagination.DimensionValuepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.DimensionValuepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalid = $(this).val();
+            var DDId;
+            var dimcontainer = $('.selected-dim-val');
+            $.each(dimcontainer, function (index, value) {
+                debugger;
+                if ($(value).hasclass('active') == true) {
+                    DDId = $(value).data('val');
+                }
+
+            });
+            var pagingdata = $(this).val();
+            var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+            var container = $(this).closest('.DimensionValue-explore').find('.panel-list').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/DimensionValue/_DetailPartial",
+                    type: "POST",
+                    data: {
+                        page: finalId,
+                        ViewType: listType,
+                        query: Search,
+                        DDId: DDId
+                        
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $(container).focus();
+
+                        var checkActive = $('ul.pagination.DimensionValuepaginatoin').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.DimensionValuepaginatoin').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId).addClass('active');
+
+
+                    }
+
+                });
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var DDId;
+            var DimContainer = $('.selected-dim-val');
+            $.each(DimContainer, function (index, value) {
+                debugger;
+                if ($(value).hasClass('active') == true) {
+                    DDId = $(value).data('val');
+                }
+
+            });
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.DimensionValue-explore').find('.panel-list').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+            $(container).load("/DimensionValue/_DetailPartial", { page: pagingData, ViewType: listType, query: Search, DDId: DDId });
+            var checkActive = $('ul.pagination.DimensionValuepaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.DimensionValuepaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.DimensionValuepaginatoin').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+ 
+    //$(document).ready(function() {
+    //    debugger;
+       
+    //    var container = $('.bodycontent-and-paging');
+
+    //    var DimContainer = $('.selected-dim-val');
+    //    $.each(DimContainer, function (index, value) {
+         
+
+    //        //if(index==0){
+               
+
+    //        //    $(value).addClass('.active');
+    //        //}
+    //        if (index == 0) {
+    //            var DDId = ($(value).data('val'));
+    //            $(container).load("/DimensionValue/_DetailPartial", { DDId: DDId });
+
+
+               
+    //        }
+         
+
+      
+
+    //    });
+    //});
+    function GetDimensionValue(DDId) {
+        debugger;
+        var container = $('.bodycontent-and-paging');
+    
+        var DimContainer = $('.selected-dim-val');
+     
+        $.each(DimContainer, function (index, value) {
+            debugger;
+           
+
+           
+            if ($(value).hasClass('active') == true)
+            {
+                $(value).removeClass('active');
+            }
+            if ($(value).data('val') == DDId)
+            {
+                $(value).addClass('active');
+            }
+        });
+        var listType =$('.DimensionValue-explore').find('#viewType').val();
+        //var huhu=$('.button1').data('val');
+        ////.addClass('active');
+        //$(huhu).css('background-color','blue');
+        //   $(huhu).addClass("active");
+      
+        $.ajax({
+            type: 'GET',
+            url: "/DimensionValue/_DetailPartial",
+            data: { DDId: DDId, ViewType: listType},
+            success:function(data){
+                debugger;
+                //$('button').removeClass('active');
+                //$(this).css({"background-color": "#4CAF50",
+                //"color": "white"});
+                //$(this).removeClass('button1');
+                //$(this).addClass('active');
+                //$(this).addClass("active");
+
+                $(container).html("");
+                $(container).html(data);
+                //$(huhu).addClass("active");
+            }, error: function () {
+                alert("error");
+            }
+
+
+        });
+    }
+</script>
+
+<style>
+    .details {
+        width: 30%;
+        max-height: 129px;
+    }
+
+    input.btn.btn-box-tool.txtSearch {
+        cursor: text;
+    }
+   .button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 8px 6px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius:24px;
+    outline:none;
+}
+   .button1 {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #4CAF50;
+    }
+   .button1:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+ /*.active{
+       background-color: #4CAF50;
+       color: white;
+ }*/
+    .active{
+         background-color: #4CAF50;
+    color: white;
+    }
+
+</style>
+

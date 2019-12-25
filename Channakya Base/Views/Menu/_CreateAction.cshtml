@@ -1,0 +1,12 @@
+﻿@model Loader.Models.Menu
+@Html.LabelFor(model => model.Controler, htmlAttributes: new { @class = "control-label col-md-3" })
+<div class="col-md-3">
+    @Html.EditorFor(model => model.Controler, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(model => model.Controler, "", new { @class = "text-danger" })
+</div>
+
+@Html.LabelFor(model => model.Acton, htmlAttributes: new { @class = "control-label col-md-3" })
+<div class="col-md-3">
+    @Html.EditorFor(model => model.Acton, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(model => model.Acton, "", new { @class = "text-danger" })
+</div>

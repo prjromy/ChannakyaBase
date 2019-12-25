@@ -1,0 +1,87 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL
+@{
+    CommonService commonService = new CommonService();
+}
+
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered">
+        <tr>
+            <th>
+                Date
+            </th>
+            <th>
+                AccountNumber
+            </th>
+            <th>
+                Account Name
+            </th>
+            @if (Model.cstate == 1)
+            {
+                <th>
+                    From Cheque
+                </th>
+                <th>
+                    To Cheque
+                </th>
+                <th>
+                    Status
+                </th>
+            }
+            @if (Model.cstate == 2 || Model.cstate == 3)
+            {
+                <th>
+                    Cheque No
+                </th>
+            }
+            @if (Model.cstate == 3)
+            {
+                <th>
+                    Remarks
+                </th>
+            }
+
+
+        </tr>
+
+        @foreach (var item in Model.AchqList)
+        {
+            <tr>
+                <td>
+                    @commonService.GetEnglishDate(item.tdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                @if (Model.cstate == 1)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.cfrom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.cto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChequeStatus)
+                    </td>
+                }
+                @if (Model.cstate == 2 || Model.cstate == 3)
+                {
+                    <td>
+                        @item.ChequeNo
+                    </td>
+                }
+                @if (Model.cstate == 3)
+                {
+                    <td>
+                        @item.Remarks
+                    </td>
+                }
+            </tr>
+        }
+
+    </table>
+</div>

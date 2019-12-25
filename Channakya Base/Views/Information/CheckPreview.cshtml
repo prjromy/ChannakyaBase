@@ -1,0 +1,101 @@
+﻿@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ChannakyaBase.BLL.Service.InformationService informationService = new ChannakyaBase.BLL.Service.InformationService();
+    ChannakyaBase.DAL.DatabaseModel.ChqAttribute chqattribute = new ChannakyaBase.DAL.DatabaseModel.ChqAttribute();
+    chqattribute = informationService.GetChequeAttribute();
+}
+<style>
+    .fields {
+       height: 74.92mm;
+        width: 210mm;
+        position: relative;
+    }
+    .blocks{
+        display: inline-block;
+        position:absolute;
+    }
+</style>
+        <div id="element" class="fields">
+            @if (chqattribute == null)
+            {
+                <div class="chkitems blocks" id="custname" style="top:20px;left:10px;">
+                    <label class="">Account Name</label>
+                </div>
+                <div class="chkitems blocks" id="accno" style="top:40px;left:10px;">
+                    <label class="">Account No.</label>
+                </div>
+                <div class="chkitems blocks" id="savingtype" style="top:60px;left:10px;">
+                    <label class="">Account Type</label>
+                </div>
+                <div class="chkitems blocks" id="checkno" style="top:80px;left:10px;">
+                    <label class="">Cheque Number</label>
+                </div>
+                <div class="chkitems blocks" id="check2no" style="top:100px;left:10px;">
+                    <label class="">Cheque Number</label>
+                </div>
+                <div class="chkitems blocks" id="branch" style="top:120px;left:10px;">
+                    <label class="">Branch</label>
+                </div>
+            }
+            else
+            {
+                <div class="chkitems blocks" id="custname" style="@chqattribute.AccountNamePostion">
+                    <label class="">Account Name</label>
+                </div>
+                <div class="chkitems blocks" id="accno" style="@chqattribute.AccountNumberPosition">
+                    <label class="">Account No.</label>
+                </div>
+                <div class="chkitems blocks" id="savingtype" style="@chqattribute.AccountTypePosition">
+                    <label class="">Account Type</label>
+                </div>
+                <div class="chkitems blocks" id="checkno" style="@chqattribute.ChequeNumberPosition">
+                    <label class="">Cheque Number</label>
+                </div>
+                <div class="chkitems blocks" id="check2no" style="@chqattribute.Cheque2NumberPosition">
+                    <label class="">Cheque Number</label>
+                </div>
+                <div class="chkitems blocks" id="branch" style="@chqattribute.BranchNamePosition">
+                    <label class="">Branch</label>
+                </div>
+            }
+        </div>
+<div>
+    <button id="btnSaveAttributes">Save</button>
+</div>
+<script>
+    $(".chkitems").draggable({
+        containment: ".fields"
+    });
+    $("#btnSaveAttributes").on('click', function () {
+        debugger;
+        var custstyle = $("#custname").attr("style");
+        var accnostyle = $("#accno").attr("style");
+        var savingtypestyle = $("#savingtype").attr("style");
+        var chknostyle = $("#checkno").attr("style");
+        var chk2nostyle = $("#check2no").attr("style");
+
+        var branchstyle = $("#branch").attr("style");
+        var param = JSON.stringify({
+            custstyle: custstyle,
+            accnostyle: accnostyle,
+            savingtypestyle: savingtypestyle,
+            chknostyle: chknostyle,
+            chk2nostyle: chk2nostyle,
+            branchstyle: branchstyle
+        });
+
+        $.ajax({
+            data:param,
+            datatype:"json",
+            contentType:"application/json;charset=utf-8",
+            url: "/Information/AddChequeAttributes",
+            type: "POST",
+            success: function (data) {
+                alert("");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+</script>

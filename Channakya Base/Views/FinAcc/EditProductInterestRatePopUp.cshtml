@@ -1,0 +1,207 @@
+﻿@using ChannakyaAccounting.Models.Models
+@model Tuple<ProductDurationInt, ProductICBDur>  
+
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+@{
+    ChannakyaAccounting.Service.Duration.DurationService duratinService = new ChannakyaAccounting.Service.Duration.DurationService();
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+}
+
+<form id="editInterestRateProduct" method="post">
+    <div class="modal-dialog modal-lg edit-recurring">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="input-group">
+
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                <h4 class="modal-title" id="myModal-label">Edit Interest Rate</h4>
+
+
+            </div>
+            <div class="modal-body" style="padding:40px 50px; ">
+                @if (Model.Item1 != null && Model.Item2==null)
+                {
+                <table class="table table-bordered" id="" border="1" style="width:100%; border-width: 1px; border-color: Silver;margin-bottom:20px;">
+                    <thead>
+                        <tr>
+                            <th>
+                                Duration
+                            </th>
+                            @if (Model.Item1.DBId != null)
+                            {
+                            <th>
+                                Deposit Basis
+                            </th>
+                            }
+                            <th>
+                                Capitalization Rule
+                            </th>
+                            <th>
+                                Interest Rate
+                            </th>
+                            <th>
+                                Effective From
+                            </th>
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody class="interest-rate-container">
+                        <tr>
+                            <td>
+                                @duratinService.GetSingle(Model.Item1.DVId).Duration1
+                            </td>
+                            @if (Model.Item1.DBId != null)
+                            {
+                            <td>
+                                @finaccService.GetDepositBasis((int)Model.Item1.DBId).DurRule
+                            </td>
+                            }
+                            <td>
+                                @if (Model.Item1.ICBId != null)
+                                {
+                                    @Html.HiddenFor(x => x.Item1.ICBId)
+                                    @finaccService.GetICBRule((int)Model.Item1.ICBId).ICBDurNam
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(x => x.Item1.ICBId, finaccService.GetRuleICB(), "Select Rule", new { @class = "form-control icbid-popup" })
+                                    @Html.ValidationMessageFor(x => x.Item1.ICBId, null, new { @class = "text-danger" })
+                                }
+                            </td>
+                            <td>
+                                @Html.HiddenFor(x => x.Item1.Id)
+                                @if (Model.Item1.DBId != null)
+                                {
+                                @Html.HiddenFor(x => x.Item1.DBId)
+                                }
+                                @Html.HiddenFor(x => x.Item1.DVId)
+                                @Html.HiddenFor(x => x.Item1.Value)
+
+                                @Html.HiddenFor(x => x.Item1.PId)
+                                @Html.TextBoxFor(x => x.Item1.InterestRate, new { @class = "form-control" })
+                            </td>
+                            <td>
+                                @Html.DatePicker(x => x.Item1.EffectiveFrom)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                }
+                else
+                {
+                    <table class="table table-bordered" id="" border="1" style="width:100%; border-width: 1px; border-color: Silver;margin-bottom:20px;">
+                        <thead>
+                            <tr>
+                             <th>
+                                 Capitalization Rule
+                             </th>
+                                <th>
+                                    Interest Rate
+                                </th>
+                                <th>
+                                    Effective From
+                                </th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody class="interest-rate-container">
+                            <tr>
+
+                                <td>
+                                    @if (Model.Item2.ICBDurID != 0)
+                                    {
+                                        @Html.HiddenFor(x => x.Item2.ICBDurID)
+                                        @finaccService.GetICBRule((int)Model.Item2.ICBDurID).ICBDurNam
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.Item2.ICBDurID, finaccService.GetRuleICB(), "Select Rule", new { @class = "form-control icbid-popup" })
+                                        @Html.ValidationMessageFor(x => x.Item2.ICBDurID, null, new { @class = "text-danger" })
+                                    }
+                                </td>
+                                <td>
+                                    @Html.HiddenFor(x => x.Item2.PICBDurID)
+                                    @Html.HiddenFor(x => x.Item2.ICBDurID)
+                                    @Html.HiddenFor(x => x.Item2.IsDefault)
+                                    @Html.HiddenFor(x => x.Item2.PID)
+                                    @Html.TextBoxFor(x => x.Item2.IRate, new { @class = "form-control" })
+                                </td>
+                                <td>
+                                    @Html.DatePicker(x => x.Item2.EffectiveFrom)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+
+            </div>
+
+
+
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-success" value="Save" />
+                <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>
+
+            </div>
+
+        </div>
+
+    </div>
+</form>
+<script type="text/javascript">
+
+    $("#editInterestRateProduct").submit(function () {
+        debugger;
+        var container = $('.interest-main-container').find('.interest-list-container');
+        var icbId = $('.edit-recurring').find('.icbid-popup').val();
+        if (icbId == "") {
+            InfoAlert("Please Select Rule", 5000);
+            return false;
+        }
+
+        var formData = new FormData($(this)[0]);
+        $.ajax({
+            url: '@Url.Action("EditProductInterestRate", "FinAcc")',
+            type: 'POST',
+            async: false,
+            dataType: 'html',
+            data: formData,
+            success: function (data) {
+                debugger;
+                $(container).html(data);
+                $("div#getProductDetailToEdit").modal('hide');
+
+
+            },
+            error: function (data) {
+                debugger;
+                ErrorAlert(data.responseText, 15000)
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+        return false;
+    });
+</script>
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+</style>

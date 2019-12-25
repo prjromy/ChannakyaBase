@@ -1,0 +1,282 @@
+﻿@model  List<ChannakyaBase.Model.ViewModel.AChqModel>
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+<div class="cheque-contain-here">
+
+    <div id='common-pop-up-div' class='modal fade' role='dialog'></div>
+    <div class="box box-success">
+        <div class="box-header with-border">
+            <h1 class="box-title" style="font-weight:700">Cheque Print </h1>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+
+        <div class="customer-main details">
+            <div class="row">
+                <div class="col-md-12">
+                    @*<fieldset style="height:200px;width:250px">*@
+                    @*<div class="col-md-12" style="text-decoration:underline;font-size:15px;font-weight:700">
+                            Cheque Record Number
+                        </div>*@
+                    <div class="col-md-12" style="max-height: 200px;font-size:15px; overflow-y: auto;">
+                        @{
+                            var data = Model;
+                            <div class="table-responsive">
+                                <table class="table table-hover cheque-information-table">
+                                    <thead class="table-head">
+                                        <tr>
+                                            <th scope="col"></th>
+                                            <th scope="col">Record Number</th>
+                                            <th scope="col">Account Name</th>
+                                            <th scope="col">Account Number</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in data)
+                                        {
+                                            @*<div class="row">
+                                                    <div class="col-md-2">
+                                                        @Html.CheckBoxFor(modelItem => item.isChecked, new { @class = "checkone", @id = @item.rno })
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <a href="#" data-url="@item.rno" id="cheque-record-number" class="cheque-record-number" style="color:darkblue">@item.rno. @item.AccountName <br /> @item.AccountNumber</a>
+                                                    </div>
+                                                </div>*@
+                                            <tr>
+                                                <td>@Html.CheckBoxFor(modelItem => item.isChecked, new { @class = "checkone", @id = @item.rno })</td>
+                                                <td><a href="#" data-url="@item.rno" id="cheque-record-number" class="cheque-record-number" style="color:black">@item.rno. </a></td>
+                                                <td><a href="#" data-url="@item.rno" id="cheque-record-number" class="cheque-record-number" style="color:black">@item.AccountName</a></td>
+                                                <td><a href="#" data-url="@item.rno" id="cheque-record-number" class="cheque-record-number" style="color:black">@item.AccountNumber</a></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    @*</fieldset>*@
+                </div>
+                <div class="col-md-12 cheque-information-div" style="font-size:15px">
+                    @using (Html.BeginForm("_PrintChequePrint", "Information", FormMethod.Post, new { @class = "hidden-form", @id = "hiddenForm" }))
+                    {
+                        <input type="text" style="display:none" id="htmlf" name="htmlf" class="htmlf" />
+                        <input type="submit" style="display:none" class="hiddenSubmit" />
+                    }
+                </div>
+                <div class="col-md-12 cheque-information-div2" style="font-size:15px">
+
+                </div>
+                <div class="col-md-12">
+                    @*<button type="button" name="btn-cheque-print" id="btn-cheque-print" class="btn btn-primary pull-right" style="margin: 0em 1em 1em 0em;" value="Print">
+                            PRINT
+                        </button>*@
+                    <button type="button" name="btn-cheque-print2" id="btn-cheque-print2" class="btn btn-primary pull-right" style="margin: 0em 1em 1em 0em;" value="Print2">
+                        PRINT
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="" id="checkpreview">
+
+    </div>
+
+</div>
+<script>
+    $('#btn-cheque-print2').on('click', function () {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure to print?"
+        }).done(function () {
+            debugger
+            @*var flag = '@ViewBag.ChequeFlag';*@
+            var checkedId = [];
+
+            $('.checkone').each(function (index, input) {
+                if (input.checked) {
+                    checkedId.push(input.id); //checked wala haru ko id
+                }
+            })
+
+            if (checkedId.length != 0) {
+                //if (flag == 1) {
+                    var i = 0;
+                    debugger
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Information/_PDFChequeWithCoordinates",
+                        datatype: "json",
+                        data: {
+                            checkedId: checkedId
+                        },
+                        success: function (result) {
+                            debugger
+                            if (result != null) {
+                                debugger;
+                                $('.cheque-contain-here').html("");
+                                $('.cheque-contain-here').html(result);
+                                alert("Completed Sucessfully");
+                            }
+                        }
+                    });
+                //}
+                //else {
+                //    var i = 0;
+                //    debugger
+
+                //    $.ajax({
+                //        type: "POST",
+                //        url: "/Information/_ChequePrintDetailsNotepad",
+                //        datatype: "json",
+                //        data: {
+                //            checkedId: checkedId
+                //        },
+                //        success: function (result) {
+                //            if (result != null) {
+                //                debugger;
+                //                window.location.href = window.location.href;
+
+                //                window.open("/Information/_ChequePrintNotepadDownload");
+
+                //            }
+                //        }
+                //    });
+                //}
+
+            }
+            else {
+                alert("Please Check in the Checkbox");
+            }
+        }
+    )
+    });
+
+
+    $('.cheque-record-number').on('click', function () {
+        debugger;
+        var chequeRecordNo = $(this).attr('data-url');
+        $.ajax({
+            type: "GET",
+            url: "/Information/_ChequePrint",
+            datatype: "HTML",
+            data: {
+                chequeRecordNo: chequeRecordNo
+            },
+            success: function (result) {
+                if (result != null) {
+                    $('.cheque-information-div2').html("");
+                    $('.cheque-information-div2').html(result);
+                }
+            }
+        });
+    });
+
+
+    @*$('#btn-cheque-print').on('click', function () {
+        debugger
+        var flag = '@ViewBag.ChequeFlag';
+        var checkedId = [];
+
+        $('.checkone').each(function (index, input) {
+            if (input.checked) {
+                checkedId.push(input.id); //checked wala haru ko id
+            }
+        })
+        if (checkedId.length != 0) {
+            if (flag == 1) {
+                var i = 0;
+                debugger
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Information/_ChequePrintDetails",
+                    datatype: "json",
+                    data: {
+                        checkedId: checkedId
+                    },
+                    success: function (result) {
+                        if (result != null) {
+                            debugger;
+                            //PrintChq(result);
+                            $('.cheque-information-div2').html("");
+                            $('.cheque-information-div2').html(result);
+                            var htmlfilesss = $('.cheque-information-div2').html();
+                            $("#htmlf").val(htmlfilesss);
+                            $(".hiddenSubmit").trigger('click');
+                            debugger
+                            $('.cheque-information-div2').html("");
+                            //window.location.href = window.location.href;
+                        }
+                    }
+                });
+
+                function PrintChq(result) {
+                    debugger;
+                    var mywindow = window.open('', 'new div', 'height=600,width=1000');
+                    mywindow.document.write('<html><head><title>Print cheque</title>');
+                    /*optional stylesheet*/ //mywindow.document.write('<link rel="stylesheet" href="main.css" type="text/css" />');
+                    mywindow.document.write('</head><body >');
+                    mywindow.document.write(result);
+                    mywindow.document.write('</body></html>');
+                    mywindow.print();
+                    //window.opener.focus();
+                    mywindow.close();
+                    return true;
+                }
+            }
+            else {
+                var i = 0;
+                debugger
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Information/_ChequePrintDetailsNotepad",
+                    datatype: "json",
+                    data: {
+                        checkedId: checkedId
+                    },
+                    success: function (result) {
+                        if (result != null) {
+                            debugger;
+                            window.location.href = window.location.href;
+
+                            window.open("/Information/_ChequePrintNotepadDownload");
+
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            alert("Please Check in the Checkbox");
+        }
+    });*@
+
+    $(".hiddenSubmit").on("click", function () {
+        var htmlf = $("#htmlf").val();
+        debugger
+        $.ajax({
+            type: "POST",
+            url: "/Information/_PrintChequePrint",
+            datatype: "html",
+            data: {
+                htmlf: htmlf
+            },
+            success: function (result) {
+                debugger
+                $('#common-pop-up-div').html(result);
+
+                //alert("HiddenForm Submitted");
+                //window.location.href = window.location.reload;
+
+            }
+        });
+    });
+
+</script>

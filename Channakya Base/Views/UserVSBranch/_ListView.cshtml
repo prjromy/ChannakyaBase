@@ -1,0 +1,47 @@
+﻿@model Loader.Models.UserVSBranch
+@{
+    var test = Model;
+    Loader.Service.UserVSBranchService usr_brnchService = new Loader.Service.UserVSBranchService();
+    Loader.Service.MenuTemplateService mnuTemplateService = new Loader.Service.MenuTemplateService();
+}
+
+
+
+
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.Id" style="vertical-align:top;">
+        <a class="inner listDrill" UserVSBranch-caption="@usr_brnchService.GetUserName(Model.UserId)" style="cursor:pointer;">@usr_brnchService.GetUserName(Model.UserId)</a>
+    </td>
+    <td>
+        @usr_brnchService.GetBranchName(Model.BranchId)
+     
+    </td>
+    <td>
+       @Model.From.ToShortDateString()
+    </td>
+    <td>
+        @if (Model.To != null)
+        {
+            var toDate = (Convert.ToDateTime(Model.To)).ToShortDateString();
+            @toDate
+        }
+        </td>
+    <td>
+        @{ 
+            string mtName = "";
+            var mtObj = mnuTemplateService.GetSingle(Model.RoleId);
+            if(mtObj!=null)
+            {
+                mtName = mtObj.MTName;
+            }
+        }
+      @mtName
+    </td>
+
+    
+    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.Id" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+
+</tr>
+
+
+

@@ -1,0 +1,78 @@
+﻿@model List<ChannakyaBase.Model.ViewModel.AccountDetailsViewModel>
+@if (Model.Count() != 0)
+{
+
+    <div style="height: 400px; overflow: auto;">
+        <fieldset>
+            <legend>Lists of Accounts</legend>
+            <table class="table table-responsive table-hover interest-policy-list-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.CheckBox("Check All") @*id=Check_All*@
+                        </th>
+                        <th>
+                            @Html.DisplayName("Account ID")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Account Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Current Interest Rate")
+                        </th>
+                        <th>
+                            @Html.DisplayName("New Interest Rate")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            @Html.HiddenFor(modelItem => Model[i].IAccno)
+                            <td>
+                                @Html.CheckBoxFor(modelItem => Model[i].isSingleChecked, new { @class = "checkone" })
+                            </td>
+                            <td>
+                                @Html.HiddenFor(modelItem => Model[i].Accno)
+                                @Html.DisplayFor(modelItem => modelItem[i].Accno)
+                            </td>
+                            <td>
+                                @Html.HiddenFor(modelItem => Model[i].Aname)
+                                @Html.DisplayFor(modelItem => modelItem[i].Aname)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => modelItem[i].IRate)
+                                @Html.HiddenFor(modelItem => Model[i].IRate)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(modelItem => Model[i].NewInterestRate, new { @class = "account-newInterestRate" })
+                            </td>
+                            <td>
+                                @*<button type="button" class="btn btn-info btn-sm btn-edit-policy-interest glyphicon glyphicon-edit" data-id="@item.ProductId"></button>*@
+                                @*<button type="button" class="btn btn-info btn-sm btn-sm btn-delete-policy-interest glyphicon glyphicon-trash danger" data-id="@item.PSID" data-val="@item.PSName" data-></button>*@
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+}
+else
+{
+
+}
+@*<script>
+    $('#Check_All').on('change', function () {
+        debugger
+        if (this.checked == true) {
+                $('.checkone').attr('checked', true);
+        }
+        else
+        {
+            $('.checkone').attr('checked', false);
+        }
+    })
+</script>*@

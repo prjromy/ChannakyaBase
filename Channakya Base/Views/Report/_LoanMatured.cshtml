@@ -1,0 +1,202 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.LoanMatured>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+
+    decimal appAmount = 0;
+    decimal disAmount = 0;
+    decimal BalAmount = 0;
+    decimal TotPriAmount = 0;
+    decimal TotPriPaidiAmount = 0;
+    decimal TotPriDueAmount = 0;
+    decimal TotIntAmount = 0;
+    decimal TotIntPaidAmount = 0;
+    decimal TotIntDueAmount = 0;
+    decimal TotDueAmount = 0;
+    CommonService cmService = new CommonService();
+
+}
+<div class="table table-responsive">
+
+    <table class="table">
+        <tr>
+        <tr>
+            <th colspan="8" style="text-align:center"></th>
+            <th colspan="3" style="text-align:center">Principal</th>
+            <th colspan="3" style="text-align:center">Interest</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AccNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PName)
+            </th>
+            <th>
+                Matured Date
+            </th>
+            <th>
+                Due Days
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApprovedAmt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DisbursedAmt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+          
+            <th>
+                Total
+            </th>
+            <th>
+                Paid
+            </th>
+            <th>
+                Due
+            </th>
+            <th>
+                Total
+            </th>
+            <th>
+                Paid
+            </th>
+            <th>
+                Due
+            </th>
+            <th>
+                Total Due Bal
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PName)
+                </td>
+                <td>
+                    @if (item.MDate != Convert.ToDateTime("1/1/0001 12:00:00 AM"))
+                {
+                        <span>@cmService.GetEnglishDate(Convert.ToDateTime(item.MDate))</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MDays)
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.ApprovedAmt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.DisbursedAmt).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.Balance).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+              
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.PrincipalPybl).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.PrincipalPaid).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.PrincipalPybl - item.PrincipalPaid).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+
+
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.InterestPybl).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.InterestPaid).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.InterestPybl - item.InterestPaid).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+                <td style="text-align:right">
+                    <span> @Convert.ToDecimal(item.MaturedPrin).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                </td>
+
+            </tr>
+            appAmount += (decimal)item.ApprovedAmt;
+            disAmount += (decimal)item.DisbursedAmt;
+            BalAmount += (decimal)item.Balance;
+            TotPriAmount += (decimal)item.PrincipalPybl;
+            TotPriPaidiAmount += (decimal)item.PrincipalPaid;
+            TotPriDueAmount += (decimal)(item.PrincipalPybl - item.PrincipalPaid);
+            TotIntAmount += (decimal)item.InterestPybl;
+            TotIntPaidAmount += (decimal)item.InterestPaid;
+            TotIntDueAmount += (decimal)(item.InterestPybl - item.InterestPaid);
+            TotDueAmount += (decimal)item.MaturedPrin;
+
+
+        }
+        <tr>
+            <td colspan="15">
+
+            </td>
+        </tr>
+        <tr>
+            <th colspan="5" style="text-align:center">
+                Totals
+            </th>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(appAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(disAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td>
+                <span> @Convert.ToDecimal(BalAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotPriAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotPriPaidiAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotPriDueAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td>
+                <span> @Convert.ToDecimal(TotIntAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotIntPaidAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotIntDueAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+            <td style="text-align:right">
+                <span> @Convert.ToDecimal(TotDueAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+            </td>
+        </tr>
+
+    </table>
+</div>

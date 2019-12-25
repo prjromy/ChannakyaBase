@@ -1,0 +1,109 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.ReSenctionModel
+
+@using (Html.BeginForm("LoanReSanction", "Credit", FormMethod.Post, new { id = "re-senction-account-form" }))
+{
+    <div class="modal-dialog">
+        <div class="modal-content modal-dialog-centered">
+            <div class="modal-header">
+                <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+                <h4 class="modal-title">Re-Senction Loan</h4>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <legend style="font-size:14px;font-weight:bold">Change Info</legend>
+                    <div class="row">
+                        @Html.HiddenFor(x => x.IAccno)
+                        
+                        <div class="col-md-6">
+                            @Html.LabelFor(model => model.SenctionAmount, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+
+                                @Html.TextBoxFor(model => model.SenctionAmount, new { @class = "form-control text-right", @readonly= "readonly" })
+                                @Html.ValidationMessageFor(model => model.SenctionAmount, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(model => model.ExtraAmount, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+                                @Html.TextBoxFor(x => x.ExtraAmount, new { @class = "form-control text-right" })
+                                @Html.ValidationMessageFor(model => model.ExtraAmount, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(model => model.NewSenctionAmount, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+                                @Html.TextBoxFor(model => model.NewSenctionAmount, new { @class = "form-control text-right", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.NewSenctionAmount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                      
+                            <div class="col-md-6 AggrementForFixed">
+                                @Html.LabelFor(model => model.OutstandingAmount, new { @class = "control-label" })
+                                <div class="form-grop_padding">
+
+                                    @Html.TextBoxFor(model => model.OutstandingAmount, new { @class = "form-control text-right", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.OutstandingAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                       
+                      
+
+                    </div>
+                </fieldset>
+                <div class="btn-groups modal-footer">
+                    @*<input type="button" value="Close" data-dismiss="modal" class="btn"/>*@
+                    <button type="button" data-dismiss="modal" class="btn">Close</button>
+                    <input type="button" value="Save" class="btn btn-default btn-account-renew-save" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+
+    $(function () {
+        $("#ExtraAmount").on("change", function (e) {
+            var extraAmount = $(this).val();
+            var senAmount = $("#SenctionAmount").val()
+            var Total = parseFloat(extraAmount) + parseFloat(senAmount)
+            $("#NewSenctionAmount").val(Total)
+        });
+        //$("#AmountCurrency").trigger("change");
+        $.validator.unobtrusive.parse('#re-senction-account-form');
+        $(".btn-account-renew-save").on("click", function (e) {
+            debugger;
+            $('#re-senction-account-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#re-senction-account-form'));
+            if ($("#re-senction-account-form").valid()) {
+                $('#re-senction-account-form').ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (result) {
+                        if (result.Success) {
+                            $("#message-pop-up-div2").modal('toggle');
+                           
+                            $("#account-pop-up-div3").modal('toggle');
+                           
+                            SuccessAlert(result.Msg, 5000);
+                           // document.getElementById('alert-success').scrollIntoView();
+
+                        } else {
+
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                });
+
+            }
+        })
+
+    });
+</script>

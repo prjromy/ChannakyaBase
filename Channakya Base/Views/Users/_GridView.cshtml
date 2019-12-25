@@ -1,0 +1,88 @@
+﻿@model Loader.Models.ApplicationUser
+
+
+@{
+    var test = Model;
+    var UserTypeClass = "background-color:#00c0ef !important";
+    Loader.Service.UsersService empService = new Loader.Service.UsersService();
+}
+
+@*<span class="icon">
+
+
+    </span>*@
+@*@if (Model.Id == 1 || Model.UserName == "super.admin")
+{
+    if (Loader.Models.Global.UserId == 1)
+    {
+        <div class="info-box-content inner" User-caption="@Model.UserName">
+            @if (Model.UserName != "super.admin")
+            {
+                <span class="deleteNode" id="@Model.Id" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+            }
+            <span class="info-box-text" id="UserCaption" data-toggle="tooltip" data-placement="top" title="@Model.UserName" style="cursor:pointer;"> @Model.UserName</span>
+            <span class="info-box-number">@Model.Id</span>
+
+            <div class="progress">
+                <div class="progress-bar" style="width: 100%"></div>
+            </div>
+            <span class="progress-description">
+            </span>
+        </div>
+    }
+}*@
+<div class="info-box bg-aqua" style="@UserTypeClass">
+@if (Model.UserName != "super.admin")
+{
+    <div class="info-box-icon icon">
+         <img src="~/Images/images.jpg" class="UsersImage"id="@Model.Id" style="height: 100%;padding-bottom: 2px;margin-top: -10px;"  />
+    </div>
+}
+else
+{
+    <div class="info-box-icon icon">
+        <img src="~/Images/images.jpg" style="height: 100%;padding-bottom: 2px;margin-top: -10px;" />
+    </div>
+}
+
+
+    @* <div class="inner" User-caption="@Model.UserName">
+            <p id="UserCaption" data-toggle="tooltip" data-placement="top" title="@Model.UserName" style="cursor:pointer;"> @Model.UserName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" User-caption="@Model.UserName">
+        @if(Model.UserName!="super.admin")
+                {
+        @*<span class="deleteNode" id="@Model.Id" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>*@
+        }
+        <span class="info-box-text" id="UserCaption" data-toggle="tooltip" data-placement="top" title="@Model.UserName" > @Model.UserName</span>
+        <span class="info-box-number">@Model.Id</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        <span class="progress-description">
+        </span>
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #UserCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+    $(document).tooltip();
+});
+</script>
+
+

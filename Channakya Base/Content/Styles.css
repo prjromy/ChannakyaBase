@@ -1,0 +1,99 @@
+﻿
+    fieldset {
+        display: block;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-top: 0.35em;
+        padding-bottom: 0.625em;
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+        border:2px groove rgba(0,0,0,.075);
+        border-radius: 5px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    legend {
+        width: inherit; /* Or auto */
+        padding: 0 10px; /* To give a bit of padding on the left and right */
+        border-bottom: none;
+        margin: 5px 10px;
+        font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+    }
+ /*thead{
+             background: #b9bfbf;
+             width:100%;
+ }*/
+ /*#hor-minimalist-a {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    background: #fff;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin: 20px;
+}
+ tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+td {
+    border-bottom: 1px solid #ccc;
+    color: black;
+    padding: 6px 8px;
+}
+th {
+    font-size: 14px;
+    font-weight: normal;
+    color: #039;
+    border-bottom: 2px solid #6678b1;
+    padding: 10px 8px;
+}*/
+ /*table {
+  font-family: 'Arial';
+  margin: 0px auto;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+  border-bottom: 2px solid #499898;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1), 0px 10px 20px rgba(0, 0, 0, 0.05), 0px 20px 20px rgba(0, 0, 0, 0.05), 0px 30px 20px rgba(0, 0, 0, 0.05);
+  white-space:nowrap;
+}
+table tr:hover {
+  background: #f4f4f4;
+}
+table tr:hover td {
+  color: #555;
+}
+table th, table td {
+  color: #999;
+  border: 1px solid #eee;
+ 
+  border-collapse: collapse;
+}
+table th {
+  background: #499898;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+table th.last {
+  border-right: none;
+}*/
+body {
+     
+    font-size: 12px;
+     
+}
+.panel-heading {
+    padding: 5px 13px;
+   
+}
+/*.subsi-container-body .table-responsive li:not([id]):not([class]) {
+    display: none;
+}
+.Voucher1-explore .explore-details .panel-create #mainVoucher .main-voucher-table-container li:not([id]):not([class]) {
+display:none;
+}*/

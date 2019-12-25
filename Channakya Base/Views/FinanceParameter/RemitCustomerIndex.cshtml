@@ -1,0 +1,367 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.RemittanceCustomer
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Remittance Customer</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="RemitCustomer">
+
+
+        <div id="RemitCustomer-create" class="RemitCustomerCreate">
+            @{Html.RenderAction("_RemitCustomerCreate", "FinanceParameter");}
+        </div>
+        <div id="RemitCustomer-list" class="RemitCustomerList">
+
+            @{Html.RenderAction("_RemitCustomerList", "FinanceParameter");}
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script type="text/javascript">
+
+    //window.onbeforeunload = null;
+    function onfailure(errormesg) {
+        debugger;
+        erroralert(errormesg);
+    }
+
+
+    function createSuccess() {
+        SuccessAlert("Remittance Company Succesfully created. ", 5000);
+        $.ajax({
+            url: '@Url.Action("_RemitCustomerCreate","FinanceParameter")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+    $(document).ready(function () {
+
+        $('.RemitCustomer').on('click', '#btn-save-RemitCustomer', function () {
+            debugger;
+            $.validator.unobtrusive.parse('#RemitCustomerSubmitForm');
+            $('#RemitCustomerSubmitForm').removeData('validator').removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($('#RemitCustomerSubmitForm'));
+            if ($('#RemitCustomerSubmitForm').valid() == false) {
+                var alreadymsg = $(this).closest("form").find(".field-validation-error").text();
+                InfoAlert(alreadymsg, 6000);
+                return false;
+            }
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                debugger
+                $("#RemitCustomerSubmitForm").ajaxSubmit({
+                    //return false;
+                    beforeSubmit: function () {
+
+
+                    },
+
+                    success: function (result) {
+                        if (result.Success) {
+                            $.ajax({
+                                url: "/FinanceParameter/RemitCustomerIndex",
+                                type: 'GET',
+                                async: false,
+                                success: function (result) {
+                                    debugger;
+                                    $('section.content').html(result);
+                                }
+                            })
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+                        }
+                        else {
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000);
+                    }
+                })
+            }).fail(function () {
+                //return false;
+            })
+        })
+
+        $("#RemitCustomer-create").on("change", "#CID", function () {
+            debugger;
+            var CID = $(this).val();
+            $.ajax({
+                type: 'GET',
+                url: "/FinanceParameter/_RemitCustomerList",
+                data: { CID: CID },
+                success: function (data) {
+                    $("#RemitCustomer-list").html("");
+                    $("#RemitCustomer-list").html(data);
+                    $("#FID").get(0).selectedIndex = 0;
+                }
+            })
+        });
+
+        //edit-remittance
+        $('.RemitCustomer').on('click', '.btn-edit-RemitCustomer', function () {
+
+            var RID = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/_RemitCustomerCreate/",
+                data: { RID: RID },
+                success: function (data) {
+                    // $(".section-create").show();
+                    //  $('.InterestPolicyCreate').html(data);
+                    $('.RemitCustomerCreate').html(data).find('.focusdiv').focus()
+                    //if (RID != null) {
+
+                    //    $("#CID").attr('disabled', true);
+
+                    //}
+
+                }
+               
+                
+            });
+          
+        });
+        $('.RemitCustomer').on('click','#btn-editsave-RemitCustomer', function () {
+                debugger;
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    debugger
+                    $("#RemitCustomerSubmitForm").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+
+                        success: function (result) {
+                            if (result.Success) {
+                                debugger
+                                $.ajax({
+                                    url: "/FinanceParameter/RemitCustomerIndex",
+                                    type: 'GET',
+                                    async: false,
+                                    success: function (result) {
+                                        debugger;
+                                        $('section.content').html(result);
+                                    }
+                                })
+
+                                debugger;
+                                SuccessAlert(result.Msg, 5000);
+                                document.getElementById('alert-success').scrollIntoView();
+                            }
+                            else {
+                                debugger
+                                ErrorAlert(result.Msg, 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                            }
+                        },
+                        error: function () {
+                            debugger
+                            ErrorAlert(data.responseText, 15000);
+                        }
+                    })
+
+
+
+                    }).fail(function () {
+                    debugger
+                    //return false;
+                })
+            });
+            //if ($('#RemitCustomerSubmitForm').valid() == false) {
+
+            //    InfoAlert('Please Fill out the form', 6000);
+            //    return false;
+            //}
+
+            //$.MessageBox({
+            //    buttonDone: "Yes",
+            //    buttonFail: "No",
+            //    message: "Are you sure?"
+            //}).done(function () {
+            //    debugger
+            //    $("#RemitCustomerSubmitForm").ajaxSubmit({
+            //        //return false;
+            //        beforeSubmit: function () {
+
+
+            //        },
+
+            //        success: function (result) {
+            //            if (result.Success) {
+            //                $.ajax({
+            //                    url: "/FinanceParameter/RemitCustomerIndex",
+            //                    type: 'GET',
+            //                    async: false,
+            //                    success: function (data) {
+            //                        debugger;
+            //                        $('section.content').html(data);
+            //                    }
+            //                })
+            //                SuccessAlert(result.Msg, 5000);
+            //                document.getElementById('alert-success').scrollIntoView();
+            //            }
+            //            else {
+            //                ErrorAlert(result.Msg, 5000);
+            //                document.getElementById('alert-error').scrollIntoView();
+            //            }
+            //        },
+            //        error: function () {
+            //            ErrorAlert(data.responseText, 15000);
+            //        }
+            //    })
+            //}).fail(function () {
+            //    //return false;
+            //})
+
+
+
+
+            $('.RemitCustomer').on('click', '#btn-Cancel-RemitCustomer', function () {
+
+                var container = $(this).closest('.RemitCustomer').find(".RemitCustomerCreate");
+                $(this).closest('.ChargeSetup').find(".RemitCustomerCreate").find('#btn-cancel-RemitCustomer').hide();
+                $(container).html("");
+                $.ajax({
+                    type: "GET",
+                    url: "/FinanceParameter/_RemitCustomerCreate/",
+                    success: function (data) {
+                        $(container).html(data);
+                    }
+                });
+            });
+
+
+            $('.RemitCustomer').on('click', '.btn-delete-RemitCustomer', function () {
+                debugger;
+
+                RID = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_RemitCustomerDelete", "FinanceParameter")',
+                    data: { RID: RID },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (result) {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to Delete ?"
+                        }).done(function () {
+                            //alert(result)
+                            debugger;
+                            if (result == "true") {
+                                debugger;
+                                deleteRemitCustomer(RID);
+                            }
+                            else {
+                                ErrorAlert("Cannot Be deleted, is in use. ", 5000);
+                            }
+                        }).fail(function () {
+                            //return false;
+                        });
+                    }, error: function () {
+                        alert("error");
+                    }
+                });
+
+
+        
+        function deleteRemitCustomer(RID) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("_RemitCustomerDeleteConfirm", "FinanceParameter")',
+                data: { RID: RID },
+                success: function (result) {
+                    debugger
+                   
+                        //$.ajax({
+                        //    url: "/FinanceParameter/RemitCustomerIndex",
+                        //    type: 'GET',
+                        //    async: false,
+                        //    success: function (result) {
+                        //        debugger;
+                        //        $("#RemitCustomerList").html(result);
+                        //    }
+                        //})
+
+                        SuccessAlert("Sucessfully Deleted", 5000);
+                        $(".RemitCustomerList").html(result);
+                        //SuccessAlert(result.Msg, 5000);
+
+                        //}
+                
+
+                        
+                },
+                error: function () {
+                    alert("error");
+                }
+            })
+        }
+
+
+    });
+
+    @*function RemitCustomercreateSuccess() {
+                debugger;
+                SuccessAlert("Succesfully Saved. ", 5000);
+                $.ajax({
+                    url: '@Url.Action("_RemitCustomerList", "FinanceParameter")',
+                    type: 'GET',
+                    processData: false,
+                    success: function (data) {
+                        $(".ChargeSetupList").html(data);
+                        console.log(data)
+                        $.ajax({
+                            url: '@Url.Action("_RemitCustomerCreate", "FinanceParameter")',
+                            type: 'GET',
+                            processData: false,
+                            success: function (data) {
+                                $(".RemitCustomerCreate").html(data);
+                                console.log(data)
+                            },
+                            error: function () {
+                                alert('error');
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });*@
+
+
+    });
+</script>

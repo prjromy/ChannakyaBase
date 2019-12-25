@@ -1,0 +1,41 @@
+﻿@model ChannakyaBase.Model.ViewModel.DenoInViewModel
+@using ChannakyaBase.BLL
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Currency")
+        </th>
+        <th>
+            @Html.DisplayName("Figure")
+        </th>
+        <th>
+            @Html.DisplayName("Action")
+        </th>
+       
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.DenoInList)
+    {
+        <tr>
+           @Html.HiddenFor(modelItem => item.DenoID)
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Currency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Deno)
+            </td>
+           
+
+            
+                <td><a class="btn btn-info btn-sm btn-edit-branch glyphicon glyphicon-edit" onclick="EditDemoSetup"@item.DenoID" ></a>
+                
+            </td>
+        </tr>
+    }
+
+</table>
+

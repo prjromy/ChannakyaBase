@@ -1,0 +1,63 @@
+﻿
+@model Loader.Models.Param
+@{
+    var test = Model;
+    var paramTypeClass = "background-color:#00c0ef !important";
+    if (Model.IsGroup == false)
+    {
+        paramTypeClass = "background-color:indianred !important";
+    }
+}
+
+
+<div class="small-box bg-aqua"style="@paramTypeClass">
+    @if (Model.PId > 2)
+    {
+    <span class="deleteNode" id="@Model.PId" style="right:0px;position:absolute;cursor:pointer;"> <i class="glyphicon glyphicon-remove"></i></span>
+    }
+    <div id="@Model.PId"class="icon parameterImage"style="top: -31px;">
+        <img class="parameterImage"id="@Model.PId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" />
+    </div>
+    <div class="inner" menu-caption="@Model.PName">
+        <p id="parameterCaption" data-toggle="tooltip" data-placement="top" title="@Model.PName" style="cursor:pointer;height:20px;"> @Model.PName</p>
+
+        @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>*@
+    </div>
+    
+    
+    <a class="small-box-footer">
+        @*<input type="button" value="drill" class="btndrill" id="" />*@
+        @if (Model.IsGroup == true)
+        {
+        <span class="btndrill" id="@Model.PId"data-toggle="tooltip" data-placement="top" title="Drill" style="cursor:pointer;"><i class="glyphicon glyphicon-screenshot drill"></i></span>
+        }
+        else
+        {
+            <span class="btndrill editList" id="@Model.PId" data-toggle="tooltip" data-placement="top" title="Edit" style="cursor:pointer;"><i id="@Model.PId" class="glyphicon glyphicon-list-alt editList "></i></span>
+        }
+
+        @*<span id="btndetails"><i class="glyphicon glyphicon-list-alt details" fid="@Model.Fid" did="@Model.Fname" pid="@Model.Pid"></i></span>*@
+    </a>
+</div>
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #parameterCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    img.parameterImage
+    {
+        height:20px;
+        width:20px;
+    }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+    $(document).tooltip();
+});
+</script>

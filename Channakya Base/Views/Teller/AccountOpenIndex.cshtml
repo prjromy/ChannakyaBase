@@ -1,0 +1,200 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountListViewModel
+
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Unverified Account Information List</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="col-md-12">
+                        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+                        <div class="col-md-3" id="search-Account-Name">
+                            @Html.TextBoxFor(model => model.AccountName, "", htmlAttributes: new { @class = "form-control", @id = "txtAccountSearch", @placeholder = "Account Name" })
+                            @*@Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "text-danger" })*@
+                        </div>
+
+                        <div class="col-md-2 " id="SchemeType">
+
+                            @Html.DropDownListFor(x => x.SchemeId, TellerUtilityService.GetAllDepositScheme(), "--Select Scheme--", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2 " id="ProductType">
+
+                            @Html.DropDownListFor(x => x.PID, new SelectList("", ""), "--Select Product--", new { @class = "form-control" })
+                        </div>
+
+                        <div class=" col-md-4" id="AccountNumber">
+                            @*@Html.Label("Account Number", htmlAttributes: new { @class = "control-label col-md-3" })*@
+                            @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.AccountClose.GetDescription(), EAccountFilter.UnverifiedAccountList.GetDescription(), EAccountType.Normal.GetDescription())
+
+                        </div>
+
+                        @*<div class="form-group">
+                            @Html.LabelFor(model => model.Accno, new { @class = "control-label col-md-2" })*@
+                        @*<div class="col-md-4 " id="AccountNumber">
+                                @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.AccountClose.GetDescription(), EAccountFilter.AccountClose.GetDescription(), EAccountType.Normal.GetDescription())
+
+                            </div>*@
+                        @* </div>*@
+
+                        @*<div class="from-to-date col-md-4">
+
+                                @Html.Label("From Date - To Date", htmlAttributes: new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.DateRangePicker(x => x.From, x => x.To)
+                                    @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                                    @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+                        <div class="input-group-btn col-md-1">
+                            <button type="button" id="searchAccount" class="btn btn-searchAccount btn-default"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-10" style="margin-top: 20px;">
+                        <div class="col-md-5  form-group" id="search-from=date">
+                            @Html.Label("From Date", htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class=" col-md-2">
+                                @Html.DatePicker(x => x.From)
+                            </div>
+                        </div>
+                        <div class="col-md-5  form-group" id="search-to-date">
+                            @Html.Label("To Date", htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class=" col-md-2">
+                                @Html.DatePicker(x => x.To)
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="customer-main details">
+            @*<input type="button" value="New Account" id="btn-create" class="btn btn-info btn-sm btn-create" />*@
+            <div class="NewAccount-list">
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        @*@Html.RenderPartial("_AccountOpenIndex","Teller")*@
+                        @{Html.RenderAction("_AccountOpenIndex", "Teller");}
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="NewAccount-create">*@
+
+        </div>
+    </div>
+
+    </div>
+
+    @*<script src="~/Scripts/jquery-1.10.2.js"></script>
+        <script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+    @*<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>*@
+    <script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+    <script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+    <link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+    <script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+    <script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+    <script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+    <script>
+        //$("div.table-click-account-open").on('click', 'input.btnPaging', function (e) {
+
+        //    e.stopImmediatePropagation();
+        //    var parentContainer = $(this).parents()
+        //    var me = $(this);
+        //    var container = parentContainer.find(".table-click-account-open")
+
+        //    getPageNumberBtnAction("", container, me)
+        //});
+        //$("div.table-click-account-open").on('change', 'input#pageNo', function (e) {
+        //    e.stopImmediatePropagation();
+        //    var parentContainer = $(this).parents()
+        //    var me = $(this);
+
+        //    var container = parentContainer.find(".table-click-account-open")
+
+        //    getPageNumberChangeData("", container, me)
+        //});
+        //$("div.table-click-account-open").on('change', 'input#pageSize', function (e) {
+        //    e.stopImmediatePropagation();
+        //    var parentContainer = $(this).parents()
+        //    var me = $(this);
+
+        //    var container = parentContainer.find(".table-click-account-open")
+
+        //    getPageSizeChangeData("", container, me)
+        //});
+
+        $(document).on("click", "#searchAccount", function (e) {
+            debugger;
+            e.stopImmediatePropagation();
+            debugger;
+            var parentContainer = $(this).parents();
+            var me = $(this);
+            var FromDate = $("#From").val();
+            var ToDate = $("#To").val();
+            var AccountName = parentContainer.find("#search-Account-Name").find("#txtAccountSearch").val();
+            //var SchemeType = parentContainer.find("#SchemeType option:selected").val();
+            var PID = parentContainer.find("#ProductType option:selected").val();
+            var AccountNumber = $('#AccountId').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '/Teller/_AccountList',
+                data: {
+                    FromDate: FromDate,
+                    ToDate: ToDate,
+                    pageNo: 1,
+                    pageSize: 10,
+                    AccountName: AccountName,
+                    PID: PID,
+                    AccountNumber: AccountNumber
+
+                },
+                traditional: true,
+                success: function (result) {
+                    debugger;
+
+                    $(".NewAccount-list").html("");
+                    $(".NewAccount-list").html(result);
+                },
+            });
+
+
+        });
+
+
+        function EditAccountNumber(IAccno) {
+
+            $.ajax({
+                type: "GET",
+                url: "/Teller/_AccountDetails",
+                datatype: "Json",
+                data: {
+                    IAccno: IAccno,
+                    ModelFrom: "indexReport",
+                },
+                success: function (result) {
+                    $('section.content').html("");
+                    $('section.content').html(result);
+                }
+            })
+        }
+
+    </script>
+

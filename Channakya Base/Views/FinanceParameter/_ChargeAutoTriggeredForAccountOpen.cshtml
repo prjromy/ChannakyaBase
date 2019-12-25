@@ -1,0 +1,46 @@
+﻿
+@model List<ChannakyaBase.DAL.DatabaseModel.ChargeDetail>
+@{
+
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+
+
+}
+@using ChannakyaBase.BLL.Service
+<fieldset>
+    <legend>Charge details</legend>
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-bordered table-striped table-hover">
+            <tbody>
+                <tr>
+                    <th class="col-md-2">
+                        Charge Name
+                    </th>
+                    <th class="col-md-4">
+                        Financial Ledger
+                    </th>
+                    <th class="col-md-2">
+                        Amt./(%)
+                    </th>
+                    <th class="col-md-2">
+                        Charge
+                    </th>
+                    <th class="col-md-2">
+                        Total Charge in Amount
+                    </th>
+                   
+
+                </tr>
+
+
+                @foreach (var item in Model)
+                {
+
+                    @Html.Partial("_ChargeAutoTriggeredPartialForAccountOpen", item)
+
+                }
+
+            </tbody>
+        </table>
+    </div>
+</fieldset>

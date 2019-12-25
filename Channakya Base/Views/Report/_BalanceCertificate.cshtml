@@ -1,0 +1,112 @@
+﻿@model ChannakyaBase.Model.ViewModel.BalanceCertificateModel
+@using ChannakyaBase.BLL.Service
+@{
+    DateTime dateToday = DateTime.Now;
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" media="screen,print"/>
+<link href="~/Content/printstylesheet.css" rel="stylesheet" media="print"/>
+<style>
+    body
+    {
+        margin: 10mm 25mm 10mm 20mm;
+    }
+</style>
+<div class="container">
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right">
+                Date: @dateToday.Date.ToString("d")
+            </div>
+            <div class="col-md-12" style="text-align:center;font-weight:900;text-decoration:underline">
+                <br />BALANCE CERTIFICATE
+            </div>
+            <div class="col-md-12" style="text-align:center;font-weight:900;text-decoration:underline">
+                TO WHOM IT MAY CONCERN
+            </div>
+
+            <div class="col-md-12">
+                <br />This is to certify that the under mentioned maintain(s) an account with us.
+                <br /><br />Details of the account are as follows :
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px"><br />Name</div>
+                    <div style="width:33%; float:left;"><br />@Model.AccountTitle</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">A/C No.</div>
+                    <div style="width:33%; float:left;">@Model.AccountNumber</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">A/C Type</div>
+                    <div style="width:33%; float:left;">@Model.SchemeName</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">Currency</div>
+                    <div style="width:33%; float:left;">@Model.currency</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">Balance In NPR</div>
+                    <div style="width:33%; float:left;">@Model.Balance</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">Balance In Words</div>
+                    <div style="width:66%; float:left;">@Model.BalanceInWords</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div style="width:25%; float:left; padding-left:15px">Balance Of Date</div>
+                    <div style="width:33%; float:left;">@Model.TDate.Date.ToString("d") </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+            </div>
+            <div class="col-md-12">
+                <br />This certificate has been issued as per the request of the above stated account holder and
+                without any obligation on the part of the Bank.
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-2">
+                        <br /> ___________________
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        @Model.BrnchName
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        @*find out company name here*@
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        @Model.Address
+                    </div>
+                </div>
+            </div>
+        </div>
+    @*<input  type="button" value="Click To Print" id="btn-print-balance-certificate"/>*@
+    </div>
+    <div class="row"><br />
+        <a href="javascript:window.print()" class="noprint" style="width:25%; float:left; padding-left:15px">Click to Print This Page</a>
+    </div>
+    </div>

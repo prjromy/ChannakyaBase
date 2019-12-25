@@ -1,0 +1,83 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanAfterAutoPayment
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    CommonService commonservice = new CommonService();
+}
+<div class="table table-responsive">
+
+
+    <table class="table">
+        <tr>
+            <th colspan="2"></th>
+            <th colspan="4" style="text-align:center">Credit Amount</th>
+            <th colspan="2"></th>
+        </tr>
+        <tr>
+            <th>
+               Accno
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Int)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Penal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Charge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DAccno)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dramt)
+            </th>
+           
+       
+        </tr>
+
+        @foreach (var item in Model.LoanAfterAutoPaymentList)
+        {
+            <tr>
+               
+          
+                <td>
+                    @Html.DisplayFor(modelItem => item.LAccno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Int)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Penal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Charge)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DAccno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dramt)
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>

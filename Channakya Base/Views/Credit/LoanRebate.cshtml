@@ -1,0 +1,316 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.LoanRebateModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Rebate</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="box box-body">
+        @using (Html.BeginForm("InsertRebate", "Credit", FormMethod.Post, new { id = "Loan-Rebate-form" }))
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+
+                        <div class="Loan-Rebate-create">
+                            @* verifier section start *@
+                            @{
+                                bool isverified = new CommonService().isStrictlyVerifiable();
+                            }
+                            <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                            </div>
+                            @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                            @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                           @* @Html.Hidden("MessageEventID", 22)*@
+                            @*end *@
+                        </div>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Account", new { @class = "control-label  col-md-1" })
+                            <div class="col-md-5">
+                                @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.LoanRebate.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                            </div>
+                        </div>
+                        <div class="customer-event-message">
+                        </div>
+                        <div class="load-rebate-data">
+                        </div>
+
+
+
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <div class="col-md-offset-10 col-md-12">
+                                    <input type="button" value="Save" class="btn btn-default btn-Loan-rebate-save" data-eventid="32" isMultiVerifier="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                                }
+    </div>
+
+</div>
+<script>
+
+    $('#Loan-Rebate-form').on('input', '.Amount', function () {
+        debugger;
+        var id = this.id;
+        switch (id) {
+            case "RebateInterestOnOther":
+                var interestOnOther = parseFloat($('#InterestOnOther').val());
+                var Amount = parseFloat($(this).val());
+                if (Amount > interestOnOther) {
+                    ErrorAlert('Value cannot be greater than' + interestOnOther, 3000);
+                    return false;
+                }
+                else {
+
+                    $('#RebateInterestOnOther').val($('#RebateInterestOnOther').val());
+                }
+
+                break;
+            case "RebateIntrestOnInterest":
+                var intrestOnInterest = parseFloat($('#IntrestOnInterest').val());
+                var Amount = parseFloat($(this).val());
+                if (Amount > intrestOnInterest) {
+                    ErrorAlert('Value cannot be greater than' + intrestOnInterest, 3000);
+                    return false;
+                }
+                else {
+                    $('#RebateIntrestOnInterest').val($('#RebateIntrestOnInterest').val());
+                }
+
+                break;
+            case "RebatePenaltyOnPrincipal":
+                var penaltyOnPrincipal = parseFloat($('#PenaltyOnPrincipal').val());
+                var Amount = parseFloat($(this).val());
+                if (Amount > penaltyOnPrincipal) {
+                    ErrorAlert('Value cannot be greater than' + penaltyOnPrincipal, 3000);
+                    return false;
+                }
+                else {
+                    $('#RebatePenaltyOnPrincipal').val($('#RebatePenaltyOnPrincipal').val());
+                }
+
+                break;
+            case "RebatePenaltyOnInterest":
+                var penaltyOnInterest = parseFloat($('#PenaltyOnInterest').val());
+                var Amount = parseFloat($(this).val());
+                if (Amount > penaltyOnInterest) {
+                    ErrorAlert('Value cannot be greater than' + penaltyOnInterest, 3000);
+                    return false;
+                }
+                else {
+                    $('#RebatePenaltyOnInterest').val($('#RebatePenaltyOnPrincipal').val());
+                }
+
+                break;
+            case "RebateInterestOnPrincipal":
+
+                var interestOnPrincipal = parseFloat($('#InterestOnPrincipal').val());
+                var Amount = parseFloat($(this).val());
+                if (Amount > interestOnPrincipal) {
+                    ErrorAlert('Value cannot be greater than' + interestOnPrincipal, 3000);
+                    return false;
+                }
+                else {
+                    $('#RebateInterestOnPrincipal').val($('#RebateInterestOnPrincipal').val());
+
+                }
+                break;
+        }
+           
+        //var key = this.id;
+        //var rebateInterestOnOther =$('##RebateInterestOnOther')
+        //var interestOnOther = $('#InterestOnOther').val();
+        //    if (interestOnOther == 0 || interestOnOther == null) {
+        //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+        //    }
+        //    else {
+        //        $('#RebateInterestOnOther').val(interestOnOther);
+        //    }
+        var totalsum = 0;
+        $('.Amount').each(function () {
+            var totalVal = $(this).val();
+            if ($.isNumeric(totalVal)) {
+
+                totalsum += parseFloat(totalVal);
+            }
+
+
+
+        });
+
+        $('#result').html(totalsum.toFixed(2));
+        if ($('#result').val() != 0 || $('#result').val() != null) {
+            debugger;
+            TriggerAddLoanRebate();
+        }
+
+    })
+
+    function TriggerAddLoanRebate() {
+        debugger;
+        if ($('#OldPrincipalOut').val() != 0) {
+            $('#NewOtherBalance').val('');
+            $('#NewLinkAccount').val('');
+            $('#NewPrincpalOut').val($('#result').val());
+
+        }
+        else if ($('#OldOtherBalance').val() != 0) {
+            $('#NewLinkAccount').val('');
+            $('#NewPrincpalOut').val('');
+            $('#NewOtherBalance').val($('#result').val());
+
+        } else if ($('#OldLinkAccount').val() != 0) {
+            $('#NewPrincpalOut').val('');
+            $('#NewOtherBalance').val('');
+            $('#NewLinkAccount').val($('#result').val())
+        }
+
+
+
+
+    }
+
+    $(function () {
+
+
+        $.validator.unobtrusive.parse('#Loan-Rebate-form');
+        $(".btn-Loan-rebate-save").on("click", function (e) {
+          
+            var strictVerifiable = $('#Loan-Rebate-form').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            var ismultiVerify = $(this).attr('isMultiVerifier');
+            $('#Loan-Rebate-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#Loan-Rebate-form'));
+            if ($("#Loan-Rebate-form").valid()) {
+                if (strictVerifiable == true) {
+
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    LoanRebateTransaction();
+                }
+            
+            }
+        })
+
+    });
+
+    function LoanRebateTransaction() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#Loan-Rebate-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Credit/LoanRebate',
+
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+
+    //$('#RebateInterestOnOther').on('keyup', function () {
+    //    debugger;
+    //    var interestOnOther = $('#InterestOnOther').val();
+    //    if (interestOnOther == 0 || interestOnOther == null) {
+    //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+    //    }
+    //    else {
+    //        $('#RebateInterestOnOther').val(interestOnOther);
+    //    }
+
+
+    //})
+
+    //$('#RebatePenaltyOnInterest').on('keyup', function () {
+    //    debugger;
+    //    var penaltyOnInterest = $('#PenaltyOnInterest').val();
+    //    if (penaltyOnInterest == 0 || penaltyOnInterest == null) {
+    //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+    //    }
+    //    else {
+    //        $('#RebatePenaltyOnInterest').val(interestOnOther);
+    //    }
+    //})
+
+    //$('#RebatePenaltyOnPrincipal').on('keyup', function () {
+    //    debugger;
+    //    var penaltyOnPrincipal = $('#PenaltyOnPrincipal').val();
+    //    if (penaltyOnPrincipal == 0 || penaltyOnPrincipal == null) {
+    //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+    //    }
+    //    else {
+    //        $('#RebatePenaltyOnPrincipal').val(interestOnOther);
+    //    }
+    //})
+    //$('#RebateIntrestOnInterest').on('keyup', function () {
+    //    debugger;
+    //    var intrestOnInterest = $('#IntrestOnInterest').val();
+    //    if (intrestOnInterest == 0 || intrestOnInterest == null) {
+    //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+    //    }
+    //    else {
+    //        $('#RebateIntrestOnInterest').val(interestOnOther);
+    //    }
+    //})
+    //$('#RebateInterestOnOther').on('keyup', function () {
+    //    debugger;
+    //    var interestOnOther = $('#InterestOnOther').val();
+    //    if (interestOnOther == 0 || interestOnOther == null) {
+    //        ErrorAlert('Value cannot be greater than' + interestOnOther, 3000)
+    //    }
+    //    else {
+    //        $('#RebateInterestOnOther').val(interestOnOther);
+    //    }
+    //})
+
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>

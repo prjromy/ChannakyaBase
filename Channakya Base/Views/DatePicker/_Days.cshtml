@@ -1,0 +1,33 @@
+﻿
+@model ChannakyaCustomeDatePicker.Models.HolidaysInYear
+@{
+    Layout = null;
+}
+@using (Html.BeginCollectionItem("HolidayList"))
+{<div class="daysRow">
+        <div class="row">
+            <div class="col-sm-3">
+                @Html.TextBoxFor(model => model.Holiday, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(model => model.Holiday)
+
+            </div>
+            <div class="col-sm-5">
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description)
+
+            </div>
+            @if (Model.HolidayId == 0)
+            {
+
+                <div class="col-sm-1">
+                    <button type="button" onclick="DeleteRow(this)" class="row-button btn btn-sm btn-danger btn-delete"><i class="fa fa-trash-o"></i> Remove</button>
+
+                </div>
+            }
+        </div>
+        <br />
+    </div>
+
+
+}
+

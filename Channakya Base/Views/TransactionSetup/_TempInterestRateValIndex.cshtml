@@ -1,0 +1,11 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.TempIntRateVal
+<div class="TempIntRateVal">
+    @*<input type="button" value="New Certificate" id="btn-create" class="btn btn-sm btn-create" />*@
+
+    <div id="TempIntRateVal-create" class="TempIntRateValCreate">
+        @{Html.RenderAction("_TempInterestRateValCreate", "TransactionSetup");}
+    </div>
+    <div id="TempIntRateVal-list" class="TempIntRateValList">
+        @{Html.RenderAction("_TempInterestRateValList", "TransactionSetup");}
+    </div>
+</div>

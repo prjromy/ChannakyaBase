@@ -1,0 +1,589 @@
+﻿@model Loader.Models.RegisterViewModel
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    /**/
+    Html.EnableClientValidation(true);
+    Layout = null;
+    var test = Model;
+    //var designationtreeData = (Loader.ViewModel.TreeView)ViewBag.DesignationTree;
+    //var departmenttreeData = (Loader.ViewModel.TreeView)ViewBag.DepartmentTree;
+
+    var employeeTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.EmployeeText, "Select Employee", "");
+    var empSearch = new Loader.ViewModel.SearchViewModel(0, "", "", ViewBag.EmployeeText, "Select Employee", "", "", "Dept", "Employee");
+    var menuTemplateTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.MTText, "Select MenuTemplate", "");
+    if (ViewBag.Id != 0)
+    {
+        menuTemplateTree = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 1, ViewBag.MTText, "Select MenuTemplate", "");
+    }
+
+    var treeobjDesignation = new Loader.ViewModel.TreeViewParam(false, true, true, 0, 0, "", "Select Designation", "");
+    if (Model.UserDesignationId != null && Model.UserDesignationId != 0)
+    {
+        treeobjDesignation = new Loader.ViewModel.TreeViewParam(false, true, true, 0, Convert.ToInt32(Model.UserDesignationId), ViewBag.DesgText, "Select Designation", "");
+    }
+    var title = "Create Users";
+    var Id = ViewBag.Id;
+    var createVal = "Create";
+    if (ViewBag.Id == 1)
+    {
+        title = "Edit Users";
+        createVal = "Save";
+    }
+
+    //if (Model. != 0)
+    //{
+    //    title = "Edit Users";
+    //}
+    //for toggle
+
+}
+<div class="box box-warning users-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <form method="post" id="createUsers">
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @if (ViewBag.Id == 0)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @id = "Email" })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(x => x.Email);
+                }
+
+                @if (ViewBag.Id != 0)
+                {
+                    <div class="form-group col-md-12">
+                        @Html.Label("User Name", null, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.Id == 0)
+                {
+
+                    <div class="form-group col-md-12">
+                        @Html.Label("User Name", null, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @id = "UserName" })
+
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    if (ViewBag.WithEmployee == true)
+                    {
+                        <div class="form-group col-md-12">
+                            @Html.Label("Employee Name", null, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-9">
+
+                                @Html.EditorForEmployeeSearch(model => model.EmployeeId, empSearch)
+                                @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger employeeError" })
+                            </div>
+                        </div>
+                    }
+                }
+
+                @if (ViewBag.Designation == 1 )
+                {
+                    <div class="form-group col-md-12">
+                        @Html.Label("Designation", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9 DesignationId">
+
+                            @Html.EditorForTree(model => model.UserDesignationId, treeobjDesignation)
+                            @Html.ValidationMessageFor(model => model.UserDesignationId, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                }
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.MTId, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-8">
+
+                        @Html.EditorForTree(model => model.MTId, menuTemplateTree)
+                        @Html.ValidationMessageFor(model => model.MTId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-1">
+                        <label class="bs-switch">
+                            <input type="checkbox" class="bs-switch__input" name="switch" />
+                            <span class="bs-switch__handle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group col-md-12 toggle-menu-template-out" hidden>
+                    <div class="col-md-2"></div>
+                    <div class="toggle-menu-template col-md-9" style="overflow:auto;height:400px">
+
+                    </div>
+                </div>
+
+
+                <div class="form-group col-md-12">
+                    @*@Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-3" })*@
+                    <label class="control-label col-md-2">Status</label>
+
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { @class = "form-control" } })
+
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+                @if (ViewBag.Id == 0)
+                {
+
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password", @autocomplete = "off" })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.ConfirmPassword, new { @class = "form-control", @type = "password", @autocomplete = "off" })
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.IsUnlimited, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.IsUnlimited, new { htmlAttributes = new { @class = "form-control" } })
+
+                        @Html.ValidationMessageFor(model => model.IsUnlimited, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+
+                <div class="from-to-date col-md-12">
+
+                    @if (Model.IsUnlimited != true)
+                    {
+                        @*@Html.Label("From Date - To Date", htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-3">
+                                @Html.DateRangePicker(x => x.From, x => x.To)
+                                @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                            </div>*@
+
+                        @Html.Label("From Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-3 From">
+                            @Html.DatePicker(x => x.From)
+                            @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+
+                        </div>
+
+                        @Html.Label("To Date", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-3 To">
+                            @Html.DatePicker(x => x.To)
+                            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@createVal" class="btn btn-default" />
+            </div>
+        </div><!-- box-footer -->
+    </form>
+
+</div><!-- /.box -->
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger
+        //$("#Email").blur(function () {
+        //    debugger
+        //    $(this).val($(this).val().trim());
+        //});
+
+        //$("#UserName").blur(function () {
+        //    debugger
+        //    $(this).val($(this).val().trim());
+        //});
+        //$("#Email").prop("readonly", true);
+        //$("#UserName").prop("readonly", true);
+        //$("#DesignationId").prop("readonly", true);
+        //$("#Email").focus(function(){
+        //    $("#Email").prop("readonly", false);
+        //    $("#UserName").prop("readonly", false);
+
+        //});
+
+        $( function() {
+            debugger;
+            $( ".dt" ).datepicker();
+        } );
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PEmployeeId").focus();
+
+    });
+    $('.bs-switch__input').on('change', function () {
+        debugger;
+        var DesinationToggleValue = $(this).is(":checked");
+        var menuTemplateId = $("#MTId").find(".internal-value").val()
+
+        if(DesinationToggleValue == true)
+        {
+            $.ajax({
+                url: "/Users/GetDesignationAssignedMenu",
+                data: {menuTemplateId:menuTemplateId},
+                success: function (data) {
+                    $(".toggle-menu-template").html(data);
+                    $(".toggle-menu-template-out").toggle()
+                    $(".toggle-menu-template").find(".treeview-title").html("Assigned Menu");
+                    $(".toggle-menu-template :checkbox").click(function(){return false})
+                    $(".toggle-menu-template").find(".input-group").html("")
+                }
+            });
+        }
+        else{
+            $(".toggle-menu-template-out").toggle()
+        }
+    })
+
+    $('.upldimge').on('click', function () {
+        debugger;
+        $(this).prev('.exm').trigger('click');
+    })
+
+    $('.exm').on('change', function () {
+        debugger;
+        var Imageform = new FormData();
+        var imagecontent = $(this)[0].files[0];
+        if(imagecontent!=null)
+        {
+            form1.append('file', imagecontent);
+
+            Imageform.append('file', imagecontent)
+            $.ajax({
+                type: 'post',
+                cache: false,
+                contentType: false,
+                processData: false,
+                url: "/Employee/DisplayImage",
+                data: Imageform,
+                success: function (ImageContent) {
+                    debugger;
+                    $('#loadimage').empty();
+                    $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                    // $('#loadimage').attr("content", imagecontent);
+                }
+            });
+        }
+    });
+
+
+    $('.users-create').on('change', 'input#IsUnlimited', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest(".users-create").find(".from-to-date")
+        if (!this.checked) {
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("GetFromToDate", "Users")',
+                contentType: "application/json; charset=utf-8",
+                // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $(container).html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $(container).html("");
+        }
+    });
+
+
+    //$('#LoanRegistration-form').removeData("validator").removeData("unobtrusiveValidation");
+    //$.validator.unobtrusive.parse($('#LoanRegistration-form'));
+    //if ($("#createUsers").valid()) {
+
+    $("#createUsers").submit(function () {
+        debugger;
+        //$('#createUsers').removeData("validator").removeData("unobtrusiveValidation");
+        //$.validator.unobtrusive.parse($('#createUsers'));
+        //if ($("#createUsers").valid())
+        //{
+        //    ErrorAlert("The Required Field is Empty", 1500);
+        //    return false;
+        //}
+        var form = $(this);
+        form.validate();
+        if (form.valid() == false) {
+            ErrorAlert("The Required Field is Empty",1500);
+            return false;
+        }
+
+        var menuTemplateID = form.find(".internal-value").val();
+        if (menuTemplateID == 0) {
+            ErrorAlert("Menu Template Field is Empty!!!", 15000);
+            console.log(menuTemplateID);
+            return false;
+        }
+
+        var userName = form.find("#UserName").val();
+        if (userName == 0) {
+            ErrorAlert("User Name Field is Empty!!!", 15000);
+            console.log(menuTemplateID);
+            return false;
+        }
+        var container = $(this).closest('.panel-create');
+        var formData = new FormData($(this)[0]);
+        var nodeId = $(this).find('.section-treeview#PUsersId').find('.internal-value').val()
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+
+            if(@Id==0)
+            {
+                $.ajax({
+                    url: '@Url.Action("Register", "Account")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+                        SuccessAlert("User Added Succesfully.",1500);
+
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }
+            else
+            {
+                $.ajax({
+                    url: '@Url.Action("UpdateRegister", "Account")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+                        SuccessAlert("User Edited Succesfully.",1500);
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }
+        }).fail(function () {
+            //$.MessageBox("you clicked no");
+        });
+
+        return false;
+    });
+
+
+
+    $('.users-create').on('filterTree', '.section-treeview', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var designationId = 0;
+
+        designationId = $(".section-treeview").find(".internal-value").val();
+
+
+        if (designationId == "" || designationId == null || designationId=="0") {
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load('@Response.ApplyAppPathModifier("/Users/_GetEmployeeTreePopup")', { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Users/_GetEmployeeTree", { param: data.param })
+
+            }
+        }
+        else
+        {
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load('@Response.ApplyAppPathModifier("/Users/_GetEmployeeTreePopupwithDGId")', { param: data.param, designationId: designationId })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Users/_GetEmployeeTree", { param: data.param })
+
+            }
+        }
+
+
+
+    });
+
+    $('.users-create').on('filterSearch', '.section-search', function (e, data) {
+        debugger;
+        e.stopPropagation();
+
+        if (data.fromPopUp == 'false') {
+            data.param.Title = "Select Employee";
+
+            $dlg_dpicker.load("/Users/_GetEmployeeSearchPopup", { param: data.param })
+        }
+        else {
+            $dlg_dpicker.find('.treeview-area').load("/Users/_GetEmployeeTree", { param: data.param })
+
+        }
+
+
+    });
+
+
+
+    //fiter user
+    //$('.userStatusList').change(function () {
+    //    debugger;
+    //    var status = $(this).val();
+    //    var Search = $('.txtSearch').val();
+
+    //    var container = $(this).closest('.Users-explore').find('.panel-list').find('.bodycontent-and-paging');
+    //    var listType = $(this).closest('.Users-explore').find('#viewType').val();
+    //    //alert(listType);
+    //    $.ajax({
+    //        url: "/Users/_DetailPartial",
+    //        type: "GET",
+    //        data: {
+    //            ViewType: listType,
+    //            query: Search,
+    //            page: 1,
+    //            status: status,
+
+    //        },
+    //        success: function (result) {
+    //            debugger;
+    //            $(container).html("");
+    //            $(container).html(result);
+    //            $(container).focus();
+
+    //            var checkActive = $('ul.pagination.Userpagination').find('li').hasClass('active');
+    //            if (checkActive == true) {
+    //                $('ul.pagination.Userpagination').find('.active').removeClass('active');
+    //            }
+    //            // after changing next status ,pagenumber is 1
+    //            $('ul.pagination.Userpagination').find('li#' + 1).addClass('active');
+    //        }
+    //    });
+    //});
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+
+    .bs-switch {
+        position: relative;
+        height: 28px;
+        display: inline-block;
+        width: 46px;
+    }
+
+    .bs-switch__input[type="checkbox"] {
+        height: 0;
+        width: 0;
+        opacity: 0;
+    }
+
+    .bs-switch__handle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        cursor: pointer;
+        border-radius: 9999px;
+        background-color: #808080;
+    }
+    .bs-switch__handle::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            transition: transform 250ms ease-in-out;
+    }
+
+    .bs-switch__input[type="checkbox"]:checked + .bs-switch__handle {
+        background: #5198c1;
+    }
+
+    .bs-switch__input[type="checkbox"]:checked + .bs-switch__handle:before {
+        transform: translateX(18px);
+    }
+</style>

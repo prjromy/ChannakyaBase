@@ -1,0 +1,42 @@
+﻿@model  List<Loader.Models.Param>
+  
+
+<div class="container1">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+
+                    <th>
+                        Parameter Name
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                
+                    <th>
+                        DataType
+                    </th>
+                      
+
+                    </thead>
+                    
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                                
+                                @Html.Partial("_ListView", item)
+                       
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

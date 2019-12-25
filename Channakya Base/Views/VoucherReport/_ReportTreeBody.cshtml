@@ -1,0 +1,11 @@
+﻿
+@model ChannakyaAccounting.Models.ViewModel.ReportTreeView
+@{
+    Nullable<Boolean> withPrevYr = ViewData["WithPrevYr"] as Nullable<Boolean>;
+    //Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+    
+  @Html.EditorFor(x=>x.TreeData, new ViewDataDictionary { { "WithPrevYr", withPrevYr } })
+
+

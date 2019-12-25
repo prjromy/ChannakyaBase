@@ -1,0 +1,76 @@
+﻿@model  ChannakyaBase.Model.ViewModel.AWtdQueueModel
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Teller Exceed Payment</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @*<div class="col-md-12">*@
+    <div class="box box-body">
+        <div class="row">
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="form-group">
+                       
+                        <div class="col-md-4">
+                           @Html.TextBoxFor(x => x.AccountNumber, new { @class = "form-control",placeholder = "Account Number" })
+                        </div>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.Partial("_TellerExceedPayment", Model)
+
+    </div>
+</div>
+
+
+
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+<script>
+
+    $('input#AccountNumber').on('change', function () {
+        $.ajax({
+            type: "GET",
+            url: "/Teller/_TellerExceedPayment",
+            datatype: "Json",
+            data: { accountNumber: $(this).val() },
+            success: function (result) {
+                $('.table.table-responsive.table-hover.table-cash-limit-exceed').html("");
+                $('.table.table-responsive.table-hover.table-cash-limit-exceed').html(result);
+            }
+        })
+    })
+    function withdrawPayment(rno,taskId,actionFrom) {
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/UserLimitExceedDetailsVeryfyAfterByCashier",
+            datatype: "Json",
+            data: {
+                rno: rno,
+                eventId:12,
+                taskId: taskId,
+                buttonShow: actionFrom
+            },
+            success: function (result) {
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+
+</script>
+
+

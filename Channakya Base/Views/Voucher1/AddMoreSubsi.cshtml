@@ -1,0 +1,164 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher3T
+@using ChannakyaAccounting.Helper
+@using ChannakyaAccounting.Helper.BeginCollectionHelper
+
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var fromVoucher = Model;
+}
+
+
+   
+        @if (Model.V2TId == 0)
+        {
+                    <tr>
+                        @using (Html.BeginCollectionItem("SubsiVSLedgerList"))
+                        {
+                        <td>
+
+                            @Html.HiddenFor(x => x.SFId)
+                            @Html.HiddenFor(x => x.V3TId)
+                            @*@Html.DropDownListFor(x => Model.SFId, voucher1.GetVoucherSubsiList(Model.SId), "Select", new { @class = "form-control col-md-12 subsi-name" })*@
+                            @if (Model.SFId == 1)
+                            {
+                                @Html.GenerateSubsiTypeList(x => Model.SId, Model.SFId, "Search by Employee Name or Number")
+                            }
+                            @if (Model.SFId == 2)
+                            {
+                                @Html.GenerateSubsiTypeList(x => Model.SId, Model.SFId, "Search by UserName")
+                            }
+                            @if (Model.SFId == 3 || Model.SFId == 4 || Model.SFId == 5)
+                            {
+                                @Html.GenerateSubsiTypeList(x => Model.SId, Model.SFId, "Search by Customer Name or Acc Number")
+                            }
+                            @if (Model.SFId == 6 || Model.SFId == 7 || Model.SFId == 8)
+                            {
+                                @Html.AccountNumberSearch(x => x.SId, EAccountDetailsShow.ChequeTransHistory.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessageFor(model => model.SId, "", new { @class = "text-danger" })
+
+                            }
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(x => x.Description, new { @class = "form-control col-md-12", @placeholder = "Description" })
+                        </td>
+
+                        <td>
+                            @Html.TextBoxFor(x => x.Amount, new { @class = "form-control col-md-12", @placeholder = "Amount" })
+                        </td>
+                        }
+                        <td>
+                            <input type="button" class="btn btn-danger" value="Remove" onclick="removeTR(this)" />
+                        </td>
+                        
+                    </tr>
+
+
+
+
+
+
+        }
+        else
+        {
+            using (Html.BeginCollectionItem("SubsiVSLedgerList"))
+            {
+            <div id="subsiDetails" class="subsi-voucher-container">
+                <table class="table table-bordered ">
+                    
+                    @Html.HiddenFor(x => x.V3TId)
+                    <thead>
+                        <tr>
+                            <th class="col-md-5">
+                                Select Subsi
+                            </th>
+                            <th>
+                                @{ 
+                                    var subsitblId = ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId(Convert.ToInt32(Model.Voucher2T.Fid));
+                                }
+                                @Html.DropDownListFor(x => Model.SId, new SelectList(ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiList(subsitblId), "Id", "Name",Model.SId), "Select", new { @class = "form-control col-md-12 subsi-name" })
+                            </th>
+                            </tr>
+
+                        <tr>
+                            <th class="col-md-5">
+                                Description
+                            </th>
+                            <th>
+                                @Html.TextBoxFor(x => x.Description, new { @class = "form-control col-md-12", @placeholder = "Description" })
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th class="col-md-5">
+                               Amount
+                            </th>
+                            <th>
+                                @Html.TextBoxFor(x => x.Amount, new { @class = "form-control col-md-12", @placeholder = "Amount" })
+                            </th>
+                        </tr>
+
+                    </thead>
+
+
+                </table>
+            </div>
+                
+            }
+
+    }
+
+<script type="text/javascript">
+
+    @*$('.addSubsi').click(function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var subsiName = $('.subsi-name option:selected').text();
+        var container = $('.add-voucher-finacc').find('.subsi-voucher-list')
+
+        $.ajax({
+            url: '/Voucher1/AddSubsiInVoucher/',
+            data:{SId:@Model.SId,SubsiName:subsiName},
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $('.subsi-voucher-container').append(data);
+            },
+            error: function (data) {
+                debugger;
+            },
+        });
+
+
+
+    });*@
+
+    $('.btn-search-subsi').click(function(e){
+        debugger;
+        e.stopImmediatePropagation();
+        subsiEvent = $(this);
+        var subsiId = $(this).attr('subsiid');
+        var placeholder = $(this).attr('placeholder');
+        var ledgerId = $(this).closest('.addvoucherDetails').find('input#Fid').val();
+
+        $.ajax({
+            url: '/Voucher1/GenerateSubsiTypeNameList/',
+            data:{SId:subsiId,Placeholder:placeholder,ledgerId:ledgerId},
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $('#getSubsiDetailsList ').html(data);
+                $('#getSubsiDetailsList').modal('show');
+                $('div#getSubsiDetailsList').css('display','block');
+            },
+            error: function (data) {
+                debugger;
+            },
+        });
+
+
+
+    });
+</script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearchAcc.js"></script>

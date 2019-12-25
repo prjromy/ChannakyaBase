@@ -1,0 +1,514 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.AWtdQueueModel
+    @using ChannakyaBase.BLL
+    @using ChannakyaBase.BLL.Service
+    @using ChannakyaCustomeDatePicker.Helper;
+    @using ChannakyaBase.BLL.CustomHelper;
+    @{
+
+        // ViewBag.Title = "EmployeeList";
+        // int eventvalue = Convert.ToInt32(Model.EventValue);
+        CommonService commonService = new CommonService();
+        // int accstate = cs.GetAccStatusByIaccno(eventvalue);
+        DateTime dateTrans = commonService.GetBranchTransactionDate();
+        int eventId = ViewBag.eventId;
+        int task1Id= ViewBag.task1Id;
+
+
+    }
+
+    <div class="modal-dialog modal-lg verifier-modal modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+
+            <div class="table-responsive no-padding verify-container">
+
+
+                <div class="box box-body">
+                    @using (Html.BeginForm("UserLimitExceedDetailsVeryfyAfterByCashier", "Teller", FormMethod.Post, new { id = "user-limit-exceed-transaction-form" }))
+                    {
+                        <div class="col-md-12">
+                            <div class="content-box">
+                                <fieldset>
+                                    <legend style="font-size:large;font-weight:bold">
+                                        <span>  Teller Limit Exceed Payment</span>
+                                    </legend>
+                                    <div class="limitamount">
+                                        @Html.HiddenFor(x => x.amount)
+                                    </div>
+
+                                    @Html.HiddenFor(x => x.EventId)
+                                    @Html.HiddenFor(x => x.TaskId)
+                                    @Html.HiddenFor(x => x.Rno)
+                                    <div class="col-md-6">
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table table-striped table-bordered table-responsive">
+                                                <tbody>
+
+                                                    <tr>
+                                                        <th>Account Number</th>
+                                                        <td><span class="form-control">@Model.AccountNumber</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Account Name</th>
+                                                        <td><span class="form-control">@Model.AccountName</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        @if (Model.isslip == true)
+                                                        {
+                                                            <th>Slip No.</th>
+                                                        }
+                                                        else
+                                                        {
+                                                            <th>Cheque No</th>
+                                                        }
+
+                                                        <td><span class="form-control">@Model.chqno</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Transaction Date</th>
+                                                        @*<td>  <span class="form-control">@commonServices.GetDate(Model.tdate)</span></td>*@
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Payee </th>
+                                                        <td> <span class="form-control">@Model.notes</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Amount</th>
+                                                        <td> <span class="form-control">@Model.amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                                                    </tr>
+
+
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                        <div class="form-group">
+                                            <div class="transaction-with-deno">
+
+                                                @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = Model.currid, denoInOut = EDeno.DenoOut.GetDescription() });}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                        </div>
+
+                    }
+
+                </div>
+
+                <div class="btn-groups modal-footer" style="padding:5px">
+
+                    <button type="button" class="btn btn-success btn-sm btn-account-verifier-confirm" data-eventid=@Model.EventId data-isreject="false">Verify <i class="fa fa-check" aria-hidden="true"></i></button>
+
+                    @*<button type="button" class="btn btn-success btn-sm btn-teller-disburse-payment-verifier-confirm" data-eventid=@Model.EventId data-isreject="false">Verify <i class="fa fa-check" aria-hidden="true"></i></button>*@
+
+
+                    <button type="button" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+    $(".verifier-modal").on("click", ".btn-account-verifier-confirm", function () {
+        debugger
+        var eventValue = $(this).data("valofevent");
+        var eventId = $(this).data("eventid");
+       @*// var task1Id = '@Model.Task1Id'*@
+        var remarks = $('#Remarks').val();
+        var isReject = $(this).data("isreject");
+        var dateTrans = $('#VDate').val();
+        var tskMessage = $("#TaskMessage").val();
+        var GrantedDuration = $('#GrantedDuration').val();
+        var SAmt = $('#SAmt').val();
+        var Url1;
+        if (tskMessage == 'TaskMain') {
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (tskMessage != 'viewSingleNotification' && tskMessage != 'TaskMain') {
+
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (remarks == undefined) {
+            remarks = "";
+        }
+        if (dateTrans == undefined) {
+            dateTrans = "";
+        }
+        //$(this).data("taskId");
+        var url = "/TaskVerification/VerificationConfirm";
+        var urlLink= "/TaskVerification/_ViewAllPendingTaskIndex";
+        $.ajax(
+        {
+            type: "Post",
+            url: url,
+            data: { eventValue: eventValue, eventId: eventId, task1Id: task1Id, remarks: remarks, isReject: isReject, dateTrans: dateTrans, GrantedDuration: GrantedDuration, SAmt: SAmt },
+            success: function (result) {
+                if (result.Success) {
+                    $.ajax({
+                        url: Url1,
+                        type: 'get',
+                        async: false,
+                        success: function (abc) {
+                            debugger;
+                           // $(".content").html(abc);
+
+                        }
+                    })
+                    SuccessAlert(result.Msg,6000);
+                    document.getElementById('alert-success').scrollIntoView();
+                } else {
+                    ErrorAlert(result.Msg,6000);
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+
+            }
+        })
+    })
+    $(".verifier-modal").on("click", ".btn-account-verifier-delete", function () {
+        debugger
+        var eventValue = $(this).data("valofevent");
+        var eventId = $(this).data("eventid");
+        @*var task1Id = '@Model.Task1Id'*@
+        var remarks = $('#Remarks').val();
+        var tskMessage = $("#TaskMessage").val()
+        var Url1;
+        if (tskMessage == 'TaskMain') {
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (tskMessage != 'viewSingleNotification' && tskMessage != 'TaskMain') {
+
+
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (remarks == undefined) {
+            remarks = "";
+        }
+        //$(this).data("taskId");
+        var url = "/TaskVerification/DeleteTaskConfirm";
+        $.ajax(
+        {
+            type: "Post",
+            url: url,
+            data: { eventValue: eventValue, eventId: eventId, task1Id: task1Id, remarks: remarks },
+            success: function (result) {
+                if (result.Success) {
+                    $.ajax({
+                        url: Url1,
+                        type: 'get',
+                        async: false,
+                        success: function (abc) {
+                            debugger;
+                          //  $(".content").html(abc)
+                        }
+                    })
+                    SuccessAlert(result.Msg,6000);
+                    document.getElementById('alert-success').scrollIntoView();
+                } else {z
+                    ErrorAlert(result.Msg,6000);
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+                //$(".content-wrapper").find("#account-pop-up-div2").modal('toggle');
+            }
+        })
+    })
+    $(".verifier-modal").on("click", ".btn-teller-disburse-payment-verifier-confirm", function () {
+        debugger
+        var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+        var depositAmount = 0;
+        depositAmount = $('.disburse-cash-amount').val();
+        if (parseFloat(depositAmount) != parseFloat(Math.abs(balanceInDeno))) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Amount is not match with deno balance!!"
+            }).done(function () {
+
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return;
+        }
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+
+            $('#Disburse-Verify-By-Teller-form').ajaxSubmit({
+                success: function (result) {
+                    var url;
+
+                    //if (result.Success) {
+                    //    SuccessAlert(result.Msg);
+                    //    document.getElementById('alert-success').scrollIntoView();
+                    //    $.ajax({
+                    //        url: "/Credit/LoanRegistration",
+                    //        type: 'get',
+                    //        async: false,
+                    //        success: function (abc) {
+                    //            debugger;
+                    //            $(".content").html(abc)
+                    //        }
+                    //    })
+
+
+                    //} else {
+
+                    //    ErrorAlert(result.Msg, 5000);
+                    //    document.getElementById('alert-error').scrollIntoView();
+                    //}
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    })
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @*@model ChannakyaBase.Model.ViewModel.AWtdQueueModel
+        @using ChannakyaBase.BLL
+        @using ChannakyaBase.BLL.Service
+        @using ChannakyaBase.BLL.CustomHelper;
+        @{
+            CommonService commonServices = new CommonService();
+
+        }
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <h3 class="box-title">Teller Exceed Payment</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div> /.box-tools
+            </div>
+            <div class="box box-body">
+                @using (Html.BeginForm("UserLimitExceedDetailsVeryfyAfterByCashier", "Teller", FormMethod.Post, new { id = "user-limit-exceed-transaction-form" }))
+                {
+                    <div class="col-md-12">
+                        <div class="content-box">
+                            <fieldset>
+                                <legend style="font-size:large;font-weight:bold">
+                                    <span>  Teller Limit Exceed Payment</span>
+                                </legend>
+                                <div class="limitamount">
+                                    @Html.HiddenFor(x => x.amount)
+                                </div>
+
+                                @Html.HiddenFor(x => x.EventId)
+                                @Html.HiddenFor(x => x.TaskId)
+                                @Html.HiddenFor(x => x.Rno)
+                                <div class="col-md-6">
+                                    <div class="box-body table-responsive no-padding">
+                                        <table class="table table-striped table-bordered table-responsive">
+                                            <tbody>
+
+                                                <tr>
+                                                    <th>Account Number</th>
+                                                    <td><span class="form-control">@Model.AccountNumber</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Account Name</th>
+                                                    <td><span class="form-control">@Model.AccountName</span></td>
+                                                </tr>
+                                                <tr>
+                                                    @if (Model.isslip == true)
+                                                    {
+                                                        <th>Slip No.</th>
+                                                    }
+                                                    else
+                                                    {
+                                                        <th>Cheque No</th>
+                                                    }
+
+                                                    <td><span class="form-control">@Model.chqno</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Transaction Date</th>
+                                                    <td>  <span class="form-control">@commonServices.GetDate(Model.tdate)</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Payee </th>
+                                                    <td> <span class="form-control">@Model.notes</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Amount</th>
+                                                    <td> <span class="form-control">@Model.amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span></td>
+                                                </tr>
+
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                        <div class="form-group">
+                                            <div class="transaction-with-deno">
+
+                                                @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = Model.currid, denoInOut = EDeno.DenoOut.GetDescription() });}
+                                            </div>
+                                        </div>
+
+                                </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-md-offset-10">
+                                @if (Model.VerifyBy == "")
+                                {
+                                    <button type="button" class="btn btn-success btn-sm btn-user-limit-exceed">Save <i class="fa fa-check" aria-hidden="true"></i></button>
+                                }
+                                else
+                                {
+                                    <span>Transaction completed by @Model.VerifyBy</span>
+                                }
+                                @if (ViewBag.buttonShow != "controlAction")
+                                {
+                                    <button type="button" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+
+        <script>
+            $(".btn-user-limit-exceed").on("click", function (e) {
+                debugger;
+              var balanceDiv = $(this).parents().find("#dataTransaction")
+                var strictVerifiable = $('.Depost-transaction-create').find('#strictlyverifiable').prop('checked');
+                eventid = $(this).data('eventid');
+                ismultiVerify = $(this).attr('isMultiVerifier');
+
+                $('#user-limit-exceed-transaction-form').removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($('#user-limit-exceed-transaction-form'));
+                if ($("#user-limit-exceed-transaction-form").valid()) {
+
+                    var IsDenoTransaction = '@commonServices.IsTransactionWithDeno()';
+                    if (IsDenoTransaction == 'True') {
+
+                        var depositAmount = $('.limitamount').find("#amount").val();
+                        var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                      var balanceDiv = $('.transaction-with-deno').find('.balance-deno-div').find('.deno-inout-balance')
+                        if (parseFloat(depositAmount).toFixed(2) != parseFloat(Math.abs(balanceInDeno))) {
+                            $.MessageBox({
+                                buttonDone: "OK",
+                                message: "withdraw amount is not match with deno balance!!"
+                            }).done(function () {
+                                $(balanceDiv).find("#Balance").focus();
+                                return false;
+                            }).fail(function () {
+                                //return false;
+                            })
+                            return;
+                        }
+
+                    }
+                    $.MessageBox({
+                        buttonDone: "Yes",
+                        buttonFail: "No",
+                        message: "Are you sure?"
+                    }).done(function () {
+                        $('#user-limit-exceed-transaction-form').ajaxSubmit({
+                            beforeSubmit: function () {
+                            },
+                            success: function (result) {
+                                debugger;
+                                if (result.Success) {
+
+                                    SuccessAlert(result.Msg);
+                                    document.getElementById('alert-success').scrollIntoView();
+
+                                } else {
+
+                                    ErrorAlert(result.Msg);
+                                    document.getElementById('alert-error').scrollIntoView();
+                                }
+                            },
+                            error: function () {
+                                ErrorAlert(data.responseText, 15000)
+                            }
+                        });
+                    }).fail(function () {
+
+                    });
+
+
+                }
+            })
+        </script>*@
+

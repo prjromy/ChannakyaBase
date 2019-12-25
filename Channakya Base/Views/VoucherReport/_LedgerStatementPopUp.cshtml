@@ -1,0 +1,68 @@
+﻿@using PagedList;
+
+@{
+     List<ChannakyaAccounting.Models.ViewModel.SubsiBalanceViewModel> subsiBal = new List<ChannakyaAccounting.Models.ViewModel.SubsiBalanceViewModel>();
+    var title = "";
+    int pageSize = ViewBag.PageSize;
+    List<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel> ledgerStatement = new List<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel>();
+    if (ViewData["_SubsiBalance"] != null)
+    {
+        subsiBal = ViewData["_SubsiBalance"] as List<ChannakyaAccounting.Models.ViewModel.SubsiBalanceViewModel>;
+        title = "Subsi Balance";
+    }
+    else if (ViewData["_CashStatement"] != null)
+    {
+        ledgerStatement = ViewData["_CashStatement"] as List<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel>;
+        title = "Cash Statement Report";
+    }
+    else if (ViewData["_BankStatement"] != null)
+    {
+        ledgerStatement = ViewData["_BankStatement"] as List<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel>;
+        title = "Bank Statement Report";
+    }
+
+    else if (ViewData["_LedgerStatement"] != null)
+    {
+        ledgerStatement = ViewData["_LedgerStatement"] as List<ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel>;
+        title = "Ledger Statement Report";
+    }
+
+
+}
+
+<div class="modal-dialog modal-lg add-voucher-finacc">
+    <div class="modal-content addvoucherDetails">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModal-label">@title</h4>
+        </div>
+
+        <div class="modal-body" style="padding:0px 50px; ">
+            @if (subsiBal.Count() > 0)
+            {
+                @Html.Partial("SubsiBalanceReport", subsiBal.ToPagedList(1,pageSize), new ViewDataDictionary { { "LedgerID", ViewBag.FId }, { "pageSize", pageSize },{"ActivePager", ViewBag.ActivePager} })
+            }
+
+            @if (ledgerStatement.Count() > 0)
+            {
+                if (ViewData["_BankStatement"] != null)
+                {
+                    @Html.Partial("BankStatementReport", ledgerStatement.ToPagedList(1, pageSize), new ViewDataDictionary { { "LedgerID", ViewBag.FId },{"pageSize",pageSize }, { "ActivePager", ViewBag.ActivePager } })
+                }
+               else if (ViewData["_CashStatement"] != null)
+                {
+                    @Html.Partial("CashStatementReport", ledgerStatement.ToPagedList(1, pageSize), new ViewDataDictionary { { "LedgerID", ViewBag.FId }, { "pageSize", pageSize }, { "ActivePager", ViewBag.ActivePager } })
+                }
+                else
+                {
+                    @Html.Partial("LedgerReport", ledgerStatement.ToPagedList(1, pageSize), new ViewDataDictionary { { "LedgerID", ViewBag.FId }, { "pageSize", pageSize }, { "ActivePager", ViewBag.ActivePager } })
+                }
+
+            }
+
+            <div class="modal-footer">
+            </div>
+
+        </div>
+    </div>
+</div>

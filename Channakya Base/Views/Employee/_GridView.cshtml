@@ -1,0 +1,70 @@
+﻿@model Loader.Models.Employee
+
+
+@{
+    var test = Model;
+    var EmployeeTypeClass = "background-color:mediumseagreen !important";
+    if (Model.Status == 2)
+    {
+        EmployeeTypeClass = "background-color:indianred  !important";
+    }
+    if (Model.Status == 3)
+    {
+        EmployeeTypeClass = "background-color:indianred !important";
+    }
+    Loader.Service.EmployeeService empService = new Loader.Service.EmployeeService();
+}
+
+@*<span class="icon">
+
+
+    </span>*@
+<div class="info-box bg-aqua" style="@EmployeeTypeClass">
+    <div class="info-box-icon icon">
+        @if (Model.Photo != null)
+        {
+            <span class="EmployeeImage" data-toggle="tooltip" data-placement="top" title="Edit" id="@Model.EmployeeId"><img src="data:image;base64,@System.Convert.ToBase64String(Model.Photo)" id="imgide" width="40" height="40" class="image" /></span>
+        }
+        else
+        {
+            <img class="EmployeeImage" data-toggle="tooltip" data-placement="top" title="Edit" id="@Model.EmployeeId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        }
+    </div>
+
+
+    @* <div class="inner" Employee-caption="@Model.EmployeeName">
+            <p id="EmployeeCaption" data-toggle="tooltip" data-placement="top" title="@Model.EmployeeName" style="cursor:pointer;"> @Model.EmployeeName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" Employee-caption="@Model.EmployeeName">
+        <span class="deleteNode" id="@Model.EmployeeId" data-toggle="tooltip" data-placement="top" title="Delete" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="EmployeeCaption" data-toggle="tooltip" data-placement="top" title="@Model.EmployeeName" style="cursor:pointer;"> @Model.EmployeeName</span>
+        <span class="info-box-number">@Model.EmployeeNo</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        <span class="progress-description">
+            @empService.GetStatusName(Model.Status)
+        </span>
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #EmployeeCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

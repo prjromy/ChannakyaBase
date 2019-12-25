@@ -1,0 +1,88 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustInformationViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    ViewBag.Title = "CustomerInfoList";
+    Layout = null;
+}
+<link href="~/Content/Choose/chosen.min.css" rel="stylesheet" />
+<script src="~/Content/Choose/chosen.jquery.customer.js"></script>
+
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+                <h4 class="modal-title">customer</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content-box">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-grop_padding">
+                                @Html.HiddenFor(x => x.Mode)
+                                @Html.HiddenFor(x => x.CustomerType)
+                                @Html.DropDownListFor(x => x.SearchOption, CustomerUtilityService.CustomerSearchOption(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-grop_padding">
+                                <div class="box-tools">
+                                    <div class="input-group input-group-sm pull-right form-grop_padding">
+                                        @Html.TextBoxFor(x => x.SearchParameter, new { @class = "form-control" })
+                                        <div class="input-group-btn">
+                                            <button type="button" name="btn-customer-search" id="btn-customer-search" class="btn btn-default" style="margin-left: 0px;">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                    </div>
+                    @if (Model.Mode != ECustomerSearchType.SingleType.GetDescription())
+                {
+                <div class="form-group">
+                    <div class="col-md-12 listBox">
+                        <div class="form-grop_padding">
+                            @Html.ListBoxFor(x => x.CIDs, new SelectList(Model.SelectedCustInfoList, "CID", "Name"), new { placeholder = "Customer:", multiple = "", @class = "chzn-select chosen-select form-control multiselect" })
+
+                        </div>
+                    </div>
+                </div>
+                }
+                    <div id="customerDetails">
+                        @Html.Partial("_CustomerInfoList", Model)
+                    </div>
+                    <div class="btn-groups modal-footer">
+                        @if (Model.Mode != ECustomerSearchType.SingleType.GetDescription())
+                    {
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary addandClose" data-dismiss="modal"><i class="fa fa-plus" aria-hidden="true"></i>Add & Close</button>
+                    </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <style>
+        .chosen-drop {
+            display: none;
+        }
+
+        .chosen-container {
+            overflow: auto;
+            max-height: 100px;
+        }
+    </style>
+    <script>
+        $(".multiselect").chosen({
+            single_backstroke_delete: true,
+            placeholder_text_multiple: "Customer"
+        });
+    </script>

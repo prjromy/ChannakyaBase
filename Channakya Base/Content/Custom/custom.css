@@ -1,0 +1,408 @@
+﻿body {
+    background: #f9f9f9;
+}
+a{
+    color: #006671;
+}
+.form-grop_paddingTop {
+    margin-top: 5px;
+}
+a:hover, a:focus{
+   color:#f70000;
+    }
+a, a:hover, a:active, a:visited, a:focus,
+.btn-add:hover, .btn-add:active, .btn-add:visited, .btn-add:focus
+{
+	outline: 0px none;
+	text-decoration:none
+}
+header {
+    position: relative;
+    height:65px;
+}
+#header {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #08C;
+    border-bottom: 4px solid rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 0px 3px 0px;
+    z-index: 1;
+}
+    header .navbar-default {
+        background: none;
+        border: none;
+        float:right;
+        margin:0;
+    }
+    header .logo {
+        padding: 2px 0;
+    }
+.navbar-default .navbar-nav > li > a {
+    color: #fff;
+    line-height:24px;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:focus, .navbar-default .navbar-nav > .open > a:hover {
+    color: #fff;
+    background-color: rgb(15, 103, 179);
+}
+.main-content {
+    border: 1px solid #eee;
+    padding: 0 15px;
+    min-height:500px;
+    border-radius:4px 4px 0 0;
+
+}
+
+.content-box {
+}
+
+.title {
+    padding: 6px 12px;
+    border-radius: 3px 3px 0 0;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: 15px;
+    background: #08C;
+    color: #FFF;
+}
+
+.title h3 {
+    margin: 0px;
+    font-size: 19px;
+    font-weight: 600;
+    text-shadow: 0 1px 0px #000000;
+
+    }
+    .title h3::before {
+        content:"\f0f6";
+        font-family:FontAwesome;
+        padding-right:5px;
+    }
+
+.btn-add {
+    border-color: #c50000;
+    background: #d20000;
+    color: #ffffff;
+    border-radius: 0px;
+    padding: 2px 6px;
+    font-weight:600;
+    margin-bottom: 10px;
+    text-shadow: none;
+}
+.btn-add:active, .btn-add:focus, .btn-add:hover {
+	background: #c50000;
+    color:#ffffff;
+    border-color: #c50000;
+}
+.btn-export,
+.btn-delete {
+        color: #FFF;
+    border-radius: 0px;
+    padding: 2px 6px;
+}
+.btn-export {
+    margin-bottom: 5px;
+}
+/*.row .col-md-6:nth-child(odd) {
+    padding-left: 5px;
+}
+
+.rwo .col-md-6:nth-child(even) {
+    padding-right: 5px;
+}*/
+
+
+.right-container {
+margin-top: 0;
+margin-left: 260px;
+}
+
+    .right-container .modal-dialog {
+        margin-top: 115px;
+    }
+
+    .right-container .modal-content {
+    border-radius: 2px;
+    border-bottom: 5px solid #005986;
+    padding: 0;
+        
+    }
+
+
+.modal-header {
+background: #005986;
+    color: #fff;
+    text-shadow: 1px 1px 0px #000;
+    padding: 4px 10px;
+    border-radius:0;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-header .close {
+    margin-top: 0;
+    color: #fff;
+    background: #b10000;
+    height: 22px;
+    width: 22px;
+    border-radius: 22px;
+    opacity: 1;
+    text-align: center;
+    font-weight: 200;
+}
+
+    .modal-header .close:hover {
+        opacity: 1;
+    }
+
+.modal-footer {
+    padding: 0;
+}
+
+.form-grop_padding {
+    /*padding: 5px;
+    background: #FBFBFB;
+    border: 1px solid #EDEDED;*/
+    margin-bottom: 5px;
+}
+legend{
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e5e5;
+}
+.form-control {
+    height: 24px;
+    padding: 4px 5px;
+    box-shadow: none;
+    font-size: 13px;
+    border: 1px solid #989898;
+    border-radius: 0;
+}
+
+label {
+    font-weight: 600;
+    color: #252525;
+    font-size: 13px;
+    margin-bottom:3px;
+}
+.required-field::after {
+    content: " *";
+    color:#BF0000;
+  
+}
+.input-group-addon {
+    background: #fff;
+}
+
+    .input-group-addon i {
+        color: #909090;
+        font-size: 1.1em;
+    }
+
+.input-group-sm > .form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn {
+    border-radius: 0;
+}
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background: #fff;
+    border-radius: 0;
+}
+.table-bordered{
+    border:0 none;
+}
+
+.table-bordered > thead > tr > th {
+    border-bottom-width: 1px;
+    background: #3e8198;
+    color: #fff;
+    border-color: #2c738a;
+    font-size: 14px;
+   
+}
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+padding:2px 6px;
+}
+.table-bordered > thead > tr > th {
+    padding: 3px 6px;
+}
+.table-bordered > tr > td {
+    font-size: 12px;
+}
+.table-striped > tbody > tr:nth-of-type(even) {
+    background:#f7f7f7
+}
+.table > tbody > tr > td a {
+    display: block;
+}
+.table > tbody > tr > td a i {
+    color: #23b500;
+    border-right: 1px solid #c7c7c7;
+    display: inline-block;
+    padding-right: 5px;
+    margin-right:5px;
+}
+    .table > tbody > tr > td a:hover i, .table > tbody > tr > td a:focus i {
+        color: #f70000;
+    }
+.width-30 {
+    width: 30px;
+}
+.width-105 {
+    width: 105px;
+}
+.btn-groups {
+    border-top: 1px solid #DADADA;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    text-align: right;
+    width: 100%;
+}
+
+    .btn-groups .btn {
+        margin-left: 5px;
+        border-radius: 2px;
+        padding: 3px 10px;
+        display: inline-block;
+    }
+
+    .btn-groups .btn-save {
+        box-shadow: 1px 1px 0px 0px #1888E6 inset;
+    }
+
+.btn-griups .btn-edit {
+    background: #ED8600;
+}
+
+  .margin-8 {
+    padding-left: 7px;
+    padding-right: 7px;
+        }
+        .staff-border-box {
+            border: 1px solid #ddd;
+            padding: 8px;
+            margin-bottom:10px;
+            position:relative;
+            word-wrap: break-word;
+            border-radius:2px;
+        }
+            .staff-border-box:hover {
+                background: rgba(238, 238, 238, 0.6);
+                cursor: pointer;
+            }
+        .agent-counter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #555;
+    height: 18px;
+    border-radius: 2px 0 0;
+    width: 18px;
+    padding: 0;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1em;
+    line-height: 1.1555;
+        }
+        .figure-box {
+            width: 100px;
+            float:left;
+        }
+        .agent-details {
+            width:66%;
+            float: right;
+        }
+            .staff-border-box img {
+                border-radius: 2px;
+            }
+        .agent-name {
+            font-size: 1.11em;
+                color: #113446;
+                font-weight:600
+        }
+        .agent-email {
+            font-size: 0.9em;
+             
+        }
+        .agent-details i {
+                color: #003a56;
+    float: left;
+    margin-right: 5px;
+    margin-top: 3px;
+        }
+        .agent-email span {
+            display: inline-block;
+            width: 90%;
+        }
+fieldset {
+    padding: .35em .625em .75em;
+    margin: 0;
+    border: 1px solid silver;
+}
+legend {
+    width: auto;
+    padding: 0 10px;
+    border:0;
+    font-size:14px;
+    margin:0;
+}
+
+  .input-border {
+        border: 1px solid #ddd;
+        padding: 2px;
+        margin:5px 0;
+        width:100%;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding:2px 5px;
+    
+    }
+    .btn-default {
+    padding: 3px 10px;
+    margin-top: 5px;
+    border-radius:0;
+    }
+    .div-table {
+        width: 50%;
+        float:left
+    }
+    .div-table .sn-no {
+        width:40px;
+    }
+        .div-table .remnueration {
+            width: 44%;
+        }
+    .div-table .amoutn{
+        width:28%;
+    }
+    .div-table .action {
+        width:90px;
+    }
+    .div-table .amoutn, .div-table .action, .div-table .sn-no, .div-table .remnueration, .div-table .width20, .div-table .width15, .div-table .width12, .div-table .width10 {
+        background:#fff;
+float: left;
+    padding: 3px 5px;
+    border: 1px solid #ddd;
+    height: 34px;
+    margin: -1px -1px 0 0;
+    }
+    .table-head {
+        font-weight: 600;
+    }
+    .div-table .table-head .amoutn, .div-table .table-head .action, .div-table .table-head .sn-no, .div-table .table-head .remnueration, .div-table .table-head .width20, .div-table .table-head .width15, .div-table .table-head .width12, .div-table .table-head .width10  {
+        background:#eee;
+    }
+#remuneration-table-div .btn-add{
+    margin: -45px -8px 0;
+}
+ 

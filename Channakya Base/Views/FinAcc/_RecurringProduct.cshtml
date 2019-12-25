@@ -1,0 +1,76 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+    @{ 
+        ChannakyaAccounting.Service.DepositProduct.DepositProductService depositProduct = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+        var depositBasisList = depositProduct.AllDepositBasis();
+    }
+<div class="row">
+    <div class="form-group col-md-12">
+        @Html.Label("Interest Calculation Rule", new { @class = "col-sm-3  control-label col-form-label" })
+        <div class="col-md-9">
+            @Html.DropDownListFor(m => Model.InterestValueList[0].PolicyIntCalcId, depositProduct.GetCalculationRule(Model.InterestValueList[0].PolicyIntCalcId), "Select Calculation Rule", new { @class = "form-control", @id = "calc-rule-dropdown" })
+        </div>
+
+    </div>
+
+</div>
+
+<div class="tab-content">
+    @for (int i = 0; i < Model.InterestValueList.Count(); i++)
+    {
+        //using (Html.BeginCollectionItem("ProductInterest"))
+        //{
+
+        var interestCss = "tab-pane fade";
+        if (i == 0)
+        {
+            interestCss = "tab-pane fade in active";
+        }
+
+        <div id="depositBasisId-@Model.InterestValueList[i].Amount" class="@interestCss">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>
+                            Duration
+                        </th>
+                        @foreach (var item in depositBasisList)
+                        {
+                            <th class="depositBasis" id="@item.Id">@item.Name</th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @Html.HiddenFor(x => Model.InterestValueList[i].Amount)
+
+                    @for (int j = 0; j < Model.InterestValueList[i].DurationList.Count(); j++)
+                    {
+
+                        @Html.HiddenFor(x => Model.InterestValueList[i].DurationList[j].Id)
+                        <tr class="DurationList">
+                            <th scope="row" class="Duration" id="@Model.InterestValueList[i].DurationList[j].Id">@Model.InterestValueList[i].DurationList[j].Duration1</th>
+
+                            @for (int k = 0; k < Model.InterestValueList[i].DurationList[j].DepositBasisList.Count(); k++)
+                            {
+                                @Html.HiddenFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].Id)
+
+                                <td class="depositListTextbox" id="@Model.InterestValueList[i].DurationList[j].DepositBasisList[k].Id">
+                                    <input type="button" producticb-id="@Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.Id" onclick="showPopupToEditProduct(this)" class="btn btn-link pull-right" value="Edit" style="margin: -13px -10px -5px -9px" />
+                                    @Html.DropDownListFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.ICBId,depositProduct.GetCapitalizationRule(Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.ICBId), "Select Rule", new { @class = "form-control", onclick = "return false" })
+                                    @Html.TextBoxFor(x => Model.InterestValueList[i].DurationList[j].DepositBasisList[k].ProductDurationInt.InterestRate, new { @class = "form-control", onclick = "return false" })
+
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+    }
+
+</div>

@@ -1,0 +1,133 @@
+﻿
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Customer Company Group</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+    <div class="box box-body">
+        <div id="customer-group-create">
+            @{Html.RenderAction("InsertUpdateCustomerCompanyGroup", "Customer");}
+
+        </div>
+
+        <div id="customer-group-list">
+
+            @{Html.RenderAction("CustomerCompanyList", "Customer");}
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function EditCustomerCompanyGroup(CCGroupID) {
+        var cCGroupID = $('#CCGroupID').val();
+        var cCGroupName = $('#CCGroupName').val();
+
+        $.ajax({
+            url: "/Customer/CheckCustomerCompany",
+            type: 'GET',
+            async: false,
+            data: { CCGroupName: cCGroupName, CCGroupID: cCGroupID },
+            success: function (result) {
+                // var message = $(this).closest("form").find(".field-validation-error").text();
+                if (result == false) {
+                    debugger;
+
+                    InfoAlert("Duplicate value, Cannot be edited", 5000);
+
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Customer/InsertUpdateCustomerCompanyGroup",
+                        datatype: "Json",
+                        data: { CCGroupID: CCGroupID },
+                        success: function (result) {
+                            $('#customer-group-create').html("");
+                            $('#customer-group-create').html(result);
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    function DeleteCustomerCompanyGroup(CCGroupID) {
+        debugger
+        //var CCGroupName = $(this).val('CCGroupName');
+        //var CCGroupID = $(this).val('CCGroupID');
+
+        $.ajax({
+            url: "/Customer/_CustomerCompanyDelete",
+            type: 'GET',
+            async: false,
+            data: { CCGroupID: CCGroupID },
+            success: function (result) {
+                debugger;
+                
+                if (result == false) {
+                    debugger;
+
+                    InfoAlert("Cannot be deleted, in use", 5000);
+                    return false;
+
+                }
+                else {
+                    $.MessageBox({
+                                  buttonDone: "Yes",
+                                  buttonFail: "No",
+                                  message: "Are you sure?"
+                     }).done(function () {
+                                       $.ajax({
+                                              type: 'POST',
+                                              url: '@Url.Action("_CustomerCompanyDeleteConfirm", "Customer")',
+                                              data: { CCGroupID: CCGroupID },
+                                              success: function (result) {
+
+                    //if (result == "true") {
+
+                                              SuccessAlert("Sucessfully Deleted", 5000);
+                                              $("#customer-group-list").html(result);
+
+                    //}
+
+                                                  },
+                                              error: function () {
+                                        alert("error");
+                                                                 }
+                                      });
+                                   });
+                }
+            }
+        });
+
+        @*$.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("_CustomerCompanyDeleteConfirm", "Customer")',
+                data: { CCGroupID: CCGroupID },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert("Sucessfully Deleted", 5000);
+                    $("#customer-group-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });*@
+        }
+</script>

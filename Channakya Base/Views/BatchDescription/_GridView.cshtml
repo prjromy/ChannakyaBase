@@ -1,0 +1,57 @@
+﻿@model ChannakyaAccounting.Models.Models.BatchDescription
+
+
+@{
+    var test = Model;
+    var VoucherNameTypeClass = "background-color:#00c0ef !important";
+  
+    
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+@*<span class="icon">
+
+
+    </span>*@
+<div class="info-box bg-aqua" style="@VoucherNameTypeClass">
+    <div class="info-box-icon icon">
+        <img class="VoucherNameImage" id="@Model.BId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        
+    </div>
+
+
+    @* <div class="inner" VoucherName-caption="@Model.VoucherNameName">
+            <p id="VoucherNameCaption" data-toggle="tooltip" data-placement="top" title="@Model.VoucherNameName" style="cursor:pointer;"> @Model.VoucherNameName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" VoucherName-caption="@Model.">
+        <span class="deleteNode" id="@Model.BId" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="VoucherNameCaption" data-toggle="tooltip" data-placement="top" title="@Model.BatchName" style="cursor:pointer;"> @Model.BatchName</span>
+        <span class="info-box-number">@*@Model.BId*@</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @*<span class="progress-description">
+            @empService.GetStatusName(Model.Status)
+        </span>*@
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #VoucherNameCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

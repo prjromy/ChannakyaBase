@@ -1,0 +1,171 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.AccountSearchViewModelAcc
+@*@using ChannakyaBase.BLL.Service*@
+@{
+    ViewBag.Title = "Account";
+    ChannakyaAccounting.Service.Teller.TellerServiceAcc _tellerService = new ChannakyaAccounting.Service.Teller.TellerServiceAcc();
+}
+
+@*<div id='common-pop-up-div' class='modal fade' role='dialog'></div>*@
+<div class="modal fade" id="common-pop-up-div" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" style="width:1300px;"></div>
+<div class="modal-dialog modal-lg account-modal-popup"style="width:850px;padding-left: 70px;">
+    <div class="modal-content" style="position:fixed;">
+        <div class="modal-header">
+            <span class="close" id="closeTop" @*data-dismiss="modal"*@ aria-hidden="true">&times;</span>
+            <h4 class="modal-title">Account Number</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group">
+                        @Html.HiddenFor(x => x.ProductId)
+                        @Html.HiddenFor(x=>x.ProductId)
+                        <div class="col-md-4 ">
+                            <label>
+                                Branch
+                            </label>
+                            <div class="form-grop_padding appount-search-branch">
+                                @Html.DropDownListFor(x => x.BranchId, _tellerService.CurrentBranch(Model.BranchId), new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.FilterAction)
+                                @Html.HiddenFor(x => x.AccountType)
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label> Currency</label>
+                            <div class="form-grop_padding appount-search-currency">
+                                @Html.DropDownListFor(x => x.CurrencyId, _tellerService.GetAccountOpenCurrency(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="control-label">Customer  Name/Account Number </label>
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm pull-right form-grop_padding">
+                                    @Html.TextBoxFor(x => x.AccountHolder, new { @class = "form-control", placeholder = "Customer Name or Account Number" })
+                                    <div class="input-group-btn">
+                                        <button type="button" name="btn-account-holder-search" id="btn-account-holder-search" class="btn btn-default" style="margin-left: 0px;">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        @*<div class="col-md-12">
+
+                                <div class="box-tools">
+                                    <div class="input-group input-group-sm pull-right">
+
+                                        <div class="input-group-btn">
+                                            <button type="button" name="btn-refresh" id="btn-refresh" class="btn btn-default" style="margin-left: 0px;">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+            <div id="account-number-search">
+                @Html.Partial("~/Views/Voucher1/_AccountNumberSearch.cshtml", Model)
+
+            </div>
+            
+            <div class="btn-groups modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/CurrencyProductWiseSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script>
+    $(document).keypress(function (e) {
+        if ($("#account-pop-up-div").hasClass('in') && (e.keycode == 13 || e.which == 13)) {
+            debugger
+            if (e.which == '13') {
+                e.preventDefault();
+            }
+            $("#btn-account-holder-search").click();
+        }
+    });
+
+    $('#common-pop-up-div').on('hidden.bs.modal', function (e) {
+        e.stopImmediatePropagation();
+        if ($('.modal').hasClass('in')) {
+            $('body').addClass('modal-open');
+        }
+
+        //$(document).on('click', '.table-click-account-number-search tr', function (e) {
+
+        //    //e.stopImmediatePropagation();
+        //    //var accountNumber = $(this).closest('tr').attr('id');
+        //    //var parent = $(this).parents();
+        //    //var idAttribute = _globalObject;
+        //    //var data = $(parent).find(".account-number-div").find(".account-aumber#" + idAttribute).attr('showwith');
+        //    //var viewDetailsBtn = $(parent).find(".account-number-div").find("button#btn-account-view-details-" + idAttribute);
+
+        //    debugger;
+        //    e.stopImmediatePropagation();
+        //    debugger;
+        //    var subsiId = $(this).attr('iaccno');
+        //    var subsiText = $(this).attr('accountname');
+
+        //    var doesSameIdExists = $(subsiEvent).closest('.add-more-subsi-container').find('tr');
+        //    var count = 0;
+        //    $(doesSameIdExists).each(function (index, item) {
+
+        //        var hassameElement = $(item).find('input.internal-value').val();
+        //        if (subsiId == hassameElement) {
+        //            count++;
+        //        }
+
+
+        //    });
+        //    if (count > 0) {
+        //        ErrorAlert("Subsi Already Selected", 5000);
+
+        //    }
+        //    else {
+        //        $(subsiEvent).closest('.account-number-div').find('input.display-txt-subsi').val(subsiText);
+        //        $(subsiEvent).closest('.account-number-div').find('input.internal-value').val(subsiId)
+        //        $('div#account-pop-up-div').modal('hide');
+        //    }
+        //});
+    });
+
+    $(".account-modal-popup").on("click", "#closeTop", function () {
+        debugger;
+        $("#account-pop-up-div").modal('hide');
+    });
+    $("#btn-account-holder-search").on("click", function () {
+        debugger;
+        var productCode = $(this).parents().find(".appount-search-product-code").find("#ProductId").val();
+        var branchCode = $(this).parents().find(".appount-search-branch").find("#BranchId option:selected").val();
+        var currencyCode = $(this).parents().find(".appount-search-currency").find("#CurrencyId option:selected").val();
+        var filterAccount = $(this).parents().find(".appount-search-branch").find("#FilterAction").val();
+        var accountType = $(this).parents().find(".appount-search-branch").find("#AccountType").val();
+        var customerName = $("#AccountHolder").val();
+        $.ajax({
+            type: 'GET',
+            url: "/Voucher1/_AccountNumberSearch",
+            async:false,
+            data: { branchCode: branchCode, productCode: productCode, currencyCode: currencyCode, customerName: customerName, filterAccount: filterAccount, accountType: accountType },
+            success: function (result) {
+                $("#account-number-search").html(result);
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+</script>
+<style>
+    .modal-open .modal {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+</style>

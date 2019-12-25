@@ -1,0 +1,123 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    string Status = "";
+    string Color = "";
+    InformationService informationService = new InformationService();
+}
+
+<div class="box-body table-responsive no-padding table-cheque-block-unblock-deactive-status">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+            <th>
+                ChequeNumber
+            </th>
+            <th>
+                Trans Date
+            </th>
+            <th>Status</th>
+            
+        </tr>
+
+        @for (int i = 0; i < Model.AchqList.Count(); i++)
+        {
+            if (Model.AchqList[i].cstate == 2)
+            {
+                Status = "Active";
+                Color = "#5cb85c";
+            }
+            else if (Model.AchqList[i].cstate == 4)
+            {
+                Status = "Pieces Blocked";
+                Color = "#ff3300";
+            }
+            else if (Model.AchqList[i].cstate == 3)
+            {
+                Status = "Blocked";
+                Color = "#cc0000";
+            }
+            else if (Model.AchqList[i].cstate == 5)
+            {
+                Status = "Deactive";
+                Color = "#cc0000";
+            }
+            <tr>
+                <td>
+
+                    <button type="button" class="btn btn-custome btn-less-chq-num" Rno="@Model.AchqList[i].rno" Action="Show">
+                        <i class='fa fa-plus  on-@Model.AchqList[i].rno' title='show details'></i>
+                        <i class='fa fa-minus off-@Model.AchqList[i].rno hidden' title='hide details'></i>
+                    </button>
+                    @Html.DisplayFor(moel => Model.AchqList[i].cfrom)-@Html.DisplayFor(model => Model.AchqList[i].cto)
+
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetDate(Model.AchqList[i].tdate)
+                </td>
+                <td>
+                    <span class="btn-custome" style="background-color:@Color;color:white">@Status</span>
+                </td>
+              
+
+            </tr>
+            <tr id="hide-show-@Model.AchqList[i].rno" class="hidden">
+                <td colspan="4">
+                    <div id="load-details-@Model.AchqList[i].rno"></div>
+                </td>
+            </tr>        }
+    </table>
+
+</div>
+<style>
+    .btn-custome {
+        padding: 0px 3px;
+        font-size: 11px;
+        line-height: 1.5;
+        border-radius: 14px;
+    }
+
+    .rotate-fa {
+        transform: rotate(+86deg);
+    }
+</style>
+
+<script>
+    //$(".btn-less-chq-num").click(function () {
+    //    debugger;
+
+    //    var imageClass = $(this).toggleClass('rotate-fa');
+    //    var currentRno = $(this).attr('Rno')
+    //    getChequeDetails(currentRno)
+    //    $("#hide-show-" + currentRno).slideToggle();
+    //});
+
+    
+
+    $('.btn-less-chq-num').on('click', function () {
+       
+        var currentRno = $(this).attr('Rno')
+        var attrShowHide = $(this).attr('Action');
+        var IsSelect=$(this).closest('tr').find('')
+        if (attrShowHide == 'Show') {
+            $('.off-' + currentRno).removeClass('hidden');
+            $('.on-' + currentRno).addClass('hidden');
+            $(this).attr('Action', 'Hide')
+            $('#hide-show-' + currentRno).removeClass('hidden');
+            getChequeDetails(currentRno ,false,"hide");
+        } else {
+            $('.on-' + currentRno).removeClass('hidden');
+            $('.off-' + currentRno).addClass('hidden');
+
+            $(this).attr('Action', 'Show')
+            $('#hide-show-' + currentRno).addClass('hidden');
+            return;
+        }
+
+    });
+
+ 
+</script>

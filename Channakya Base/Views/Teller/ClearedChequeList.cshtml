@@ -1,0 +1,94 @@
+﻿@model ChannakyaBase.Model.ViewModel.AMClearenceViewModel
+@using ChannakyaCustomeDatePicker.Service
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    CommonService commonService = new CommonService();
+
+    int i = Model.AmclearenceWithIPageList.Count();
+}
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Cleared Cheque List</h3>
+
+        <div class="box-tools pull-right">
+            @* <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>*@
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="form-horizontal">
+        <div class="pop-up-for-verify">
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+              
+                    @Html.Label("From Date", new { @class = "col-md-2" })
+                <div class="col-md-4">
+                    @Html.DatePicker(x => x.fromDate)
+                    @Html.ValidationMessageFor(model => model.fromDate, "", new { @class = "text-danger" })
+                </div>
+              
+                    @Html.Label("To Date", new { @class = "col-md-2 " })
+                <div class="col-md-4">
+                    @Html.DatePicker(x => x.toDate)
+                    @Html.ValidationMessageFor(model => model.toDate, "", new { @class = "text-danger" })
+                </div>
+                   
+            </div>
+            <div class="col-md-3">
+                @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.WithdrawAccept.GetDescription(), EAccountType.Normal.GetDescription())
+                @Html.ValidationMessageFor(model => model.IAccno, "", new { @class = "text-danger account-number" })
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="Name" id="Name" placeholder="Bank Name" class="form-control" style="margin-top:3px;margin-right:2px;" />
+            </div>
+
+            <div class="col-md-1">
+                <input type="button" value="Search" class="btn btn-info btn-sm glyphicon glyphicon-search " onclick="searchclearedchequebyAccountnumber()" />
+            </div>
+        </div>
+        @Html.Partial("_ClearedChequeList", Model)
+
+
+    </div>
+</div>
+<script>
+    function searchclearedchequebyAccountnumber() {
+        debugger;
+        var IAccno = $('#IAccno').val();
+        var bankname = $('#Name').val();
+        var cdate = $('#toDate').val();
+        var fromdate = $('#fromDate').val();
+
+        if (IAccno !== undefined && IAccno !== "" || bankname !== undefined && bankname !== "" || cdate !== undefined && cdate !== "") {
+
+            $.ajax({
+                type: "GET",
+                url: "/Teller/_ClearedChequeList",
+                data: {
+                    IAccno: IAccno,
+                    bankname: bankname,
+                    toDate: cdate,
+                    fromdate: fromdate
+
+                },
+                success: function (result) {
+                    debugger;
+                    $('.responsive-data').html(result);
+                    $('.modal-backdrop').remove();
+                }
+            });
+        }
+        else
+            ErrorAlert("Please Account number !!", 5000);
+    }
+
+
+
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />

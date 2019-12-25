@@ -1,0 +1,93 @@
+﻿@model  ChannakyaBase.Model.ViewModel.DenoTransactionViewModel
+
+@{
+    decimal denoSum = 0;
+    var denoreport = Model;
+}
+@if (Model.DenoReportList.Count() == 0)
+{
+    <tr>
+        <td colspan="4">
+            <h4><b>No Records Found.</b></h4>
+        </td>
+    </tr>
+}
+else
+{
+<div class="box-body table-responsive no-padding table-click-account-open" style="font-size:12px;">
+ 
+        <fieldset>
+            <table class="table table-inverse table-hover">
+                <tr>
+                    <td>
+                        <span>Employee Name :-</span>
+                    </td>
+                    <th>
+                        <span class="form-control">@Model.DenoReportList.Select(x => x.EmployeeName).FirstOrDefault()</span>
+                    </th>
+                    <td>
+                        <span>User Name :-</span>
+                    </td>
+                    <th>
+                        <span class="form-control">@Model.DenoReportList.Select(x => x.UserName).FirstOrDefault()</span>
+                    </th>
+
+
+                    <td>
+                        <span>Currency :-</span>
+                    </td>
+                    <th>
+                        <span class="form-control">@Model.DenoReportList.Select(x => x.CurrencyName).FirstOrDefault()</span>
+                    </th>
+                </tr>
+            </table>
+        </fieldset>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+
+                    <th>
+                        Deno
+                    </th>
+                    <th style="text-align:right">Pieces</th>
+                    <th style="text-align:right">
+                        Amount
+                    </th>
+
+                </tr>
+            </thead>
+
+    @foreach (var item in Model.DenoReportList)
+    {
+                <tr>
+
+                    <td>
+                        @item.Deno
+                    </td>
+                    <td style="text-align:right">
+                        @item.Pics
+                    </td>
+                    <td style="text-align:right">
+                        @item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    </td>
+
+
+                </tr>
+        denoSum += item.Amount;
+    }
+            <tr>
+                <th colspan="2">
+                    Total
+                </th>
+                <th style="text-align:right">
+                    @denoSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </th>
+            </tr>
+
+        </table>
+   
+   
+
+
+</div>
+}

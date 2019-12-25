@@ -1,0 +1,222 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.DenoInViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    FinanceParameterService financeParameterService= new FinanceParameterService();
+
+    if (Model.DenoID != 0)
+    {
+
+        var denoSetupDesc = financeParameterService.EmployeeInfoDenoSetupId(Model.DenoID);
+        Model.DenoID = denoSetupDesc.DenoID;
+        Model.Currency = denoSetupDesc.Currency;
+        Model.Deno = denoSetupDesc.Deno;
+    }
+    Layout = null;
+}
+
+
+
+@using (Html.BeginForm("InsertUpdateDenoSetup", "FinanceParameter", FormMethod.Post, new { id = "deno-setup-form" }))
+{
+    <div class="box-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @Html.HiddenFor(x => x.DenoID)`
+                    <div class="form-group" id="currency">
+                       
+                        
+                        @Html.LabelFor(model => model.Currency, new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4">
+                            @Html.DropDownListFor(x => x.CurrID, FinanceParameterUtilityService.DenoSetupList(), "--Please Select--", new { @class = "form-control"})
+                            @Html.ValidationMessageFor(model => model.Currency, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Deno, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.Deno, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Deno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-12">
+                    <input type="button" value="Save" class="btn btn-default btn-deno-setup-save" />
+                </div>
+            </div>
+        </div>
+
+}
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+ $(function () {
+     $.validator.unobtrusive.parse('#deno-setup-form');
+     $(".btn-deno-setup-save").on("click", function () {
+         $('#deno-setup-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#deno-setup-form'));
+            if ($("#deno-setup-form").valid()) {
+
+                denoSetUpLimit();
+
+            } else {
+                return false;
+            }
+
+        })
+
+    });
+
+ function denoSetUpLimit() {
+     debugger;
+     var currID = $('#CurrID').val();
+     var Deno = $('#Deno').val();
+     var DenoID = $('#DenoID').val();
+     if (Deno == 0) {
+         InfoAlert("Figures can't be 0 !!!", 5000);
+
+     }
+     else if (DenoID == 0) {
+         $.ajax({
+             url: "/FinanceParameter/DenoAlreadyExist",
+             type: 'GET',
+             async: false,
+             data: { currID: currID, Deno: Deno },
+             success: function (result) {
+                 if (result == false) {
+                     debugger;
+                     ErrorAlert("Deno Already Exists", 5000);
+
+                 } else {
+
+
+
+                     debugger;
+                     $.MessageBox({
+                         buttonDone: "Yes",
+                         buttonFail: "No",
+                         message: "Are you sure?"
+                     }).done(function () {
+                         debugger;
+                         $('#deno-setup-form').ajaxSubmit({
+                             beforeSubmit: function () {
+                             },
+                             success: function (result) {
+                                 debugger;
+                                 if (result.Success) {
+                                     $.ajax({
+                                         url: "/FinanceParameter/DenoSetupIndex",
+                                         type: 'GET',
+                                         async: false,
+                                         success: function (result) {
+                                             $('section.content').html(result);
+                                         }
+                                     })
+                                     SuccessAlert(result.Msg, 5000);
+                                     document.getElementById('alert-success').scrollIntoView();
+
+                                 } else {
+                                     debugger;
+                                     ErrorAlert(result.Msg, 5000);
+                                     document.getElementById('alert-error').scrollIntoView();
+                                 }
+                             },
+                             error: function () {
+                                 ErrorAlert(data.responseText, 15000)
+                             }
+                         });
+                     }).fail(function () {
+
+                     });
+                 }
+
+             }
+         })
+     }
+
+     else {
+
+         $.ajax({
+             url: "/FinanceParameter/DenoInDenoTrnx",
+             type: 'GET',
+             async: false,
+             data: { DenoID: DenoID},
+             success: function (result) {
+                 if (result == false) {
+                     debugger;
+                     ErrorAlert("Deno Already in use.", 5000);
+
+                 } else {
+
+
+
+                     debugger;
+                     $.MessageBox({
+                         buttonDone: "Yes",
+                         buttonFail: "No",
+                         message: "Are you sure?"
+                     }).done(function () {
+                         debugger;
+                         $('#deno-setup-form').ajaxSubmit({
+                             beforeSubmit: function () {
+                             },
+                             success: function (result) {
+                                 debugger;
+                                 if (result.Success) {
+                                     $.ajax({
+                                         url: "/FinanceParameter/DenoSetupIndex",
+                                         type: 'GET',
+                                         async: false,
+                                         success: function (result) {
+                                             $('section.content').html(result);
+                                         }
+                                     })
+                                     SuccessAlert(result.Msg, 5000);
+                                     document.getElementById('alert-success').scrollIntoView();
+
+                                 } else {
+                                     debugger;
+                                     ErrorAlert(result.Msg, 5000);
+                                     document.getElementById('alert-error').scrollIntoView();
+                                 }
+                             },
+                             error: function () {
+                                 ErrorAlert(data.responseText, 15000)
+                             }
+                         });
+                     }).fail(function () {
+
+                     });
+                 }
+
+             }
+         })
+
+     }
+     
+
+ }
+</script>
+

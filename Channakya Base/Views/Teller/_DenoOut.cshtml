@@ -1,0 +1,37 @@
+﻿@model ChannakyaBase.Model.ViewModel.DenoOutViewModel
+@using HtmlHelpers.BeginCollectionItem
+<tr>
+    @using (Html.BeginCollectionItem("DenoOutList"))
+    {
+        
+        <td>
+            @Html.HiddenFor(x => x.UserIdOut, new { @class = "UserId" })
+            @Html.HiddenFor(x => x.UserLevelOut, new { @class = "UserLevel" })
+            @Html.HiddenFor(x => x.DenoIDOut, new { @class = "DenoID" })
+            @Html.HiddenFor(x => x.DenoBalIdOut, new { @class = "DenoBalId" })
+            @Html.TextBoxFor(x => x.PieceOut, new { @style = "width:100%;", @readonly = "readonly", @class= "PieceOut" })
+        </td>
+        <td>
+            @Html.TextBoxFor(x => x.DenoOut, new { @style = " width:100%;", @readonly = "readonly", @class = "DenoOut" })
+        </td>
+        <td><label>X</label></td>
+        if (Model.PieceOut != null && Model.PieceOut != 0)
+        {
+            <td>
+                @Html.TextBoxFor(x => x.DenoNumberOut, new { @style = " width:100%;", @class = "DenoNumberOut text-right", @type = "number"})
+            </td>
+        }
+        else
+        {
+            <td>
+                @Html.TextBoxFor(x => x.DenoNumberOut, new { @style = " width:100%;background-color:#ebebe0;", @class = "DenoNumberOut", @readonly = "readonly" })
+            </td>
+        }
+
+        <td>
+            @Html.TextBoxFor(x => x.DenoNumberTotalOut, new { @style = " width:100%;", @readonly = "readonly", @class = "DenoNumberTotalOut" })
+        </td>
+
+    }
+</tr>
+

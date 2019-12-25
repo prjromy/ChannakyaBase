@@ -1,0 +1,72 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.TempIntRateVal
+@using ChannakyaBase.BLL.Service
+@using (Ajax.BeginForm("_TempInterestRateValCreate", "TransationSetup", new AjaxOptions
+{
+    UpdateTargetId = "TempIntRateVal-create",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "createInterestRateValSuccess"
+    //OnFailure = "errMessage"
+
+}
+                                       , new { id = "TempInterestRateValFormCreate" }))
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Template Interest Rate Value</h4>
+        <hr />
+        @Html.HiddenFor(x=>x.TIRID)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(x => x.TID, htmlAttributes: new { @class = "control-label col-md-2" })
+            @*<div class="col-md-6">
+                @Html.DropDownListFor(model => model.TID, TransactionUtilityService.TempInterestRate(), "Please Select...", new { autofocus = "autofocus", @class = "form-control focusdiv tempID " })
+                @Html.ValidationMessageFor(model => model.TID, "", new { @class = "text-danger" })
+            </div>*@
+
+            <div class="col-md-6">
+                @Html.DropDownListFor(model => model.TID, TransactionService.GetTemplateListForFloatingInterest(), "Please Select...", new { autofocus = "autofocus", @class = "form-control focusdiv tempID " })
+                @Html.ValidationMessageFor(model => model.TID, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x=>x.IRate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.IRate, new { htmlAttributes = new { @class = "form-control " } })
+                @Html.ValidationMessageFor(model => model.IRate, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x=>x.ULAmt, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.ULAmt, new { htmlAttributes = new { @class = "form-control " } })
+                @Html.ValidationMessageFor(model => model.ULAmt, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @if (Model.TIRID == 0)
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Save" id="btn-saveIntRateVal-submit" class="btn btn-default btn-saveIntRateVal " />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Save Changes" id="btn-saveIntRateVal-submit" class="btn btn-default btn-saveIntRateVal " />
+                    <input type="button" value="Cancel" id="btn-cancel-saveIntRateVal" class="btn btn-default btn-cancel-saveIntRateVal" />
+                </div>
+            </div>
+        }
+
+      
+    </div>
+}
+ 

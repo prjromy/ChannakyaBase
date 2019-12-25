@@ -1,0 +1,201 @@
+﻿@model List<ChannakyaBase.DAL.DatabaseModel.Location>
+@{
+    int? maxLevel = ViewBag.MaxLevel;
+    int? level = ViewBag.CurrentLevel;
+    int parentId = ViewBag.ParentNodeId;
+    
+}
+
+<div id="location-main-list" class="col-md-12 location-main-list" style="padding-top:15px">
+    <div id="location-list-controls" style="background-color:silver;">
+       
+        @Html.HiddenFor(x => @parentId)
+
+        <span id="btnBack" class="location-back">
+            @if (ViewBag.ParentNodeId == 0)
+            {
+                <button class="btn btn-default btnback" disabled="disabled" id='@parentId'> Back </button>
+            }
+            else
+            {
+                <button class="btn btn-default btnback" id='@parentId'> Back </button>
+            }
+        </span>
+
+        <span style="text-align: center;"> @ViewBag.Address </span>
+
+        @if (level == 0)
+        {
+            <button type="button" class="btn btn-info btnMove" style="float:right;margin-left:7px;" disabled="disabled">Move</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-info btnMove" style="float:right;margin-left:7px;">Move</button>
+            <input type="button" class="btn btn-info btnCancelMove" style="float:right;margin-left:7px;display:none;" value="Cancel" />
+            <input type="button" class="btn btn-info btnMoveConfirm" style="float:right;margin-left:7px;display:none;" value="Confirm" />
+        }
+
+        @if (level == maxLevel)
+        {
+            <button type="button" class="btn btn-info createLocation" data-toggle="modal" style="float:right;" disabled="disabled">Create</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-info createLocation" data-toggle="modal" style="float:right;">Create</button>
+        }
+
+        <div class="add-location">
+            <div class="modal fade add-location-modal" data-backdrop="static" data-keyboard="false" id="add-location-modal">
+                <div class="modal-dialog">
+                    <div id="modal-content" class="add-location-content modal-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="delete-location">
+            <div class="modal fade delete-location-modal" data-backdrop="static" data-keyboard="false" id="delete-location-modal">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div id="modal-content" class="delete-location-content modal-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="edit-location">
+            <div class="modal fade edit-location-modal" data-backdrop="static" data-keyboard="false" id="edit-location-modal">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div id="modal-content" class="edit-location-content modal-content">
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-location">
+            <div class="modal fade detail-location-modal" data-backdrop="static" data-keyboard="false" id="detail-location-modal">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div id="modal-content" class="detail-location-content modal-content">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="move-location">
+            <div class="modal fade move-location-modal" data-backdrop="static" data-keyboard="false" id="move-location-modal">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div id="modal-content" class="move-location-content modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h3 class="modal-title">Location Move</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="confirmQuestion">
+                                <text><b>Where do you want to move selected locations?</b></text><br /><br />
+                            </div>
+                            <div class="location-move-body">
+                                <div class="child-body">
+
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                            <div class="form-horizontal moveConfirmation" hidden>
+                                <text><b>Are you sure you want to move selected locations to above selected location?</b></text><br />
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-default btnCancelLocationMove" style="margin-left:7px;margin-right:14px;float:right;">Cancel</button>
+                                    <button type="button" class="btn btn-default btnMoveLocation" nodeid="" style="float:right;">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btnMoveOk" style="display:none;">OK</button>
+                            <button type="button" class="btn btn-default btn-cancel">Cancel</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="height:500px; overflow-y:auto;background-color:white">
+
+
+            @if (Model.Count() != 0)
+            {
+                foreach (var item in Model)
+                {
+                    <div id="location" class="col-lg-3 col-xs-6 location" nodeId=@item.LId.ToString() parentNodeId=@item.PLId.ToString() nodetext="@item.LocationName.ToString()" style="height:80px; text-align:center; margin:10px; padding:33px 0 0 3px;">
+                        <div class="small-box bg-green-gradient" style="background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #3C8DBC), color-stop(1, #3DB3D6)) !important;">
+                            <button id="removeLocation" class="btn btn-box-tool location-remove" data-widget="remove" data-toggle="modal" style="float:right;position:absolute;top:0;right:0;">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                            <span style="position:absolute;bottom:56px;left:7px;cursor:pointer;"><input type="checkbox" class="boxMove" nodeId="@item.LId.ToString()" parentNodeId="@item.PLId.ToString()" hidden /></span>
+                            <div class="inner">
+                                <h4>@Html.DisplayFor(x => item.LocationName)</h4>
+                            </div>
+                            <a class="small-box-footer">
+                                @if (item.IsGroup == true)
+                                {
+                                    <i class="glyphicon glyphicon-screenshot btnDrill" data-toggle="tooltip" title="Drill" style="cursor:pointer;"></i>
+                                }
+                                <i class="glyphicon glyphicon-list-alt btnDetails" data-toggle="tooltip" title="Details" style="cursor:pointer;"></i>
+                                <i class="glyphicon glyphicon-edit btnEdit" data-toggle="tooltip" title="Edit" style="cursor:pointer;"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p><b>No inner locations available.</b></p>
+            }
+        </div>
+    </div>
+</div>
+
+@*<style>
+    .location-icon {
+        position: relative;
+        margin: 3px 5px 3px 0;
+        padding: 3px 20px 3px 5px;
+        border: 1px solid #aaa;
+        max-width: 18%;
+        border-radius: 3px;
+        background-color: #eee;
+        background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(20%,#f4f4f4),color-stop(50%,#f0f0f0),color-stop(52%,#e8e8e8),color-stop(100%,#eee));
+        background-image: -webkit-linear-gradient(#f4f4f4 20%,#f0f0f0 50%,#e8e8e8 52%,#eee 100%);
+        background-image: -moz-linear-gradient(#f4f4f4 20%,#f0f0f0 50%,#e8e8e8 52%,#eee 100%);
+        background-image: -o-linear-gradient(#f4f4f4 20%,#f0f0f0 50%,#e8e8e8 52%,#eee 100%);
+        background-image: linear-gradient(#f4f4f4 20%,#f0f0f0 50%,#e8e8e8 52%,#eee 100%);
+        background-size: 100% 19px;
+        background-repeat: repeat-x;
+        background-clip: padding-box;
+        box-shadow: 0 0 2px #fff inset,0 1px 0 rgba(0,0,0,.05);
+        color: #333;
+        line-height: 13px;
+        cursor: default;
+    }
+</style>*@
+
+<style>
+    .display-inline {
+        display: inline;
+    }
+
+    .display-none {
+        display: none;
+    }
+</style>
+
+

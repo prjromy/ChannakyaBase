@@ -1,0 +1,87 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher5T
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var fromVoucher = Model.fromVoucher;
+    var payees = Model.Payees;
+    if (fromVoucher != 0)
+    {
+        var chequeNo = Model.ChequeNo;
+        var chequeAmount = Model.ChequeAmount;
+        var chequeDate = Model.ChequeDate;
+        var payee = Model.Payees;
+    }
+}
+@*<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>*@
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+@if (fromVoucher == 0)
+{
+    @Html.HiddenFor(x => x.V5TId)
+    @Html.HiddenFor(x => x.V2TId)
+
+    <div class="form-group col-md-12">
+        @Html.LabelFor(m => m.ChequeNo, new { @class = "col-sm-4  control-label col-form-label" })
+        <div class="col-sm-8">
+            @Html.TextBoxFor(m => m.ChequeNo, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        @Html.LabelFor(m => m.ChequeAmount, new { @class = "col-sm-4  control-label col-form-label" })
+        <div class="col-sm-8">
+            @Html.TextBoxFor(m => m.ChequeAmount, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group col-md-12 ">
+        @Html.LabelFor(model => model.ChequeDate, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.TextBoxFor(model => model.ChequeDate, new { @class = "form-control dt", @Value = DateTime.Now.ToShortDateString() })
+            @*@Html.DatePicker(x => Model.ChequeDate)*@
+            @Html.ValidationMessageFor(model => model.ChequeDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        @Html.LabelFor(model => model.Payees, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.TextBoxFor(m => m.Payees, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Payees, "", new { @class = "text-danger" })
+        </div>
+    </div>
+}
+else
+{
+
+    @Html.HiddenFor(x => x.ChequeAmount)
+    @*<input type="hidden" id="chequeAmountTTT" value="@Model.ChequeAmount" />
+        <input type="hidden" id="chequeAmountDDD" value="@Model.ChequeDate" />*@
+
+    @Html.HiddenFor(x => x.ChequeDate)
+    @Html.HiddenFor(x => x.ChequeNo)
+    @Html.HiddenFor(x => x.Payees)
+    @Html.HiddenFor(x => Model.Id)
+    @Html.HiddenFor(x => x.V5TId)
+    @Html.HiddenFor(x => x.V2TId)
+
+    <script>
+        debugger
+        //alert("yes");
+        //$(document).ready(function () {
+        //    debugger;
+        //    alert("yes");
+
+        //})
+    </script>
+}
+<script>
+    @*alert("doc not ready");
+    $(document).ready(function () {
+        debugger;
+        alert(@fromVoucher);
+    });*@
+
+
+    $(function () {
+        $(".dt").datepicker();
+    });
+</script>

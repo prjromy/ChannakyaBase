@@ -1,0 +1,297 @@
+﻿@model IEnumerable<Loader.Models.Department>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Department Setup";
+    Loader.Service.EmployeeService check = new  Loader.Service.EmployeeService();
+
+}
+
+@{
+
+    var DepartmentTreeview = (Loader.ViewModel.TreeView)ViewBag.treeview;
+    Loader.ViewModel.TreeViewParam param = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body ">
+        <div id="explorer" class="Department-explore">
+            @Html.Hidden("viewType", 1)
+            @if (ViewBag.Heirarchy == 1)
+            {
+                <div class="col-md-3 Department-treeview section-treeview">
+                    @Html.Partial("~/Views/Shared/_TreeView.cshtml", DepartmentTreeview,
+                                     new ViewDataDictionary { { "param", param } })
+                </div>
+            }
+            @if (ViewBag.Heirarchy == 0)
+            {
+                <div id="explore-details" class="col-md-12 explore-details">
+                    <div class="panel-create" id="create">
+
+                    </div>
+                    <div class="panel-list" id="list">
+                        @{Html.RenderPartial("_Details", Model);}
+                    </div>
+                </div>
+                            }
+                            else
+                            {
+                                <div id="explore-details" class="col-md-9 explore-details">
+                                    <div class="panel-create" id="create">
+
+                                    </div>
+                                    <div class="panel-list" id="list">
+                                        @{Html.RenderPartial("_Details", Model);}
+                                    </div>
+                                </div>
+                                            }
+        </div>
+
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+<script type="text/javascript">
+
+    $('.Department-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.Department-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pDepartmentId').val();
+
+        $('.Department-treeview').SelectNode(nodeId);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        if (data.allowSelectGroupNode == null)
+        {
+            data.allowSelectGroupNode = false;
+        }
+        var container = $(this).closest('.Department-explore').find('.panel-list');
+        var listType = $(this).closest('.Department-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Department")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.Department-treeview').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Department-explore').find('.panel-list');
+        var listType = $(this).closest('.Department-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "Department")',
+            contentType: "application/json; charset=utf-8",
+            data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode, ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.Department-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.Department-explore').find('.Department-treeview').moveUp();
+        //$(this).closest('.Department-explore').find('.Department-treeview').updateTreeview("Department", "_UpdateDepartmentTree", 1009,-1)
+    });
+    $('.Department-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.Department-explore').find('.Department-treeview').SelectNode(id);
+    });
+    $('.Department-explore').on('click', '.DepartmentImage, .editList, .btn-create-Department', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.Department-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        var activeElement = $(this).closest('.Department-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.Department-explore').find('.treeview-selected').attr('nodeid');
+        var DepartmentId = 0;
+        if ($(this).attr('class') == 'DepartmentImage' || 'editList') {
+            DepartmentId = $(this).attr('id');
+        }
+        var pDepartmentId = $('#pDepartmentId').val()
+        if (pDepartmentId == "") {
+            pDepartmentId = 0;
+        }
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "Department")',
+            data: { activeText: activeElement, activeId: pDepartmentId, DepartmentId: DepartmentId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    $('.Department-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var DepartmentId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('#pDepartmentId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "Department")',
+            data: { id: DepartmentId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+                    
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteDepartment(DepartmentId, nodeId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes or Data Linked To Other Table First ", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+    function deleteDepartment(DepartmentId, nodeId) {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "Department")',
+            data: { DepartmentId: DepartmentId },
+            success: function () {
+                SuccessAlert("Department Sucessfully Deleted", 5000)
+                if(@ViewBag.Heirarchy==0)
+                {
+                    $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                }
+                else
+                {
+                    $.fn.updateTreeview('Department', '_UpdateDepartmentTree', nodeId, -1)
+                }
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //        $.post(url, dataToPost).done(function (response, status, jqxhr) {
+        //    alert();
+        //})
+    }
+
+
+    $('.Department-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: '',
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/Department/_GetDepartmentTree"
+        var container = $(this).closest('.Department-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var filter = query.toUpperCase();
+        var total = $('.detailsList').size();
+        var dataBackup = $('.detailsList').html();
+        var count = 0;
+        //var checkDepartment = $(this).closest('.panel-list').find('.box-body').find('col-lg-3.col-xs-6.details');
+        if (filter == "") {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == true) {
+                    $(item).css('display', 'table-row');
+                }
+                else {
+                    $(item).css('display', 'block');
+                }
+                $("#noChilds").css('display', 'none');
+            });
+        }
+        else {
+            $('.detailsList').each(function (index, item) {
+                debugger;
+                var findList = $(item).find('.inner').hasClass('listDrill');
+                if (findList == false) {
+                    var text = $(item).find('.inner').attr('Department-caption').toUpperCase();
+                    $(item).css('display', 'block');
+                } else {
+                    var text = $(item).find('.inner').attr('Department-caption').toUpperCase();
+                    $(item).css('display', 'table-row');
+                }
+                if (text.search(filter) == -1) {
+                    debugger;
+                    $(item).css('display', 'none');
+                    count++;
+                }
+                //$(text+':not(:contains(' + filter + '))').hide();
+            });
+            if(total === count)
+            {
+                $("#noChilds").css('display', 'inline');
+            }
+            else{
+                $("#noChilds").css('display', 'none');
+            }
+        }
+    });
+</script>
+

@@ -1,0 +1,75 @@
+﻿@model ChannakyaBase.Model.ViewModel.EmployeeViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@{
+}
+<div class="table-responsive table-click-Employee-Branch-Map">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th>@Html.LabelFor(x => x.EmployeeNo)</th>
+                <th>@Html.LabelFor(x => x.EmployeeName)</th>
+                
+                <th>@Html.LabelFor(x => x.DGName)</th>
+                <th>Start From</th>
+                <th>Branch</th>
+                <th>Current Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.EmployeeList)
+            {
+
+
+                <tr id="@item.EmployeeId">
+                    <td class="Customername">@item.EmployeeNo</td>
+                    <td><a href="#" onclick="EditBranchEmployee('@item.MapId')"><i class="fa fa-edit"></i>@item.EmployeeName</a> </td>
+                   
+                    <td>@item.DGName</td>
+                    <td>@item.StartFrom.ToShortDateString()</td>
+                    <td>@item.BrnhNam</td>
+                    <td>@item.RoleName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_BranchEmployeeList", "FinanceParameter", Model.EmployeeList.PageCount, Model.EmployeeList.PageNumber, Model.EmployeeList.PageSize)
+</div>
+
+
+<script>
+    $("div.table-click-Employee-Branch-Map").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-Employee-Branch-Map")
+        var employeeName = $(parentContainer).find(".b-e-account").find("#EmployeeName").val();
+        var branchId = $(parentContainer).find(".b-e-branch").find("#BranchId").val();
+        var url = "?employeeName=" + employeeName + "&branchId=" + branchId;
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-click-Employee-Branch-Map").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-Employee-Branch-Map")
+        var employeeName = $(parentContainer).find(".b-e-account").find("#EmployeeName").val();
+        var branchId = $(parentContainer).find(".b-e-branch").find("#BranchId").val();
+        var url = "?employeeName=" + employeeName + "&branchId=" + branchId;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-click-Employee-Branch-Map").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-Employee-Branch-Map")
+        var employeeName = $(parentContainer).find(".b-e-account").find("#EmployeeName").val();
+        var branchId = $(parentContainer).find(".b-e-branch").find("#BranchId").val();
+        var url = "?employeeName=" + employeeName + "&branchId=" + branchId;
+        getPageSizeChangeData(url, container, me)
+    });
+
+</script>

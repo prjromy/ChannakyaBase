@@ -1,0 +1,6 @@
+﻿CREATE TABLE [fin].[TempIntRate] (
+    [TID]   TINYINT      IDENTITY (1, 1) NOT NULL,
+    [Tname] VARCHAR (30) NOT NULL,
+    PRIMARY KEY CLUSTERED ([TID] ASC)
+);
+

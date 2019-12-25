@@ -1,0 +1,245 @@
+﻿<!-- Logo -->
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    Loader.Service.ParameterService paramService = new Loader.Service.ParameterService();
+    var FiscalYearListForBranch = voucherService.GetAllFYearForBranch();
+    var FiscalYear = FiscalYearListForBranch[0].FYID;
+    var FiscalYearName = FiscalYearListForBranch[0].FyName;
+    Loader.Service.EmployeeService employeeService = new Loader.Service.EmployeeService();
+    Loader.Models.Employee EmployeeImage = employeeService.GetEmployeePhoto(Loader.Models.Global.UserId);
+
+
+
+    var CompanyName = employeeService.getCompanyName();
+
+}
+
+<div style="display:none">
+    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+    {
+
+        @Html.AntiForgeryToken()
+    }
+</div>
+
+<a href="Home/Index" class="logo">
+    <!-- mini logo for sidebar mini 50x50 pixels -->
+    <span class="logo-mini">@CompanyName</span>
+    <!-- logo for regular state and mobile devices -->
+    <span class="logo-lg">@CompanyName</span>
+
+</a>
+<!-- Header Navbar: style can be found in header.less -->
+<nav class="navbar navbar-static-top">
+    <!-- Sidebar toggle button-->
+  
+
+    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+    </a>
+
+
+  
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="hidden-xs"> TransactionDate: <span id="cTDate">@Convert.ToDateTime(Loader.Models.Global.TransactionDate).ToShortDateString()</span></span>
+                </a>
+            </li>
+
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="hidden-xs"> FiscalYear: <span id="cFYear">@FiscalYearName</span></span>
+                </a>
+
+                <ul class="dropdown-menu"style="left: 1%;width: 100%;overflow: auto;max-height: 414px">
+                    <li class="user-footer">
+                    
+                            <ul class="list-group">
+                                @*<a href="#" class="btn btn-default btn-flat li-dropdown-notifications-changepassword">Change Password</a>*@
+                                @*<li class="list-group-item active">2071/72</li>
+                                <li class="list-group-item">2071/72</li>*@
+                             
+                                @foreach (var item in FiscalYearListForBranch)
+                                {
+                                    if(FiscalYear == item.FYID)
+                                    //if (item.FYID == Loader.Models.Global.CurrentFYID)
+                                    {
+                                        <li class="list-group-item active fyear" id="@item.FYID" style="cursor:pointer;">@item.FyName</li>
+                                    }
+                                    else
+                                    {
+                                        <li class="list-group-item fyear" id="@item.FYID" style="cursor:pointer;">@item.FyName</li>
+                                    }
+
+                                }
+                            </ul>
+                      
+                    </li>
+                </ul>
+            </li>
+            </ul>
+           <style>
+               .fyear:hover
+               {
+                   background-color:#286090;
+               }
+           </style>
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                @*<li class="dropdown messages-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-envelope-o"></i>
+                        <span class="label label-success">0</span>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <li class="header">You have no tasks</li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+
+                        </li>
+                        <li class="footer">
+                            <a href="#">View all tasks</a>
+                        </li>
+                    </ul>     <!-- inner menu: contains the actual data -->
+                    <!-- end message -->
+                    <!-- Notifications: style can be found in dropdown.less -->*@
+                <li class="dropdown user user-menu" style="cursor:pointer;">
+
+                    @Html.Action("_MyNotifications", "TaskVerification", null)
+                    @*<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon glyphicon-user"></i>
+                        
+                    </a>*@
+                    @*<span>@Session["IBUsername"] <i class="caret"></i></span>*@
+                    <ul class="dropdown-menu" id="notification-details"></ul>
+                </li>
+                    <!-- Tasks: style can be found in dropdown.less -->
+                @*<li class="dropdown tasks-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-flag-o"></i>
+                        <span class="label label-danger">0</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">You have no tasks</li>
+                        <li>
+
+                        </li>
+                        <li class="footer">
+                            <a href="#">View all tasks</a>
+                        </li>
+                    </ul>
+                </li>*@
+                <!-- User Account: style can be found in dropdown.less -->
+
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        @*<img src="~/AdminLTE/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">*@
+                        <span class="hidden-xs">@Loader.Models.Global.UserName</span>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <!-- User image -->
+                        <li class="user-header">
+                            @if (@EmployeeImage == null)
+                            {
+                                @*EmployeeImage.StringPhoto = "~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png";*@
+                                <img src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" class="img-circle" alt="User Image">
+                            }
+                            else {
+                                <img src="@EmployeeImage.StringPhoto" class="img-circle" alt="User Image">
+                            }
+
+
+                            <p>
+                                @Loader.Models.Global.UserName
+                                @*<small>Member since Nov. 2012</small>*@
+                            </p>
+                            <p>
+                                @{Loader.Service.UserVSBranchService usrBranchService = new Loader.Service.UserVSBranchService(); }
+                                Current Branch: @usrBranchService.GetBranchName(Loader.Models.Global.BranchId)
+                            </p>
+                        </li>
+                        <!-- Menu Body -->
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a href="#" class="btn btn-default btn-flat li-dropdown-notifications-changepassword">Change Password</a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="#" class="btn btn-default btn-flat li-dropdown-notifications-logout">Sign out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                @*<li class="dropdown notifications-changepassword">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon glyphicon-edit"></i>
+                        <span class="hidden-xs">Change Password</span>
+                    </a>
+                </li>
+                <li class="dropdown notifications-menu logout">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon glyphicon-log-out"></i>
+                        <span class="hidden-xs">Log Out</span>
+                    </a>
+                </li>*@
+
+                <li></li>            @*<li>
+                    <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li>*@
+            </ul>
+</div>
+</nav>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.li-dropdown-notifications-logout').click(function () {
+            debugger;
+            document.getElementById('logoutForm').submit();
+
+        });
+        $('li.list-group-item.fyear').click(function(){
+            debugger;
+            var id=$(this).attr('id');
+            $('ul.list-group').find('li.active').removeClass('active');
+            $(this).addClass('active')
+            if(id!=""&& !isNaN(id))
+            {
+                var data={FYId:id};
+                $.get("/Employee/SetFiscalYear",data,function(fyName){
+                    $("#cFYear").html(fyName);
+                });
+                $.get("/Employee/SetTranscationDate",data,function(fyName){
+                    debugger;
+                    $("#cTDate").html(fyName);
+                   
+                });
+            }
+            $(".content").empty();
+        });
+
+        $('.li-dropdown-notifications-changepassword').click(function () {
+            debugger;
+            $.ajax({
+                type: "get",
+                url: "/Manage/ChangePassword",
+                contentType: "application/json; charset=utf-8",
+                data:{userId:@Loader.Models.Global.UserId},
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $('section.content').html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        });
+    });
+
+
+</script>

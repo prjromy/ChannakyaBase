@@ -1,0 +1,73 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1T
+
+
+@{
+    var test = Model;
+    var voucherTypeClass = "background-color:#00c0ef !important";
+    //if (Model.SType == 1)
+    //{
+    //    voucherTypeClass = "background-color:lightslategray !important";
+    //}
+
+    //if (Model.Status == 2)
+    //{
+    //    voucherTypeClass = "background-color:mediumseagreen  !important";
+    //}
+    //if (Model.Status == 3)
+    //{
+    //    voucherTypeClass = "background-color:indianred !important";
+    //}
+    //ChannakyaAccounting.Service.Depositvoucher.DepositvoucherService schmService = new ChannakyaAccounting.Service.Depositvoucher.DepositvoucherService();
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+@*<span class="icon">
+
+
+    </span>*@
+<div class="info-box bg-aqua" style="@voucherTypeClass">
+    <div class="info-box-icon icon">
+            <img class="voucherImage" id="@Model.V1TId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+    </div>
+
+
+    @* <div class="inner" voucher-caption="@Model.voucherName">
+            <p id="voucherCaption" data-toggle="tooltip" data-placement="top" title="@Model.voucherName" style="cursor:pointer;"> @Model.voucherName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" voucher-caption="@Model.Narration">
+        <span class="deleteNode" id="@Model.V1TId" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="voucherCaption" data-toggle="tooltip" data-placement="top" title="@Model.Narration" style="cursor:pointer;"> @Model.Narration</span>
+        <span class="info-box-number">@Model.V1TId</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+     
+            <span class="progress-description">
+                Voucher Master
+            </span>
+       
+        
+
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #voucherCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>
+

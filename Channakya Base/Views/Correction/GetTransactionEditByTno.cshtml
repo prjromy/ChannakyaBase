@@ -1,0 +1,160 @@
+﻿
+
+@model ChannakyaBase.Model.ViewModel.TransactionEditViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@{
+
+    ViewBag.Title = "TransactionEdit";
+    CorrectionService correctionService = new CorrectionService();
+    CommonService commonService = new CommonService();
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+    var model = Model;
+}
+@if (Model.IsDeposit == 0)
+{
+    <h3 class="box-title">Withdraw</h3>
+}
+else
+{
+    <h3 class="box-title">Deposit</h3>
+}
+<div class="col-md-12">
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Iaccno, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @{
+                            var Iaccnofull = commonService.GetAccountFullNameByIaccno(Convert.ToInt32(Model.Iaccno));
+
+                        }
+                        @Html.TextBoxFor(x => Iaccnofull, new { @class = "form-control col-md-6", @readonly = "readonly", @Value = Iaccnofull })
+                        @Html.HiddenFor(x => x.Iaccno, new { @class = "form-control col-md-6", @readonly = "readonly" })
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Aname, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.Aname, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.BranchName, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.BranchName, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(x=>x.PostedBy)
+                    @Html.LabelFor(x => x.Username, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.Username, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.tdate, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+
+                        @Html.TextBoxFor(x => x.tdate, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.slpno, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.slpno, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Amt, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.Amt, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CurrencyName, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.CurrencyName, new { @class = "form-control col-md-6", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.newAmount, new { @class = "control-label col-md-3" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(x => x.newAmount, new { @class = "form-control col-md-6" })
+                        @Html.ValidationMessageFor(x => x.newAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="chkPassport">
+                                    <input type="checkbox" id="chgAccount" />
+                                    Change Account No
+                                </label>
+                            </div>
+                            @*<div class="form-group" style="display: none" id="accountShow">*@
+
+
+                            <div class="col-md-8" style="display: none" id="accountShow">
+                                @Html.LabelFor(x => x.newAccountNo, new { @class = "control-label  col-md-8" })
+                                @Html.AccountNumberSearch(x => x.newAccountNo, EAccountDetailsShow.WithdrawWithIntPay.GetDescription(), EAccountFilter.AdjustmentAccept.GetDescription(), EAccountType.Normal.GetDescription())
+
+
+                                @Html.ValidationMessageFor(x => x.newAccountNo, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <fieldset>
+                    <legend style="font-size:large;font-weight:bold">Deno</legend>
+                    @Html.Action("UseDenoList", "Teller", new { utno = Model.Tno })
+                </fieldset>
+            </div>
+            @if (IsTransactionWithDeno)
+            {
+                if (Model.IsDeposit == 1)
+                {
+                    <div class="form-group">
+                        <div class="col-md-6 transaction-with-deno">
+                            @{Html.RenderAction("DenoTransactionByUser", "Teller", new { currencyId = new CommonService().DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription(), UserId = Model.PostedBy });}
+
+                        </div>
+                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <div class="col-md-6 transaction-with-deno">
+                                            @{Html.RenderAction("DenoTransactionByUser", "Teller", new { currencyId = new CommonService().DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription(), UserId = Model.PostedBy });}
+
+                                        </div>
+                                    </div>
+                                                }
+                                                }
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery.form.min.js"></script>

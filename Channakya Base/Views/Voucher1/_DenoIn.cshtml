@@ -1,0 +1,27 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.DenoInViewModel
+@using ChannakyaAccounting.Helper.BeginCollectionHelper
+@{
+    var model = Model;
+}
+<tr>
+    @using (Html.BeginCollectionItem("DenoInList"))
+    {
+        <td>
+            @Html.HiddenFor(x => x.UserId, new { @class = "UserId" })
+            @Html.HiddenFor(x => x.UserLevel, new { @class = "UserLevel" })
+            @Html.HiddenFor(x => x.DenoID, new { @class = "DenoID" })
+            @Html.HiddenFor(x => x.DenoBalId, new { @class = "DenoBalId" })
+            @Html.TextBoxFor(x => x.Piece, new { @style = "width:100%;", @readonly = "readonly" })
+        </td>
+        <td>
+            @Html.TextBoxFor(x => x.Deno, new { @style = " width:100%;", @readonly = "readonly", @class = "Deno" })
+        </td>
+        <td><label>X</label></td>
+        <td>
+            @Html.TextBoxFor(x => x.DenoNumber, new { @class = "DenoNumber text-right", @style = "width:100%;", @type = "number", @min = 0, @oninput = "this.value = Math.abs(this.value)" })
+        </td>
+        <td>
+            @Html.TextBoxFor(x => x.DenoNumberTotal, new { @style = " width:100%;", @readonly = "readonly", @class = "DenoNumberTotal" })
+        </td>
+    }
+</tr>

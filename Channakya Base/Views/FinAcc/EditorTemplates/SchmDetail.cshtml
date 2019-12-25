@@ -1,0 +1,378 @@
+﻿@model ChannakyaAccounting.Models.Models.SchmDetail
+
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var ruleMovementlist = finaccService.GetMovement();
+    var ruleICBList = finaccService.GetRuleICB();
+    var accountType = Model.SType; // Deposit Scheme
+
+}
+
+@Html.HiddenFor(x=>x.SDID)
+<div class="box box-warning col-md-12 scheme-box">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Scheme Features
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+
+                    @if (accountType == 0)
+                    {
+                        <div class="form-group col-md-12">
+
+
+                            @Html.LabelFor(m => m.HasDormancy, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasDormancy,new { @id="hasDormacy"})
+                                @Html.ValidationMessageFor(model => model.HasDormancy, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(m => m.HasOverdraw, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasOverdraw, new { @id = "hasOverdraw" })
+                                @Html.ValidationMessageFor(model => model.HasOverdraw, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    }
+                    @if (accountType == 1)
+                    {
+                        <div class="form-group col-md-12">
+
+
+                            @if (Model.Revolving == null)
+                            {
+                                Model.Revolving = false;
+                            }
+                            @Html.LabelFor(m => m.Revolving, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Revolving", Model.Revolving.Value, new { @id = "revolving" })
+                                @Html.ValidationMessageFor(model => model.Revolving, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(m => m.IsRenewable, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.IsRenewable, new { @id = "isRenewable" })
+                                @Html.ValidationMessageFor(model => model.IsRenewable, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.HasCheque, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCheque, new { @id = "hasCheque" })
+                            @Html.ValidationMessageFor(model => model.HasCheque, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(m => m.HasCard, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCard, new { @id = "hasCard" })
+                            @Html.ValidationMessageFor(model => model.HasCard, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(m => m.HasCertificate, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCertificate, new { @id = "hasCert" })
+                            @Html.ValidationMessageFor(model => model.HasCertificate, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(m => m.HasDuration, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasDuration, new { @id = "hasDuration" })
+                            @Html.ValidationMessageFor(model => model.HasDuration, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-12">
+
+
+                        @Html.LabelFor(m => m.HasIndivLimit, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasIndivLimit, new { @id = "hasIndLimit" })
+                            @Html.ValidationMessageFor(model => model.HasIndivLimit, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.Label("Nominable", new { @class = "col-md-6  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.Nomianable, new { @id = "isNominable" })
+                            @Html.ValidationMessageFor(model => model.Nomianable, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+
+
+                        @if (Model.IsInsured == null)
+                        {
+                            Model.IsInsured = false;
+                        }
+                        @Html.LabelFor(m => m.IsInsured, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBox("IsInsured", Model.IsInsured.Value, new { @id = "isInsured" })
+                            @Html.ValidationMessageFor(model => model.IsInsured, "", new { @class = "text-danger" })
+                        </div>
+                        @if (Model.HASSMS == null)
+                        {
+                            Model.HASSMS = false;
+                        }
+                        @Html.LabelFor(m => m.HASSMS, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBox("HASSMS", Model.HASSMS.Value, new { @id = "hasSMS" })
+                            @Html.ValidationMessageFor(model => model.HASSMS, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+
+                    @if (accountType == 0)
+                    {
+                        <div class="form-group col-md-12">
+                            @if (Model.MultiDeposit == null)
+                            {
+                                Model.MultiDeposit = false;
+                            }
+                            @Html.LabelFor(m => m.MultiDeposit, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("MultiDeposit", Model.MultiDeposit.Value, new { @id = "multiDeposit" })
+                                @Html.ValidationMessageFor(model => model.MultiDeposit, "", new { @class = "text-danger" })
+                            </div>
+                            @if (Model.Withdrawal == null)
+                            {
+                                Model.Withdrawal = false;
+                            }
+                            @Html.LabelFor(m => m.Withdrawal, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Withdrawal", Model.Withdrawal.Value, new { @id = "withDrawl" })
+                                @Html.ValidationMessageFor(model => model.Withdrawal, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.HasIndivRate, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasIndivRate, new { @id = "hasIndrate" })
+                            @Html.ValidationMessageFor(model => model.HasIndivRate, "", new { @class = "text-danger" })
+                        </div>
+                      
+                        @if (accountType == 1)
+                        {
+                            if(Model.IsFDLoan == null)
+                            {
+                                Model.IsFDLoan = false;
+                            }
+                            @Html.LabelFor(m => m.IsFDLoan, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+
+                                @Html.CheckBox("IsFDLoan",Model.IsFDLoan.Value, new { @id = "isFDLoan" })
+                                @Html.ValidationMessageFor(model => model.IsFDLoan, "", new { @class = "text-danger" })
+                            </div>
+                        }
+
+                    </div>
+                    <div class="form-group col-md-12">
+                        @if (Model.SDID != 0)
+                        {
+                            @Html.LabelFor(m => m.SEnable, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+
+                                @Html.CheckBoxFor(x => x.SEnable, new { @id = "senable" })
+                                @Html.ValidationMessageFor(model => model.SEnable, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        </div>
+
+
+
+
+
+                    </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+@if (accountType == 0)
+{
+    <div class="box box-warning col-md-12 scheme-box">
+        <div class="box-header with-border">
+            <h2 class="box-title paramHeader">
+                Select Rules
+            </h2>
+            <br />
+            <br />
+            <div class="container col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.MID, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(m => m.MID, ruleMovementlist, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.ICBID, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(m => m.ICBID, ruleICBList, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ICBID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-tools pull-right">
+                @*<button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>*@
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div>
+
+    </div>
+}
+
+<script>
+    $('.deposit-scheme-container').on('change', 'input#hasDuration, input#hasDormacy , input#multiDeposit, input#withDrawl', function (e) {
+        debugger;
+
+        e.stopPropagation();
+        var durationCheck = $(this).closest(".deposit-scheme-container").find("input#hasDuration").prop("checked")
+        var multiDepositCheck = $(this).closest(".deposit-scheme-container").find("input#multiDeposit").prop("checked")
+        var multiWithdrawlCheck = $(this).closest(".deposit-scheme-container").find("input#withDrawl").prop("checked")
+        if ($(this).attr('id') == "hasDuration") {
+  
+            if (this.checked) {
+                $(this).closest(".deposit-scheme-container").find("input#hasDormacy").prop("checked",false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasOverdraw").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+            }
+            if (this.checked && multiWithdrawlCheck==true) {
+                //$(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+                //$(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+               
+            }
+            if (!this.checked || multiWithdrawlCheck == false)
+            {
+                //$(this).closest(".deposit-scheme-container").find("input#hasCheque").removeClass('makeDisable');
+                //$(this).closest(".deposit-scheme-container").find("input#hasCard").removeClass('makeDisable');
+            }
+            if (!this.checked)
+            {
+                $(this).closest(".deposit-scheme-container").find("input#hasDormacy").removeClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasOverdraw").removeClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").removeClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCheque").removeClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").removeClass('makeDisable');
+              
+            }
+       
+
+            if (this.checked && multiDepositCheck == true ) {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+             
+             
+                
+            }
+            if (this.checked && multiDepositCheck == false || multiWithdrawlCheck == false) {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").prop("checked", false).removeClass('makeDisable');
+                
+            }
+        }
+
+        if ($(this).attr('id') == "hasDormacy")
+        {
+            var multiDepositCheck = $(this).closest(".deposit-scheme-container").find("input#multiDeposit").prop("checked")
+            var multiWithdrawlCheck = $(this).closest(".deposit-scheme-container").find("input#withDrawl").prop("checked")
+            if (this.checked) {
+                $(this).closest(".deposit-scheme-container").find("input#hasDuration").prop("checked", false).addClass('makeDisable');
+            }
+            else
+            {
+                $(this).closest(".deposit-scheme-container").find("input#hasDuration").prop("checked", false).removeClass('makeDisable');
+            }
+
+            if (this.checked && multiDepositCheck == true && multiWithdrawlCheck == true) {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+            }
+
+        }
+        if ($(this).attr('id') == "multiDeposit")
+        {
+            if (this.checked && durationCheck == true) {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+            }
+            if(!this.checked)
+            {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").removeClass('makeDisable');
+                //$(this).closest(".deposit-scheme-container").find("input#hasCheque").removeClass('makeDisable');
+                //$(this).closest(".deposit-scheme-container").find("input#hasCard").removeClass('makeDisable');
+            }
+        }
+
+        if ($(this).attr('id') == "withDrawl")
+        {
+            if (this.checked && durationCheck == true && multiDepositCheck == true) {
+                $(this).closest(".deposit-scheme-container").find("input#hasCert").prop("checked", false).addClass('makeDisable');
+               
+            }
+
+            //if (this.checked)
+            //{
+            //    $(this).closest(".deposit-scheme-container").find("input#hasCheque").prop("checked", false).addClass('makeDisable');
+            //    $(this).closest(".deposit-scheme-container").find("input#hasCard").prop("checked", false).addClass('makeDisable');
+            //}
+            if (!this.checked && durationCheck==false ) {
+                //$(this).closest(".deposit-scheme-container").find("input#hasCert").removeClass('makeDisable');
+                //$(this).closest(".deposit-scheme-container").find("input#hasCheque").removeClass('makeDisable');
+                $(this).closest(".deposit-scheme-container").find("input#hasCard").removeClass('makeDisable');
+            }
+        }
+    });
+
+
+
+
+</script>
+
+
+<style>
+    .makeDisable{
+        pointer-events: none;
+    opacity: 0.3;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

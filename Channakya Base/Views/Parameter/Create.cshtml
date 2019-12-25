@@ -1,0 +1,363 @@
+﻿@model Loader.Models.Param
+@using Loader.Helper
+@{
+    Layout = null;
+
+    var test = Model;
+    var treeobj = new Loader.ViewModel.TreeViewParam(false, true, true,0, Model.ParentId, ViewBag.ActiveText, "Select Parameter", "");
+    Loader.ViewModel.TreeViewParam paramData = (Loader.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Parameter";
+    //if (ViewBag.ParamId != 0)
+    //{
+    //    treeobj = new Loader.ViewModel.TreeViewParam(false, true, true, Model.PId, 1, ViewBag.ActiveText, "Select Parameter", "");
+    //    title = "Edit Parameter";
+    //}
+    var valueSubmit = "Create";
+    var hideParent = "";
+    if (Model.PId != 0)
+    {
+        hideParent = "display:none;";
+        valueSubmit = "Save";
+    }
+}
+
+<div class="box box-warning parameter-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @*@using (Ajax.BeginForm("GetPatients", "Patient", new AjaxOptions
+        {//GetPatients is name of method in PatientController
+            InsertionMode = InsertionMode.Replace, //target element(#patientList) will be replaced
+            UpdateTargetId = "patientList",
+            LoadingElementId = "loader" // div with .gif loader - that is shown when data are loading
+        }))*@
+    @using (Html.BeginForm("Create", "Parameter", FormMethod.Post, new { @id = "createParameter" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                @Html.HiddenFor(x => x.PId)
+
+             
+                <div class="form-group col-md-12"style="@hideParent">
+                    @Html.LabelFor(model => model.ParentId, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+
+                            @Html.EditorForTree(model => model.ParentId, treeobj)
+                        @Html.ValidationMessageFor(model => model.ParentId, "", new { @class = "text-danger" })
+                        <div class="Pid-error"style="color:red;"></div>
+                    </div>
+                    
+                </div>
+                
+
+
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.PName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.PName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.Label("Is Parameter Group",null, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @if (ViewBag.ParamId != 0)
+                        {
+                            <div class="isgrp-readonly"style="pointer-events:none;opacity:0.5;"> @Html.CheckBoxFor(model => model.IsGroup, new { htmlAttributes = new { @class = "is-groups"} })</div>
+                        }
+                        else
+                        {
+                            <div class="isgrp-event"> @Html.CheckBoxFor(model => model.IsGroup, new { htmlAttributes = new { @class = "is-groups" } })</div>
+                        }
+
+
+                        @Html.ValidationMessageFor(model => model.IsGroup, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12 param-value">
+                    @if (Model.paramValue != null)
+                    {
+                        if (Model.paramValue.PId != 0)
+                        {
+                            @Html.EditorFor(x => x.paramValue);
+                        }
+
+                    }
+                </div>
+          
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@valueSubmit" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        if(@Model.PId==1 || @Model.PId==2 || @Model.ParentId==1)
+        {
+            $('input#IsGroup').css("pointer-events", "none")
+            $('.isgroup-event').css("opacity","0.5")
+        }
+
+        $('.parameter-create').on('blur', "input#ParentId", function (e) {
+            var container = $(this).closest(".parameter-create").find(".param-value")
+            var pName = $(this).val()
+            if (pName == "Root") {
+                $('.Pid-error').html("Not allowed");
+                $('#btnSubmit').prop("disabled", true);
+            }
+            else {
+                $('.Pid-error').empty();
+                $('#btnSubmit').prop("disabled", false);
+            }
+            if (pName == "System Parameters" || pName == "User Parameters") {
+                debugger;
+                var isgrp = document.getElementById("IsGroup");
+                $(isgrp).prop('checked','true');
+                $('#IsGroup').css("pointer-events", "none")
+                $('.isgroup-event').css("opacity","0.5")
+                $(container).html("");
+            }
+            else {
+                var isgrp = document.getElementById("IsGroup");
+                $(isgrp).prop('checked','true');
+                $(container).html("");
+
+                $('input#IsGroup').css("pointer-events", "auto")
+                $('.isgroup-event').css("opacity","1")
+            }
+
+        });
+
+        var form1 = new FormData();
+        $(".display-txt#PMenuId").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            if(imagecontent!=null)
+            {
+                form1.append('file', imagecontent);
+
+                Imageform.append('file', imagecontent)
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    url: "Menu/DisplayImage",
+                    data: Imageform,
+                    success: function (ImageContent) {
+                        debugger;
+                        $('#loadimage').empty();
+                        $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                        // $('#loadimage').attr("content", imagecontent);
+                    }
+                });
+            }
+        });
+
+
+        $("#createParameter").submit(function () {
+            debugger;
+
+
+            var pid = $(this).closest('.box-body').find('.section-treeview').find('input.internal-value').val();
+            if(pid=="")
+            {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",1500);
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).find('.section-treeview#ParentId').find('.internal-value').val()
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Parameter")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $.fn.updateTreeview('Parameter', '_UpdateParamTree', nodeId, -1)
+                        if(@Model.PId==0)
+                        {
+                            SuccessAlert("Parameter Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Parameter Edited Succesfully.",1500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+    
+
+
+        $('.isgrp-event').on('change', 'input#IsGroup', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".parameter-create").find(".param-value")
+           // var scriptContainer = $(this).closest(".parameter-create").find(".param-script")
+            if (!this.checked) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetParamValue", "Parameter")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+                //$('.paramValue-editor').show();
+            }
+        });
+
+
+        $('.parameter-create').on('change', 'select#paramValue_DTId', function (e) {
+            debugger;
+            var dvalue = this.value;
+            var container = $(this).closest(".parameter-create").find(".param-script")
+            if (dvalue == 5) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetScript", "Parameter")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.parameter-create').on('change', '#IsContextMenu', function (e) {
+            debugger;
+            e.stopPropagation();
+  
+            var container = $(this).closest(".parameter-create").find(".action-controller")
+            var groupCheck = $(this).closest(".parameter-create").find("input#IsGroup").prop("checked")
+            if (!this.checked && groupCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "Menu")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.parameter-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/Parameter/_GetParamTreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/Parameter/_GetParamTree", { param: data.param })
+            }
+        });
+    });
+</script>
+
+<style>
+            div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+    margin-left: 1px;
+    top: 10px;
+    padding: 4px -1px -3px -4px;
+}
+
+</style>

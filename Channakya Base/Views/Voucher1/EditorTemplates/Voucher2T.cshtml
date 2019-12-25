@@ -1,0 +1,400 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher2T
+@using ChannakyaAccounting.Helper
+@{
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    Model.VoucherTransType = Convert.ToInt16(null);
+    var bankList = Model.Voucher5T;
+    var susbsiList = Model.Voucher3T;
+    //var dimList = Model.Voucher4T;
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+}
+<tr class="newrow">
+    <td style="display:none">
+        @Html.TextBoxFor(x => x.Fid, null, new { @id = "ledgerID-voucher" })
+    </td>
+    <td style="text-align:left">
+        @Html.HiddenFor(x => x.V2TId, new { @class = "rowId" })
+        @Html.DropDownListFor(x => x.VoucherTransType, voucherType, new { @class = "form-control", @id = "voucherSelect", })
+    </td>
+    <td style="text-align:left;" class="ledger-search-container editable" id="append">
+        <div class="input-group add-on" style="width:99%;">
+            @Html.TextBox("LedgerName", null, new { @class = "LedgerName form-control", @placeholder = "Search", @id = "ledgerSearch" })
+            <div class="input-group-btn">
+                @* <button class="btn" style="background-color:#2aabd2!important" type="button"><i class="glyphicon glyphicon-search" id="btnledgersearch" style="color:white;"></i></button>*@
+                <i class='btn glyphicon glyphicon-search ' style="background-color:#2aabd2!important" id='btnledgersearch' />
+            </div>
+        </div>
+    </td>
+    <td style="text-align:left" class="ledger-search-container col-md-4" id="append">
+        @Html.TextAreaFor(x => x.Particulars, new { @class = " form-control Particulars", @rows = "1", @id = "particularsSearch", @style = "margin-top: 1px;", @placeholder = "Enter your description here" })
+        @*<br/>*@
+        @if (ViewBag.AppendValue == null)
+        {
+            <div id="description-content" style="margin-right:-17px;margin-left:-17px;padding-top:3px;">
+                @if (Model.Voucher5T != null)
+                {
+                    if (Model.Voucher5T.Count() > 0)
+                    {
+                        foreach (var item in Model.Voucher5T)
+                        {
+                            <br />
+                            <br />
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Cheque/Slip No:
+                                        </th>
+                                        <th>
+                                            @item.ChequeNo
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Cheque/Slip Amount:
+                                        </th>
+                                        <th>
+                                            @item.ChequeAmount
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Cheque Date:
+                                        </th>
+                                        <th>
+                                            @item.ChequeDate
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Depositor/Payee:
+                                        </th>
+                                        <th>
+                                            @item.Payees
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        }
+                    }
+                }
+                @if (Model.Voucher3T != null)
+                {
+                    if (Model.Voucher3T.Count() > 0)
+                    {
+                        foreach (var item in Model.Voucher3T)
+                        {
+                            <br />
+                            <br />
+                            <table class="table table-bordered">
+
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Subsi Name:
+                                        </th>
+                                        <th>
+                                            @{
+                                                var subsiTableId = ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiTableFromLedgerId((int)item.Voucher2T.Fid);
+                                            }
+                                            @ChannakyaAccounting.Helper.GenerateSubsiTypeList.GenerateSubsiName(item.SId, subsiTableId)
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Subsi Amount
+                                        </th>
+                                        <th>
+                                            @item.Amount
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Subsi Description
+                                        </th>
+                                        <th>
+                                            @item.Description
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                                                        }
+
+                                                    }
+                                                }
+
+                                                @*@if (Model.Voucher4T != null)
+                                                    {
+                                                        if (Model.Voucher4T.Count() > 0)
+                                                        {
+
+                                                        }
+                                                    }*@
+                                            </div>
+                                                }
+                                                else
+                                                {
+                                                    <div id="description-content" style="margin-right:-17px;margin-left:-17px;">
+                                                        @if (Model.Voucher5T != null)
+                {
+                    if (Model.Voucher5T.Count() > 0)
+                    {
+                                                                @Html.EditorFor(x => x.Voucher5T)
+                                                            }
+                                                        }
+                                                        @if (Model.Voucher3T != null)
+                {
+                    if (Model.Voucher3T.Count() > 0)
+                    {
+                        for (int i = 0; i < Model.Voucher3T.Count(); i++)
+                        {
+                                                                    @Html.Partial("AddMoreSubsi", Model.Voucher3T.ToList()[i])
+                                                                }
+                                                            }
+                                                        }
+                                                        @*@if (Model.Voucher4T != null)
+                                                            {
+                                                                if (Model.Voucher4T.Count() > 0)
+                                                                {
+
+                                                                }
+                                                            }*@
+                                                    </div>
+                                                }
+    </td>
+    @if (Model.V2TId == 0)
+    {
+        <td style="text-align:right" class="ledger-search-container debit" id="append">
+            @Html.TextBoxFor(x => x.DebitAmount, null, new { @class = " form-control dbamnt", @style = "text-align:right;" })
+
+        </td>
+    }
+    else
+    {
+        if (Model.DebitAmount != null)
+        {
+            <td style="text-align:right" class="ledger-search-container debit" id="append">
+                @Html.TextBoxFor(x => x.DebitAmount, null, new { @class = " form-control dbamnt", @style = "text-align:right;" })
+
+            </td>
+        }
+        else
+        {
+            <td style="text-align:right" class="ledger-search-container debit" id="append">
+                @Html.TextBoxFor(x => x.DebitAmount, null, new { @class = " form-control dbamnt", @style = "display:none;text-align:right; " })
+
+            </td>
+        }
+    }
+    @if (Model.V2TId == 0)
+    {
+        <td style="text-align:right;" class="ledger-search-container credit" id="append">
+            @Html.TextBoxFor(x => x.CreditAmount, null, new { @class = " form-control cramnt", @style = "display:none;text-align:right;" })
+        </td>
+    }
+    else
+    {
+        if (Model.CreditAmount != null)
+        {
+            <td style="text-align:right;" class="ledger-search-container credit" id="append">
+                @Html.TextBoxFor(x => x.CreditAmount, null, new { @class = " form-control cramnt", @style = "text-align:right;" })
+            </td>
+        }
+        else
+        {
+            <td style="text-align:right;" class="ledger-search-container credit" id="append">
+                @Html.TextBoxFor(x => x.CreditAmount, null, new { @class = " form-control cramnt", @style = "display:none;" })
+            </td>
+        }
+    }
+    <td style="text-align: center">
+        <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-disk' data-toggle="tooltip" title="Save" id='btnSave' /> <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-save ' data-toggle="tooltip" title="Save And Add" id='btnSaveandNext' /> <i class='btn btn-info btn-sm glyphicon glyphicon-trash' data-toggle="tooltip" title="Delete" id='btnDelete' />
+    </td>
+</tr>
+
+@*<tr class="newrow-cash">
+    </tr>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        debugger
+        if( @susbsiList.Count() != 0 && @bankList.Count() != 0)
+        {
+            var voucher2 = {  SubsiVSLedgerList: '@susbsiList', BankInfoList: ' @bankList' }
+            $.ajax({
+                url: '/Voucher1/AddVoucherLedgerDetails/',
+                data: { voucher2: voucher2 },
+                dataType: "html",
+                success: function (data) {
+                    debugger;
+                    $('td.voucher-ledger-details-container').html(data);
+                }
+            });
+        }
+
+        $("i#btnDelete").click(function () {
+            debugger;
+            var masterId = $('input.voucher-master-Id').val();
+            //if (masterId != 0 && masterId != null) {
+            //    $("#V1TId").val(masterId);
+            //}
+            $(this).closest('tr.newrow').remove();
+        });
+
+        $('select#voucherSelect').change(function () {
+            debugger;
+            var voucherType = $(this).val();
+
+            var debitcontainer = $(this).closest('tr.newrow').find('input.dbamnt')
+            var creditcontainer = $(this).closest('tr.newrow').find('input.cramnt')
+            if (voucherType == 0) {
+                $(debitcontainer).show();
+                $(creditcontainer).hide();
+                $(creditcontainer).val('');
+            }
+
+            else {
+                $(debitcontainer).hide();
+                $(debitcontainer).val('');
+                $(creditcontainer).show();
+            }
+        });
+
+        $('select#VTypeId').change(function () {
+            debugger;
+            var voucherType = $(this).val();
+            var container = $(this).closest('.Voucher1-create').find('.batch-number');
+
+            var form = $(container).closest("form");
+            $.ajax({
+                url: '/Voucher1/GetBatch/',
+                data: { type: voucherType },
+                dataType: "html",
+                success: function (data) {
+                    $(container).show();
+                    $(container).html(data);
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+
+                }
+            });
+        });
+
+        //$('#btnledgersearch').click(function () {
+        //    debugger;
+        //    voucherEvent = $(this);
+        //    var currentEvent = $(this);
+        //    var Search = $('#ledgerSearch').val();
+        //    var url = $('#getVoucherDetails').data('url');
+        //    var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+        //    var data = { "type": type };
+        //    $.get(url, data, function (data) {
+        //        debugger
+        //        $('#getVoucherDetails').html(data);
+        //        $('#getVoucherDetails').modal('show');
+        //    });
+
+        //});
+
+        $('button#recentLog').click(function () {
+            debugger;
+            var url = $('#getVoucherLogs').data('url');
+            //var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+            //var data = { "type": type };
+            $.get(url, function (data) {
+                $('#getVoucherLogs').html(data);
+                debugger;
+                $('#getVoucherLogs').modal('show');
+            });
+
+        });
+
+
+        @*$('tbody.voucher2-container').on('click', 'i#btnSave', function () {
+            debugger;
+            //var form = $("#createVoucherRow");
+            var saveMaster = 0;
+            var currentevent = $(this);
+            if ($('select#VTypeId').hasClass('makeDisable') == false) {
+                saveMaster = 1;
+            }
+            var masterId = $('input.voucher-master-Id').val();
+            if (masterId != 0 && masterId != null) {
+                $("#V1TId").val(masterId);
+            }
+            $('select#VTypeId').addClass('makeDisable');
+            $('select#CTId').addClass('makeDisable');
+            $('select#BatchNo').addClass('makeDisable');
+
+
+            //var container = $('.Voucher1-create').find('.voucher2-container')
+            var formData = new FormData($("#mainVoucher")[0]);
+
+            $.ajax({
+                url: '@Url.Action("SaveTableTemporary", "Voucher1")',
+                type: 'POST',
+                data: formData,
+                async: false,
+                success: function (data) {
+                    debugger;
+
+
+                    $(currentevent).closest('tr.newrow').html(data);
+
+                    var finalDebitAmount = 0;
+                    var finalCreditAmount = 0;
+
+                    var allAmounts = $('tbody.voucher2-container').find('tr.newrow');
+
+                    $(allAmounts).each(function (index, item) {
+
+                        var amountDebit = parseFloat($(item).find('.dbamnt').text()).toFixed(2)
+
+                        if (isNaN(amountDebit)) {
+                            amountDebit = 0;
+                        }
+                        else {
+                            finalDebitAmount = (parseFloat(finalDebitAmount) + parseFloat(amountDebit)).toFixed(2)
+                        }
+
+                        var amountCredit = parseFloat($(item).find('.cramnt').text()).toFixed(2)
+                        if (isNaN(amountCredit)) {
+                            amountCredit = 0;
+
+                        }
+                        else {
+                            finalCreditAmount = (parseFloat(finalCreditAmount) + parseFloat(amountCredit)).toFixed(2)
+                        }
+
+                    });
+                    if (isNaN(parseFloat(finalCreditAmount)) == false) {
+                        $('.main-voucher-table-container').find('td.credit-total-amount').html("<b>" + finalCreditAmount + "<b>");
+                    }
+                    if (isNaN(parseFloat(finalDebitAmount)) == false) {
+                        $('.main-voucher-table-container').find('td.debit-total-amount').html("<b>" + finalDebitAmount + "</b>");
+                    }
+
+
+
+                },
+                error: function (data) {
+                    debugger;
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+
+
+            return false;
+
+
+        });*@
+
+
+    });
+</script>

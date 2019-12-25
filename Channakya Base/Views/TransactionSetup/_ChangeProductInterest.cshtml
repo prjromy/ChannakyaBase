@@ -1,0 +1,704 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChangeProductInterestViewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@{
+    CommonService commonservice = new CommonService();
+    TellerService ts = new TellerService();
+    var s = Model;
+    ViewBag.Empty = 0;
+}
+@*@using (Ajax.BeginForm("_ChangeProductInterest", "TransationSetup", new AjaxOptions
+    {
+        UpdateTargetId = "ChangeProductInterest-list",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnSuccess = "createSuccess",
+        OnFailure = "OnFailure"
+    }, new { id = "ChangeProductInterestFormCreate" }))*@
+@using (Html.BeginForm("_ChangeProductInterest", "TransationSetup", FormMethod.Post, new { @id = "ChangeProductInterestFormCreate" }))
+{
+    <fieldset>
+        <legend>Change Details</legend>
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal change-product-interest-form">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(x => x.PID, new { @class = "hiddenPID" })
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Product Type", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.ProductType, TransactionUtilityService.AccountType(), "-Select Type-", htmlAttributes: new { @class = "form-control", id = "productType" })
+                        @Html.ValidationMessageFor(model => model.ProductType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group col-md-6">
+                    @Html.Label("Effective Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DatePicker(x => x.InterestChangeDate)
+                        @Html.ValidationMessageFor(model => model.InterestChangeDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Product", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.ProductName, Enumerable.Empty<SelectListItem>() , "-Select Product-", htmlAttributes: new { @class = "form-control PName" })
+                        @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-6 change-interest-duration">
+                    @Html.Label("Duration", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.Duration, TellerUtilityService.DurationList(Model.PID), "-Select Duration-", new { @class = "form-control", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6  change-interest-basic">
+                    @Html.Label("Basic", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.Basic, new SelectList("", ""), "-Select Duration Basic -", new { @class = "form-control basicCI", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.Basic, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="ContributionAmountForRecurringCI form-group col-md-6 hidden">
+                    @Html.Label("Contribution", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.Contribution, new SelectList("", ""), "-Select contribution Amount -", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Contribution, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row only-for-loan-ci" style="display:none">
+                <div class="form-group col-md-6">
+                    @Html.Label("Penalty Interest Rate", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.PenaltyInterestRate, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PenaltyInterestRate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.Label("OI Rate", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.OIRate, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.OIRate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row only-for-loan-ci" style="display:none">
+                <div class="form-group col-md-6">
+                    @Html.Label("Principle Penalty Rate", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.PrinciplePenaltyRate, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PrinciplePenaltyRate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Current Rate", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.CurrentRate, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control focusdiv", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.CurrentRate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-6  change-interest-capitalization">
+                    @Html.Label("Interest Capitalization", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(model => model.InterestCapitalization, TellerUtilityService.GetInterestCapitalizeByProductId(Model.PID), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.InterestCapitalization, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.Label("New Rate", htmlAttributes: new { @class = "control-label col-md-4 " })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.NewRate, new { htmlAttributes = new { autofocus = "autofocus", @class = "form-control product-newInterestRate" } })
+                        @Html.ValidationMessageFor(model => model.NewRate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.Label("Apply to product only", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-2 col-md-offset-1">
+                        @Html.CheckBox("applyToProductOnly", new { @class = "apply-to-product-only", @checked = true })
+                    </div>
+                    <div class="col-md-3">
+                        <input type="button" value="Search" id="btn-search-list" class="btn btn-default btn-save btn-search-ci" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ChangeProductInterest-list" class="ChangeProductInterestList">
+        </div>
+
+        <div class="row text-center">
+            <input type="button" value="Apply" id="btn-applynewinterest-submit" class="btn btn-default btn-save apply-btn" />
+            <input type="submit" value="Apply" id="btn-applynewinterest-submit" class="btn btn-default hidden btn-save apply-hidden-btn" />
+        </div>
+    </fieldset>
+}
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+    $(function () {
+        $('#productType').on('change', function () {
+            debugger
+            var batchID = $(this).val();
+            //alert("product type "+batchID);
+            $.ajax({
+                url: "/TransactionSetup/GetProductByProductType",
+                data: { batchID: batchID },
+                cache: false,
+                type: "get",
+                success: function (data) {
+                    debugger
+                    $(".ChangeProductInterestList").html("");
+
+                    if (batchID == 1) {
+                        $(".only-for-loan-ci").show(300);
+                        $(".change-interest-duration").hide(300);
+                        $(".change-interest-basic").hide(300);
+                        $(".change-interest-capitalization").hide(300);
+                        $(".ContributionAmountForRecurringCI").hide(300);
+                    }
+                    else {
+                        $(".only-for-loan-ci").hide(300);
+                        $(".change-interest-duration").show(300);
+                        $(".change-interest-basic").show(300);
+                        $(".change-interest-capitalization").show(300);
+                        $(".ContributionAmountForRecurringCI").show(300);
+                    }
+
+                    var markup = "<option value='0'> -Select Product-</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $(".PName").html(markup).show();
+
+                    //to reset the form hereafter
+                    var markup2 = "<option value='0'>-Choose Interest Capitalization</option>";
+                    $("#InterestCapitalization").html(markup2);
+
+                    var markup3 = "<option value='0'>-Choose Duration-</option>";
+                    $('#Duration').html(markup3);
+
+                    var markup4 = "<option value='0'>-Choose Basic-</option>";
+                    $('#Basic').html(markup4);
+
+                    var markup5 = "<option value='0'>-Choose Contribution-</option>";
+                    $('#Contribution').html(markup5);
+
+                    $("#CurrentRate").val("");
+
+
+                },
+                error: function (reponse) {
+                    //alert("error : " + reponse);
+                }
+            });
+
+        })
+    });
+
+    $('.PName').on('change', function () {
+        debugger;
+        var batchID = $(this).val();
+        //account div empty at first
+        $(".ChangeProductInterestList").html("");
+
+        $.ajax({
+            url: "/TransactionSetup/GetInterestCapitalizeByProductType",
+            data: { batchID: batchID },
+            //cache: false,
+            type: "get",
+            success: function (data) {
+                var markup = "<option value='0'>Choose</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                }
+                $(".interest-cap").html(markup).show();
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+
+        var productId = $(".PName option:selected").val();
+        //alert("product id is " + productId);
+        $(".hiddenPID").val(productId);
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetAllProductDetailsByProductId",
+            datatype: "Json",
+            data: { productId: productId },
+            success: function (result) {
+                debugger
+
+                $.ajax({
+                    url: "/TransactionSetup/GetStypeByProductId",
+                    data: { batchID: batchID },
+                    //cache: false,
+                    type: "get",
+                    success: function (data) {
+                        if (data.SType == 0) {
+                            debugger
+                            if (result.ChkProductType.IsDuration) {
+                                if (result.ChkProductType.IsRecurring || result.ChkProductType.IsOtherTypeRecurring) {
+                                    $(".ContributionAmountForRecurringCI").removeClass('hidden');
+                                    $(".basicCI").removeAttr('disabled');
+                                }
+                                else {
+                                    $(".ContributionAmountForRecurringCI").addClass('hidden');
+                                    $(".basicCI").attr('disabled', 'disabled');
+                                }
+
+                                $("#Duration").removeAttr('disabled');
+                                $("#ContributionAmountCI").removeAttr('disabled');
+
+                                var durationList = '';
+
+                                $.each(result.productDurationList, function (index, item) {
+
+                                    durationList = durationList + "<option value='" + item.Id + "'>" + item.Duration + "</option>"
+                                })
+                                $('#Duration').html(durationList);
+                                $("#CurrentRate").val("");
+                                $("#Duration").trigger("change")
+                            }
+                            else {
+                                debugger
+                                $('#Duration').html("");
+                                $("#Basic").attr('disabled', 'disabled');
+                                $("#Duration").attr('disabled', 'disabled');
+
+                                $("#CurrentRate").val("");
+                                $("#ContributionAmountCI").attr('disabled', 'disabled');
+                                var InterestCapitalizeList = '';
+
+                                $.each(result.InterestCapital, function (index, item) {
+                                    InterestCapitalizeList = InterestCapitalizeList + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                                })
+                                $('#InterestCapitalization').html(InterestCapitalizeList);
+                                $("#InterestCapitalization").trigger("change");
+
+                            }
+
+                            debugger
+                            var InterestCalList = '';
+
+                            $.each(result.Policy, function (index, item) {
+                                InterestCalList = InterestCalList + "<option value='" + item.PloicyIntCalId + "'>" + item.PolicyIntCalName + "</option>"
+                            })
+
+                            $('#InterestCalRule').html(InterestCalList);
+
+                            if (result.ChkProductType.IsMovement) {
+                                debugger
+                                $("#MovementAcc").removeAttr('disabled');
+                                $(".btn-account-open-search").removeAttr('disabled');
+                            }
+                            else {
+                                debugger
+                                $("#MovementAcc").val("");
+                                $("#MovementAcc.account-id").val("");
+                                $("#MovementAcc").attr('disabled', 'disabled');
+                                $(".btn-account-open-search").attr('disabled', 'disabled');
+                            }
+
+                            var CurrList = '';
+                            $.each(result.Currency, function (index, item) {
+                                CurrList = CurrList + "<option value='" + item.CTId + "'>" + item.CurrencyName + "</option>"
+                            })
+                            $('#CurrID').html(CurrList);
+
+                            //var FloatingInterestList = '';
+                            //$.each(result.FloatingInterest, function (index, item) {
+                            //    FloatingInterestList = FloatingInterestList + "<option value='" + item.FloatingId + "'>" + item.FloatingName + "</option>"
+                            //})
+                            //$('#FloatingInterest').html(FloatingInterestList);
+                            debugger
+                            if (result.ChkProductType.IsIndiviualInterestRate) {
+                                $("#CurrentRate").removeAttr('readonly');
+                            }
+                            else {
+                                $("#CurrentRate").attr('readonly', 'readonly');
+                            }
+
+                            $("#MinimumBalance").val(result.ProductDetails.MinimumAmount);
+
+                            if (result.ChkProductType.IsIndividualLimit) {
+                                $("#MinimumBalance").removeAttr('readonly');
+                            }
+                            else {
+                                $("#MinimumBalance").attr('readonly', 'readonly');
+                            }
+
+                            if (result.IsChargeAvailable) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: "/FinanceParameter/_ChargeAutoTriggered",
+                                    datatype: "Json",
+                                    data: {
+                                        productId: productId, modevent: 4,
+                                    },
+                                    success: function (result) {
+                                        $(".account-create").find(".chargeDetails").html("");
+                                        $(".account-create").find(".chargeDetails").html(result);
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            debugger
+                            $("#PenaltyInterestRate").val(result.ProductDetails.PIRate);
+                            $("#OIRate").val(result.ProductDetails.OIRate);
+                            $("#PrinciplePenaltyRate").val(result.ProductDetails.PPRate);
+                            $("#CurrentRate").val(result.ProductDetails.IRate);
+                            $("#CurrentRate").removeAttr('readonly');
+                            $("#CurrentRate").attr('readonly', 'readonly');
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+        })
+    })
+
+    $("#Contribution").on("change", function () {
+        debugger;
+        //alert("contribution change");
+        var durationId = $("#Duration option:selected").val();
+        var productId = $(".PName option:selected").val();
+        var contrubAmount = $("#Contribution").val();
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetRecurringBasic",
+            datatype: "Json",
+            data: {
+                contrubAmount: contrubAmount,
+                productId: productId,
+                durationId: durationId,
+
+            },
+            success: function (result) {
+
+                var durationBasic = "";
+
+                $.each(result, function (index, item) {
+                    durationBasic = durationBasic + "<option value='" + item.Id + "'>" + item.Duration + "</option>"
+                })
+                $('#Basic').html(durationBasic);
+                $("#Basic").trigger('change')
+            }
+        })
+    });
+
+    $("#Basic").on("change", function () {
+        //alert("Basic change");
+        var durationId = $("#Duration option:selected").val();
+        var productId = $(".PName option:selected").val();
+        var contrubAmount = $("#Contribution option:selected").val();
+        var basicId = $("#Basic option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetInterestCapitalizeForRecurringProduct",
+            datatype: "Json",
+            data: {
+                durationId: durationId,
+                productId: productId,
+                basicId: basicId,
+                value: contrubAmount,
+            },
+            success: function (result) {
+                debugger
+
+                var InterestCapitalizeList = "";
+                $.each(result, function (index, item) {
+                    InterestCapitalizeList = InterestCapitalizeList + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                })
+                $('#InterestCapitalization').html(InterestCapitalizeList);
+                $("#InterestCapitalization").trigger("change");
+            }
+        })
+    });
+
+    $("#Duration").on("change", function () {
+        //alert("Duration change");
+        debugger
+        var durationId = $("#Duration option:selected").val();
+        var productId = $(".PName option:selected").val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetCaptRuleByProductDuration",
+            datatype: "Json",
+            data: {
+                //registerDate: regDate,
+                productId: productId,
+                durationId: durationId
+                //datetype: datetype
+            },
+            success: function (result) {
+                debugger
+                //$("#MaturationDate").val(result.duration.Date);
+                //$('#DateType').prop('readonly', true);
+
+                //dateAd.val(result.duration.EnglishDate);
+                //dateBs.val(result.duration.NepaliDate)
+                if (result.ChkProductType.IsFixed) {
+                    var InterestCapital = "";
+
+                    $.each(result.InterestCapital, function (index, item) {
+                        InterestCapital = InterestCapital + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                    })
+                    $('#InterestCapitalization').html(InterestCapital);
+                    $("#InterestCapitalization").trigger("change");
+
+                } else if (result.ChkProductType.IsRecurring || result.ChkProductType.IsOtherTypeRecurring) {
+                    var recValue = "";
+                    $.each(result.InterestCapital, function (index, item) {
+                        recValue = recValue + "<option value='" + item.contributionValue + "'>" + item.contributionValue + "</option>"
+                    })
+                    $('#Contribution').html(recValue);
+                    $("#Contribution").trigger('change')
+
+                }
+                else if (result.ChkProductType.IsOtherTypeRemaining)
+                {
+                    var InterestCapital = "";
+
+                    $.each(result.InterestCapital, function (index, item) {
+                        InterestCapital = InterestCapital + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                    })
+                    $('#InterestCapitalization').html(InterestCapital);
+                    $("#InterestCapitalization").trigger("change");
+                }
+
+            }
+        })
+    });
+
+    $("#InterestCapitalization").on("change", function () {
+        //alert("Interest Capitalization Change");
+        debugger
+
+        var captId = $("#InterestCapitalization option:selected").val();
+        var durationId = $("#Duration option:selected").val();
+        var contrubAmount = $("#Contribution option:selected").val();
+        var basicId = $("#Basic option:selected").val();
+        var productId = $(".PName option:selected").val();
+        if (captId == 0) {
+            return;
+        }
+        //alert("ICAP:" + captId  );
+        //here trying to sort out if it is loan account or not
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetStypeChangeInterest",
+            datatype: "Json",
+            data: {
+                productId: productId
+            },
+            success: function (result) {
+                debugger
+                if (result.SType == 1) //loan
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Teller/GetLoanCurrentInterest",
+                        datatype: "Json",
+                        data: {
+                            productId: productId
+                        },
+                        success: function (result) {
+                            debugger
+                            //try to get interest only as now whole data is being fetched in actionresult
+                            $("#CurrentRate").val(result.IRate);
+                        }
+                    })
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Teller/GetCaptRuleIntRateByProductAndDurationId",
+                        datatype: "Json",
+                        data: {
+                            captId: captId,
+                            productId: productId,
+                            contrubAmount: contrubAmount,
+                            durationId: durationId,
+                            basicId: basicId
+                        },
+                        success: function (result) {
+                            //alert("ICAP:" + captId);
+                            debugger
+                            $("#CurrentRate").val(result);
+                        }
+                    });
+                }
+            }
+        })
+    });
+
+    $(".btn-search-ci").on("click", function () {
+        //alert("Search Button Clicked");
+        debugger
+        var newInterest = $(".product-newInterestRate").val();
+        var captId = $("#InterestCapitalization option:selected").val();
+        var durationId = $("#Duration option:selected").val();
+        var contrubAmount = $("#Contribution option:selected").val();
+        var basicId = $("#Basic option:selected").val();
+        var productId = $(".PName option:selected").val();
+        if (productId == 0) {
+            InfoAlert("Please Select Products",3000);
+        }
+        else {
+            $.ajax({
+                type: "GET",
+                url: "/Teller/GetAccountSearchList2",
+                datatype: "Json",
+                data: {
+                    productId: productId,
+                    durationId: durationId,
+                    captId: captId,
+                    basicId: basicId,
+                    value: contrubAmount
+                },
+                success: function (result,status,xhr) {
+                    debugger
+                    if (xhr.getResponseHeader("Counter") == "0")
+                    {
+                        InfoAlert("No Accounts in this product to show.", 5000);
+                        $(".ChangeProductInterestList").html("");
+                    }
+                    if(xhr.getResponseHeader("Counter") == "1")
+                    {
+                        $(".ChangeProductInterestList").html("");
+                        $(".ChangeProductInterestList").html(result);
+                        $(".account-newInterestRate").val(newInterest);
+                        //$(".ChangeProductInterestList").val(result);
+                    }
+                }
+            });
+        }
+
+    });
+
+    var isNonChecked = false;
+    $('.apply-btn').on('click', function () {
+        debugger;
+        if ($("#productType").val() === "") {
+            InfoAlert("Please select type of product", 4000);
+            return false;
+        }
+        if ($("#ProductName").val() === "0") {
+            InfoAlert("Please select product", 4000);
+            return false;
+        }
+        //if ($("#NewRate").val() === "0") {
+        //    InfoAlert("New Rate cannot be 0", 4000);
+        //    return false;
+        //}
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger
+            //$("#ChangeProductInterest-list").find("table > tbody > tr").each(function (trcount, obj) {
+            //    if ($(obj).find(".checkone").prop('checked') == true && isNonChecked == false) {
+            //        isNonChecked = true;
+            //    }
+            //});
+            //if (isNonChecked == false) {
+            //    //alert("Please check accounts to apply new interest");
+            //    $(this).closest("form").submit();
+            //}
+            //else {
+            //    //$(".apply-hidden-btn")
+            //    //jQuery.fn.preventDoubleSubmit = function () {
+            //    $(this).closest("form").submit();
+            //    //}
+            //}
+            //alert("On sucess function entered");
+            var formData = new FormData($("#ChangeProductInterestFormCreate")[0]);
+
+            $.ajax({
+                url: '@Url.Action("_ChangeProductInterest", "TransactionSetup")',
+                type: 'POST',
+                data: formData,
+                async: false,
+                success: function (result) {
+                    debugger
+                    if (result.Success == true) {
+                        $.ajax({
+                            url: '@Url.Action("ChangeProductInterestIndex", "TransactionSetup")',
+                            type: 'GET',
+                            processData: false,
+                            success: function (data) {
+                                debugger
+                                $('section.content').html("");
+                                $('section.content').html(data);
+                                SuccessAlert(result.Msg, 4000);
+                            },
+                            error: function () {
+                                alert('error');
+                            }
+                        });
+                    }
+                    else {
+                        ErrorAlert(result.Msg, 4000);
+                    }
+                },
+                error: function (data) {
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+    });
+
+    //$(".apply-to-product-only").on("change", function () {
+    //    debugger
+    //    if (this.checked == true) {
+    //        $("#Check_All").prop("checked", true);
+    //        $("#Check_All").trigger("change");
+    //    }
+    //    else {
+    //        $("#Check_All").prop("checked", false);
+    //        $("#Check_All").trigger("change");
+    //    }
+    //})
+
+    $(".product-newInterestRate").on("change", function () {
+        //alert($(".product-newInterestRate").val())
+        debugger
+        var temp = $(".product-newInterestRate").val();
+        if ($(this).val() > 50) {
+            ErrorAlert("Interest rate can't exceed 50%",5000);
+            $(this).val("0");
+        }
+        else {
+            $(".account-newInterestRate").val(temp);
+        }
+
+
+    })
+
+</script>

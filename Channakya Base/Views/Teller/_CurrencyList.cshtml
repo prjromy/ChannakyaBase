@@ -1,0 +1,25 @@
+﻿@model ChannakyaBase.Model.ViewModel.CurrencyModel
+<div class="table-responsive table-click-currency">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Currency Code</th>
+                <th>Currency Name</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CurrencyList)
+            {
+                <tr id="@item.CTId">
+                    <td class="Product-code">@item.CurrencyCode</td>
+                    <td>@item.CurrencyName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+
+

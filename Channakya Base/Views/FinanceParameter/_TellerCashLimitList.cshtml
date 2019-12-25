@@ -1,0 +1,60 @@
+﻿@model  ChannakyaBase.Model.ViewModel.CashLimitModel
+@using ChannakyaBase.BLL
+@{
+
+}
+
+<div class="box-body table-responsive no-padding table-CashLimitModel">
+    <table class="table table-bordered table-striped table-hover tale-cashlimit">
+        <tr>
+
+            <th>
+                EmployeeName
+            </th>
+
+            <th>
+                UserName
+            </th>
+            <th>
+                Designation
+            </th>
+
+            <th>Dr Amount</th>
+            <th>Cr Amount</th>
+            <th>Action</th>
+        </tr>
+
+        @foreach (var item in Model.CashLimitList)
+        {
+            <tr>
+              
+                    @Html.HiddenFor(modelItem => item.stfid)
+                
+                <td>
+                      @item.EmployeeName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @item.DGName
+
+
+                </td>
+
+                <td>
+                  
+                    @Html.DisplayFor(modelItem => item.dramt)
+
+                </td>
+                <td>
+                   @Html.DisplayFor(modelItem => item.cramt)
+
+                </td>
+                <td><a  class="btn btn-info btn-sm btn-edit-branch glyphicon glyphicon-edit" onclick="EditCashLimit(@item.cashLimitId)"></a></td>
+            </tr>
+        }
+
+    </table>
+
+</div>

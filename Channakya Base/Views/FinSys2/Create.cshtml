@@ -1,0 +1,353 @@
+﻿
+@model ChannakyaAccounting.Models.Models.FinSys2
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = Model;
+    var treeobj = new ChannakyaAccounting.Models.ViewModel.TreeViewParam(false, true, true, 0, 0, ViewBag.ActiveText, "Select FinSys2", "");
+    ChannakyaAccounting.Models.ViewModel.TreeViewParam paramData = (ChannakyaAccounting.Models.ViewModel.TreeViewParam)ViewData["param"];
+    var title = "Create Node";
+    var buttonTitle = "Create";
+    if (Model.F2id != 0)
+    {
+        title = "Edit Node";
+        buttonTitle = "Edit";
+    }
+
+}
+<div class="box box-warning FinSys2-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">@title </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    @using (Html.BeginForm("Create", "FinSys2", FormMethod.Post, new { @id = "createFinSys2" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @Html.HiddenFor(x=>x.Content)
+                @Html.HiddenFor(x => x.F2id)
+
+                <div class="form-group col-md-12 parent-finsys2">
+                    @Html.LabelFor(model => model.Pid, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+
+                        @Html.EditorForTree(model => model.Pid, treeobj)
+                        @Html.ValidationMessageFor(model => model.Pid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.F2Desc, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.F2Desc, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.F2Desc, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.F1id, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+
+                        @Html.DropDownListFor(model => model.F1id, (IEnumerable<SelectListItem>)ViewBag.FinSys1List, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.F1id, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="type-container">
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.F1Type, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+
+                            @Html.DropDownListFor(model => model.F1Type, (IEnumerable<SelectListItem>)ViewBag.TypeList, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.F1Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.IsFixed, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.IsFixed, new { htmlAttributes = new { @class = "is-group" } })
+                        @Html.ValidationMessageFor(model => model.IsFixed, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+
+
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Count, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.Count, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Count, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.Content, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-3">
+                        <input type="file" id="fileid1" name="file" class="file-picker-input exm" style="display:none;" />
+                        <i class="glyphicon glyphicon-upload uploadicon upldimge"></i>
+                        @if (Model.F2id != 0 && ViewBag.Image != null)
+                        {
+                            <div id="loadimage"><img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,@ViewBag.Image" alt=""></div>
+
+                        }
+                        else
+                        {
+                            <div id="loadimage"></div>
+                        }
+                        @*@Html.EditorFor(model => model.FinSys2Caption, new { htmlAttributes = new { @class = "form-control" } })*@
+                        @Html.ValidationMessageFor(model => model.Content, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+
+                <div class="form-group col-md-12 action-controller">
+                    @*@if (Model.IsGroup != true && Model.IsContextFinSys2 != true)
+                        {
+                            @Html.Partial("_CreateAction", Model)
+                        }*@
+
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+
+            <div class="col-md-offset-11">
+                <input type="submit" id="btnSubmit" value="@buttonTitle" class="btn btn-default" />
+            </div>
+
+        </div><!-- box-footer -->
+
+    }
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script src="~/Scripts/ch-treeview.js"></script>*@
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div><!-- /.box -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var form1 = new FormData();
+        $(".display-txt#PF2id").focus();
+
+        $('.upldimge').on('click', function () {
+            debugger;
+            $(this).prev('.exm').trigger('click');
+        })
+        $('.exm').on('change', function () {
+            debugger;
+
+            var Imageform = new FormData();
+            var imagecontent = $(this)[0].files[0];
+            Imageform.append('imagefile', imagecontent);
+            var img = $('input#fileid1').val();
+            $.ajax({
+                type: 'POST',
+                url: "/FinSys2/DisplayImage",
+                data: Imageform,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (ImageContent) {
+                    debugger;
+                    $('#loadimage').empty();
+                    $('#loadimage').append(' <img style="max-height:40px;max-width:40px;object-fit:contain;margin-left: 4px;" src="data:image/gif;base64,' + ImageContent + '"  alt=""/>');
+                    // $('#loadimage').attr("content", imagecontent);
+                }
+            });
+
+        });
+
+        $('div#Pid').on('getType', function (e, data) {
+            
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".FinSys2-create").find(".type-container");
+     
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetType", "FinSys2")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { Pid: data.pid },
+                    dataType: "html",
+                    success: function (html) {
+                        debugger;
+                        $(container).html("");
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            
+            
+      
+        });
+
+        $("#createFinSys2").submit(function () {
+            debugger;
+
+            var form = $(this);
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty");
+                return false;
+            }
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            var nodeId = $(this).closest('form#createFinSys2').find('.parent-finsys2').find('div#Pid').find('input.internal-value').val();
+          
+            
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("Create", "FinSys2")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $.fn.updateTreeview('FinSys2', '_UpdateFinSys2Tree', nodeId, -1)
+
+                        if(@Model.F2id==0)
+                        {
+                            SuccessAlert("Node Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Node Edited Succesfully.",1500);
+                        }
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+
+
+
+        $('.FinSys2-create').on('change', '#IsGroup', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".FinSys2-create").find(".action-controller")
+            var contextCheck = $(this).closest(".FinSys2-create").find("input#IsContextFinSys2").prop("checked")
+            if (!this.checked && contextCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "FinSys2")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.FinSys2-create').on('change', '#IsContextFinSys2', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $(this).closest(".FinSys2-create").find(".action-controller")
+            var groupCheck = $(this).closest(".FinSys2-create").find("input#IsGroup").prop("checked")
+            if (!this.checked && groupCheck == false) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_CreateAction", "FinSys2")',
+                    contentType: "application/json; charset=utf-8",
+                    // data: { parentId: data.nodeId, allowSelectGroup: data.allowSelectGroupNode },
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        $('.FinSys2-create').on('filterTree', '.section-treeview', function (e, data) {
+            debugger;
+            e.stopPropagation();
+
+            if (data.fromPopUp == 'false') {
+
+                $dlg_dpicker.load("/FinSys2/_GetFinSys2TreePopup", { param: data.param })
+            }
+            else {
+                $dlg_dpicker.find('.treeview-area').load("/FinSys2/_GetFinSys2Tree", { param: data.param })
+
+            }
+
+
+        });
+
+    });
+    $.fn.GetLayoutFinSys2 = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/FinSys2/GetLayoutFinSys2/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+
+
+</script>
+
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+</style>
+

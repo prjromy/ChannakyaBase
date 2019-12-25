@@ -1,0 +1,301 @@
+﻿@{
+    Nullable<int> totalPage = ViewBag.TotalPage as Nullable<int>;
+    var fromDate = Convert.ToDateTime(ViewBag.FromDate).ToShortDateString();
+    var toDate = Convert.ToDateTime(ViewBag.ToDate).ToShortDateString();
+    //var fId = ViewBag.FId;
+    //  ViewBag.ActivePager=ViewBag.
+
+}
+
+<ul class="pagination pager-list" style="float:left;margin-right:20px;">
+    <li class="previous"><a href="#">Previous</a></li>
+    @for (int i = 1; i <= totalPage; i++)
+            {
+                if (i > 4)
+                {
+                    if (i == ViewBag.ActivePager)
+                    {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+
+                    if (i > ViewBag.ActivePager)
+                    {
+                        if (i - ViewBag.ActivePager <= 2)
+                        {
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+                        else
+                        {
+                            if (i == totalPage)
+                            {
+                                if (totalPage - ViewBag.ActivePager > 3)
+                                {
+                                    <li class=""><a>.......</a> </li>
+                                }
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                        }
+                    }
+                    else
+                    {
+
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+        else
+        {
+            if (i == ViewBag.ActivePager)
+            {
+                <li id=@i class="pagerClass active"><a>@i</a> </li>
+            }
+            else
+            {
+                if (i >= (ViewBag.ActivePager - 2))
+                {
+                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                }
+                else
+                {
+                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                }
+            }
+        }
+    }
+    <li class="next"><a href="#">Next</a></li>
+
+</ul>
+<div style="margin-top:20px;margin-left:20px" class="search-container">
+    @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        //var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        //var strLength = searchInput.val().length * 2;
+        //searchInput.focus();
+        //searchInput[0].setSelectionRange(strLength, strLength);
+
+        //var date = new Date(Date.parse(myCSharpString));
+        var fromDate = '@fromDate';
+
+        //fromDate
+        var toDate = '@toDate';
+
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var fromDate = '@fromDate';
+            var toDate = '@toDate';
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.pager-list').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.CashStatementReport-DataTable').find('#container-to-append');
+                    //var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                   // $("#container-to-append").load("/VoucherReport/_CashStatementReport", { page: finalId, fromDate: fromDate, toDate: toDate });
+                    $.ajax({
+                        url: '/VoucherReport/_CashStatementReport',
+                        type: 'POST',
+                        data: JSON.stringify({ page: finalId, fromDate: fromDate, toDate: toDate}),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/CashReportPagination',
+                                type: 'POST',
+                                data: {
+                                    totalPage:@totalPage,
+                                    page:finalId,
+                                    fromDate: fromDate,
+                                    toDate: toDate
+                                },
+                                //contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    debugger;
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+                }
+            }
+            else {
+                var pager = $('ul.pagination.pager-list').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.pager-list').find('li#' + finalId)
+                var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.CashStatementReport-DataTable').find('#container-to-append');
+                  //  $("#container-to-append").load("/VoucherReport/_CashStatementReport", { page: finalId, fromDate: fromDate, toDate: toDate });
+                    $.ajax({
+                        url: '/VoucherReport/_CashStatementReport',
+                        type: 'POST',
+                        data: JSON.stringify({  page: finalId, fromDate: fromDate, toDate: toDate}),
+                        contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (data) {
+                            debugger;
+                            $('#container-to-append').html(data);
+                            $.ajax({
+                                url: '/VoucherReport/CashReportPagination',
+                                type: 'POST',
+                                data: {
+                                    totalPage:@totalPage,
+                                    page:finalId,
+                                    fromDate: fromDate,
+                                    toDate: toDate
+                                },
+                                //contentType: 'application/json',
+                                dataType: 'html',
+                                success: function (pagination) {
+                                    debugger;
+                                    $('.pagination-only').html("");
+                                    $('.pagination-only').html(pagination);
+                                }
+                            });
+
+                            var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                            if (checkActive == true) {
+                                $('ul.pagination.pager-list').find('.active').removeClass('active');
+                            }
+                            $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                        },
+                        error: function (data) {
+                            debugger;
+                            ErrorAlert(data.responseText, 15000)
+                        },
+                    });
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            var pagingData = $(this).val();
+            var container = $(this).closest('.BankStatement-DataTable').find('#container-to-append');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/VoucherReport/_CashStatementReport",
+                    type: "POST",
+                    data: {
+                        page: finalId,
+                        fromDate: fromDate,
+                        toDate: toDate
+                    },
+                    success: function (data) {
+                        debugger;
+                        $("#container-to-append").html(data);
+                        $("#container-to-append").focus();
+                        $.ajax({
+                            url: '/VoucherReport/CashReportPagination',
+                            type: 'POST',
+                            data: {
+                                totalPage:@totalPage,
+                                page:finalId,
+                                fromDate: fromDate,
+                                toDate: toDate
+                            },
+                            //contentType: 'application/json',
+                            dataType: 'html',
+                            success: function (pagination) {
+                                debugger;
+                                $('.pagination-only').html("");
+                                $('.pagination-only').html(pagination);
+                            }
+                        });
+
+                        var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                        if (checkActive == true) {
+                            $('ul.pagination.pager-list').find('.active').removeClass('active');
+                        }
+                        $('ul.pagination.pager-list').find('li#' + pagingData).addClass('active');
+
+
+                    }
+
+                });
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var finalId = $(this).attr('id');
+            var container = $(this).closest('.CashStatementReport-DataTable').find('#container-to-append');
+            // var listType = $(this).closest('.Employee-explore').find('#viewType').val();
+            //$("#container-to-append").load("/VoucherReport/_CashStatementReport", { page: pagingData, fromDate: fromDate, toDate: toDate });
+            $.ajax({
+                url: '/VoucherReport/_CashStatementReport',
+                type: 'POST',
+                data: JSON.stringify({  page: finalId, fromDate: fromDate, toDate: toDate}),
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    debugger;
+                    $('#container-to-append').html(data);
+                    $.ajax({
+                        url: '/VoucherReport/CashReportPagination',
+                        type: 'POST',
+                        data: {
+                            totalPage:@totalPage,
+                            page:finalId,
+                            fromDate: fromDate,
+                            toDate: toDate
+                        },
+                        //contentType: 'application/json',
+                        dataType: 'html',
+                        success: function (pagination) {
+                            debugger;
+                            $('.pagination-only').html("");
+                            $('.pagination-only').html(pagination);
+                        }
+                    });
+
+                    var checkActive = $('ul.pagination.pager-list').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.pager-list').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.pager-list').find('li#' + finalId).addClass('active');
+
+                },
+                error: function (data) {
+                    debugger;
+                    ErrorAlert(data.responseText, 15000)
+                },
+            });
+        });
+
+    });
+</script>

@@ -1,0 +1,368 @@
+﻿@model List<ChannakyaBase.Model.ViewModel.CollectorDetailViewModel>
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper
+@{
+    CommonService commonservice = new CommonService();
+    TempData.Keep();
+}
+
+    
+@{var hasChild = Model.Count(); }
+@if (hasChild == 0)
+{
+    <b> No Childs found to Display</b>
+}
+else
+{
+    <div class="listTable" style="max-height:400px;overflow:auto;">
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="button" value="ExportToExcel" class="btn btn-info pull-right btn-collectorWiseAccountOpen-export-to-excel" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <fieldset>
+                                <table class="table scroll-table ">
+                                    <tr style="background-color: lightslategrey; color: white;">
+                                        <th>
+                                            Account Number
+                                        </th>
+                                        <th>
+                                            Account Name
+                                        </th>
+                                        <th>
+                                            Register Date
+                                        </th>
+                                        <th>
+                                            Balance
+                                        </th>
+                                        <th>
+                                            Employee Name
+                                        </th>
+                                        <th>
+                                            Product Name
+                                        </th>
+                                        <th>
+                                            Scheme Name
+                                        </th>
+                                    </tr>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(model => item.Accno)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => item.AccountName)
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var customerservice = commonservice.GetDate(item.RDate);
+                                                    @Html.Label(customerservice)
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => item.Balance)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => item.EmployeeName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => item.PName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => item.SDName)
+                                            </td>
+                                        </tr>
+                                                    }
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                                    }
+<!-- /.box-body -->
+@if (ViewBag.CountPager > 0)
+{
+    <ul class="pagination Productpagination" style="float:left;margin-right:20px;">
+        <li class="previous"><a href="#">Previous</a></li>
+
+        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                {
+                    if (i > 4)
+                    {
+                        if (i == ViewBag.ActivePager)
+                        {
+                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                }
+                else
+                {
+                    if (i >= (ViewBag.ActivePager - 2))
+                    {
+
+                        if (i > ViewBag.ActivePager)
+                        {
+                            if (i - ViewBag.ActivePager <= 2)
+                            {
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i == ViewBag.CountPager)
+                                {
+                                    if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                    {
+                                        <li class=""><a>.......</a> </li>
+                                    }
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                }
+                                <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                            }
+                        }
+                        else
+                        {
+
+                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                        }
+
+                    }
+                    else
+                    {
+                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                    }
+                }
+            }
+            else
+            {
+                if (i == ViewBag.ActivePager)
+                {
+                    <li id=@i class="pagerClass active"><a>@i</a> </li>
+                }
+                else
+                {
+                    if (i >= (ViewBag.ActivePager - 2))
+                    {
+                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                    }
+                    else
+                    {
+                        <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                    }
+                }
+            }
+        }
+        <li class="next"><a href="#">Next</a></li>
+
+    </ul>
+                        <div style="margin-top:20px;margin-left:20px" class="search-container">
+                            @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+
+                        </div>
+}
+
+<script>
+    $(document).ready(function () {
+        debugger
+        //var searchInput = $('input.btn.btn-box-tool.txtSearch');
+        //var strLength = searchInput.val().length * 2;
+        //searchInput.focus();
+        //searchInput[0].setSelectionRange(strLength, strLength);
+        var Search = $('.txtSearch').val();
+        var tdate = $('#FromDate').val();
+        var fdate = $('#ToDate').val();
+        var status = $('#Status').val();
+        var collectorId = @Convert.ToInt32( TempData["collectorId"] );
+        var Pname = "@TempData["Pname"].ToString()";
+
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                debugger;
+                var pager = $('ul.pagination.Productpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Productpagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.Depost-transaction-create').find('.display-list-pop-up').find('.bodycontent-and-paging');
+                    var listType = $(this).closest('.Product-explore').find('#viewType').val();
+
+                    $.ajax({
+                        url: "/Report/CollectorWiseAccountOpenDetailPartial",
+                        type: "GET",
+                        data: {
+                            collectorId : collectorId,
+                            tDate: tdate,
+                            fDate: fdate,
+                            status: status,
+                            Pname: Pname,
+                            page: finalId
+                        },
+                        success: function (data) {
+                            debugger;
+                            $(container).html(data);
+                        }
+
+                    });
+                    //$(container).load("/Report/_CollectionSheetReportPartial", {FDate:FromDate,TDate:ToDate, page: finalId, search: Search });
+
+                    var checkActive = $('ul.pagination.Productpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Productpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Productpagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                debugger;
+                var pager = $('ul.pagination.Productpagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Productpagination').find('li#' + finalId)
+                var listType = $(this).closest('.Product-explore').find('#viewType').val();
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.Depost-transaction-create').find('.display-list-pop-up').find('.bodycontent-and-paging');
+
+                    $.ajax({
+                        url: "/Report/CollectorWiseAccountOpenDetailPartial",
+                        type: "GET",
+                        data: {
+                            collectorId : collectorId,
+                            tDate: tdate,
+                            fDate: fdate,
+                            status: status,
+                            Pname: Pname,
+                            page: finalId
+                        },
+                        success: function (data) {
+                            debugger;
+                            $(container).html(data);
+                        }
+
+                    });
+                    //$(container).load("/Report/_CollectionSheetReportPartial", { page: finalId, ViewType: listType, query: Search });
+
+                    var checkActive = $('ul.pagination.Productpagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Productpagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Productpagination').find('li#' + finalId).addClass('active');
+
+                }
+            }
+
+        });
+        $('.search-container').on('change', '.searchPager', function () {
+            debugger;
+            var finalId = $(this).val();
+            //var pagingData = $(this).val();
+            var listType = $(this).closest('.Product-explore').find('#viewType').val();
+            var container = $(this).closest('.Depost-transaction-create').find('.display-list-pop-up').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/Report/CollectorWiseAccountOpenDetailPartial",
+                    type: "GET",
+                    data: {
+                        collectorId : collectorId,
+                        tDate: tdate,
+                        fDate: fdate,
+                        status: status,
+                        Pname: Pname,
+                        page: finalId
+                    },
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                    }
+
+                });
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var finalId = $(this).attr('id');
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.Depost-transaction-create').find('.display-list-pop-up').find('.bodycontent-and-paging');
+            var listType = $(this).closest('.Product-explore').find('#viewType').val();
+            $.ajax({
+                url: "/Report/CollectorWiseAccountOpenDetailPartial",
+                type: "GET",
+                data: {
+                    collectorId : collectorId,
+                    tDate: tdate,
+                    fDate: fdate,
+                    status: status,
+                    Pname: Pname,
+                    page: finalId
+                },
+                success: function (data) {
+                    debugger;
+                    $(container).html(data);
+                }
+
+            });
+
+        });
+        $('.txtSearch').change(function () {
+            debugger;
+            var finalId = 1;
+            var Search = $(this).val();
+
+            //var pagingData = $(this).val();
+            var container = $(this).closest('.Depost-transaction-create').find('.display-list-pop-up').find('.bodycontent-and-paging');
+
+            $.ajax({
+                url: "/Report/CollectorWiseAccountOpenDetailPartial",
+                type: "GET",
+                data: {
+                    collectorId : collectorId,
+                    tDate: tdate,
+                    fDate: fdate,
+                    status: status,
+                    Pname: Pname,
+                    page: finalId
+                },
+                success: function (data) {
+                    debugger;
+                    $(container).html(data);
+                }
+
+            });
+
+
+        });
+    });
+
+
+</script>
+<style>
+    .details {
+        width: 30%;
+        max-height: 129px;
+    }
+
+    input.btn.btn-box-tool.txtSearch {
+        cursor: text;
+    }
+</style>
+<script>
+    $('.btn-collectorWiseAccountOpen-export-to-excel').on('click', function (e) {
+        debugger
+        e.stopImmediatePropagation();
+        e.preventDefault()
+        var fdate = $('#FromDate').val(); //use get element by id and fetech
+        var tdate = $('#ToDate').val();
+        var status = $('#Status').val();
+        //window.location = "/Report/ExportToExcel?fromDate=" + fromDate + "&toDate=" + toDate
+        window.open("/Report/CollectorWiseAccountOpenDetailExportExcel?toDate=" + tdate + "&fromDate=" + fdate + "&status=" + status);
+    });
+</script>

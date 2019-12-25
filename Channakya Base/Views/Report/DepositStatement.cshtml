@@ -1,0 +1,154 @@
+﻿@model ChannakyaBase.Model.ViewModel.DepositStatementViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    ViewBag.Title = "Deposit Statement";
+}
+<div class="box box-success deposit-statement-index">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Deposit Statement</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12" id="report-account-details">
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <legend>Account Details</legend>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+                            <hr />
+                        </div>
+                        <div class="form-group">
+
+                            @Html.Label("Account", new { @class = "control-label  col-md-2" })
+                            <div class="col-md-10">
+                                @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.Report.GetDescription(), EAccountFilter.DepositAccept.GetDescription(), EAccountType.Normal.GetDescription())
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("From Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.FromDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("To Date : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DatePicker(model => model.ToDate)
+                                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="Generate" class="btn btn-success btn-deposit-statement-generate" data-toggle="tooltip" title="Generate" />
+                <input type="button" value="ExportToExcel" class="btn btn-info  btn-deposit-statement-report-to-excel" data-toggle="tooltip" title="Export To Excel"/>    
+            </div>
+        </div>
+    </div> 
+        
+    <div class="Deposit-Statement-details" id="deposit-statement-list">
+
+    </div>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+    $(".deposit-statement-index").on("click", '.btn-mark-passbook-date', function () {
+         
+       
+        debugger;
+        var markDate = $(".mark-passbook-date").find("#Tdate option:selected").val();
+            var ToDate = $('#ToDate').val();
+            var accountId = $(".account-id").val();
+            var FromDate = $('#FromDate').val();
+
+            $.ajax({
+                type: "Post",
+                url: "/Report/_MarkPassBook",
+                data: { accountId: accountId, markDate: markDate },
+                success: function (result) {
+                    if (result.Success == true) {
+                        $.ajax({
+                            type: "GET",
+                            url: "/Report/_DepositStatementList",
+                            data: { Iaccno: accountId, FromDate: FromDate, ToDate: ToDate },
+                            success: function (result) {   
+                                $(".deposit-statement-list").html("");
+                                $(".deposit-statement-list").html(result)
+                            }
+                        })
+                        SuccessAlert(result.Msg,5000)
+                    }
+                    else if(result.Success == false)
+                    {
+                        ErrorAlert(result.Msg, 5000)
+                    }
+                    
+
+                }
+            })
+          
+    })
+    $(".deposit-statement-index").on("click", '.btn-deposit-statement-generate', function () {
+        var btnName = $(this).val();
+        if (btnName == "Back") {
+            $("#report-account-details").show()
+            $(".btn-deposit-statement-generate").val("Generate");
+        }
+        else if (btnName == "Generate") {
+
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var accountId = $(".account-id").val();
+            if (FromDate != '' && ToDate != '' && FromDate > ToDate) {
+                ErrorAlert("Please ensure that the End Date is greater than or equal to the Start Date.", 6000);
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "/Report/_DepositStatementWithDetails",
+                data: { Iaccno: accountId, FromDate: FromDate, ToDate: ToDate },
+                success: function (result) {
+                    $("#report-account-details").hide()
+                    $(".btn-deposit-statement-generate").val("Back");
+                    $(".Deposit-Statement-details").html("");
+                    $(".Deposit-Statement-details").html(result)
+                }
+            })
+        }
+    })
+
+
+    $('.btn-deposit-statement-report-to-excel').on('click', function () {
+        debugger;
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        if (FromDate != '' && ToDate != '' && FromDate > ToDate) {
+            ErrorAlert("Please ensure that the End Date is greater than or equal to the Start Date.", 6000);
+            return false;
+        }
+        var accountId = $(".account-id").val();
+        window.open("/Report/DepositStatementExportToExcel?FromDate=" + FromDate + "&ToDate=" + ToDate + "&accountId=" + accountId );
+
+    });
+
+</script>

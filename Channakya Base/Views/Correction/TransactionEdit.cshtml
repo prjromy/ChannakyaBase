@@ -1,0 +1,405 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.TransactionEditViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@{
+
+    ViewBag.Title = "TransactionEdit";
+    CorrectionService correctionService = new CorrectionService();
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+}
+
+<div class="box box-success transaction-edit">
+    <div class="box-header with-border">
+        <h3 class="box-title">Transaction Edit</h3>
+        <div class="box-tools pull-right">
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div>
+    </div>
+    @using (Html.BeginForm("EditTransaction", "Correction", FormMethod.Post, new { id = "transaction-edit-form" }))
+    {
+
+        <div class="box-body" style="border-bottom-width: thin;">
+            <div>
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                    @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+
+                @*end *@
+            </div>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+                       
+                        <div class="col-md-12">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group" style="padding-left: 120px;">
+                                        <div class="radio-inline">
+                                            @*@Html.RadioButton("Transaction", 0, true)Unverified Trnx*@
+                                            <input type="radio" name="Transaction" id="Transaction" class="unverified" value="0" checked="checked">Unverified
+
+                                        </div>
+                                        <div class="radio-inline">
+                                            @*@Html.RadioButton("Transaction",1)Verified Trnx*@
+                                            <input type="radio" name="Transaction" id="Transaction" class="verified" value="1">Verified
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.Tno, new { @class = "control-label col-md-4 " })
+                                        <div class="col-md-5 input-group">
+                                            @Html.TextBoxFor(x => x.Tno, new { @class = "form-control Tno", @type = "number" })
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm btn-success btn-find-tno" type="button">Find</button>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="box-body insert-data-transaction">
+
+
+        </div>
+
+
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-12">
+                    <input type="button" value="Save" class="btn btn-success btn-transaction-edit-save" data-eventid="29" isMultiVerifier="false" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script>
+
+
+    $('input[type=radio][name=Transaction]').change(function () {
+        debugger;
+        $('.insert-data-transaction').hide();
+        $('.box-footer').hide();
+     })
+    $(function () {
+        $('.insert-data-transaction').on('click', '#chgAccount', function () {
+            debugger;
+            if ($(this).is(":checked")) {
+                $("#transaction-edit-form").find("#accountShow").show();
+            }
+            else {
+                $("#transaction-edit-form").find("#accountShow").hide();
+            }
+
+
+        });
+
+        $('.box-footer').hide();
+
+    });
+
+
+    $('.btn-find-tno').on('click', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var tNo = $('#transaction-edit-form').find('.Tno').val();
+    
+
+        if (tNo == "") {
+            ErrorAlert("Please Enter Tno!!", 3000);
+        }
+        else {
+            
+
+            var getRadio = $('.transaction-edit').find('.unverified');
+
+            //var IsDenoTransaction = $('.transaction-edit').find('#transactionDeno').prop('checked');
+            //if (IsDenoTransaction == true) {
+
+            //}
+            //if (e.keyCode === 13) {
+
+            if (getRadio.is(':checked')) {
+                var getRadioValue = $('.transaction-edit').find('.unverified').val();
+                debugger;
+                $.ajax({
+                    dataType: 'HTML',
+                    type: 'GET',
+                    url: '/Correction/GetTransactionEditByTno',
+                    data: { tNo: tNo, getRadioValue: getRadioValue },
+                  
+                    success: function (transactionEditViewModel) {
+                        debugger;
+                        if (transactionEditViewModel == 1) {
+                            ErrorAlert(" Transaction date do not match", 5000);
+                            $('.box-footer').hide();
+                            $('#Tno').val;
+                            $('.insert-data-transaction').hide();
+                            return false;
+                        }
+                        if (transactionEditViewModel == 2) {
+                            ErrorAlert("Wrong Transaction No", 5000);
+                            $('.box-footer').hide();
+                            $('.insert-data-transaction').hide();
+                            $('#Tno').val('');
+                            return false;
+                        }
+                        if (transactionEditViewModel == 3) {
+                            ErrorAlert("Data is Deleted", 5000);
+                            $('.box-footer').hide();
+                            $('.insert-data-transaction').hide();
+                            $('#Tno').val('');
+                            return false;
+                        }
+                        if (transactionEditViewModel != null && transactionEditViewModel!="") {
+                            debugger;
+                            $('.insert-data-transaction').html(transactionEditViewModel);
+                            $('.insert-data-transaction').show();
+                            $('.box-footer').show();
+                        }
+                        else {
+                            $('.insert-data-transaction').html(transactionEditViewModel);
+                            ErrorAlert("This is verified Transaction.Please CANCEL this transaction and check 'Verified Transaction' radio button and enter transaction No", 9000);
+                            document.getElementById('alert-error').scrollIntoView();
+                            $('.box-footer').hide();
+                            $('#Tno').val('');
+                        }
+                    },
+                    error: function (transactionEditViewModel) {
+                        $('.insert-data-transaction').html(transactionEditViewModel);
+                        ErrorAlert("Error", 9000);
+                        document.getElementById('alert-error').scrollIntoView();
+                        $('.box-footer').hide();
+                        $('#Tno').val('');
+                    }
+
+                });
+            }
+            else {
+                debugger;
+                var getRadioValue = $('.transaction-edit').find('.verified').val();
+                $.ajax({
+                    dataType: 'HTML',
+                    type: 'GET',
+                    url: '/Correction/GetTransactionEditByTno',
+                    data: { tNo: tNo, getRadioValue: getRadioValue },
+                   
+                    success: function (transactionEditViewModel) {
+                        debugger;
+                        if (transactionEditViewModel == 1) {
+                            ErrorAlert(" Transaction date do not match", 5000);
+                            $('.box-footer').hide();
+                            $('.insert-data-transaction').hide();
+                            $('#Tno').val('');
+                            return false;
+                        }
+                        if (transactionEditViewModel == 2) {
+                            ErrorAlert("Wrong Transaction No", 5000);
+                            $('.box-footer').hide();
+                            $('.insert-data-transaction').hide();
+                            $('#Tno').val('');
+                            return false;
+                        }
+                        if (transactionEditViewModel == 3) {
+                            ErrorAlert("Data is deleted", 5000);
+                            $('.box-footer').hide();
+                            $('.insert-data-transaction').hide();
+                            $('#Tno').val('');
+                            return false;
+                        }
+                        if (transactionEditViewModel != null && transactionEditViewModel != "") {
+                            debugger;
+                            $('.insert-data-transaction').html(transactionEditViewModel);
+                            $('.insert-data-transaction').show();
+                            $('.box-footer').show();
+                        }
+                        else {
+                            $('.insert-data-transaction').html(transactionEditViewModel);
+                            ErrorAlert("This is unverified Transaction.Please CANCEL this transaction and check 'Unverified Transaction' radio button and enter transaction No", 9000);
+                            document.getElementById('alert-error').scrollIntoView();
+                            $('.box-footer').hide();
+                            $('#Tno').val('');
+                        }
+
+                    },
+                    error: function (transactionEditViewModel) {
+                        $('.insert-data-transaction').html(transactionEditViewModel);
+                        ErrorAlert("Error !!", 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                        $('.box-footer').hide();
+                        $('#Tno').val('');
+                    }
+                });
+
+            }            
+        }
+    });
+
+    $(function () {
+        debugger;
+        $.validator.unobtrusive.parse('#transaction-edit-form');
+        debugger;
+        $('.btn-transaction-edit-save').on("click", function (e) {
+            debugger;
+            e.stopImmediatePropagation();
+            var tNo = $('#transaction-edit-form').find('.Tno').val();
+            var Iaccno = $('#Iaccno').val();
+            $('#transaction-edit-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#transaction-edit-form'));
+            var status = false;
+            var strictVerifiable = $('.transaction-edit').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            ismultiVerify = $(this).attr('isMultiVerifier');
+            var newAmount=$('#newAmount').val();
+            var newAccountNo = $('.account-id').val();
+            if ((Iaccno == newAccountNo && newAmount == 0) || (Iaccno == newAccountNo && newAmount != 0)) {
+                ErrorAlert('Similar Account Number.Transaction Canceled !!', 3000)
+                return false;
+            }
+           
+       
+            if ($('#transaction-edit-form').valid()) {
+                //var accountId = $('.account-number-div').find(".account-id").val()
+                //if (accountId == 0) {
+                //    ErrorAlert("Account Number is required!!", 5000);
+                //    document.getElementById('alert-error').scrollIntoView();
+                //    return false
+                //}
+                
+                var IsDenoTransaction = $('.transaction-edit').find('#transactionDeno').prop('checked');
+
+                if (IsDenoTransaction == true) {
+
+                    var balanceDiv = $('.transaction-with-deno').find('.balance-deno-div').find('.deno-inout-balance')
+                    var depositAmount = $("#newAmount").val();
+                    var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                    if (parseFloat(depositAmount) != parseFloat(balanceInDeno)) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Transaction not match with enter deno!!"
+                        }).done(function () {
+                            $(balanceDiv).find("#Balance").focus();
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/Correction/CheckusermatchTransactionEdit',//if user matches no need to send for verification
+                    data: { tno: tNo },
+                    success: function (result) {
+                        debugger;
+                        if (result == true && strictVerifiable == true) {
+                            EditTransaction();
+                        }
+                        else {
+                            taskVerifierList(eventid, ismultiVerify);
+                        }
+
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                });
+             
+                //if (strictVerifiable == true && status == false) {
+                //    debugger;
+                //    taskVerifierList(eventid, ismultiVerify);
+                //}
+
+
+                //else {
+                //    EditTransaction();
+                //}
+
+                
+            }
+        });
+    });
+
+
+
+    function EditTransaction() {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+            $('#transaction-edit-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Correction/TransactionEdit',
+                            async:false,
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            }
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+            }).fail(function () {
+              
+        });
+    }
+
+</script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>

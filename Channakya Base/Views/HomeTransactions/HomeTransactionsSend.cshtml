@@ -1,0 +1,362 @@
+﻿@model ChannakyaBase.Model.ViewModel.HomeTransactionsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var state = Model;
+}
+@{
+    ViewBag.Title = "Home Transaction";
+    bool IsTransactionWithDeno = new CommonService().IsTransactionWithDeno();
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Home Transcation</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+
+        @using (Html.BeginForm("HomeTransactionsSend", "HomeTransactions", FormMethod.Post, new { id = "HomeTransactionsCreate-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <b style="font-family:serif;">@Model.ActionType</b>
+            <div class="form-horizontal Home-Transactions-create">
+                <div class="col-md-6">
+                    <fieldset>
+                        @Html.HiddenFor(x => x.PId)
+                        @Html.HiddenFor(x => x.UserState)
+                        @Html.HiddenFor(x => x.Status)
+                        @Html.HiddenFor(x => x.DesignationId)
+                        @Html.HiddenFor(x => x.operationType)
+                        @Html.CheckBox("TransactionWithDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                        <legend>Send Cash</legend>
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Sender
+                                    </th>
+                                    <th>
+                                        Department
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                </tr>
+
+                            </thead>
+                            <tr>
+                                <td>
+                                    <span class="control-label">@Model.DGName</span>
+                                </td>
+                                <td>
+                                    <span class="control-label">@Model.DeptName</span>
+                                </td>
+                                <td>
+                                    @if (@Model.UserState)
+                                    {
+                                        @*<span class="form-control">Active</span>*@
+                                        <span>Active</span>
+                                    }
+                                    else
+                                    {
+                                        @*<span class="form-control">In Active</span>*@
+                                        <span>In Active</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+
+                        <fieldset>
+                            <legend>Current Balance</legend>
+
+                            <div class="sender-balance-div">
+                                <div style="min-height:50px;max-height:100px;overflow:auto;">
+                                    <table class="table table-bordered table-striped tabble table-responsive sender-balance-table">
+                                        <tr>
+                                            <th>
+                                                Currency
+                                            </th>
+                                            <th>
+                                                Amount
+                                            </th>
+                                        </tr>
+                                        @foreach (var item in Model.AmountWithCurrency)
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    <span class="control-label" id="CurrentCurrencyId">@item.CurrencyName</span>
+                                                </td>
+
+                                                <td class="all-currency">
+                                                    @Html.HiddenFor(x => item.CTId, htmlAttributes: new { @class = "form-control currency-id" })
+                                                    <span class="control-label" id="CurrentBalance" style="text-align:right">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                                    @Html.HiddenFor(x => item.Amount, new { @class = "Current-Balance" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+
+
+
+
+                                    @*<span class="control-label" id="CurrentBalance">@Model.CurrentBalance</span>*@
+                                </div>
+
+                            </div>
+                        </fieldset>
+                        @*<div class="form-group">
+                                @Html.Label("Department : ", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    <span class="control-label">@Model.DeptName</span>
+                                </div>
+                            </div>*@
+
+                    </fieldset>
+                    <fieldset>
+                        <div class="table">
+                            <div class="form-group">
+                                @Html.Label("To:", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.UserId, Model.RecieverList, "--Select--", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                                </div>
+                            
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Currency:", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.Currid, Model.CurrencyList, "-Select-", htmlAttributes: new { @class = "form-control currencyId" })
+                                    @Html.ValidationMessageFor(model => model.Currid, "", new { @class = "text-danger" })
+                                </div>
+                             </div>
+                                <div class="form-group">
+                                    @Html.Label("Amount:", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @style = "text-align: right;" } })
+                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                                <div class="form-group hide">
+                                    @Html.Label("Receiving Limit:", htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-4">
+                                        <span class="form-control dr-amount t" style="text-align:right">@Model.Dramt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                    </fieldset>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6 transaction-with-deno">
+                        @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = new CommonService().DefultCurrency(), denoInOut = EDeno.DenoOut.GetDescription() });}
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+
+                        <input type="button" value="Save" class="btn btn-success btn-save-Home-Transactions" data-eventid="8" data-isMultiVerifier="false" />
+                        <input type="button" value="Cancel" id="btn-Cancel-Home-Transactions" class="btn btn-default btn-Cancel " />
+                    </div>
+                </div>
+            </div>
+                            }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var currId;
+        var currAmount;
+
+        $(".Home-Transactions-create").on('change', '#Amount', function (e) {
+            var userId = $("#UserId").val();
+            debugger
+            $.ajax({
+                contentType: "json",
+                type: "Get",
+                data: { userId: userId },
+                url: "/HomeTransactions/CheckUserIfVaultByUserId",
+                success: function (data1) {
+                    debugger
+                    isVault = data1;
+                    var amountVal = $('#Amount').val();
+                    if (isVault) {
+                        $(".Home-Transactions-create").find(".dr-amount").html(amountVal);
+                    }
+                }
+            })
+        });
+        
+        $(".Home-Transactions-create").on('change', '#UserId', function (e) {
+            var userId = $(this).val();
+            var parentContainer = $(this).parents();
+            var isVault;
+            var me = $(this);
+
+            $.ajax({
+                contentType: "json",
+                type: "Get",
+                data: { userId: userId },
+                url: "/HomeTransactions/CheckUserIfVaultByUserId",
+                success: function (data1) {
+                    debugger
+                    isVault = data1;
+                    if (isVault) {
+                        SuccessAlert("Welcome Vault",3000);
+                    }
+                    else {
+                        $.ajax({
+                            contentType: "json",
+                            type: "Get",
+                            data: { userId: userId },
+                            url: "/HomeTransactions/RecieverDetails",
+                            success: function (data1) {
+
+                                $(".Home-Transactions-create").find(".dr-amount").html(data1.Dramt)
+
+                            }
+                        })
+
+                    }
+                }
+            })
+           
+        });
+        $(".Home-Transactions-create").on('change', '.currencyId', function (e) {
+            debugger;
+            currId = $(this).val();
+            var parentContainer = $(this).parents()
+            var me = $(this);
+            var currencyTable = $(parentContainer).find(".sender-balance-div").find(".sender-balance-table").find("tr").find(".all-currency");
+            $(currencyTable).each(function (trCounttotal, obj) {
+                debugger;
+                if ($(obj).find('.currency-id').val() == currId) {
+                    {
+                        var a = $(obj).find('.Current-Balance').text().trim();
+                        currAmount = parseFloat($(obj).find('.Current-Balance').text().trim());
+                    }
+                }
+            });
+        });
+        $("#btn-Cancel-Home-Transactions").on("click", function (e) {
+            debugger;
+            $("#UserId").get(0).selectedIndex = 0;
+            $("#Currid").get(0).selectedIndex = 0;
+            $('#Amount').val(0.00);
+        });
+        $(".btn-save-Home-Transactions").on("click", function (e) {
+            debugger
+            var amount = parseFloat($(".Home-Transactions-create").find("#Amount").val());
+            var drLimit = parseFloat($(".Home-Transactions-create").find(".dr-amount").text().trim());
+            var currentBalance = parseFloat($(".Home-Transactions-create").find(".Current-Balance").val());
+
+            //if (amount > drLimit) {  //sir le bvanekko
+            //    $.MessageBox({
+            //        buttonDone: "OK",
+            //        message: "Recieving Limit Exceeds !!!"
+            //    }).done(function () {
+
+            //        return false;
+            //    }).fail(function () {
+
+            //    })
+            //    return;
+            //}
+            if (amount > currentBalance) {
+                $.MessageBox({
+                    buttonDone: "OK",
+                    message: "Insuffcient Balance with Selected Currency !!!"
+                }).done(function () {
+
+                    return false;
+                }).fail(function () {
+
+                })
+                return;
+            }
+            $('#HomeTransactionsCreate-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#HomeTransactionsCreate-form'));
+            if ($("#HomeTransactionsCreate-form").valid()) {
+
+                var IsDenoTransaction = $('.Home-Transactions-create').find('#TransactionWithDeno').prop('checked');
+                if (IsDenoTransaction == true) {
+
+
+                    var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                    if (parseFloat(amount) != parseFloat(balanceInDeno)) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Amount does not match with deno balance!!"
+                        }).done(function () {
+                            $("#Balance").focus();
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+
+                }
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    debugger;
+
+                    $('#HomeTransactionsCreate-form').ajaxSubmit({
+                        success: function (result) {
+                            var url;
+                            if (result.ReturnId == 1)
+                                url = "/HomeTransactions/SendToLower"
+                            if (result.ReturnId == 2)
+                                url = "/HomeTransactions/SendToHigher"
+                            if (result.ReturnId == 3)
+                                url = "/HomeTransactions/SendToSameLevel"
+                            if (result.Success) {
+                                $.ajax({
+                                    url: url,
+                                    type: 'get',
+                                    async: false,
+                                    success: function (abc) {
+                                        $(".content").html(abc)
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                })
+
+
+                            } else {
+
+                                ErrorAlert(result.Msg, 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                            }
+                        },
+                        error: function (data) {
+                            ErrorAlert(data.responseText, 15000)
+                        }
+                    });
+                }).fail(function () {
+
+                });
+            }
+        })
+    });
+</script>
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+

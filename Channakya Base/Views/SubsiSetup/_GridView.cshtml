@@ -1,0 +1,54 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.SubsiSetUpViewModal
+
+
+@{
+    var test = Model;
+    var SubsiSetupTypeClass = "background-color:#00c0ef !important";
+  
+    
+}
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<div class="info-box bg-aqua" style="@SubsiSetupTypeClass">
+    <div class="info-box-icon icon">
+        <img class="SubsiSetupImage" data-toggle="tooltip" title="Edit" id="@Model.SSId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+        
+    </div>
+
+
+    @* <div class="inner" SubsiSetup-caption="@Model.SubsiSetupName">
+            <p id="SubsiSetupCaption" data-toggle="tooltip" data-placement="top" title="@Model.SubsiSetupName" style="cursor:pointer;"> @Model.SubsiSetupName</p>
+            @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>
+        </div>*@
+
+    <div class="info-box-content inner" SubsiSetup-caption="@Model.Title">
+        <span class="deleteNode" id="@Model.SSId" data-toggle="tooltip" title="Delete" style="right:0px;position:absolute;cursor:pointer;margin:-7px 15px 0px 0px;"> <i class="glyphicon glyphicon-remove"></i></span>
+        <span class="info-box-text" id="SubsiSetupCaption" data-toggle="tooltip" data-placement="top" title="@Model.Title" style="cursor:pointer;"> @Model.Title</span>
+        <span class="info-box-number">@Model.SSId</span>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        @*<span class="progress-description">
+            @empService.GetStatusName(Model.Status)
+        </span>*@
+    </div>
+</div>
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #SubsiSetupCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

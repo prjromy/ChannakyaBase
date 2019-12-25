@@ -1,0 +1,79 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChqRqstModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
+
+<div class="box box-success cheque-registration-search">
+    <div class="box-header with-border">
+        <h3 class="box-title">New cheque Registration</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+
+    <div class="box box-body">
+        <div id="cheque-registration-create">
+            @{Html.RenderAction("ChequeRegistration", "Information");}
+        </div>
+
+    </div>
+
+    <div id="cheque-registration-list">
+        <div class="row">         
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @*<label class="control-label col-md-2">Account Number</label>
+            <div class="col-md-4">
+                <div class="input-group">
+                    @Html.TextBoxFor(x => x.AccountNo, new { @class = "form-control col-md-4" })
+                    <span class="input-group-btn">
+                        <button type='button' id='btn-cheque-issue-registration' class='btn btn-default'><i class='fa fa-search'></i></button>
+                    </span>
+                </div>
+            </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Iaccno, new { @class = "control-label  col-md-2" })
+                            <div class="col-md-6">
+                                @Html.AccountNumberSearch(x => x.Iaccno, EAccountDetailsShow.WithOutAccountSearch.GetDescription(), EAccountFilter.AllowCheque.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessageFor(model => model.Iaccno, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                    </div>
+            </div>
+        </div>
+       
+            @{Html.RenderAction("NewChequeIssueIndex", "Information");}
+    </div>
+    
+</div>
+
+
+
+
+@*</div>*@
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script>
+    $('#btn-cheque-issue-registration').on('click', function () {
+        debugger;
+        var accountNumber = $('#AccountNo').val();
+        $.ajax({
+            type: 'GET',
+            url: '/Information/NewChequeIssueIndex',
+            data: {
+                accountNumber: accountNumber,
+
+            },
+            success: function (result) {
+                debugger;
+                $('.table-cheque-issue-registration').html(result);
+
+            },
+        });
+    });
+</script>

@@ -1,0 +1,7 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContact
+
+@foreach (var item in Model.CustContList)
+{
+
+    @Html.Partial("_CustCompulsoryContactPartialDetails", item)
+}

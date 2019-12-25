@@ -1,0 +1,105 @@
+﻿@model Loader.ViewModel.LayoutTreeView
+@{
+    var test = Model;
+}
+@Html.EditorFor(x => x.LayoutTreedata)
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.pull-right-container').click(function () {
+            debugger;
+            var parent = $(this).closest('li.active.treeview');
+            var id = $(this).attr('id');
+            var isMaster = parent.hasClass('master');
+            if (isMaster == true) {
+                $(parent).nextAll('li').slideToggle();
+            }
+            else {
+                $(parent).nextAll('li[pid=' + id + ']').slideToggle();
+            }
+            $(this).toggleClass('rotatefa')
+
+
+
+        });
+        $('.treeview-menu-item').click(function (e) {
+            debugger;
+            var controller = $(this).attr("controller");
+            var action = $(this).attr("acton");
+            var url = '/' + controller + '/' + action + '/';
+            //window.location = url;
+            //if (e.ctrlKey) {
+            //    window.open(url);
+               
+            //}
+            //else {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        debugger;
+                        $('section.content').html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+        //}
+
+        });
+        $('#treeview-menu-area').on('click', "button#search-btn", function (e) {
+            debugger;
+            var query = $(this).closest('.input-group').find("input.form-control").val();
+
+            if (query != null) {
+                var wrapperClass = $(this).closest('.section-treeview').find('.ch-treeview');
+
+                var div = $(wrapperClass).find('.treeview-area');
+
+                var TreeViewParam = {
+                    WithCheckBox: "false",
+                    AllowSelectGroup: "true",
+                    WithImageIcon: "true",
+                    WithOutMe: "false",
+                    Title: "",
+                    SelectedNodeId: "1",
+                    Filter: query
+                }
+
+
+
+                var url = "/Menu/_GetLayoutSideBarTree"
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data:{param:TreeViewParam},
+                    dataType: "html",
+                    success: function (html) {
+                        debugger;
+                        $('.main-side-tree').html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+                //$(".main-side-tree").load(url, { param: TreeViewParam });
+                //debugger;
+            }
+
+
+        });
+
+
+
+
+    });
+
+
+</script>

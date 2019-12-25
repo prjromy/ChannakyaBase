@@ -1,0 +1,113 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ProductWiseCollectionSheet
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using MoreLinq
+@{
+    CommonService cmService = new CommonService();
+    var distinctProduct = Model.ProductWiseCollectionSheetList.DistinctBy(x => x.PID).ToList();
+    var distinctCollector = Model.ProductWiseCollectionSheetList.DistinctBy(x => x.EmployeeId).ToList();
+    var distinctProductAmount = Model.ProductWiseCollectionSheetList.GroupBy(x => x.PID).ToList();
+
+    decimal TotalColectorWiseSum = 0;
+    var fromDate = Convert.ToDateTime(ViewBag.fromDate).ToShortDateString();
+    var toDate = Convert.ToDateTime(ViewBag.ToDate).ToShortDateString();
+
+}
+
+<div class="box-body table-responsive no-padding">
+    @if (ViewBag.Status == 0)
+    {
+        <div>
+            @{Html.RenderAction("CompanyHeading", "Report", new { fromDate, toDate });}
+        </div>
+
+                }
+
+    <table class="table table-bordered table-hover" border="1">
+
+        <tr>
+
+            <th>
+                Employee/Product
+            </th>
+            @foreach (var item in distinctProduct)
+            {
+                <th>
+                    @item.PName
+                </th>
+            }
+            <td>Total</td>
+        </tr>
+        @*<tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.EmployeeName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalAmount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EmployeeId)
+                </th>
+                <th></th>
+            </tr>*@
+
+        @foreach (var item1 in distinctCollector)
+        {
+            decimal TotalColectorWise = 0;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item1.EmployeeName)
+                </td>
+                @foreach (var item2 in distinctProduct)
+                {
+                    <td style="text-align:right">
+                        @{ var productAmount = Model.ProductWiseCollectionSheetList.Where(x => x.EmployeeId == item1.EmployeeId && x.PID == item2.PID).FirstOrDefault();}
+                        @if (productAmount != null)
+                        {
+                            <span> @Convert.ToDecimal(productAmount.TotalAmount).ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                            TotalColectorWise += Convert.ToDecimal(productAmount.TotalAmount);
+                        }
+                        else
+                        {
+                            <span>0.00</span>
+                        }
+
+                    </td>
+                            }
+
+                <th style="text-align:right">@TotalColectorWise.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+
+            </tr>
+                            }
+        <tr>
+
+            <td style="font-weight:bold;font-style:italic">
+                Total
+            </td>
+            @foreach (var item3 in distinctProduct)
+            {
+                var productWise = Model.ProductWiseCollectionSheetList.Where(x => x.PID == item3.PID).GroupBy(x => x.EmployeeId).ToList();
+                decimal ProductWiseTotal = 0;
+                foreach (var items in productWise)
+                {
+                    ProductWiseTotal += items.Select(x => x.TotalAmount.Value).FirstOrDefault();
+                }
+
+                <td style="text-align:right">
+
+                    @ProductWiseTotal.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                TotalColectorWiseSum += ProductWiseTotal;
+            }
+            <th style="text-align:right">@TotalColectorWiseSum.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+    </table>
+
+
+</div>

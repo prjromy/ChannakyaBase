@@ -1,0 +1,26 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustContact
+@using ChannakyaBase.BLL.Service
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<tr>
+
+   
+        @Html.HiddenFor(x => x.CCID, new { @class = "CCID" })
+        @Html.HiddenFor(x => x.IsDeleted, new { @class = "IsDeleted" })
+
+        <td>
+            <span class="control-label">@Model.ContactDef.CNodesc</span>
+        </td>
+
+            <td>
+                <span class="control-label">@Model.CNo</span>
+              
+            </td>
+            <td>
+                @Html.CheckBoxFor(x => Model.IsDefault, new { @class = "isChecked", @disabled = "disabled"})
+           
+            </td>
+           
+    
+
+</tr>

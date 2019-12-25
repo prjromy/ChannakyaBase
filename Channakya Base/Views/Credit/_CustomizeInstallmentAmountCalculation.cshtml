@@ -1,0 +1,223 @@
+﻿@model ChannakyaBase.Model.ViewModel.ScheduleTrialModel
+
+@{
+    int count = 1;
+}
+@using (Html.BeginForm("_CustomizeInstallmentAmountCalculation", "Credit", FormMethod.Post, new { id = "customizecalculate-form" }))
+{
+    @Html.HiddenFor(x => x.ButtonTap)
+
+    @Html.HiddenFor(x => x.RemainingBalance)
+    @Html.HiddenFor(x => x.StartDate)
+    @Html.HiddenFor(x => x.IsFlat)
+    @Html.HiddenFor(x => x.Amount)
+    @Html.HiddenFor(x => x.Rate)
+    @Html.HiddenFor(x => x.RequestFrom)
+    @Html.HiddenFor(x => x.IAccno)
+
+    <div class="box-body table-responsive no-padding customize-Installment-table">
+
+        <label><b style="color:red"> Select row in a grid enter percentage and click ok to distribute.</b></label>
+        <br />
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+
+                    <th width="2px">
+                        S.N
+                    </th>
+                    <th>
+                        Has Prin
+                    </th>
+                    <th>Has Inte</th>
+                    <th>
+                        Date AD
+                    </th>
+                    <th>
+                        Date BS
+                    </th>
+                   
+
+                    <th>
+                        Total <br />Installment
+                    </th>
+                    <th>
+                        Balance
+                    </th>
+                    <th>
+                        Days
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="table-installment">
+                @for (int item = 0; Model.scheduleList.Count > item; item++)
+                {
+                    string BackgroundColor = "#c2c4c3";
+                    if (Model.scheduleList[item].IsChecked == false)
+                    {
+                        BackgroundColor = "";
+                    }
+                    if (Model.scheduleList[item].HasInterest)
+                    {
+                        <tr style="background-color:@BackgroundColor" class="currentRow" id="@count">
+
+                            <td>
+                                @count
+
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(x => Model.scheduleList[item].HasPrincipal)
+                                @Html.HiddenFor(x => Model.scheduleList[item].HasPrincipal)
+
+                            </td>
+                            <td>
+                                @Html.HiddenFor(x => Model.scheduleList[item].HasInterest)
+                                @Html.DisplayFor(x => Model.scheduleList[item].HasInterest)
+                            </td>
+                            <td>
+                                @Model.scheduleList[item].DateAd.ToShortDateString()
+                                @Html.HiddenFor(x => Model.scheduleList[item].DateAd)
+                            </td>
+                            <td>
+                                @Model.scheduleList[item].NepaliDate
+                                @Html.HiddenFor(x => Model.scheduleList[item].NepaliDate)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.scheduleList[item].PrincipalInstall)
+                                @Html.HiddenFor(x => Model.scheduleList[item].PrincipalInstall)
+
+                            </td>
+
+
+
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.scheduleList[item].Balance)
+                                @Html.HiddenFor(x => Model.scheduleList[item].Balance)
+                            </td>
+                            <th>
+                                @Model.scheduleList[item].Day
+                                @Html.HiddenFor(x => Model.scheduleList[item].Day)
+                            </th>
+                            @if (Model.scheduleList[item].Balance != 0)
+                        {
+                                <td>
+                                    @Html.CheckBoxFor(x => Model.scheduleList[item].IsChecked, new { @class = "Ischeck", @style = "pointer - events:none;", @onclick = "this.checked=!this.checked" })
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="checke-box-checked" id="@count">
+                                    @Html.CheckBoxFor(x => Model.scheduleList[item].IsChecked, new { @class = "Ischeck", @style = "pointer - events:none;" })
+                                </td>
+                            }
+
+
+                        </tr>
+                        count++;
+                    }
+
+                }
+            </tbody>
+
+        </table>
+
+
+    </div>
+    <div class="box-footer">
+
+        <div class="form-group">
+            @Html.Label("Remaining Percent", new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
+
+                @Html.TextBoxFor(x => x.Remprecent, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            @Html.Label("Distribute Percent", new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
+                @Html.TextBoxFor(x => x.Percent, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-10 col-md-12">
+                <input type="button" value="OK" class="btn btn-default btn-customize-calculate-save" />
+            </div>
+        </div>
+
+
+    </div>
+}
+
+<script>
+    $(".customize-Installment-table table tr").on('click', function () {
+        var closestTr = $(this).closest('tr');
+        var objCheck = $(closestTr).find('.Ischeck');
+        var isChecked = $(closestTr).find('.Ischeck').prop("checked");
+        var currrentId = $(this).closest('tr').attr('id');
+
+        var thisIndex = $(closestTr).attr('id');
+
+        var allTrElements = $(this).closest('tr').closest('.table-installment').find('tr');
+
+        $(allTrElements).each(function (index, item) {
+
+            var finalIndex = parseInt(index);
+
+            if (finalIndex < parseInt(thisIndex)) {
+                //debugger;
+                var test = $(item).closest('tr').css('background-color', '#c2c4c3');
+                $(item).find('td.checke-box-checked').find('.Ischeck').prop('checked', true);
+            }
+            else {
+                $(item).closest('tr').removeAttr('style');
+                $(item).find('td.checke-box-checked').find('.Ischeck').prop('checked', false);
+            }
+
+
+        });
+
+    })
+    $('.btn-customize-calculate-save').on('click', function () {
+        customizeTrial()
+    })
+    function customizeTrial() {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#customizecalculate-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Status) {
+                        if (result.Message == "disbursement" ||result.Message =="renew") {
+                            $('#Preview-trial-list').html("");
+                            $(".disbursement-schedule-final").html(result.htmlToShow);
+                            $(".btn-rePreview-Schedule").removeClass("hidden")
+                        }
+                        else {
+                            $('#Preview-trial-list').html(result.htmlToShow);
+                        }
+                        
+                    } else {
+
+                        ErrorAlert(result.Message, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+
+</script>
+
+

@@ -1,0 +1,30 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.CollectedAccountSheetSummary
+@{
+    Layout = null;
+
+}
+@using ChannakyaBase.BLL.Service;
+<table class="table table-bordered table-striped table-hover" id="accountCollected-summary-table-div">
+    <thead>
+        <tr>
+
+            <th>@Html.Label("Product Name")</th>
+            <th>@Html.Label("Amount")</th>
+            <th>@Html.Label("No Of Accounts")</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+
+    @foreach (var item in Model.CollectedAccountSheetSummaryList)
+    {
+        <tr>
+            @*@Html.HiddenFor(x => item.PName, new { @class = "IndAmount" })
+            @Html.HiddenFor(x => item.Amount, new { @class = "RetId" })
+            @Html.HiddenFor(x => item.NoOfAccount, new { @class = "TempCollId" })*@
+            <td>@item.PName</td>
+            <td style = "text-align: right;">@item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
+            <td>@item.NoOfAccount</td>
+        </tr>
+    }      
+</table>

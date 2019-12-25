@@ -1,0 +1,66 @@
+﻿
+@{
+    string imgPath = ViewData["ImgPath"] as string;
+
+
+}
+
+@if (imgPath != "")
+{
+    <div class="container">
+
+        <div class="image-sample">
+            <h3 class="box-title">Image Preview</h3>
+           
+            <div class="pr-img col-md-6 " > 
+            <img src="@imgPath" alt="No image"  class="img-responsive preview-image" />
+                </div>
+        </div>
+
+         <div class="col-md-12">
+                <div id="button-history btn-group" class="text-center">
+                    <button type="button" class="btn btn-success" onclick="clickbutton()"><span class="glyphicon glyphicon-circle-arrow-down"></span>&nbsp; Image History</button>
+
+                </div>
+            </div>
+       
+    </div>
+}
+else
+{
+    <h3 class="box-title">Image Preview</h3>
+    <div class="empty"> <img src="~/images/No Image.png" alt="No image" height="250" width="250" class="col-md-offset-5" /></div>
+}
+
+
+<style>
+   
+    .preview-image {
+        position: relative;
+        -webkit-transition: all 200ms ease-in;
+        -webkit-transform: scale(1);
+        -ms-transition: all 200ms ease-in;
+        -ms-transform: scale(1);
+        -moz-transition: all 200ms ease-in;
+        -moz-transform: scale(1);
+        transition: all 200ms ease-in;
+        transform: scale(1);
+    }
+
+        .preview-image:hover {
+            z-index: 2;
+            -webkit-transition: all 200ms ease-in;
+            -webkit-transform: scale(1.5);
+            -ms-transition: all 200ms ease-in;
+            -ms-transform: scale(1.5);
+            -moz-transition: all 200ms ease-in;
+            -moz-transform: scale(1.5);
+            transition: all 200ms ease-in;
+            transform: scale(1.5);
+        }
+
+    .pr-img {
+        margin: 0 auto;
+        float: none;
+    }
+</style>

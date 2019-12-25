@@ -1,0 +1,287 @@
+﻿@model ChannakyaBase.Model.ViewModel.WithdrawViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "Cheque Good For Payment";
+
+}
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Cheque Good For Payment </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("ChequeGoodForPayment", "Information", FormMethod.Post, new { id = "cheque-for-good-payment-form" }))
+    {
+
+        <div class="box-body">
+
+            <div class="cheque-good-for-payment">
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @Html.Hidden("MessageEventID", 13)
+                @*end *@
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                     
+                        <div class="form-group">
+                            <label class="control-label  col-md-2">Account No</label>
+                            <div class="col-md-6">
+                                @Html.AccountNumberSearch(x => x.AccountId, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.AllowCheque.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessageFor(model => model.AccountId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                        @*event message display*@
+                        <div class="customer-event-message">
+                        </div>
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <div class="col-md-offset-9 col-md-12">
+                                    <input type="button" value="Report as Cheque Bounce" class="btn btn-default btn-report-as-cheque-bounce" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="cheque-for-good-payment-div">
+                            <fieldset>
+                                <legend>Cheque For Good Payment</legend>
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.ChequeNumber, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.ChequeNumber, new { @class = "form-control text-right" })
+                                        @Html.ValidationMessageFor(model => model.ChequeNumber, "", new { @class = "text-danger" })
+                                    </div>
+                                    <label class="control-label  col-md-2">Payee</label>
+
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.Payee, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Payee, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group activeAmount">
+                                    @Html.LabelFor(model => model.Amount, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.Amount, new { @class = "form-control text-right " })
+                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                    </div>
+
+                                    @Html.LabelFor(model => model.Remarks, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-10 col-md-12">
+                                            <input type="button" value="Save" class="btn btn-default btn-cheque-good-for-payment-save" data-eventid="13" data-val="withdraw transaction" isMultiVerifier="false" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        
+                        <div id="cheque-bounce-report" class="hide">
+                            <fieldset>
+                                @Html.CheckBoxFor(x=>x.IsBounce, new { @class = "hide" })
+                                <legend>Report as cheque Bounce</legend>
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.ChequeNumber, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.BounceChequeNumber, new { @class = "form-control text-right" })
+                                        @Html.ValidationMessageFor(model => model.BounceChequeNumber, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Cheque Bounce Reason", new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextAreaFor(model => model.ChqBounceReason, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ChqBounceReason, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-10 col-md-12">
+                                            <input type="button" value="Report" class="btn btn-default btn-cheque-good-for-payment-bounce-save" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+                    }
+</div>
+<script>
+    $('.btn-report-as-cheque-bounce').click(function (e) {
+
+        if ($(this).val() == "Report as Cheque Bounce") {
+            $('#cheque-bounce-report').removeClass('hide');
+            $(this).val('Cheque for Good Payment');
+            var chequeNo = $('#ChequeNumber').val();
+            if (chequeNo != "") {
+                $('#BounceChequeNumber').val(chequeNo)
+            }
+            $('input#IsBounce').prop('checked', true);
+            $('#cheque-for-good-payment-div :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            $('#cheque-for-good-payment-div').addClass('hide');
+
+        } else {
+            $('#cheque-bounce-report :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            $('#cheque-bounce-report').addClass('hide');
+            $('#cheque-for-good-payment-div').removeClass('hide');
+            $('input#IsBounce').prop('checked', false);
+            $(this).val('Report as Cheque Bounce');
+        }
+
+    });
+
+    $('#ChequeNumber').on('change', function () {
+        var chequeNumber = $(this).val();
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        duplicateChqNumber(accountId, chequeNumber);
+    })
+    $('#BounceChequeNumber').on('change', function () {
+        var chequeNumber = $(this).val();
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        duplicateChqNumber(accountId, chequeNumber);
+    })
+    function duplicateChqNumber(accountId, chequeNumber) {
+   
+        $.ajax({
+            type: 'GET',
+            url: '/Information/CheckCheque',
+            data: {
+                chequeNumber: chequeNumber,
+                accId: accountId,
+            },
+            success: function (result) {
+
+                if (result.Success == false) {
+                    ErrorAlert(result.Msg, 5000);
+                    $('#ChequeNumber').val('');
+                    $('#ChequeNumber').focus();
+                    $('#BounceChequeNumber').val('');
+                    $('#BounceChequeNumber').focus();
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+            },
+        });
+    }
+    $(function () {
+
+        $.validator.unobtrusive.parse('#cheque-for-good-payment-form');
+        $(".btn-cheque-good-for-payment-save").on("click", function (e) {
+            debugger;
+            var strictVerifiable = $('.cheque-good-for-payment').find('#strictlyverifiable').prop('checked');
+            var eventid = $(this).data('eventid');
+            var ismultiVerify = $(this).attr('isMultiVerifier');
+            $('#cheque-for-good-payment-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#cheque-for-good-payment-form'));
+            if ($("#cheque-for-good-payment-form").valid()) {
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    chequeGoodForPayment();
+                }
+            }
+        })
+
+    });
+    $(".btn-cheque-good-for-payment-bounce-save").on("click", function (e) {
+
+
+        $('#cheque-for-good-payment-form').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#cheque-for-good-payment-form'));
+        if ($("#cheque-for-good-payment-form").valid()) {
+
+            chequeGoodForPayment();
+        }
+
+
+    });
+    function chequeGoodForPayment() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#cheque-for-good-payment-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Information/ChequeGoodForPayment',
+
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+                        if (result.ReturnId == 1) {
+                            $('#cheque-bounce-report').removeClass('hide');
+                            $(this).val('Cheque for Good Payment');
+                            var chequeNo = $('#ChequeNumber').val();
+                            if (chequeNo != "") {
+                                $('#BounceChequeNumber').val(chequeNo)
+                            }
+                            $('input#IsBounce').prop('checked', true);
+                            $('#cheque-for-good-payment-div :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+                            $('#cheque-for-good-payment-div').addClass('hide');
+                        }
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+

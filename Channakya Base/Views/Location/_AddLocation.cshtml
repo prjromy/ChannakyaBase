@@ -1,0 +1,74 @@
+﻿@model Tuple<ChannakyaBase.DAL.DatabaseModel.Location, ChannakyaBase.DAL.DatabaseModel.LocationMaster>
+
+@using (Ajax.BeginForm("_AddLocation", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "success", InsertionMode = InsertionMode.Replace, AllowCache = false }, new { id = "location-form-body" }))
+{
+    int pId = ViewBag.ParentNodeId;
+    string parentLocation = ViewBag.ParentLocation;
+    int parentLevel = ViewBag.ParentLevel;
+    int? parentMaxLevel = ViewBag.MaxLevel;
+
+    <div class="modal-header">
+        <button type="button" data-dismiss="modal" class="close">&times;</button>
+        <h3 class="modal-title">Add Location</h3>
+    </div>
+
+    <div class="modal-body form-horizontal location-form-body">
+
+        <div class="form-group">
+            <text class="control-label col-md-4"><b>Parent Location :</b></text>
+
+            <div class="col-md-5" style="padding-top:7px;">
+                <text class="control-label"> <b>@parentLocation</b> </text> <br />
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Location Name :", htmlAttributes: new { @class = "control-label col-md-4" })
+
+            <div class="col-md-5">
+                @Html.EditorFor(tuple => tuple.Item1.LocationName, new { htmlAttributes = new { @class = "form-control LocationName", @required = true } })<br />
+                @Html.ValidationMessageFor(Tuple => Tuple.Item1.LocationName)
+            </div>
+
+        </div>
+
+        @if (pId == 0)
+        {
+            <div class="form-group">
+                @Html.Label("Level :", htmlAttributes: new { @class = "control-label col-md-4" })
+
+                <div class="col-md-5">
+                    @Html.EditorFor(tuple => tuple.Item2.MaxLvl, new { htmlAttributes = new { @class = "form-control", @required = true } })
+                    @Html.ValidationMessageFor(Tuple => Tuple.Item2.MaxLvl)
+                </div>
+
+            </div>
+        }
+
+        @*@Html.HiddenFor(tuple => tuple.Item1.LId, new { @Value = pId ,@class="LId"})*@
+        @Html.HiddenFor(tuple => tuple.Item1.LId, new { @Value = pId , htmlAttributes = new { @class = "form-control LId" } })
+
+        @Html.HiddenFor(tuple => tuple.Item1.PLId, new { @Value = pId })
+
+        @Html.HiddenFor(tuple => tuple.Item1.Lvl, new { @Value = parentLevel + 1 })<br />
+
+        @if (parentLevel + 1 == parentMaxLevel)
+        {
+            @Html.HiddenFor(tuple => tuple.Item1.IsGroup, new { @Value = false })<br />
+        }
+        else
+        {
+            @Html.HiddenFor(tuple => tuple.Item1.IsGroup, new { @Value = true })<br />
+        }
+
+    </div>
+
+    <div class="modal-footer location-button-footer">
+        <input type="submit" value="Add Location" class="btn btn-default add-location-button" />
+        <input type="button" data-dissmiss="modal" value="Cancel" class="btn btn-default btn-cancel" />
+        <input type="button" value="Ok" class="btn btn-default btnCreateDone" style="display:none;" />
+    </div>
+
+}
+

@@ -1,0 +1,312 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanReportAccountDetails
+@using ChannakyaBase.BLL
+@{
+    var commonService = new CommonService();
+}
+<div class="table table-responsive">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Loan Account Details</div>
+
+        <div class="panel-body">
+
+
+            <div>
+                <br />
+                <dl class="dl-horizontal col-md-6">
+                    @Html.HiddenFor(model=>model.IAccno)
+                
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Aname) :
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Aname)
+                    </dd>
+                    
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Accno) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Accno)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.SDName) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.SDName)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.PName) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.PName)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.PRule) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.PRule)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.schType) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.schType)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.AccountState) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.AccountState)
+                    </dd>
+                </dl>
+
+                <dl class="dl-horizontal col-md-6">
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Rdate) :
+                    </dt>
+
+                    <dd>
+                        @if (Model.Rdate != null)
+                        {
+                            @commonService.GetEnglishDate(Model.Rdate)
+                        }
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.valdat) :
+                    </dt>
+
+                    <dd>
+                        @if (Model.valdat != null)
+                        {
+                            @commonService.GetEnglishDate(Convert.ToDateTime(Model.valdat))
+                        }
+
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.matdat) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.matdat)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Revolving) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Revolving)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.duration) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.duration)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.IRate) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.IRate)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.QuotAmt) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.QuotAmt)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.AppAmt) :
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.AppAmt)
+                    </dd>
+                </dl>
+
+            </div>
+        </div>
+        <div class="panel-footer"></div>
+    </div>
+    <div>
+        @{Html.RenderAction("_LoanInstallmentScheduleList", Model.IAccno); }
+
+
+
+    </div>
+</div>
+<div class="box-footer">
+    <div class="form-group">
+        <div class="col-md-12">
+            <input type="button" value="Preview New Schedule" class="btn btn-success btn-Preview-Trial-Schedule1 " style="float:right;margin-left: 5px" />
+        </div>
+    </div><!-- box-footer -->
+
+
+    @using (Html.BeginForm("CreateReschedule", "Credit", FormMethod.Post, new { id = "from-reschedule-create" }))
+    {
+        <div class="form-group">
+            <div class="col-md-12">
+                <div class="reschedule-schedule"></div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+             
+                <div class="disbursement-schedule-final">
+
+                </div>
+
+
+            </div>
+            <div class="col-md-12 btn-rePreview-Schedule">
+                <input type="button" value="Save" class="btn btn-success btn-Preview-Schedule-Save" style="float:right;margin-left: 5px" />
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <div class="col-md-12">
+            <div id="Preview-trial-list"></div>
+            <div class="disbursement-schedule"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.btn-Preview-Schedule-Save').on("click", function () {
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#from-reschedule-create').ajaxSubmit({
+                success: function (result) {
+
+
+                    if (result.Success) {
+                        SuccessAlert(result.Msg);
+                        document.getElementById('alert-success').scrollIntoView();
+                        $(".disbursement-schedule-final").html("");
+                        $(".disbursement-schedule").html("");
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    })
+    $('.btn-Preview-Trial-Schedule1').on("click", function () {
+
+        var isCustomised = "True";// $('.loan-disburse-details').find('#HasCustomisedSchedule').val();
+        var accountId = $(".account-id").val();
+
+        $.ajax({
+            type: 'get',
+            url: '/credit/LoanRenewSchedule',
+            data: { iAccno: accountId },
+            contentType: 'application/json; charset=utf-8',
+            dataType: "HTML",
+            success: function (data) {
+                $(".reschedule-schedule").html("")
+                $(".reschedule-schedule").html(data)
+                $("#LoanAccountId").val(accountId)
+                LoanSchedule()
+                //if (isCustomised == "True") {
+                //    $(".disbursement-schedule").html(data.htmlToShow);
+                //}
+                //else {
+
+                //    $(".disbursement-schedule-final").html(data.htmlToShow);
+                //}
+
+            }
+        })
+    })
+    function LoanSchedule() {
+        var PaymentMode = $("#PaymentMode").val();// $('.loan-disburse-details').find('#HasCustomisedSchedule').val();
+        var IAccno = $(".account-id").val();
+        var Rate = $("#Rate").val();
+        var Duration = $("#Duration").val();
+        var Amount = $("#Amount").val();
+
+        var ScheduleType = $("#ScheduleType").val();
+        var Day = $("#Day").val();
+        var PrincipalFrequency = $("#PrincipalFrequency").val();
+        var InterestFrequency = $("#InterestFrequency").val();
+        var GraceOption = $("#GraceOption").val();
+        var PrincipalDate = $('.grace-in-day-month').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        var InterestDate = $('.grace-month-day-date').find('.chdPickerMain').find("#chdPickerId").find(".txtDateValue").val();
+        var Principal = $("#Principal").val();
+        var Interest = $("#Interest").val();
+        var IsRestructure = $("#IsRestructure").is(":checked")
+        var IsReschedule = $("#IsReschedule").is(":checked")
+
+
+        $.ajax({
+            type: 'get',
+            url: '/credit/_LoanRenewSchedule',
+            data: {
+                PaymentMode: PaymentMode,
+                IAccno: IAccno,
+                Rate: Rate,
+                Duration: Duration,
+                Amount: Amount,
+                ScheduleType: ScheduleType,
+                Day: Day,
+                PrincipalFrequency: PrincipalFrequency,
+                InterestFrequency: InterestFrequency,
+                GraceOption: GraceOption,
+                PrincipalDate: PrincipalDate,
+                InterestDate: InterestDate,
+                Principal: Principal,
+                Interest: Interest,
+                IsRestructure: IsRestructure,
+                IsReschedule: IsReschedule,
+
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: "Json",
+            success: function (data) {
+                debugger
+
+                if (PaymentMode == 3) {
+                    $(".disbursement-schedule").html("")
+                    $(".disbursement-schedule").html(data.htmlToShow);
+                    $(".disbursement-schedule-final").html("");
+                    $('.btn-rePreview-Schedule').show();
+                }
+                else {
+                    $(".disbursement-schedule-final").html("")
+                    $(".disbursement-schedule").html("")
+                    $(".disbursement-schedule-final").html(data.htmlToShow);
+                    $('.btn-rePreview-Schedule').show();
+                }
+                
+            }
+        })
+    };
+</script>
+

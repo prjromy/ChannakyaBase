@@ -1,0 +1,403 @@
+﻿@model ChannakyaBase.Model.ViewModel.TaskViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+    ViewBag.Title = "EmployeeList";
+    int eventvalue = Convert.ToInt32(Model.EventValue);
+    CommonService cs = new CommonService();
+    int accstate = cs.GetAccStatusByIaccno(eventvalue);
+    DateTime dateTrans = cs.GetBranchTransactionDate();
+
+}
+
+<div class="modal-dialog modal-lg verifier-modal modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h5 class="modal-title">
+
+                @BaseTaskUtilityService.GetTaskNameByEventId(Model.EventId)
+
+            </h5>
+        </div>
+
+        <div class="modal-body">
+            <div class="content-box">
+                <fieldset>
+                    <legend style="font-size:medium;font-weight:bold">Task Related Details</legend>
+                    @Html.Partial("_EventRaisedDetails", Model)
+                    @Html.HiddenFor(x => x.TaskMessage)
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="table-responsive no-padding verify-container">
+            @if (Model.EventId == 1)
+            {
+                var trnxno = FinanceParameterUtilityService.ChargeTranxNoByEventIdAndEventValue(4, eventvalue);
+                if (trnxno != 0)
+                {
+                    @Html.Action("_UnverifiedChargeDetails", "FinanceParameter", new { utno = trnxno })
+                }
+                @Html.Action("_AccountDetails", "Teller", new { IAccno = eventvalue })
+            }
+            @if (Model.EventId == 2 || Model.EventId == 3)
+            {
+                @Html.Action("VerifyTransaction", "Teller", new { utno = eventvalue })
+            }
+            @if (Model.EventId == 9)
+            {
+                @Html.Action("VerifiyRegisterCheque", "Information", new { rNo = eventvalue })
+            }
+            @if (Model.EventId == 10)
+            {
+                @Html.Action("_CollectionSheetCreate", "Teller", new { retId = cs.RetNoBySheetNo(Convert.ToInt32(Model.EventValue.ToString())) })
+            }
+            @if (Model.EventId == 6)
+            {
+                @Html.Action("InterestPayableDetails", "Teller", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 7)
+            {
+                var iaccno = BaseTaskUtilityService.TaskIdByEventIdAndEventValue(Model.EventId, Convert.ToInt64(Model.EventValue));
+                @Html.Action("_AccountDetails", "Teller", new { IAccno = iaccno })
+                @Html.Action("_UnverifiedChargeDetails", "FinanceParameter", new { utno = eventvalue })
+            }
+            @if (Model.EventId == 8)
+            {
+                var iaccno = BaseTaskUtilityService.TaskIdByEventIdAndEventValue(Model.EventId, Convert.ToInt64(Model.EventValue));
+                // @Html.Action("_AccountDetails", "Teller", new { IAccno = iaccno })
+                @Html.Action("_UnVerifiedManualCharge", "Teller", new { utno = eventvalue })
+            }
+            @if (Model.EventId == 11)
+            {
+                @Html.Action("UserLimitExceedDetails", "Teller", new { rno = eventvalue, taskId = Model.Task1Id })
+            }
+            @if (Model.EventId == 12)
+            {
+                @Html.Action("UserLimitExceedDetailsVeryfyAfterByCashier", "Teller", new { rno = eventvalue, eventId = Model.EventId, taskId = Model.Task1Id })
+            }
+            @if (Model.EventId == 13)
+            {
+                @Html.Action("ChequeGoodForPaymentDetails", "Information", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 14)
+            {
+                @Html.Action("InternalChequeDepositDetails", "Information", new { tno = eventvalue })
+            }
+
+            @if (Model.EventId == 15)
+            {
+                @Html.Action("RemittancedepositDetails", "Teller", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 16)
+            {
+                @Html.Action("RemittancePaymentDetails", "Teller", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 17)
+            {
+                @Html.Action("LoanRegistrationVerifyDetails", "Credit", new { regId=eventvalue, taskId=Model.Task1Id})
+            }
+            @if (Model.EventId == 19)
+            {
+                @Html.Action("LoanAccountDetails", "Credit", new { IAccno = eventvalue, modelFrom="AccountPopUp" })
+            }
+            @if (Model.EventId == 22)
+            {
+                @Html.Action("LoanPaymentVerification", "Credit", new { utno = eventvalue })
+            }
+
+            @if (Model.EventId == 21)
+            {
+                @Html.Action("_LoanDisbursementDetailsForVerify", "Credit", new { disburseId = eventvalue,modelFrom="OtherLoan" })
+            }
+            @if (Model.EventId == 24)
+            {
+                @Html.Action("ShareRegistrationDetail", "Share", new { regId = eventvalue })
+            }
+            @if (Model.EventId == 25)
+            {
+                @Html.Action("SharePurchaseDetails", "Share", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 26)
+            {
+                @Html.Action("_ShareReturnDetails", "Share", new { tno = eventvalue })
+            }
+            @if (Model.EventId == 27)
+            {
+                @Html.Action("CheckClearenceDetail", "Teller", new { rno = eventvalue, calledFromVerify = 1 })
+            }
+            @if (Model.EventId == 28)
+            {
+                @Html.Action("_LoanDisbursementDetailsForVerify", "Credit", new { disburseId = eventvalue })
+            }
+            @if (Model.EventId == 29)
+            {
+                @Html.Action("SingleTransactionEditVerify","Correction",new { tno=eventvalue})
+            }
+            @if (Model.EventId == 32)
+            {
+                @Html.Action("SingleRebate", "Credit", new { tno = eventvalue })
+            }
+
+
+            @if (Model.EventId == 13 || Model.EventId == 27)
+            {
+
+                <div class="form-group">
+                    <label class="control-label  col-md-2">Remarks</label>
+                    <div class="col-md-10">
+                        @Html.TextArea("Remarks", new { @class = "form-control" })
+                    </div>
+                </div>
+
+            }
+        </div>
+
+
+
+        <div class="btn-groups modal-footer" style="padding:5px">
+            @if (Model.IsRejected == false)
+            {
+                if (Model.EventId != 28 && Model.EventId != 24 && Model.EventId!=27 && Model.EventId!= 14)
+                {
+                    @*<button type="button" style="float:left" class="btn btn-danger btn-sm btn-account-verifier-confirm" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id data-isreject="true">Reject <i class="fa fa-check" aria-hidden="true"></i></button>*@
+                }
+                if (Model.IsVerified == true && Model.EventId != 12)
+                {
+                    <span>Verified By:@BaseTaskUtilityService.VerifiedBy(Model.Task1Id)</span>
+                }
+                else if (Model.EventId == 7 && accstate == 6)
+                {
+                    <span>Please Verify The Account Before !!!</span>
+                }
+                else
+                {
+                    if ((Model.EventId != 12))
+                    {
+                        if ((Model.EventId != 28))
+                        {
+                            <button type="button" class="btn btn-success btn-sm btn-account-verifier-confirm" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id data-isreject="false">Verify <i class="fa fa-check" aria-hidden="true"></i></button>
+                        }
+                        else if (Model.EventId == 28)
+                        {
+                            if (Model.IsVerified == true)
+                            {
+                                <span>Payment made By:@BaseTaskUtilityService.VerifiedBy(Model.Task1Id)</span>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-success btn-sm btn-teller-disburse-payment-verifier-confirm" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id data-isreject="false">Verify <i class="fa fa-check" aria-hidden="true"></i></button>
+                            }
+
+
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+
+                if (Model.EventId == 15 || Model.EventId == 16||Model.EventId==18)
+                {
+                    <button type="button" style="float:left" class="btn btn-danger btn-sm btn-account-verifier-delete hidden" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id>Delete <i class="fa fa-remove" aria-hidden="true"></i></button>
+
+                }
+                else
+                {
+                    <button type="button" style="float:left" class="btn btn-danger btn-sm btn-account-verifier-delete" data-valofevent=@Convert.ToInt32(Model.EventValue) data-eventid=@Model.EventId data-taskId=@Model.Task1Id>Delete <i class="fa fa-remove" aria-hidden="true"></i></button>
+
+                }
+            }
+            @if (Model.EventId != 12)
+            {
+                <button type="button" class="btn btn-danger btn-sm btn-account-verifier-close" data-dismiss="modal">Close <i class="fa fa-times" aria-hidden="true"></i></button>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(".verifier-modal").on("click", ".btn-account-verifier-confirm", function () {
+        debugger;
+        var eventValue = $(this).data("valofevent");
+        var eventId = $(this).data("eventid");
+        var task1Id = '@Model.Task1Id'
+        var remarks = $('#Remarks').val();
+        var isReject = $(this).data("isreject");
+        var dateTrans = $('#VDate').val();
+        var tskMessage = $("#TaskMessage").val();
+        var GrantedDuration = $('#GrantedDuration').val();
+        var SAmt = $('#SAmt').val();
+        var Url1;
+        if (tskMessage == 'TaskMain') {
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (tskMessage != 'viewSingleNotification' && tskMessage != 'TaskMain') {
+         
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (remarks == undefined) {
+            remarks = "";
+        }
+        if (dateTrans == undefined) {
+            dateTrans = "";
+        }
+        if (eventId == 17) {
+            var sanctionValue = $(".loanRegistration").find("#SAmt").val();
+            var grantedDuration = $(".loanRegistration").find("#GrantedDuration").val();
+            if (sanctionValue == "" || sanctionValue < 0) {
+                ErrorAlert("Sanction Amount should be greate than zero", 5000);
+                return false;
+            }
+            if (grantedDuration == "0" || grantedDuration < 0) {
+                ErrorAlert("Granted Duration should be greate than zero", 5000);
+                return false;
+            }
+        }
+      
+        //$(this).data("taskId");
+        var url = "/TaskVerification/VerificationConfirm";
+        var urlLink= "/TaskVerification/_ViewAllPendingTaskIndex";
+        $.ajax(
+        {
+            type: "Post",
+            url: url,
+            data: { eventValue: eventValue, eventId: eventId, task1Id: task1Id, remarks: remarks, isReject: isReject, dateTrans: dateTrans, GrantedDuration: GrantedDuration, SAmt: SAmt },
+                success: function (result) {
+                    debugger;
+                if (result.Success) {
+                    $.ajax({
+                        url: Url1,
+                        type: 'get',
+                        async: false,
+                        success: function (abc) {
+                            debugger;
+                           // $(".content").html(abc);
+
+                        }
+                    })
+                    SuccessAlert(result.Msg,6000);
+                    document.getElementById('alert-success').scrollIntoView();
+                } else {
+                    ErrorAlert(result.Msg,6000);
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+
+            }
+        })
+    })
+    $(".verifier-modal").on("click", ".btn-account-verifier-delete", function () {
+        debugger
+        var eventValue = $(this).data("valofevent");
+        var eventId = $(this).data("eventid");
+        var task1Id = '@Model.Task1Id'
+        var remarks = $('#Remarks').val();
+        var tskMessage = $("#TaskMessage").val()
+        var Url1;
+        if (tskMessage == 'TaskMain') {
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (tskMessage != 'viewSingleNotification' && tskMessage != 'TaskMain') {
+     
+
+            Url1 = "/TaskVerification/_ViewAllPendingTaskIndex";
+        }
+        if (remarks == undefined) {
+            remarks = "";
+        }
+        //$(this).data("taskId");
+        var url = "/TaskVerification/DeleteTaskConfirm";
+        $.ajax(
+        {
+            type: "Post",
+            url: url,
+            data: { eventValue: eventValue, eventId: eventId, task1Id: task1Id, remarks: remarks },
+                success: function (result) {
+                    debugger;
+                if (result.Success) {
+                    $.ajax({
+                        url: Url1,
+                        type: 'get',
+                        async: false,
+                        success: function (abc) {
+                            debugger;
+                          //  $(".content").html(abc)
+                        }
+                    })
+                    SuccessAlert(result.Msg,6000);
+                    document.getElementById('alert-success').scrollIntoView();
+                } else {
+                    ErrorAlert(result.Msg,6000);
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+                //$(".content-wrapper").find("#account-pop-up-div2").modal('toggle');
+            }
+        })
+    })
+    $(".verifier-modal").on("click", ".btn-teller-disburse-payment-verifier-confirm", function () {
+        debugger;
+        var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+        var depositAmount = 0;
+        depositAmount = $('.disburse-cash-amount').val();
+        if (parseFloat(depositAmount) != parseFloat(Math.abs(balanceInDeno))) {
+            $.MessageBox({
+                buttonDone: "OK",
+                message: "Amount is not match with deno balance!!"
+            }).done(function () {
+
+                return false;
+            }).fail(function () {
+                //return false;
+            })
+            return;
+        }
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            debugger;
+
+            $('#Disburse-Verify-By-Teller-form').ajaxSubmit({
+                success: function (result) {
+                    debugger;
+                    var url;
+
+                    //if (result.Success) {
+                    //    SuccessAlert(result.Msg);
+                    //    document.getElementById('alert-success').scrollIntoView();
+                    //    $.ajax({
+                    //        url: "/Credit/LoanRegistration",
+                    //        type: 'get',
+                    //        async: false,
+                    //        success: function (abc) {
+                    //            debugger;
+                    //            $(".content").html(abc)
+                    //        }
+                    //    })
+
+
+                    //} else {
+
+                    //    ErrorAlert(result.Msg, 5000);
+                    //    document.getElementById('alert-error').scrollIntoView();
+                    //}
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    })
+</script>

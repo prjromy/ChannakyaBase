@@ -1,0 +1,81 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.TaskVerificationList
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "EmployeeList";
+}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">@BaseTaskUtilityService.GetTaskNameByEventId(Model.EventId)</h4>
+        </div>
+        <div class="modal-body">
+            <div class="content-box">
+                <div class="row">
+
+                    @*<div class="col-md-6">
+                            <div class="form-grop_padding">
+                                Search Option
+                                @Html.DropDownListFor(x => x.EmployeeOption, CustomerUtilityService.EmployeeSearchOption(), new { @class = "form-control" })
+                            </div>
+                        </div>*@
+                    @*<div class="col-md-6">
+                            <div class="form-grop_padding">
+                                Search
+                                @Html.TextBoxFor(x => x.SearchEmployee, new { @class = "form-control" })
+                            </div>
+                        </div>*@
+                </div>
+
+                <div class="table-responsive table-click-verifier">
+                    @Html.HiddenFor(x => x.IsMultiVerifier)
+                  
+                    <table class="table table-bordered table-striped table-click-verifier-list table-hover">
+                       
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Employee Name</th>
+                                @*<th>Choose Name</th>*@
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.VerifierList)
+                            {
+
+                                @Html.Partial("_VerifierDetails", item)
+                            }
+                           
+                        </tbody>
+                    </table>
+                    <i> <span style="color:#3636e4;font-family:'Century Gothic';padding-left:10px">Note: Please Click the table rows to select the Verifier.</span></i>
+
+               
+                    @Html.TextAreaFor(x => x.Message,new { @class="form-control", @placeholder = "Message" })
+                </div>
+                <div class="btn-groups modal-footer">
+                    <input type="button" value="Save" class="btn btn-default btn-account-verifier-save" eventid="@Model.EventId" data-val="Account Opening" isMultiVerifier="@Model.IsMultiVerifier" />
+                    <input type="button" value="Close" class="btn btn-default btn-account-verifier-close" data-dismiss="modal" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+
+    //$(document).ready(function () {
+    //    var value = 0;
+    //    $('.balance-deno-div').find("#Balance").val(value);
+    //});
+
+
+  
+
+</script>

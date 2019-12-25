@@ -1,0 +1,241 @@
+﻿@model ChannakyaAccounting.Models.Models.SchmDetail
+
+@{
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var ruleMovementlist = finaccService.GetMovement();
+    var ruleICBList = finaccService.GetRuleICB();
+    var accountType = Model.SType; // Deposit Scheme
+  
+
+
+}
+
+
+<div class="box box-warning col-md-12 scheme-box">
+    <div class="box-header with-border">
+        <h2 class="box-title paramHeader">
+            Scheme Features
+        </h2>
+        <br />
+        <br />
+        <div class="container col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+
+                    @if (accountType == 0)
+                    {
+                        <div class="form-group col-md-12">
+
+
+                            @Html.LabelFor(m => m.HasDormancy, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasDormancy)
+                            </div>
+                            @Html.LabelFor(m => m.HasOverdraw, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.HasOverdraw)
+                            </div>
+
+                        </div>
+                    }
+                    @if (accountType == 1)
+                    {
+                        <div class="form-group col-md-12">
+
+
+                            @if (Model.Revolving == null)
+                            {
+                                Model.Revolving = false;
+                            }
+                            @Html.LabelFor(m => m.Revolving, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Revolving",Model.Revolving)
+                            </div>
+
+                            @Html.LabelFor(m => m.IsRenewable, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBoxFor(m => m.IsRenewable)
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.HasCheque, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCheque)
+                        </div>
+                        @Html.LabelFor(m => m.HasCard, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCard)
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+
+                        @Html.LabelFor(m => m.HasCertificate, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasCertificate)
+                        </div>
+                        @Html.LabelFor(m => m.HasDuration, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasDuration)
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-12">
+
+
+                        @Html.LabelFor(m => m.HasIndivLimit, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasIndivLimit)
+                        </div>
+                        @Html.Label("Nominable", new { @class = "col-md-6  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.Nomianable)
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+
+
+                        @if (Model.IsInsured == null)
+                        {
+                            Model.IsInsured = false;
+                        }
+                        @Html.LabelFor(m => m.IsInsured, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBox("IsInsured",Model.IsInsured)
+                        </div>
+                        @if (Model.HASSMS == null)
+                        {
+                            Model.HASSMS = false;
+                        }
+                        @Html.LabelFor(m => m.HASSMS, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBox("HASSMS",Model.HASSMS)
+                        </div>
+
+                    </div>
+
+                    @if (accountType == 0)
+                    {
+                        <div class="form-group col-md-12">
+                            @if (Model.MultiDeposit == null)
+                            {
+                                Model.MultiDeposit = false;
+                            }
+                            @Html.LabelFor(m => m.MultiDeposit, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("MultiDeposit",Model.MultiDeposit)
+                            </div>
+                            @if (Model.Withdrawal == null)
+                            {
+                                Model.Withdrawal = false;
+                            }
+                            @Html.LabelFor(m => m.Withdrawal, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                                @Html.CheckBox("Withdrawal",Model.Withdrawal)
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(m => m.HasIndivRate, new { @class = "col-sm-3  control-label col-form-label" })
+                        <div class="col-sm-3">
+                            @Html.CheckBoxFor(m => m.HasIndivRate)
+                        </div>
+                       
+                            @Html.LabelFor(m => m.SEnable, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-3">
+                              @if (Model.SDID != 0)
+                              {
+                                    @Html.CheckBoxFor(x => x.SEnable)
+                              }
+
+
+                            </div>
+                        
+
+                    </div>
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+@if (accountType == 0)
+{
+    <div class="box box-warning col-md-12 scheme-box">
+        <div class="box-header with-border">
+            <h2 class="box-title paramHeader">
+                Select Rules
+            </h2>
+            <br />
+            <br />
+            <div class="container col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.MID, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(m => m.MID, ruleMovementlist, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(m => m.ICBID, new { @class = "col-sm-3  control-label col-form-label" })
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(m => m.ICBID, ruleICBList, new { @class = "form-control" })
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-tools pull-right">
+                @*<button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>*@
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div>
+
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

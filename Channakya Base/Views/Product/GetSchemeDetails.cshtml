@@ -1,0 +1,13 @@
+﻿@model ChannakyaAccounting.Models.Models.SchmDetail
+
+@{ 
+    var schemeType = ViewBag.SchemeType;
+}
+
+@Html.EditorFor(x => x, new ViewDataDictionary { { "schemeType", schemeType } })
+
+
+
+
+
+

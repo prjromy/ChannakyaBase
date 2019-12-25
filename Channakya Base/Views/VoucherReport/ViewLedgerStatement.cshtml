@@ -1,0 +1,211 @@
+﻿
+
+@*@model IEnumerable<ChannakyaAccounting.Models.Models.FinAcc>*@
+
+@*@{
+    var count = 0;
+    var test = Model;
+}*@
+
+
+<div class="modal-dialog modal-lg view-ledger-statement">
+    <div class="modal-content">
+        <div class="modal-header">
+
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">Voucher Details</h4>
+
+
+        </div>
+        <div class="modal-body" style="padding:40px 50px; ">
+            <div class="col-md-11">
+                <input type="text" name="Search" placeholder="Search By Ledger name or Code..." class="Search form-control">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-default" name='btnsearch' id='btnsearch-voucher' type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+
+       
+
+
+            <div class="modal-footer">
+                @*  *@
+                @*<input type="submit" class="btn btn-success" value="Save" />
+                    <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>*@
+
+                <ul class="pagination employeepaginatoin">
+                    <li class="previous"><a href="#">Previous</a></li>
+                    @for (int i = 1; i <= ViewBag.CountPager; i++)
+                    {
+                        if (i > 4)
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                if (i == ViewBag.CountPager)
+                                {
+                                    <li class=""><a>.......</a> </li>
+                                    <li id=@ViewBag.CountPager class="pagerClass"><a>@ViewBag.CountPager</a> </li>
+
+                                }
+                                else
+                                {
+
+                                    <li id=@i class="pagerClass" style="display:none;"><a>i</a> </li>
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (i == ViewBag.ActivePager)
+                            {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                            }
+                            else
+                            {
+                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                            }
+                        }
+
+                    }
+                    <li class="next"><a href="#">Next</a></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.modal-body');
+                    $(container).load("/Voucher1/_AddVoucherDetails", { page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.employeepaginatoin').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.employeepaginatoin').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    //var container = $(this).closest('.Voucher1-explore').find('#getVoucherDetails');
+                    var container = $(this).closest('.modal-body');
+                    $(container).load("/Voucher1/_AddVoucherDetails", { page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.employeepaginatoin').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var container = $(this).closest('.modal-body');
+            $(container).load("/Voucher1/_AddVoucherDetails", { page: pagingData });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.employeepaginatoin').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.employeepaginatoin').find('.active').removeClass('active');
+            }
+            $('ul.pagination.employeepaginatoin').find('li#' + pagingData).addClass('active');
+
+        });
+
+    });
+
+
+    $('td.ledgername-voucher').click(function () {
+        debugger;
+        var ledgerId = $(this).attr("id");
+        var type = $(this).attr("ledger-type");
+
+        var container = $(this).closest('.Voucher1-explore').find('#getVoucherDetails');
+
+        //$.ajax({
+        //    url: '/Voucher1/EnterLedgerDetails/',
+        //    dataType: "html",
+        //    data: { ledgerId: ledgerId, type: type },
+        //    success: function (data) {
+        //        debugger;
+        //        $(container).show();
+        //        $(container).html(data);
+        //        $('#getVoucherDetails').modal('show');
+
+        //    }
+        //});
+        $(container).load("/Voucher1/EnterLedgerDetails", { ledgerId: ledgerId });
+        $('#getVoucherDetails').modal('show');
+
+
+    });
+
+
+
+    $('button#btnsearch-voucher').click(function () {
+        debugger;
+        var text = $(this).closest(".add-voucher-finacc").find("input.Search.form-control").val();
+        $.ajax({
+            url: '/Voucher1/SearchLedgerList/',
+            type:"POST",
+            data: { query: text },
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $("div.ledger-list-model").html(data);
+
+            }
+        });
+    });
+</script>
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .ledger-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>

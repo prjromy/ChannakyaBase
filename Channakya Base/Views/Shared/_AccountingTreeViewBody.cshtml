@@ -1,0 +1,10 @@
+﻿
+@model  ChannakyaAccounting.Models.ViewModel.TreeView
+@{
+    var test = Model;
+    ChannakyaAccounting.Models.ViewModel.TreeViewParam param = (ChannakyaAccounting.Models.ViewModel.TreeViewParam)ViewData["param"];
+}
+
+<ul>
+    @Html.EditorFor(x => Model.AccChildren)
+</ul>

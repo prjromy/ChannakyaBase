@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [Mast]
+    AUTHORIZATION [dbo];
+

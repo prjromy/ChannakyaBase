@@ -1,0 +1,110 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    string Status = "";
+    string Color = "";
+    InformationService informationService = new InformationService();
+}
+
+<div class="box-body table-responsive no-padding table-cheque-block-unblock-deactive">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                Account No.
+            </th>
+
+            <th>
+                ChequeNumber
+            </th>
+            <th>
+                Transaction Date
+            </th>
+        </tr>
+
+        @foreach (var item in Model.AchqPageList)
+        {
+            if (item.cstate == 2)
+            {
+                Status = "Active";
+                Color = "#5cb85c";
+            }
+            else if (item.cstate == 4)
+            {
+                Status = "Pieces Blocked";
+                Color = "#ff3300";
+            }
+            else if (item.cstate == 3)
+            {
+                Status = "Blocked";
+                Color = "#cc0000";
+            }
+            else if (item.cstate == 5)
+            {
+                Status = "Deactive";
+                Color = "#cc0000";
+            }
+            <tr>
+
+                <td>
+                    @item.AccountNumber
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cfrom)-@Html.DisplayFor(modelItem => item.cto)
+                    <button type="button" class="btn btn-custome" style="background-color:@Color;color:white">@Status</button>
+
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetDate(item.tdate)
+                </td>
+            </tr>
+                        }
+
+    </table>
+    @Html.Paging("_ChequeBlockUnBlockDeactivateIndex", "Information", Model.AchqPageList.PageCount, Model.AchqPageList.PageNumber, Model.AchqPageList.PageSize)
+</div>
+<style>
+    .btn-custome {
+        padding: 0px 3px;
+        font-size: 11px;
+        line-height: 1.5;
+        border-radius: 14px;
+    }
+</style>
+<script>
+    $("div.table-cheque-block-unblock-deactive").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $('#AccountNumber').val();
+        var container = parentContainer.find(".table-cheque-block-unblock-deactive")
+        var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction(url, container, me)
+    });
+    $("div.table-cheque-block-unblock-deactive").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $('#AccountNumber').val();
+        var container = parentContainer.find(".table-cheque-block-unblock-deactive")
+        var url = "?accountNumber=" + accountNumber;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.table-cheque-block-unblock-deactive").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var me = $(this);
+        var accountNumber = $('#AccountNumber').val();
+        var container = parentContainer.find(".table-cheque-block-unblock-deactive")
+        var url = "?accountNumber=" + accountNumber;
+        getPageSizeChangeData(url, container, me)
+    });
+
+</script>

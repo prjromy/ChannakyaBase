@@ -1,0 +1,156 @@
+﻿@using PagedList
+@model ChannakyaBase.Model.ViewModel.CustInformationViewModel
+
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+
+
+
+<div class="box-body table-responsive no-padding cust-page-list">
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Contact
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    PAN No
+                </th>
+                <th>
+                    Address
+                </th>
+                @*<th>
+                        @Html.DisplayNameFor(model => model.BrnhID2)
+                    </th>*@
+                @*<th>
+                        @Html.DisplayNameFor(model => model.DoB)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Postedby)
+                    </th>*@
+                @*<th>
+                        @Html.DisplayNameFor(model => model.Appby)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PANNo)
+                    </th>*@
+                @*<th>
+                        @Html.DisplayNameFor(model => model.Street)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CustCompany.CCName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CustIndividual.Fname)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CustType.Ctype)
+                    </th>*@
+
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        @foreach (var item in Model.CustomerInfoList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contact)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ctype)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PANNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.location)
+                </td>
+
+
+                <td>
+                    <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.CID" onclick="EditCustomerList(@item.CID)"></button>
+                    <button type="button" class="btn btn-info btn-sm btn-details glyphicon glyphicon-list" data-id="@item.CID" onclick="CustomerDetailPage(@item.CID)" Route="CustomerList"></button>
+                </td>
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_CustomerList", "Customer", Model.CustomerInfoList.PageCount, Model.CustomerInfoList.PageNumber, Model.CustomerInfoList.PageSize)
+</div>
+<script>
+
+
+    $("div.cust-page-list").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var name = parentContainer.find("#search-Employee-Name").find("#txtCustomerSearch").val();
+        var address = parentContainer.find("#search-Address").find("#txtAddress").val()
+        var contact = parentContainer.find("#search-contact").find("#txtContact").val();
+        var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+        var container = parentContainer.find("div.cust-page-list")
+        var url = "?name=" + name + "&address=" + address + "&contact=" + contact + "&cType=" + cType;
+        getPageNumberBtnAction(url, container, me)
+
+    });
+    $("div.cust-page-list").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var name = parentContainer.find("#search-Employee-Name").find("#txtCustomerSearch").val();
+        var address = parentContainer.find("#search-Address").find("#txtAddress").val()
+        var contact = parentContainer.find("#search-contact").find("#txtContact").val();
+        var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+        var container = parentContainer.find("div.cust-page-list")
+        var url = "?name=" + name + "&address=" + address + "&contact=" + contact + "&cType=" + cType;
+        getPageNumberChangeData(url, container, me)
+    });
+    $("div.cust-page-list").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var name = parentContainer.find("#search-Employee-Name").find("#txtCustomerSearch").val();
+        var address = parentContainer.find("#search-Address").find("#txtAddress").val()
+        var contact = parentContainer.find("#search-contact").find("#txtContact").val();
+        var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+        var container = parentContainer.find("div.cust-page-list")
+        var url = "?name=" + name + "&address=" + address + "&contact=" + contact + "&cType=" + cType ;
+        getPageSizeChangeData(url, container, me)
+    });
+    $(".customer-list-index").on('click', '.btn-searchCustomer', function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var name = parentContainer.find("#search-Employee-Name").find("#txtCustomerSearch").val();
+        var address = parentContainer.find("#search-Address").find("#txtAddress").val()
+        var contact = parentContainer.find("#search-contact").find("#txtContact").val();
+        var cType = parentContainer.find('#custtype').find("#CtypeID").val();
+        var accNumber=parentContainer.find('#search-accountNumber').find('#txtaccountNumber').val();
+
+        $.ajax({
+            contentType: "html",
+            type: "Get",
+            url: "/Customer/_CustomerList",
+            data: { name: name,address:address,contact:contact, cType: cType, accNumber:accNumber},
+            success: function (data) {
+                $(".customer-list-index").find("div.Customer-List").html("");
+                $(".customer-list-index").find("div.Customer-List").html(data);
+            }
+        })
+    });
+</script>

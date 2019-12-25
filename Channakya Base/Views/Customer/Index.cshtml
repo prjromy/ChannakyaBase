@@ -1,0 +1,169 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.CustInfo
+@{
+    ViewBag.Title = "Index";
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Customer</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        <input type="button" value="New Customer" id="btn-create" class="btn btn-info btn-sm btn-create" />
+        <div class="customer-list">
+            @{Html.RenderAction("_CustomerList", "Customer");}
+        </div>
+
+        <div class="customer-create">
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function OnSuccess(message) {
+        SuccessAlert(message, 5000);
+        $('.customer-main').find('.customer-create').hide();
+        $('.customer-main').find('.customer-list').hide();
+        $('.customer-main').find(".btn-create").val('New Customer');
+        $('.customer-main').find('.customer-list').show();
+        $.ajax({
+            //  url: '@Url.Action("_CustomerList", "Customer")',
+            url: "/Customer/_CustomerList",
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".customer-list").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+
+
+
+        $('.customer-main').on('click', '.btn-create', function () {
+
+            var id = 0;
+            var thisVal = $(this).val();
+            if (thisVal == "Customer List") {
+                $(this).val("New Customer")
+                $(".customer-create").fadeToggle(300);
+                $(".customer-list").fadeIn(400);
+            }
+            else {
+                $(this).val("Customer List")
+                $.ajax({
+                    type: "GET",
+                    url: "/Customer/_CustomerCreate",
+                    data: { cId: id },
+                    success: function (data) {
+                        $(".customer-list").fadeToggle(300);
+                        $(".customer-create").fadeIn(400);
+                        $('.customer-create').html(data);
+                    }
+                })
+            }
+        });
+
+        // edit get
+        $('.customer-list').on('click', '.btn-edit', function () {
+            debugger;
+            var container = $(this).closest('.customer-main').find('.customer-create');
+            $(".customer-main").find(".btn-create").val("Customer List")
+
+            var value = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/Customer/_CustomerCreate/",
+                data: { cId: value },
+                success: function (data) {
+                    $(".customer-list").fadeToggle(300);
+                    $(".customer-create").show();
+                    $('.customer-create').html(data);
+                    $('.customer-main').find('.customer-create-main').find('.btn-save').val('Save Changes');
+                    $('.customer-main').find('.customer-create-main').find('#CtypeID').css({pointerEvents: "none"})
+                    //$('.customer-main').find('.btn-create').hide();
+                    //var container= $('.customer-main').find('.customer-create').find('.customer-create-main').find('custContact-create').find('.cust-contact-table').;
+                    //$("tbody > tr").each(function (trCounttotal, obj) {
+                    //    $(obj).find(".delete-cust-contact").removeClass("hidden");
+                    //});
+                }
+            })
+
+        });
+        $('.customer-list').on('click', '.btn-details', function () {
+            debugger;
+            var container = $(this).closest('.customer-main').find('.customer-create');
+            $(".customer-main").find(".btn-create").val("Customer List")
+
+            var value = $(this).data('id');
+            debugger;
+            $.ajax({
+                type: "GET",
+                url: "/Customer/_CustomerDetails/",
+                data: { cId: value },
+                success: function (data) {
+                    alert("");
+                    $(".customer-list").fadeToggle(300);
+                    $(".customer-create").show();
+                    $('.customer-create').html(data);
+                    $('.customer-main').find('.customer-create-main').find('.btn-save').val('Save Changes');
+                    $('.customer-main').find('.customer-create-main').find('#CtypeID').prop("disabled", true);
+                    //$('.customer-main').find('.btn-create').hide();
+                    //var container= $('.customer-main').find('.customer-create').find('.customer-create-main').find('custContact-create').find('.cust-contact-table').;
+                    //$("tbody > tr").each(function (trCounttotal, obj) {
+                    //    $(obj).find(".delete-cust-contact").removeClass("hidden");
+                    //});
+                }
+            })
+
+        });
+
+    });
+
+    $('.customer-main').on('click', '.btn-cancel', function () {
+        var container = $(this).closest('.customer-create');
+        $(container).empty();
+        $(container).hide();
+
+        $('.btn-create').show();
+        $('.customer-main').find('.customer-list').show();
+    });
+
+     
+        $('.customer-main').on('click', '#btn-save-submit', function () {
+            $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#createSubmitForm'));
+            if ($("#createSubmitForm").valid()) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+
+                    $("#createSubmitForm").submit();
+                    return true;
+
+                }).fail(function (data) {
+
+                    return false;
+
+                })
+            }
+        })
+ 
+</script>
+

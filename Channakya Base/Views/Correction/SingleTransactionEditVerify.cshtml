@@ -1,0 +1,104 @@
+﻿
+
+@model ChannakyaBase.Model.ViewModel.TransactionEditViewModel
+    @using ChannakyaBase.BLL
+    @{ 
+        CommonService commonService = new CommonService();
+        var model = Model;
+    }
+<div class="box box-success View-detail-transaction-edit">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Edit Transaction Detail</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    <div class="content-box">
+        <fieldset>
+            <div class="form-horizontal">
+                <div class="col-md-12">
+                    @Html.HiddenFor(x => x.EditId)
+                    @Html.HiddenFor(x => x.Tno)
+
+
+                    <div class="form-group">
+                        @Html.Label("Transaction No:", new { @class = "control-label  col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                            @Html.DisplayFor(x => x.Tno, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+
+                        @Html.Label("Amount:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                            @Html.DisplayFor(x => x.newAmount, new { htmlAttributes = new { @class = "form-control " } })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.Label("Account No:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                         @{
+                             var accountNo = Convert.ToString(commonService.GetAccountFullNameByIaccno(@Model.newAccountNo));
+                        }
+                        @Html.DisplayFor(x => accountNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Branch Name:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">    
+                            @Html.DisplayFor(x => x.BranchName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+
+                        @Html.Label("Posted By:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                            @{
+
+                                var PName = commonService.PosterNamebyID(Convert.ToInt32(Model.PostedBy));
+
+                            }
+                            @Html.DisplayFor(x => PName)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Posted On:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                            @{
+
+
+                                var PDate = commonService.GetDate(Convert.ToDateTime(Model.PostedOn));
+                            }
+                            @Html.DisplayFor(x => PDate)
+
+
+                        </div>
+
+
+                        @Html.Label("Transaction Date:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 margin-adjust">
+                            @{ 
+                                var transactionDate = commonService.GetDate(Model.tdate);
+                            }
+                           
+                            @Html.DisplayFor(x => transactionDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+
+                 
+                    @*<div class="form-group">
+                        @Html.Label("Remarks:", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10 margin-adjust">
+                            @Html.DisplayFor(model => model.remarks, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.remarks, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>*@
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>

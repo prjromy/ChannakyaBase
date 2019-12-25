@@ -1,0 +1,76 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.DisbursementMain
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@{
+    CommonService commonService = new CommonService();
+}
+<div class="box-header with-border no-padding">
+    <div class="box box-warning menu-create no-padding">
+        <div class="box-header with-border">
+            <h4 class="page-title">Details Of Disbursement</h4>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+            <div class="row">
+
+            </div>
+            <div>
+                @{Html.RenderAction("_LoanDisbursementDetailsForVerify", Model.DisburseId);}<div class="table-responsive no-padding verify-container">
+                    @{
+                        var trnxno = FinanceParameterUtilityService.ChargeTranxNoByEventIdAndEventValue(20, Model.ADetail.IAccno);
+                        if (trnxno != 0)
+                        {
+                            @Html.Action("_UnverifiedChargeDetails", "FinanceParameter", new { utno = trnxno })
+                        }
+                    }
+                </div>
+
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="form-group">
+
+                <input type="button" class="btn btn-success btn-disburse-Verify" data-val="" data-eventid="21" data-disburse="@Model.DisburseId" data-isMultiVerifier="false" value="Verify" name="btn1" />
+                <input type="button" class="btn btn-danger  btn-disburse-Verify-2" data-eventid="21" onclick="changestatus(1)" data-val="deposit transaction" data-isMultiVerifier="false" value="Reject" name="btn1" />
+            </div><!-- box-footer -->
+        </div>
+     
+    </div>
+</div>
+<script>
+    $(".btn-disburse-Verify").on("click", function (e) {
+        var disburseId = $(this).data('disburse');
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $.ajax({
+                type: "Post",
+                url: "/Credit/_LoanDisbursementDetailsForVerifyConfirm",
+                datatype: "Json",
+                data: { disburseId: disburseId },
+                success: function (result) {
+                    if (result.Success) {
+                        SuccessAlert(result.Msg)
+                        document.getElementById('alert-success').scrollIntoView();
+                    }
+
+                    else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function (data) {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        })
+    })
+</script>

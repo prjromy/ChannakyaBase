@@ -1,0 +1,104 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountDetailsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+
+}
+<div class="box-body table-responsive no-padding table-click-loan-account-open">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Accno)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Aname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccState)
+            </th>
+            <th>
+                Action
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model.AccountOpenList)
+        {
+            <tr>
+                @Html.HiddenFor(modelItem => item.AccState)
+                <td>
+                    <a href="#" onclick="EditAccountNumber('@item.IAccno')"><i class="fa fa-edit"></i>@item.Accno</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Aname)
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+                    @commonService.GetNepaliDate(item.RDate)
+                </td>
+                <td>
+
+                    @TellerUtilityService.GetAccountStateNameByAccStateId(item.AccState)
+                </td>
+
+                <td>
+                    @if (item.AccState == 6)
+                    {
+                        if (commonService.IsAuthotityToVerify(item.IAccno, 19))
+                        {
+                            <input type="button" value="Verify Account" class="btn btn-sm btn-success btn-account-verifier-confirmations" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(19, Convert.ToInt64(item.IAccno)))">
+                        }
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_LoanAccountList", "credit", Model.AccountOpenList.PageCount, Model.AccountOpenList.PageNumber, Model.AccountOpenList.PageSize)
+</div>
+
+<div id="account-pop-up-div2" class='modal' role='dialog'>
+
+
+</div>
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+<script>
+    $("div.table-click-loan-account-open").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".table-click-loan-account-open")
+
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.table-click-loan-account-open").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-loan-account-open")
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.table-click-loan-account-open").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+
+        var container = parentContainer.find(".table-click-loan-account-open")
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>

@@ -1,0 +1,481 @@
+﻿@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Floating Interest Setup</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div id="tabs" class="form-group tabs" style="height:auto;">
+        <ul>
+            <li><a id="TempIntRateTab" href="#ContentDiv">Template Setup</a></li>
+            <li><a id="TempIntRateValTab" href="#ContentDiv">Template Rate Setup</a></li>
+
+
+        </ul>
+        <div id="ContentDiv" style="height:auto;">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/jquery.form.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+        $(document).ready(function () {
+            $(".tabs").tabs();
+        });
+
+
+        $(document).ready(function (e) {
+            $('a').on("click", function (event) {
+                debugger;
+                switch (event.target.id) {
+                    case "TempIntRateTab":
+                        var url = '@Url.Action("_TempInterestRateIndex", "TransactionSetup")';
+                        $.get(url, function (data) {
+                            event.preventDefault();
+                            $('div#ContentDiv').html("");
+                            $('div#ContentDiv').html(data);
+                        });
+                        break;
+                    case "TempIntRateValTab":
+                        var url = '@Url.Action("_TempInterestRateValIndex", "TransactionSetup")';
+                        $.get(url, function (data) {
+                            debugger;
+                            event.preventDefault();
+                            $('div#ContentDiv').html("");
+                            $('div#ContentDiv').html(data);
+                        });
+                        break;
+                }
+            });
+            $('a#TempIntRateTab').trigger('click');
+            //post for the new rate name
+
+
+            $.validator.unobtrusive.parse($("#TempInterestRateFormCreate"));
+            $('#ContentDiv').on('click', '#btn-saveIntRate-submit', function () {
+
+                $('#TempInterestRateFormCreate').removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($("#TempInterestRateFormCreate"));
+                debugger;
+
+
+                var templateName = $('#Tname').val();
+                var templateId = $("#TID").val();
+                if (templateName=="") {
+                    InfoAlert("The Required Field is Empty");
+                    return false;
+                }
+                if ($('#TempInterestRateFormCreate').valid() == false) {
+                    InfoAlert('Please Fill out the form correctly', 6000);
+                    return false;
+                }
+                $.ajax({
+                    url: "/TransactionSetup/CheckTemplateName",
+                    type: 'GET',
+                    async: false,
+                    data: { templateId: templateId, templateName: templateName },
+                    success: function (result) {
+                        debugger;
+                        var message = $(this).closest("form").find(".field-validation-error").text();
+                        if (result == false) {
+                            InfoAlert("Template Name Duplication", 5000);
+                            return false;
+                        }
+                        else {
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure?"
+                            }).done(function () {
+                                debugger
+                                $("#TempInterestRateFormCreate").ajaxSubmit({
+                                    beforeSubmit: function () {
+
+                                    },
+                                    success: function (result) {
+                                        if (result.Success) {
+                                            $.ajax({
+                                                url: "/TransactionSetup/FloatingInterestIndex",
+                                                type: 'GET',
+                                                async: false,
+                                                success: function (result) {
+                                                    $('section.content').html(result);
+                                                }
+
+                                            })
+                                            SuccessAlert(result.Msg, 5000);
+                                            document.getElementById('alert-success').scrollIntoView();
+                                        }
+                                        else {
+                                            debugger;
+                                            ErrorAlert(result.Msg, 5000);
+                                            document.getElementById('alert-error').scrollIntoView();
+                                        }
+                                    },
+                                    error: function () {
+                                        ErrorAlert(data.responseText, 15000)
+                                    }
+                                });
+
+                            }).fail(function () {
+
+                            })
+                        }
+                    }
+                        });
+            })
+
+
+
+
+
+            //                $.MessageBox({
+            //        buttonDone: "Yes",
+            //        buttonFail: "No",
+            //        message: "Are you sure?"
+            //    }).done(function () {
+            //        debugger
+            //        $("#TempInterestRateFormCreate").ajaxSubmit({
+            //            beforeSubmit: function () {
+
+            //            },
+            //            success: function (result) {
+            //                if (result.Success) {
+            //                    $.ajax({
+            //                        url: "/TransactionSetup/FloatingInterestIndex",
+            //                    type:'GET',
+            //                    async:false,
+            //                    success: function (result) {
+            //                        $('section.content').html(result);
+            //                    }
+
+            //                    })
+            //                    SuccessAlert(result.Msg, 5000);
+            //                    document.getElementById('alert-success').scrollIntoView();
+            //                }
+            //                else {
+            //                    debugger;
+            //                    ErrorAlert(result.Msg, 5000);
+            //                    document.getElementById('alert-error').scrollIntoView();
+            //                }
+            //            },
+            //            error: function () {
+            //                ErrorAlert(data.responseText, 15000)
+            //            }
+            //        });
+
+            //    }).fail(function () {
+
+            //    })
+            //})
+            //    })
+
+
+
+
+            $('#ContentDiv').on('click', '.btn-edit-TempIntRate', function () {
+                debugger
+
+                var TID = $(this).data('id');
+
+                $.ajax({
+                    type: "GET",
+                    url: "/TransactionSetup/_TempInterestRateCreate/",
+                    data: { TID: TID },
+                    success: function (data) {
+                        // $(".section-create").show();
+                        //$('.TempIntRateCreate').html(data);
+                        $('.TempIntRateCreate').html(data).find('.focusdiv').focus()
+                    }
+                })
+
+            });
+            $('#ContentDiv').on('click', '#btn-cancel-saveIntRate', function () {
+
+                var container = $(this).closest('#ContentDiv').find(".TempIntRateCreate");
+                $(this).closest('#ContentDiv').find(".TempIntRateCreate").find('#btn-cancel-saveIntRate').hide();
+                $(container).html("");
+                $.ajax({
+                    type: "GET",
+                    url: "/TransactionSetup/_TempInterestRateCreate/",
+                    success: function (data) {
+                        $(container).html(data);
+                    }
+                })
+            });
+
+            $('#ContentDiv').on('click', '#btn-saveIntRateVal-submit', function () {
+                debugger;
+                //var form = $('#TempInterestRateValFormCreate');
+                //form.validate();
+                //alert()
+                //if (form.valid() =="") {
+                //    infoalert("the required field is empty");
+                //    return false;
+                //}
+                $.validator.unobtrusive.parse('#TempInterestRateValFormCreate');
+                $('#TempInterestRateValFormCreate').removeData('validator').removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse($('#TempInterestRateValFormCreate'));
+                if ($('#TempInterestRateValFormCreate').valid() == false) {
+
+                    InfoAlert('Please Fill out the form', 6000);
+                    return false;
+                }
+
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure?"
+                }).done(function () {
+                    debugger;
+                    $("#TempInterestRateValFormCreate").ajaxSubmit({
+                        beforeSubmit: function () {
+
+                        },
+                        success: function (result) {
+                            if (result.Success) {
+                                $.ajax({
+                                    url: "/TransactionSetup/_TempInterestRateValIndex",
+                                    type: 'GET',
+                                    async: false,
+                                    success: function (result) {
+                                        $('#ContentDiv').html(result);
+                                    }
+
+                                })
+                                SuccessAlert(result.Msg, 5000);
+                                document.getElementById('alert-success').scrollIntoView();
+                            }
+                            else {
+                                debugger;
+                                ErrorAlert(result.Msg, 5000);
+                                document.getElementById('alert-error').scrollIntoView();
+                            }
+                        },
+                        error: function () {
+                            ErrorAlert(data.responseText, 15000)
+                        }
+                    });
+                    //return false;
+                }).fail(function () {
+                    //return false;
+                });
+            });
+            $('#ContentDiv').on('click', '.btn-edit-TempIntRateVal', function () {
+                debugger
+
+                var TIRID = $(this).data('id');
+
+                $.ajax({
+                    type: "GET",
+                    url: "/TransactionSetup/_TempInterestRateValCreate/",
+                    data: { TIRID: TIRID },
+                    success: function (data) {
+                         //$(".section-create").show();
+                         //$('.TempIntRateValCreate').html(data);
+                        $('.TempIntRateValCreate').html(data).find('.focusdiv').focus()
+                    }
+                })
+
+            });
+            $('#ContentDiv').on('click', '#btn-cancel-saveIntRateVal', function () {
+
+                var container = $(this).closest('#ContentDiv').find(".TempIntRateValCreate");
+                $(this).closest('#ContentDiv').find(".TempIntRateValCreate").find('#btn-cancel-saveIntRateVal').hide();
+                $(container).html("");
+                $.ajax({
+                    type: "GET",
+                    url: "/TransactionSetup/_TempInterestRateValCreate/",
+                    success: function (data) {
+                        $(container).html(data);
+                    }
+                })
+            });
+            var TID;
+
+            $('#ContentDiv').on('click', '.btn-delete-TempIntRate', function () {
+                debugger;
+
+                TID = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("TempInterestRateDelete", "TransactionSetup")',
+                    data: { TID: TID },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (result) {
+
+                    if(result=="false") {
+                            ErrorAlert("Template Type Name is in use. ", 5000);
+                    }
+                    else {
+                        debugger;
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure you want to Delete ?"
+                        }).done(function () {
+                            //alert(result)
+                            debugger;
+                            deleteMenuTempName(TID);
+                        })
+                    }
+
+
+
+
+
+                    }, error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+            function deleteMenuTempName(TID) {
+                debugger;
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("TempInterestRateDeleteConfirm", "TransactionSetup")',
+                    data: { TID: TID },
+                    success: function (result) {
+
+                        //if (result == "true") {
+
+                        SuccessAlert("Sucessfully Deleted", 5000);
+                        $("#TempIntRate-list").html(result);
+
+                        //}
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+            }
+
+            var TIRID;
+
+            $('#ContentDiv').on('click', '.btn-delete-TempIntRateVal', function () {
+                debugger;
+                TIRID = $(this).closest('td').find('.btn-edit-TempIntRateVal').attr("data-id");
+                TID = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: "@Url.Action("TempInterestRateValDelete", "TransactionSetup")",
+                    data: { TID: TID },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (result) {
+                    if (result=="false")
+                        {
+                                ErrorAlert("Must not be deleted ", 5000);
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure  you want to Delete ?"
+                        }).done(function () {
+                            //alert(result)
+                            debugger;
+                            
+                            deleteMenuTempRateVal(TIRID);
+
+
+                        })
+                    }
+
+                    }, error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+            function deleteMenuTempRateVal(TIRID) {
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    url: '/TransactionSetup/TempInterestRateValDeleteConfirm',
+                    data: { TIRID: TIRID },
+                    success: function (result) {
+
+                        //if (result == "true") {
+
+                        SuccessAlert("Sucessfully Deleted", 5000);
+                        $("#TempIntRateVal-list").html(result);
+
+                        //}
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+            }
+            $("#ContentDiv").on("change", ".tempID", function () {
+                debugger;
+                var TID = $(this).val();
+                $.ajax({
+                    type: 'GET',
+                    url: "/TransactionSetup/_TempInterestRateValList",
+                    data: { TID: TID },
+                    success: function (data) {
+                        $(".TempIntRateValList").html("");
+                        $(".TempIntRateValList").html(data);
+                    }
+                });
+            })
+        });
+        function createInterestRateSuccess() {
+            debugger;
+            SuccessAlert("Succesfully Saved. ", 5000);
+            $.ajax({
+                url: '@Url.Action("_TempInterestRateCreate", "TransactionSetup")',
+                type: 'GET',
+                processData: false,
+                success: function (data) {
+                    $(".TempIntRateCreate").html(data);
+                    console.log(data)
+                    $('a#TempIntRateTab').trigger('click');
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+        }
+        function createInterestRateValSuccess() {
+            debugger;
+            SuccessAlert("Succesfully Saved. ", 5000);
+            $.ajax({
+                url: '@Url.Action("_TempInterestRateValCreate", "TransactionSetup")',
+                type: 'GET',
+                processData: false,
+                success: function (data) {
+                    $(".TempIntRateValCreate").html(data);
+                    console.log(data)
+                    $('a#TempIntRateValTab').trigger('click');
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+        }
+</script>

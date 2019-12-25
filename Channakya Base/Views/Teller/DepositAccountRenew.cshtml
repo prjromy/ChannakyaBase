@@ -1,0 +1,271 @@
+﻿@model ChannakyaBase.Model.ViewModel.AccountRenewModel
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.CustomHelper;
+@using ChannakyaBase.BLL;
+@using ChannakyaBase.BLL.Service;
+@using (Html.BeginForm("DepositAccountRenew", "Teller", FormMethod.Post, new { id = "renew-account-form" }))
+{
+<div class="modal-dialog">
+    <div class="modal-content modal-dialog-centered">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">Renew Deposit Account</h4>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <legend style="font-size:14px;font-weight:bold">Change Info</legend>
+                <div class="row">
+                    @Html.HiddenFor(x => x.IAccno)
+                    @Html.HiddenFor(x => x.RDate)
+                    @Html.HiddenFor(x => x.PID)
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.Duration, new { @class = "control-label" })
+                        <div class="form-grop_padding">
+
+                            @Html.DropDownListFor(model => model.Duration, new SelectList(Model.ProductDurationList, "Id", "Duration"), "-Select Duration-", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Duration, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.MaturationDate, new { @class = "control-label" })
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.MaturationDate, true)
+                            @Html.ValidationMessageFor(model => model.MaturationDate, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InterestCalRule, new { @class = "control-label" })
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(model => model.InterestCalRule, new SelectList(Model.Policy, "PloicyIntCalId", "PolicyIntCalName"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.InterestCalRule, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (Model.IsFixedAccount)
+                    {
+                        <div class="col-md-6 AggrementForFixed">
+                            @Html.LabelFor(model => model.AgreementAmount, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+
+                                @Html.TextBoxFor(model => model.AgreementAmount, new { @class = "form-control text-right"})
+
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 ContributionAmountForRecurring">
+                            @Html.LabelFor(model => model.ContributionAmount, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(model => model.ContributionAmount, new SelectList("", ""), "-Select contribution Amount -", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ContributionAmount, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                    }
+
+
+                    @if (!Model.IsFixedAccount)
+                    {
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(model => model.Basic, new { @class = "control-label" })
+                            <div class="form-grop_padding">
+                                @Html.DropDownListFor(model => model.Basic, new SelectList("", ""), "-Select Duration Basic -", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Basic, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InterestCapitalize, new { @class = "control-label" })
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(model => model.InterestCapitalize, new SelectList("", ""), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.InterestCapitalize, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InterestRate, new { @class = "control-label" })
+                        <div class="form-grop_padding">
+                            @Html.TextBoxFor(model => model.InterestRate, new { @class = "form-control text-right" })
+                            @Html.ValidationMessageFor(model => model.InterestRate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                </div>
+            </fieldset>
+            <div class="btn-groups modal-footer">
+                <input type="button" value="Re-New" class="btn btn-default btn-account-renew-save" />
+            </div>
+        </div>
+    </div>
+</div>
+}
+<script>
+    $(function () {
+
+        //$("#AmountCurrency").trigger("change");
+        $.validator.unobtrusive.parse('#renew-account-form');
+        $(".btn-account-renew-save").on("click", function (e) {
+
+            
+            $('#renew-account-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#renew-account-form'));
+            if ($("#renew-account-form").valid()) {
+                $('#renew-account-form').ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (result) {
+                        if (result.Success) {
+                            $("#message-pop-up-div2").modal('toggle');
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+
+                        } else {
+
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                });
+
+            }
+        })
+
+    });
+    $("#Duration").on("change", function () {
+
+        var durationId = $("#Duration option:selected").val();
+        var regDate = formatDate($("#RDate").val());
+        var productId = $("#PID").val();
+        var dateAd = $("#MaturationDate").closest(".chdPickerMain").find(".txtDateAD");
+        var dateBs = $("#MaturationDate").closest(".chdPickerMain").find(".txtDateBS");
+       
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetCaptRuleByProductAndMatDuration",
+            datatype: "Json",
+            data: {
+                registerDate: regDate,
+                productId: productId,
+                durationId: durationId,
+               
+            },
+            success: function (result) {
+
+                $("#MaturationDate").val(result.duration.Date);
+              
+                dateAd.val(result.duration.EnglishDate);
+                dateBs.val(result.duration.NepaliDate)
+                if (result.ChkProductType.IsFixed) {
+                    var InterestCapital = "";
+
+                    $.each(result.InterestCapital, function (index, item) {
+
+                        InterestCapital = InterestCapital + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                    })
+                    $('#InterestCapitalize').html(InterestCapital);
+                    $("#InterestCapitalize").trigger("change");
+
+                } else if (result.ChkProductType.IsRecurring || result.ChkProductType.IsOtherTypeRecurring) {
+                    var recValue = "";
+
+                    $.each(result.InterestCapital, function (index, item) {
+
+                        recValue = recValue + "<option value='" + item.contributionValue + "'>" + item.contributionValue + "</option>"
+                    })
+                    $('#ContributionAmount').html(recValue);
+                    $("#ContributionAmount").trigger('change')
+
+                }
+
+            }
+        })
+    });
+    $("#ContributionAmount").on("change", function () {
+
+        var durationId = $("#Duration option:selected").val();
+        var productId = $("#PID").val();
+        var contrubAmount = $("#ContributionAmount").val();
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetRecurringBasic",
+            datatype: "Json",
+            data: {
+                contrubAmount: contrubAmount,
+                productId: productId,
+                durationId: durationId,
+
+            },
+            success: function (result) {
+
+                var durationBasic = "";
+
+                $.each(result, function (index, item) {
+                    durationBasic = durationBasic + "<option value='" + item.Id + "'>" + item.Duration + "</option>"
+                })
+                $('#Basic').html(durationBasic);
+                $("#Basic").trigger('change')
+            }
+        })
+    });
+    $("#Basic").on("change", function () {
+        var durationId = $("#Duration option:selected").val();
+        var productId = $("#PID").val();
+        var contrubAmount = $("#ContributionAmount option:selected").val();
+        var basicId = $("#Basic option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetInterestCapitalizeForRecurringProduct",
+            datatype: "Json",
+            data: {
+                durationId: durationId,
+                productId: productId,
+                basicId: basicId,
+                value: contrubAmount,
+            },
+            success: function (result) {
+                var InterestCapitalizeList = "";
+                $.each(result, function (index, item) {
+                    InterestCapitalizeList = InterestCapitalizeList + "<option value='" + item.InterestCapitalizeId + "'>" + item.InterestCapitalizeName + "</option>"
+                })
+                $('#InterestCapitalize').html(InterestCapitalizeList);
+                $("#InterestCapitalize").trigger("change");
+            }
+        })
+    });
+    $("#InterestCapitalize").on("change", function () {
+
+        var captId = $("#InterestCapitalize option:selected").val();
+        var durationId = $("#Duration option:selected").val();
+        var contrubAmount = $("#ContributionAmount option:selected").val();
+        var basicId = $("#Basic option:selected").val();
+        var productId = $("#PID").val();
+        if (captId == 0) {
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Teller/GetCaptRuleIntRateByProductAndDurationId",
+            datatype: "Json",
+            data: {
+                captId: captId,
+                productId: productId,
+                contrubAmount: contrubAmount,
+                durationId: durationId,
+                basicId: basicId
+            },
+            success: function (result) {
+
+                $("#InterestRate").val(result);
+            }
+        });
+    });
+</script>

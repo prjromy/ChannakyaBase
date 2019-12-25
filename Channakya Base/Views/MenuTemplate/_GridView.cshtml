@@ -1,0 +1,43 @@
+﻿@model Loader.Models.MenuTemplate
+@{
+    var test = Model;
+    var menuTypeClass = "background-color:#f9a825 !important";
+}
+
+
+        <div class="small-box bg-aqua" style="@menuTypeClass">
+            <span class="deleteNode" title="Delete" data-toggle="tooltip" data-placement="top" id="@Model.MTId" style="right:0px;position:absolute;cursor:pointer;"> <i class="glyphicon glyphicon-remove"></i></span>
+            <div id="@Model.MTId" class="icon MenuTemplateImage" style="top: -31px;">
+                <img class="MenuTemplateImage" id="@Model.MTId" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+            </div>
+            <div class="inner" menu-caption="@Model.MTName">
+                <p id="MTName" data-toggle="tooltip" data-placement="top" title="@Model.MTName" style="cursor:pointer;"> @Model.MTName</p>
+                @*<span class="type" data-toggle="tooltip" data-placement="bottom" title="@Model.FinSys2.F2Desc" style="color:ghostwhite"><b style="max-height:15px;overflow:hidden;position:relative;">  @Html.DisplayFor(m => Model.FinSys2.F2Desc)</b></span>*@
+            </div>
+            <a class="small-box-footer">
+                @*<input type="button" value="drill" class="btndrill" id="" />*@
+
+                <span class="btndrill editList" id="@Model.MTId" data-toggle="tooltip" data-placement="top" title="Edit" style="cursor:pointer;"><i id="@Model.MTId" class="glyphicon glyphicon-list-alt editList "></i></span>
+
+                @*<span id="btndetails"><i class="glyphicon glyphicon-list-alt details" fid="@Model.Fid" did="@Model.Fname" pid="@Model.Pid"></i></span>*@
+            </a>
+        </div>
+    
+
+<style>
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #MTName {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

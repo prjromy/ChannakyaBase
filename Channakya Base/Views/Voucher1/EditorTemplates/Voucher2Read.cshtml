@@ -1,0 +1,168 @@
+﻿
+@model ChannakyaAccounting.Models.Models.Voucher2
+@{
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+}
+
+
+<tr class="newrow">
+
+
+    <td style="text-align:center">
+
+        @Html.HiddenFor(x => x.V2Id, new { @class = "rowId" })
+        @Html.DropDownList("VoucherSelect", voucherType, "Select", new { @class = "form-control", @id = "voucherSelect" })
+    </td>
+    @Html.TextBoxFor(x => x.Fid, new { @style = "display:none", @id = "ledgerID-voucher" });
+
+
+    <td style="text-align:left" class="ledger-search-container" id="append">
+        @Html.DisplayFor(x => x.LedgerName, null, new { @class = "LedgerName", @style = "width:90%", @id = "ledgerSearch" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+        <i class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' style="cursor:pointer;"></i>
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+    <td style="text-align:left" class="ledger-search-container" id="append">
+        @Html.DisplayFor(x => x.Particulars, null, new { @class = " form-control Particulars", @id = "particularsSearch" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+
+
+    <td style="text-align:right" class="debit-amount">
+        @Html.DisplayFor(x => x.DebitAmount, new { @class = "DebitAmount form-control", @style = "width:100%" })
+    </td>
+    <td style="text-align:right" class="credit-amount">
+        @Html.DisplayFor(x => x.CreditAmount, new { @class = "CreditAmount form-control", @style = "width:100%" })
+    </td>
+
+    <td style="text-align: center">
+
+        <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-disk ' id='btnSave' /> <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-save ' id='btnSaveandNext' /> <i class='btn btn-info btn-sm glyphicon glyphicon-trash' id='btnDelete' />
+
+
+    </td>
+
+</tr>
+
+
+<script type="text/javascript">
+
+
+
+    //$('tbody.voucher2-container').on('keydown', 'input#ledgerSearch', function (event) {
+    //    debugger;
+    //    var currentEvent = $(this);
+    //    var text = $(this).val();
+    //    var checkevent = event.keyCode;
+    //    if (checkevent == 9) {
+    //        $.ajax({
+    //            url: '/Voucher1/SearchVoucherList/',
+    //            data: { text: text },
+    //            dataType: "json",
+    //            success: function (ledgerName) {
+    //                debugger;
+    //                var count = ledgerName.data.length;
+    //                if (count == 1) {
+    //                    var currentText = ledgerName.data[0].Fname;
+    //                    var currentId = ledgerName.data[0].Fid;
+    //                    currentEvent.val(currentText);
+    //                    currentEvent.closest("#ledgerID-voucher").val(currentId);
+    //                }
+    //                else {
+    //                    debugger;
+    //                    //$.each(ledgerName.data, function (key, value) {
+    //                    debugger;
+    //                    var url = "/Voucher1/AddSearchedVoucherDetails";
+    //                    var data = { "query": text };
+
+
+
+    //                    $.get(url, data, function (data) {
+
+    //                        $('#getVoucherDetails').html(data);
+    //                        debugger;
+
+    //                        $('#getVoucherDetails').modal('show');
+    //                    });
+
+    //                    // });
+    //                }
+
+    //            }
+    //        });
+
+    //    }
+
+
+
+
+
+    });
+    $('select#voucherSelect').change(function () {
+        debugger;
+        var voucherType = $(this).val();
+        var debitcontainer = $(this).closest('tr.newrow').find('.debit-amount')
+        var creditcontainer = $(this).closest('tr.newrow').find('.credit-amount')
+        if (voucherType == 0) {
+
+            var form = $(debitcontainer).closest("form");
+            $.ajax({
+                url: '/Voucher1/GetAmount/',
+                data: { type: voucherType },
+                dataType: "html",
+                success: function (data) {
+                    $(debitcontainer).show();
+                    $(debitcontainer).html(data);
+                    $(creditcontainer).empty();
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+
+                }
+            });
+        }
+        else {
+            var form = $(creditcontainer).closest("form");
+            $.ajax({
+                url: '/Voucher1/GetAmount/',
+                data: { type: voucherType },
+                dataType: "html",
+                success: function (data) {
+                    $(creditcontainer).show();
+                    $(creditcontainer).html(data);
+                    $(debitcontainer).empty();
+                    $(form).removeData("validator");
+                    $(form).removeData("unobtrusiveValidation");
+
+                }
+            });
+
+        }
+
+
+    });
+    $('i#btnledgersearch').click(function () {
+        debugger;
+        var url = $('#getVoucherDetails').data('url');
+        var type = $(this).closest('tr.newrow').find('select#voucherSelect option:selected').val();
+        var data = { "type": type };
+
+
+
+        $.get(url, data, function (data) {
+
+            $('#getVoucherDetails').html(data);
+            debugger;
+
+            $('#getVoucherDetails').modal('show');
+        });
+
+    });
+
+
+</script>

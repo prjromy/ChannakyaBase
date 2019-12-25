@@ -1,0 +1,185 @@
+﻿@model  List<ChannakyaBase.Model.ViewModel.TransactionEditViewModel>
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using Loader.Models;
+
+@{
+    CommonService commonService = new CommonService();
+
+    CorrectionService correctionService = new CorrectionService();
+
+}
+<div class="pop-up-for-verify">
+</div>
+<div class="box box-success transaction-edit">
+    <div class="box-header with-border">
+        <h3 class="box-title">Transaction Edit Verification </h3>
+        <div class="box-tools pull-right">
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div>
+    </div>
+    <div class="box-body table-responsive no-padding table-transaction-edit-verify">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+
+                <th>
+                    Transaction No.
+                </th>
+
+                <th>
+                    Amount
+                </th>
+                <th>
+                    Account
+                </th>
+
+                <th>
+                    Branch Name
+                </th>
+
+                <th>
+                    Posted By
+                </th>
+                <th>
+                    Posted On
+                </th>
+                <th>Type</th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+            @foreach (var item in Model)
+            {
+
+                <tr>
+
+
+                    @Html.HiddenFor(modelItem => item.EditId)
+                    @Html.HiddenFor(modelItem => item.Tno)
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tno)
+                    </td>
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.newAmount)
+
+                    </td>
+                    <td>
+                        @{
+                            var accountNo = Convert.ToString(commonService.GetAccountFullNameByIaccno(item.newAccountNo));
+                        }
+                        @Html.DisplayFor(modelItem => accountNo)
+
+                    </td>
+
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BranchName)
+
+                    </td>
+
+                    <td>
+                        @{
+
+                            var PName = commonService.PosterNamebyID(Convert.ToInt32(item.PostedBy));
+
+                        }
+                        @Html.DisplayFor(modelItem => PName)
+
+                    </td>
+                    <td>
+                        @{
+
+
+                            var PDate = commonService.GetDate(Convert.ToDateTime(item.PostedOn));
+                        }
+                        @Html.DisplayFor(modelItem => PDate)
+
+                    </td>
+
+
+
+                    @if (item.Status == 3)
+                    {
+                        <td>
+                            <span class="label label-primary">Unverified</span>
+                        </td>
+                    }
+                    else if (item.Status == 2)
+                    {
+                        <td>
+                            <span class="label label-danger">Rejected</span>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <span class="label label-success">Verified</span>
+                        </td>
+                    }
+
+                    @if (Global.UserId != item.PostedBy && item.Status == 3)
+                    {
+
+
+                        <td><input type="button" class="btn btn-sm btn-success  btn-view-edit-transaction-receiving-details" value="View Detail" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(29,Convert.ToInt64(item.Tno)))" /></td>
+
+
+
+                    }
+                    else if (Global.UserId == item.PostedBy && correctionService.IsVerified(item.Tno))
+                    {
+                        <td>
+                            <input type="button" class="btn btn-sm btn-danger  btn-view-delete-transaction-receiving-details" value="Delete" onclick="DeleteUnverifiedTransaction(@item.Tno)" />
+                        </td>
+
+                    }
+                    else /*if( item.Status!=3)*/
+                    {
+                        <td></td>
+                    }
+
+                </tr>
+                            }
+        </table>
+
+
+    </div>
+</div>
+
+
+<script>
+    function DeleteUnverifiedTransaction(Tno) {
+        debugger;
+            $.ajax({
+                type: "POST",
+                data: {
+                    Tno: Tno
+                },
+                url: "Correction/DeleteTransactionEdit",
+                success: function (data) {
+                    debugger;
+                    //$(".pop-up-for-verify").html(result);
+
+                    //location.reload(true);
+
+                    window.location.href = "Correction/TransactionEditVerify";
+
+                }
+            });
+
+        }
+    
+    </script>
+
+
+
+

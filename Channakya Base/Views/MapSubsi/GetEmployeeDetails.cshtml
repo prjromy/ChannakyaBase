@@ -1,0 +1,327 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.EmployeeViewModel>
+@{
+    var count = 0;
+}
+
+<div class="modal-dialog  add-Employee" style="width: 100%; padding: 0 5px 0 235px;top:20px; position:fixed;">
+    <div class="modal-content add-Employee">
+        <div class="modal-header">
+
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <h4 class="modal-title" id="myModal-label">Employee Details</h4>
+
+        </div>
+        <div class="modal-body" style="padding:20px 50px; ">
+            <div class="col-md-11">
+                <input type="text" name="Search" placeholder="Search By Employee name ..." class="Search form-control">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-default" name='btnsearch' id='btnsearch-cust' type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+            <div class="bodycontent-and-paging scroll-bar">
+                <div class="container ledger-list-model">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+
+                                <table id="mytable" class="table table-bordred" style="max-width:85%; display: flex;flex-flow: column;width: 100%;position:relative;">
+
+                                    <thead  style="flex:0 0 auto;width: calc(100% - 0.9em); display: table;table-layout: fixed;">
+                                        <tr>
+                                            <th>
+                                                S.N
+                                            </th>
+                                            <th>
+                                                Employee Id
+                                            </th>
+                                            <th>
+                                                Employee Name
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody style="flex: 1 1 auto;display: block;overflow-y: scroll;max-height: 50vh; position:relative;">
+                                        @foreach (var item in Model)
+                                    {
+                                            <tr class="Employee-details" id="@item.EmployeeId" cust-name="@item.EmployeeName" style="cursor:pointer; width: 100%;display: table;table-layout: fixed;">
+                                                @Html.HiddenFor(x => item.EmployeeId)
+                                                <td>@(count += 1)</td>
+
+                                                <td class="Employee-Id">
+                                                    @item.EmployeeId
+                                                </td>
+                                                <td class="Employee-name" style="cursor:pointer;">
+                                                    @item.EmployeeName
+                                                </td>
+
+
+                                                @*<button class="btn btn-default ledgerload" , onclick="location.href='@Url.Action("GetLedger", "Helper", new { ledgername = item.EmployeeName })';return true;">Select</button>*@
+
+
+
+                                            </tr>
+                                    }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding-left:6%">
+                    @*  *@
+                    @*<input type="submit" class="btn btn-success" value="Save" />
+                <button class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</button>*@
+
+                    <ul class="pagination Employeepagination" style="float:left;margin-right:20px;">
+                        <li class="previous"><a href="#">Previous</a></li>
+                        @for (int i = 1; i <= ViewBag.CountPager; i++)
+                       {
+                           if (i > 4)
+                           {
+                               if (i == ViewBag.ActivePager)
+                               {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                               }
+                               else
+                               {
+                                   if (i >= (ViewBag.ActivePager - 2))
+                                   {
+
+                                       if (i > ViewBag.ActivePager)
+                                       {
+                                           if (i - ViewBag.ActivePager <= 2)
+                                           {
+                                            <li id=@i class="pagerClass"><a>@i</a> </li>
+                                           }
+                                           else
+                                           {
+                                               if (i == ViewBag.CountPager)
+                                               {
+                                                   if (ViewBag.CountPager - ViewBag.ActivePager > 3)
+                                                   {
+                                                    <li class=""><a>.......</a> </li>
+                                                   }
+                                                <li id=@i class="pagerClass"><a>@i</a> </li>
+                                               }
+                                            <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                           }
+                                       }
+                                       else
+                                       {
+
+                                        <li id=@i class="pagerClass"><a>@i</a> </li>
+                                       }
+
+                                   }
+                                   else
+                                   {
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                   }
+                               }
+                           }
+                           else
+                           {
+                               if (i == ViewBag.ActivePager)
+                               {
+                                <li id=@i class="pagerClass active"><a>@i</a> </li>
+                               }
+                               else
+                               {
+                                   if (i >= (ViewBag.ActivePager - 2))
+                                   {
+                                    <li id=@i class="pagerClass"><a>@i</a> </li>
+                                   }
+                                   else
+                                   {
+                                    <li id=@i class="pagerClass" style="display:none;"><a>@i</a> </li>
+                                   }
+                               }
+                           }
+                       }
+                        <li class="next"><a href="#">Next</a></li>
+
+                    </ul>
+                    <div style="margin-top:20px;margin-left:20px" class="search-container">
+                        @Html.TextBox("SearchPager", null, new { @class = "form-control searchPager", @style = "width:65px;", @placeholder = "PageNo" })
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.pagination').on('click', 'li.next , li.previous', function () {
+            debugger;
+            var cls = $(this).attr('class');
+            var Search = $(this).closest('#getEmployeeDetails').find('.Search').val();
+            if ($(this).attr('class') == 'next') {
+                var pager = $('ul.pagination.Employeepagination').find('.active').attr('id');
+                var finalId = parseInt(pager) + 1;
+                var hasNext = $('ul.pagination.Employeepagination').find('li#' + finalId)
+                if ($(hasNext).length > 0) {
+                    var container = $(this).closest('.modal-body').find('.bodycontent-and-paging');
+                    $(container).load("MapSubsi/SearchEmployeeDetails", {query:Search, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.Employeepagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Employeepagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Employeepagination').find('li#' + finalId).addClass('active');
+                }
+            }
+            else {
+                var pager = $('ul.pagination.Employeepagination').find('.active').attr('id');
+                var finalId = parseInt(pager) - 1;
+                var hasPrev = $('ul.pagination.Employeepagination').find('li#' + finalId)
+
+                if ($(hasPrev).length > 0) {
+                    var container = $(this).closest('.modal-body').find('.bodycontent-and-paging');
+                    $(container).load("MapSubsi/SearchEmployeeDetails", { query: Search, page: finalId });
+                    $('#getVoucherDetails').modal('show');
+
+                    var checkActive = $('ul.pagination.Employeepagination').find('li').hasClass('active');
+                    if (checkActive == true) {
+                        $('ul.pagination.Employeepagination').find('.active').removeClass('active');
+                    }
+                    $('ul.pagination.Employeepagination').find('li#' + finalId).addClass('active');
+                }
+            }
+
+        });
+        $('.pagination').on('click', '.pagerClass', function () {
+            debugger;
+            var pagingData = $(this).attr('id');
+            var Search = $(this).closest('#getEmployeeDetails').find('.Search').val();
+            var container = $(this).closest('.modal-body').find('.bodycontent-and-paging');
+            $(container).load("MapSubsi/SearchEmployeeDetails", { query: Search, page: pagingData });
+            $('#getVoucherDetails').modal('show');
+            var checkActive = $('ul.pagination.Employeepagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Employeepagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Employeepagination').find('li#' + pagingData).addClass('active');
+
+        });
+        $('.search-container').on('blur', '.searchPager', function () {
+            debugger;
+            var Search = $(this).closest('#getEmployeeDetails').find('.Search').val();
+            var finalId = $(this).val();
+            var container = $(this).closest('.modal-body').find('.bodycontent-and-paging');
+            if (isNaN(finalId) == false || finalId != 0) {
+                $.ajax({
+                    url: "/MapSubsi/SearchEmployeeDetails",
+                    type: "POST",
+                    data: { query: Search, page: finalId },
+                    success: function (data) {
+                        debugger;
+                        $(this).closest('.modal-body').find('.bodycontent-and-paging').html(data);
+                        $('.bodycontent-and-paging').focus();
+
+                    }
+
+                });
+            }
+            // $(subsiContainer).load("/VoucherBalance/AddSubsiBalance", { ledgerId: ledgerId, page: finalId });
+
+            var checkActive = $('ul.pagination.Employeepagination').find('li').hasClass('active');
+            if (checkActive == true) {
+                $('ul.pagination.Employeepagination').find('.active').removeClass('active');
+            }
+            $('ul.pagination.Employeepagination').find('li#' + finalId).addClass('active');
+        });
+    });
+
+
+
+    $('tr.Employee-details').click(function () {
+
+        var id = $(this).attr('id');
+        var custName = $(this).attr('cust-name');
+
+        $('.section-customer').find('input.display-txt').val(custName);
+        $('.section-customer').find('input.internal-value').val(id);
+
+        $('#getEmployeeDetails').modal('hide');
+
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/MapSubsi/GenerateLedgerList/",
+        //    data: { custId: id },
+        //    dataType: "html",
+        //    success: function (data) {
+        //        $('.append-subsiledger-list').html(data);
+        //    }
+        //});
+
+
+
+    });
+
+
+    $('button#btnsearch-cust').click(function () {
+        debugger;
+        // var text = $(this).closest(".add-voucher-finacc").find("input.Search.form-control").val();
+        var Search = $(this).closest('#getEmployeeDetails').find('.Search').val();
+        $.ajax({
+            url: '/MapSubsi/SearchEmployeeDetails',
+            type: "POST",
+            data: { query: Search },
+            dataType: "html",
+            success: function (data) {
+                debugger;
+                $(this).closest('.modal-body').find('.bodycontent-and-paging').html(data);
+                $('.bodycontent-and-paging').focus();
+
+            }
+        });
+    });
+</script>
+<script>
+    $('.modal-body').on('keydown', '.Search', function (event) {
+        debugger;
+        if (event.keyCode == 13 || event.keyCode == 9) {
+            $('#btnsearch-cust').trigger('click');
+            return false;
+        }
+
+    });
+
+</script>
+
+
+<style>
+    .modal-header {
+        background-color: #3c8dbc;
+        color: white !important;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+
+    /*.modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }*/
+
+    .Employee-details:hover {
+        background-color: #3c8dbc;
+    }
+</style>
+
+
+
+

@@ -1,0 +1,39 @@
+﻿@model ChannakyaAccounting.Models.Models.SubsiSetup
+@{ 
+    var test = Model;
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var subsiTypeList = finaccService.GetSubsiTitle();
+}
+
+@Html.HiddenFor(m => m.SSId, new { @class = "form-control" })
+
+@*<div class="form-group col-md-12">
+    @Html.LabelFor(m => m.STitleName, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.STitleName, new { @class = "form-control" })
+    </div>
+</div>
+<div class="form-group col-md-12">
+    @Html.LabelFor(m => m.STPrefix, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.STPrefix, new { @class = "form-control" })
+    </div>
+</div>
+<div class="form-group col-md-12">
+    @Html.LabelFor(m => m.Slength, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.Slength, new { @class = "form-control" })
+    </div>
+</div>
+<div class="form-group col-md-12">
+    @Html.LabelFor(m => m.CurrentNo, new { @class = "col-sm-3  control-label col-form-label" })
+    <div class="col-sm-9">
+        @Html.TextBoxFor(m => m.CurrentNo, new { @class = "form-control" })
+    </div>
+</div>*@
+
+@*<div class="form-group" style="display:none;">
+    <div class="subsi-vs-fid">
+        @Html.EditorFor(model => model.SubsiVSFIds)
+    </div>
+</div>*@

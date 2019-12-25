@@ -1,0 +1,32 @@
+﻿@model ChannakyaBase.Model.ViewModel.ANomineeViewModel 
+    @using ChannakyaBase.BLL.Service;
+    @using HtmlHelpers.BeginCollectionItem;
+<tr>
+    @using (Html.BeginCollectionItem("ANominees"))
+    {
+
+        <td class="hidden">@Html.HiddenFor(x => x.NID)</td>
+        <td class="hidden">@Html.HiddenFor(x => x.NomNam, new { @class = "NomNam" })</td>
+        <td class="hidden">@Html.HiddenFor(x => x.NomRel, new { @class = "NomRel" })</td>
+            <td class="hidden">@Html.HiddenFor(x => x.ContactNo, new { @class = "ContactNo" })</td>
+            <td class="hidden">@Html.HiddenFor(x => x.ContactAddress, new { @class = "ContactAddress" })</td>
+            <td class="hidden">@Html.HiddenFor(x => x.CCertID, new { @class = "CCertID" })</td>
+            <td class="hidden">@Html.HiddenFor(x => x.CCertno, new { @class = "CCertno" })</td>
+            <td class="hidden">@Html.HiddenFor(x => x.Share, new { @class = "share" })</td>
+            <td>@Model.NomNam</td>
+            <td>@Model.NomRel</td>
+            <td>@Model.ContactNo</td>
+            <td>@Model.ContactAddress</td>
+            <td>@Model.CCertno</td>
+            <td>@Model.Share</td>
+            <td>@Model.CertificateName</td>
+            <td>
+                <input type="button" value="Remove" class="btn btn-outline-primary" onclick="DeleteRow(this)" />
+                @*<button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" onclick="EditRow(this)"></button>*@
+            </td>
+
+
+    }
+</tr>
+
+

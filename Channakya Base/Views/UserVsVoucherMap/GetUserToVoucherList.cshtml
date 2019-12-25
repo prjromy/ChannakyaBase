@@ -1,0 +1,249 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.usertovoucherreturnViewModel
+
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "User Vs Voucher ";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="uservsvoucher-explore section-treeview ">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create " id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+
+
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var test = $("input.btn.btn-box-tool.txtSearch");
+        $("input.btn.btn-box-tool.txtSearch").focus();
+
+    });
+    $('.uservsvoucher-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.uservsvoucher-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#uservsvoucherId').val();
+        if (nodeId =="")
+        {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.uservsvoucher-explore').find('.panel-list').find('.bodycontent-and-paging-uservsvoucher');
+        var listType = $(this).closest('.uservsvoucher-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_DetailPartial", "UserVsVoucherMap")',
+            contentType: "application/json; charset=utf-8",
+            data: {ViewType: listType},
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $(container).html(html);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+
+    $('.uservsvoucher-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.uservsvoucher-explore').find('.uservsvoucher-treeview').moveUp();
+        //$(this).closest('.uservsvoucher-explore').find('.uservsvoucher-treeview').updateTreeview("uservsvoucher", "_UpdateuservsvoucherTree", 1009,-1)
+    });
+
+    $('.uservsvoucher-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.uservsvoucher-explore').find('.uservsvoucher-treeview').SelectNode(id);
+    });
+
+
+    $('.uservsvoucher-explore').on('click', '.uservsvoucherImage, .editList, .btn-create-VoucherMap', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.uservsvoucher-explore').find('.panel-create');
+        var uservsvoucherId = 0;
+        var Vtype = $(this).attr('Vtype');
+        var Fdate = $(this).attr('FDate');
+        if ($(this).attr('class') == 'uservsvoucherImage' || 'editList') {
+            uservsvoucherId = $(this).attr('id');
+        }
+
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("UsertoVoucherMap", "UserVsVoucherMap")',
+            data: {
+                uservsvoucherId: uservsvoucherId,
+                vtype: Vtype,
+                Fdate: Fdate
+
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                debugger;
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.uservsvoucher-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var uservsvoucherId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#puservsvoucherId').val();
+        //var Vtype = $(this).closest('..panel-list').find('input#Vtype').val();
+        var Vtype = $(this).attr('vType');
+        var Btype = $(this).attr('bType');
+        var userId = $(this).attr('userId');
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("DeleteVoucher", "UserVsVoucherMap")',
+            data: {
+                id: uservsvoucherId,
+                Vtype: Vtype,
+                Btype: Btype
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteuservsvoucher(userId, Vtype, nodeId);
+
+                    }
+                    else {
+                        ErrorAlert("Batch Is Already Mapped.Item Cannot Be Deleted", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteuservsvoucher(userId, Vtype, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("VoucherDeleteConfirm", "UserVsVoucherMap")',
+            data: {
+                userId: userId,
+                Vtype: Vtype
+            },
+            success: function () {
+                SuccessAlert("User Voucher Sucessfully Deleted", 5000)
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+            },
+            error: function () {
+                alert("Batch Is Already Mapped.And Cannot Be Deleted");
+            }
+        });
+    }
+
+
+    $('.ch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: data.Title,
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/UserVsVoucherMap/_GetuservsvoucherTree"
+        var container = $(this).closest('.uservsvoucher-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var container = $(this).closest('.uservsvoucher-explore').find('.panel-list').find('.bodycontent-and-paging-uservsvoucher');
+        var listType = $(this).closest('.uservsvoucher-explore').find('#viewType').val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "UserVsVoucherMap")',
+            data: { ViewType: listType, query: query },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+    });
+
+
+</script>
+

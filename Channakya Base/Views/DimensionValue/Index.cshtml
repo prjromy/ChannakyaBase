@@ -1,0 +1,347 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.DimensionValueListViewModel>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Dimension Value Setup";
+    var test = Model;
+    var count = test.Count();
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="DimensionValue-explore section-treeview ">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create " id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details",Model);}
+                </div>
+            </div>
+
+
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var test = $("input.btn.btn-box-tool.txtSearch");
+        $("input.btn.btn-box-tool.txtSearch").focus();
+
+    });
+    $('.DimensionValue-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.DimensionValue-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var DDId;
+        var dimcontainer = $('.selected-dim-val');
+        $.each(dimcontainer, function (index, value) {
+            debugger;
+            if ($(value).hasClass('active') == true) {
+                DDId = $(value).data('val');
+            }
+
+        });
+        var nodeId = DDId;
+        if (nodeId =="")
+        {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+
+        var container = $(this).closest('.DimensionValue-explore').find('.panel-list');
+        var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "DimensionValue")',
+            contentType: "application/json; charset=utf-8",
+            data: { ViewType: listType, DDid: data.nodeId },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("errorwwwwwwwwww");
+            }
+        });
+    });
+
+
+
+    $('.DimensionValue-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.DimensionValue-explore').find('.DimensionValue-treeview').moveUp();
+        //$(this).closest('.DimensionValue-explore').find('.DimensionValue-treeview').updateTreeview("DimensionValue", "_UpdateDimensionValueTree", 1009,-1)
+    });
+
+    $('.DimensionValue-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.DimensionValue-explore').find('.DimensionValue-treeview').SelectNode(id);
+    });
+
+
+    $('.DimensionValue-explore').on('click', '.DimensionValue1Image, .editList, .btn-create-DimensionValues', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.DimensionValue-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        //var activeElement = $(this).closest('.DimensionValue-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.DimensionValue-explore').find('.treeview-selected').attr('nodeid');
+        var DimensionValueId = 0;
+        if ($(this).attr('class') == 'DimensionValue1Image' || 'editList') {
+            DimensionValueId = $(this).attr('id');
+        }
+        //var pDimensionValueId = $('#pDimensionValueId').val()
+        //if (pDimensionValueId == "") {
+        //    pDimensionValueId = 0;
+        //}
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "DimensionValue")',
+            data: { DimensionValueId: DimensionValueId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+
+                //$('#ddl-dimensionValue').prop('readonly', true);
+
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                //if (DDId != 0) {
+                //    $(container).find('#ddl-dimensionValue').prop('readonly', true);
+
+                //}
+
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.DimensionValue-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var DimensionValueId = $(this).attr('id');
+        var nodeId = $(this).closest('.panel-list').find('input#pDimensionValueId').val()
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "DimensionValue")',
+            data: { id: DimensionValueId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteDimensionValue(DimensionValueId, nodeId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes First", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteDimensionValue(DimensionValueId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "DimensionValue")',
+            data: { DimensionValueId: DimensionValueId },
+            success: function () {
+                SuccessAlert("DimensionValue Sucessfully Deleted", 5000)
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+
+    $('.ch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: data.Title,
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/DimensionValue/_GetDimensionValueTree"
+        var container = $(this).closest('.DimensionValue-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var DDId;
+        var DimContainer = $('.selected-dim-val');
+        $.each(DimContainer, function (index, value) {
+            debugger;
+            if ($(value).hasClass('active') == true) {
+                DDId = $(value).data('val');
+            }
+
+        });
+        var query = $('input.txtSearch').val();
+        var listType = $(this).closest('.DimensionValue-explore').find('#viewType').val();
+        var container = $(this).closest('.DimensionValue-explore').find('.panel-list').find('.bodycontent-and-paging');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "DimensionValue")',
+            data: { ViewType: listType, query: query, DDId: DDId },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+            });
+
+
+
+
+    //$(document).ready(function () {
+    //    $.fn.pagination(1, 0, 0)
+
+    //    $('.pagination').on('click', '.pagerClass', function () {
+    //        debugger;
+    //        var pagingData = $(this).attr('id');
+    //        $.fn.pagination(pagingData, 0, 0);
+
+    //    });
+
+    //    $('.pagination').on('click', 'li.next , li.previous', function () {
+    //        debugger;
+    //        var cls = $(this).attr('class');
+    //        if ($(this).attr('class') == 'next') {
+    //            var pager = $('ul.pagination.DimensionValuepaginatoin').find('.active').attr('id');
+    //            var finalId = parseInt(pager) + 1;
+    //            var hasNext = $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId)
+    //            if ($(hasNext).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+    //        else {
+    //            var pager = $('ul.pagination.DimensionValuepaginatoin').find('.active').attr('id');
+    //            var finalId = parseInt(pager) - 1;
+    //            var hasPrev = $('ul.pagination.DimensionValuepaginatoin').find('li#' + finalId)
+    //            if ($(hasPrev).length > 0) {
+    //                $.fn.pagination(finalId, 0, 0)
+    //            }
+    //        }
+
+    //    });
+    //});
+
+    //$.fn.pagination = function (pagerId, next, previous) {
+    //    debugger;
+    //    var checkActive = $('ul.pagination.DimensionValuepaginatoin').find('li').hasClass('active');
+    //    if (checkActive == true) {
+    //        $('ul.pagination.DimensionValuepaginatoin').find('.active').removeClass('active');
+    //    }
+    //    else {
+    //        var listcount = 0;
+    //        $('.detailsList').each(function (index, item) {
+    //            listcount++;
+    //        });
+    //        var i;
+    //        var mod = listcount / 10;
+    //        for (i = 1; i <= mod + 1; i++) {
+    //            debugger;
+    //            $('ul.pagination.DimensionValuepaginatoin').append('<li id=' + i + ' class="pagerClass"><a>' + i + '</a> </li>')
+    //        }
+    //    }
+    //    $('ul.pagination.DimensionValuepaginatoin').find('li#' + pagerId).addClass('active');
+    //    var pagerRange = 10;
+    //    var paginatonData = pagerId * pagerRange;
+    //    $('.detailsList').each(function (index, item) {
+    //        debugger;
+    //        if (paginatonData > pagerRange) {
+    //            var checkPagination = paginatonData - pagerRange;
+    //            if (index <= paginatonData && index > checkPagination) {
+    //                var text = $(item).find('.inner').attr('DimensionValue-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('DimensionValue-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+    //        else {
+    //            if (index <= paginatonData) {
+    //                var text = $(item).find('.inner').attr('DimensionValue-caption').toUpperCase();
+    //                $(item).css('display', 'table-row');
+    //            }
+    //            else {
+    //                var text = $(item).find('.inner').attr('DimensionValue-caption').toUpperCase();
+    //                $(item).css('display', 'none');
+    //            }
+    //        }
+
+    //    });
+    //};
+
+
+
+
+
+</script>

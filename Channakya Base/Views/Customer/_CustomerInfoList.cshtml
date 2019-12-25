@@ -1,0 +1,109 @@
+﻿@model ChannakyaBase.Model.ViewModel.CustInformationViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@{
+
+    Layout = null;
+    string Type = "";
+}
+<div class="table-responsive table-click-customer">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+
+                <th>FullName</th>
+                <th>Mobile No</th>
+                <th>Address</th>
+                <th>Contact Person</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CustomerInfoList)
+            {
+                var IsSelect = Model.SelectedCustInfoList.Where(x => x.CID == item.CID).Count();
+                string BackgroundColor = "#c2c4c3";
+
+                if (item.IsIndividual == 1)
+                {
+                    Type = "Individual";
+                }
+                else
+                {
+                    Type = "Company";
+                }
+                if (IsSelect==0)
+                {
+                    BackgroundColor = "";
+                }
+
+                <tr style="background-color:@BackgroundColor" class="selectedValue" id="@item.CID" >
+                    <td class="Customername">@item.Name</td>
+                    <td>@item.Mobile</td>
+                    <td>@item.Address</td>
+                    <td>@item.ContactPerson</td>
+                    @if (IsSelect > 0)
+                    {
+                        <td class="hidden"><input type="checkbox" name="vehicle" value="@item.CID" class="Ischeck" style="pointer-events:none;" checked></td>
+                    }
+                    else
+                    {
+                        <td class="hidden"><input type="checkbox" name="vehicle" value="@item.CID" class="Ischeck" style="pointer-events:none;"></td>
+                    }
+                    <td>@Type</td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+    @Html.Paging("_CustomerInfoList", "Customer", Model.CustomerInfoList.PageCount, Model.CustomerInfoList.PageNumber, Model.CustomerInfoList.PageSize)
+</div>
+<style>
+    .selectedValue{
+        cursor: pointer;
+    }
+</style>
+
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script>
+    $("div.table-click-customer").on('change', 'input#pageSize', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var searchOption = parentContainer.find('#SearchOption').val()
+        var searchParam = parentContainer.find('#SearchParameter').val()
+        var listBox = parentContainer.find('#CIDs').val()
+        var container = parentContainer.find(".table-click-customer")
+        var mode = parentContainer.find('#Mode').val()
+        var type = parentContainer.find('#CustomerType').val()
+        getPageSizeChangeDataCustomerSearch(searchOption, searchParam, listBox, container, me, mode, type)
+    });
+
+    $("div.table-click-customer").on('change', 'input#pageNo', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var searchOption = parentContainer.find('#SearchOption').val()
+        var searchParam = parentContainer.find('#SearchParameter').val()
+        var listBox = parentContainer.find('#CIDs').val()
+        var container = parentContainer.find(".table-click-customer")
+        var mode = parentContainer.find('#Mode').val()
+        var type = parentContainer.find('#CustomerType').val()
+        getPageNumberChangeDataCustomerSearch(searchOption, searchParam, listBox, container, me, mode, type)
+    });
+
+    $("div.table-click-customer").on('click', 'input.btnPaging', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var searchOption = parentContainer.find('#SearchOption').val()
+        var mode = parentContainer.find('#Mode').val()
+        var searchParam = parentContainer.find('#SearchParameter').val()
+        var listBox = parentContainer.find('#CIDs').val()
+        var container = parentContainer.find(".table-click-customer")
+        var type = parentContainer.find('#CustomerType').val()
+        getPageNumberBtnActionCustomerSearch(searchOption, searchParam, listBox, container, me, mode,type)
+    });
+</script>

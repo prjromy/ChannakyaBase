@@ -1,0 +1,22 @@
+﻿@model ChannakyaBase.Model.ViewModel.GuarantorModel
+
+@using HtmlHelpers.BeginCollectionItem
+<tr>
+    @using (Html.BeginCollectionItem("GuarantorList"))
+    {
+
+        <td class="hidden">@Html.HiddenFor(x => x.GIaccno,new {@class= "GuarantorIaccno" })</td>
+        <td class="hidden">@Html.HiddenFor(x => x.BlockedAmt)</td>
+        <td class="hidden">@Html.HiddenFor(x => x.IsPercent)</td>
+        
+            <td>@Model.AccountNumber</td>
+            <td>@Model.BlockedAmt</td>
+          
+            <td>
+                <input type="button" value="Remove" class="btn btn-danger btn-outline-primary" onclick="DeleteRow(this)" />
+                @*<button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" onclick="EditRow(this)"></button>*@
+            </td>
+
+
+    }
+</tr>

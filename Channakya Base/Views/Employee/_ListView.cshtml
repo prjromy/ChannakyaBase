@@ -1,0 +1,43 @@
+﻿@model Loader.Models.Employee
+@{
+    var test = Model;
+    Loader.Service.EmployeeService empObj = new Loader.Service.EmployeeService();
+    bool withDepartment = empObj.WithDepartment();
+    bool withDesg = empObj.WithDesignation();
+}
+
+
+
+
+<tr class="detailsList">
+    <td class="listDrill" id="@Model.EmployeeId" style="vertical-align:top;">
+        @*<a class="inner listDrill" Employee-caption="@Model.EmployeeName" style="cursor:pointer;"> @Model.EmployeeName</a>*@
+        @Model.EmployeeName
+    </td>
+    @if (withDepartment == true)
+    {
+    <td>
+       @empObj.GetDepartmentName(Model.DeptId)
+    </td>
+    }
+    @if (withDesg == true)
+    {
+    <td>
+        @empObj.GetDesignationName(Model.DGId)
+    </td>
+    }
+    <td>
+        @Model.DateOfJoin.ToShortDateString()
+    </td>
+    <td>
+        @empObj.GetStatusName(Model.Status)
+    </td>
+
+    <td>
+
+    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs editList" id="@Model.EmployeeId" data-title="Edit"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs deleteNode" id="@Model.EmployeeId" data-title="Delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+
+</tr>
+
+

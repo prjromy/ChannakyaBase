@@ -1,0 +1,12 @@
+﻿@model ChannakyaAccounting.Models.Models.DepositBasi
+@Html.HiddenFor(x => Model.Id)
+
+
+
+
+<td class="depositListTextbox" id="@Model.Id">
+
+    @Html.TextBoxFor(x => Model.ProductDurationInt.InterestRate, new { @class = "form-control" })
+
+    @*@Html.TextBoxFor(x => subitem., new { @class = "form-control interestValue" })*@
+</td>

@@ -1,0 +1,128 @@
+﻿@model Loader.ViewModel.UserBranchViewModel
+    @{ 
+        Layout = null;
+    }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Select Branch</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    @*<link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">*@
+    <!-- Font Awesome -->
+    <link href="~/Content/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/AdminLTE/dist/css/AdminLTE.min.css" rel="stylesheet" />
+    <link href="~/AdminLTE/plugins/iCheck/square/blue.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+
+
+
+<body class="hold-transition register-page">
+
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @*<div class="modal-header" align="center">
+                    @if (!ViewData.ModelState.IsValid)
+            {
+                var message = Html.ValidationMessage("Error");
+                if (message.Equals(""))
+                {
+                            <div class="alert alert-danger login"> @Html.ValidationMessage("Error")</div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-danger login"> @Html.ValidationMessage("Error")</div>
+                        }
+                    }
+
+                </div>*@
+
+                @*<img src="~/Images/Lock-icon.png" />*@
+                <div class="register-box">
+                    <div class="register-logo"style="margin-bottom: 3px;">
+                        <a style="font-size:25px"><b>Welcome , </b>@ViewData["UserName"] </a>
+                       
+                    </div>
+                    @*<div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Log Out</button>
+                    </div>*@
+
+                    <div class="register-box-body">
+                        <p class="login-box-msg">Select the Branch to Log In</p>
+
+                        @using (Html.BeginForm("SetBranchIdAndRedirect", "Account", FormMethod.Post, new { id = "branchSelectForm" }))
+                        {
+
+                            @Html.AntiForgeryToken()
+                       @Html.HiddenFor(x=>x.SelectedBranchId, new { @class="selectedBranchId"})
+                           
+                            <div class="social-auth-links text-center">
+                               
+                                @foreach (var item in Model.Branch)
+                                {
+                                    <span class="branch-list"id="@item.BranchId">
+                                        <a href="#" class="btn btn-block btn-social btn-flat" >
+                                            <i class="glyphicon glyphicon-user form-control-feedback"></i> @item.BranchName Branch
+                                        </a>
+                                    </span>
+                                }
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8">
+
+                                </div>
+                                <!-- /.col -->
+                               
+                                <!-- /.col -->
+                            </div>
+                        }
+
+
+                        
+                    </div>
+                    @*<div class="myFooter">
+                        <a href="login.html" class="text-center">Log Out My Session</a>
+                    </div>*@
+                    <!-- /.form-box -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+
+
+    <script>
+        $(function () {
+            $(document).ready(function () {
+                $('#login-modal').modal('show');
+            })
+
+            $("div#login-modal").on('click', 'span.branch-list', function () {
+                debugger;
+                var id = $(this).attr('id');
+                $('#branchSelectForm').find('.selectedBranchId').val(id);
+                document.getElementById('branchSelectForm').submit();
+
+            });
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+  });
+    </script>
+</body>
+</html>

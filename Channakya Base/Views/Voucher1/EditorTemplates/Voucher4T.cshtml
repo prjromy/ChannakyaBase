@@ -1,0 +1,36 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher4T
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var fromVoucher = Model.fromVoucher;
+}
+@if (fromVoucher == 0)
+{
+    <div class="form-group col-md-12">
+
+        @Html.HiddenFor(x => Model.DDID)
+        @*@Html.HiddenFor(x=>x.DDID)*@
+        <label class="col-md-4" style="margin-top: 6px;">@voucher1.GetDimensionName(Model.DDID)</label>
+        <div class="col-md-8">
+            @Html.DropDownListFor(x => Model.DVId, voucher1.GetVoucherDimensionList(Model.DDID), new { @class = "form-control col-md-12" })
+        </div>
+        @*<div class="col-md-4">
+            @Html.TextBoxFor(x=>x.Amount,new { @class="form-control",@placeholder="Enter Amount"})
+        </div>*@
+        <br />
+        <br />
+    </div>
+}
+else
+{
+    @Html.HiddenFor(x => Model.DVId)
+    @Html.HiddenFor(x=>x.DDID)
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('.add-details-finacc').addClass('modal-lg');
+    });
+</script>
+

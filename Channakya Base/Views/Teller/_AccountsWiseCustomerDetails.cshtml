@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.CustomerAccountsViewModel>
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL.Service
+
+<div class="Customer-Details">
+    <fieldset>
+        <legend style="font-size:large">Customer Details</legend>
+
+        <div style="min-height:50px;max-height:300px;overflow:auto;">
+
+            <table class="table table-responsive table-hover table-striped table-bordered">
+
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Contact</th>
+                    <th>Location </th>
+                    <th>Action </th>
+
+                </tr>
+
+                <tbody class="custList">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @Html.HiddenFor(x => item.CID)
+                            @Html.HiddenFor(x => item.IAccno)
+
+                            <td>
+
+                                @*<a href="#" onclick="ViewCustomerDetails('@item.CID')"><i class="fa fa-edit"></i>@item.Name</a>*@
+
+                                <span class="control-label">@item.Name</span>
+                            </td>
+                            <td>
+                                <span class="control-label">@item.Contact</span>
+
+
+                            </td>
+                            <td>
+                                <span class="control-label">@item.location</span>
+
+                            </td>
+                            <td>
+                                <input type="button" value="View Details" class="btn btn-sm btn-success view-account-details" data-id="@item.CID" />
+                            </td>
+
+                        </tr>
+                        <tr id="account-customers-details-tr-@item.CID" class="hidden">
+                            <td class="account-customers-details" colspan="4"></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</div>

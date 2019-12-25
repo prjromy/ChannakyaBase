@@ -1,0 +1,126 @@
+﻿@model ChannakyaBase.Model.ViewModel.WithdrawViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{ 
+    CommonService commonService = new CommonService();
+}
+<div class="table-responsive unverified-good-payment-list">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tno)
+            </th>
+            <th>
+                Account Number
+            </th>
+            <th>
+                Account Name
+            </th>
+            <th>
+                Cheque Number
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Remarks)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.WithdrawList)
+        {
+            <tr>
+                <td>
+                    @item.Tno
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChequeNumber)
+                </td>
+                <td>
+                    @item.Amount.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Remarks)
+                </td>
+
+               
+@if (commonService.IsAuthotityToVerify(Convert.ToInt64(item.Tno), 13))
+{
+    <td>
+        <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(13, Convert.ToInt64(item.Tno)))"><i class="fa fa-check" aria-hidden="true"></i>Verify</a>
+    </td>
+}
+
+else if (commonService.IsAuthorityToDelete(Convert.ToInt64(item.Tno), 13))
+{
+    <td>
+        <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(13, Convert.ToInt64(item.Tno)))"><i class="fa fa-check" aria-hidden="true"></i>Delete</a>
+    </td>
+}
+else
+{
+    <td></td>
+}
+            </tr>
+        }
+
+    </table>
+    @Html.Paging("_ChequeGoodForPaymentVerification", "Information", Model.WithdrawList.PageCount, Model.WithdrawList.PageNumber, Model.WithdrawList.PageSize)
+    </div>
+
+
+
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+
+
+<script>
+    $("div.unverified-good-payment-list").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-good-payment-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.unverified-good-payment-list").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-good-payment-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+       // var url = "?accountNumber=" + accountNumber;
+
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.unverified-good-payment-list").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var container = parentContainer.find(".unverified-good-payment-list")
+        //var accountNumber = parentContainer.find(".unverified-account-section").find("#accountnumber").val();
+
+        //var url = "?accountNumber=" + accountNumber;
+
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>

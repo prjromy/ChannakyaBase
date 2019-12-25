@@ -1,0 +1,150 @@
+﻿@model  ChannakyaBase.Model.ViewModel.AccountReportViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+    var mod = Model;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Account Mature Report</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+        @*<input type="button" value="New Account" id="btn-create" class="btn btn-info btn-sm btn-create" />*@
+        <div class="NewAccount-list">
+            <fieldset>
+                <div class="row">
+
+                    <div class="form-group">                        
+                        <div class="col-md-6">
+                            <label>
+                                Branch
+                            </label>
+                            <div class="form-grop_padding branch-Value">
+                                @Html.HiddenFor(x=>x.SType)
+                                @Html.DropDownListFor(x => x.BranchId, ReportUtilityService.GetBranchList(Convert.ToInt32(Model.BranchId)), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>
+                                Product
+                            </label>
+                            <div class="form-grop_padding product-Value">
+                                @Html.DropDownListFor(x => x.PID, ReportUtilityService.DurationWiseProduct(Model.SType), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <label>
+                                From Date
+                            </label>
+                            <div class="form-grop_padding FromDate">
+
+                                @Html.DatePicker(x => x.FromDate)
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>
+                                To Date
+                            </label>
+                            <div class="form-grop_padding ToDate">
+                                @Html.DatePicker(x => x.ToDate)
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <input type="button" value="ExportToExcel" class="btn btn-info mature-duration-wise-collection-export-to-excel pull-right" title="Export to Excel" data-toggle="tooltip" />
+                        <button type="button" name="btn-account-holder-search" id="btn-report-account-closed" class="btn btn-primary pull-right" @*style="margin-left: 0px;"*@ title="Search" data-toggle="tooltip">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+
+                </div>
+            </fieldset>
+            <div class="box-header with-border with-details-Report-View">
+                @Html.Partial("_MatureDurationWiseAccount", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script>
+    function ShowDetailsAccount(IAccno) {
+        var depositFrom='@Model.ViewForm'
+        $.ajax({
+            type: "GET",
+            url: "/Teller/_AccountDetails",
+            datatype: "HTML",
+            data: {
+                IAccno: IAccno,
+                ModelFrom: depositFrom,
+            },
+            success: function (result) {
+                debugger;
+                $('section.content').html("");
+                $('section.content').html(result);
+            }
+        })
+    }
+
+    $('#btn-report-account-closed').on('click', function () {
+        debugger;
+        var branchId = $('#BranchId').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var eDate = new Date(toDate);
+        var sDate = new Date(fromDate);
+        if (fromDate != '' && toDate != '' && sDate > eDate) {
+            ErrorAlert("Please ensure that the End Date is greater than or equal to the Start Date.", 6000);
+            return false;
+        }
+        var productId = $('#PID').val();
+        var sType = $('#SType').val();
+        var useStatusDate = $('#UseDateByStatus').prop('checked')
+        $.ajax({
+            type: "GET",
+            url: "/Report/_MatureDurationWiseAccount",
+            datatype: "Json",
+            data: {
+                fromDate: fromDate,
+                toDate: toDate,
+                branchid: branchId,
+                productId: productId,
+                sType: sType
+
+            },
+            success: function (result) {
+                debugger;
+                $('.with-details-Report-View').html("");
+                $('.with-details-Report-View').html(result);
+            }
+        });
+
+    });
+
+    $('.mature-duration-wise-collection-export-to-excel').on('click', function () {
+        debugger;
+        var branchId = $('#BranchId').val();
+        var branchText = $('#BranchId option:selected').text();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var productId = $('#PID').val();
+        var productText = $('#PID option:selected').text();
+        var sType = $('#SType').val();
+        var sTypeText = $("#SType option:selected").text();
+        window.open("/Report/MatureDurationWiseAccountExporttoExcel?fromDate=" + fromDate + "&toDate=" + toDate + "&branchText=" + branchText + "&productText=" + productText + "&branchid=" + branchId +  "&productId=" + productId + "&sType=" + sType );
+
+    });
+
+</script>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+

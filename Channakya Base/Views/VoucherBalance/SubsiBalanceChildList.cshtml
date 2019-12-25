@@ -1,0 +1,30 @@
+﻿@model List<ChannakyaAccounting.Models.ViewModel.OpeningBalanceViewModel>
+@using PagedList;
+@using PagedList.Mvc;
+@{
+
+    var page = ViewData["Page"];
+    var Status = ViewData["Status"]; // for edit
+    int pageSize = ViewBag.pageSize;
+    const int pageno = 1;
+    // var check = Model[0].SubsiDetailOfLedger.ToPagedList((int)ViewData["Page"], 1);
+}
+@if (Model.Count > 0 && Model[0].SubsiDetailOfLedger.Count() > 0)
+{
+    for (int i = 0; i < Model.Count(); i++)
+    {
+        @*@Html.EditorFor(x => Model[i].SubsiDetailOfLedger)*@
+
+        var totalItem = Model[i].SubsiDetailOfLedger[0].TotalCount;
+        var check = Model[i].SubsiDetailOfLedger.ToPagedList(pageno, 10);
+        @Html.Partial("SubsiDetail", Model[i].SubsiDetailOfLedger.ToPagedList(pageno, pageSize), new ViewDataDictionary { { "ledgerId", Model[i].FId }, { "openingBal", Model[i].OPBal }, { "totalCount", totalItem }, { "page", page }, { "Status", Status } })
+        @* @Html.Partial("SubsiDetail", Model[i].SubsiDetailOfLedger.ToPagedList(2,5), new ViewDataDictionary { { "ledgerId", Model[i].FId } })*@
+
+    }
+}
+else
+{
+    <p style="text-align:center;color:red;">
+        No Data Is Found
+    </p>
+}

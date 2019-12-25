@@ -1,0 +1,84 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.ReportTreeDTO
+
+@{ 
+    Nullable<Boolean> withPrevYr = ViewData["WithPrevYr"] as Nullable<Boolean>;
+}
+
+@if (Model.PId == 0)
+{
+    <tr class="treegrid-@Model.Id" id="mainAccType">
+
+        <td style="font-weight:bold;">@Model.Text</td>
+
+@if (withPrevYr != null && withPrevYr == true)
+{
+        <td align="right" class="prevDrAmnt">
+            @Model.PrevYrDebitAmount
+        </td>
+
+        <td align="right" class="prevCrAmnt">
+
+            @Model.PrevYrCreditAmount
+        </td>
+}
+        <td align="right">
+            @Model.DebitAmount
+        </td>
+
+        <td align="right">
+
+            @if (Model.CreditAmount != null)
+            {
+                <p>@Convert.ToDecimal(Model.CreditAmount)</p>
+            }
+        </td>
+    </tr>
+}
+else
+{
+    <tr class="treegrid-@Model.Id treegrid-parent-@Model.PId">
+
+        <td>@Model.Text</td>
+@if (withPrevYr != null && withPrevYr == true)
+{
+        <td align="right">
+            @Model.PrevYrDebitAmount
+        </td>
+        <td align="right">
+           @Model.PrevYrCreditAmount
+        </td>
+}
+        <td align="right">
+            @Model.DebitAmount
+        </td>
+
+        <td align="right">
+            @if (Model.CreditAmount != null)
+            {
+            <p>@Convert.ToDecimal(Model.CreditAmount)</p>
+            }
+        </td>
+    </tr>
+}
+
+@if (Model.Children != null)
+{
+    if (Model.Children.Any())
+    {
+        
+            @Html.EditorFor(x => x.Children, new ViewDataDictionary { { "WithPrevYr", withPrevYr } })
+        
+    }
+}
+
+<script type="text/javascript">
+    //function testme(currentEvent)
+    //{
+    //    var allrowsUpwards = $(currentEvent).closest("#mainAccType");
+    //    return "        ";
+        
+    //    //for()
+
+    //}
+
+</script>

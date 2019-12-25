@@ -1,0 +1,90 @@
+﻿@using PagedList
+
+@model ChannakyaBase.Model.ViewModel.AccountListViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    CommonService commonService = new CommonService();
+}
+
+<div class="Account-page-list">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.AccountNumber)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.AccountName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegisterDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountStatus)
+            </th>
+            <th>
+                    Action
+                </th>
+
+        </tr>
+        @*@if (Model.AccountOpenList.Count() == 0)
+        {
+            <tr>
+                <td>
+                    No Records Found.
+                </td>
+            </tr>
+        }
+        else
+        {*@
+            @foreach (var item in Model.AccountOpenList)
+            {
+                <tr>
+                    @Html.HiddenFor(modelItem => item.AccountState)
+                    <td>
+                        @{
+                            byte sType = commonService.GetStypeByIaccno(@item.AccountId);
+                        }
+                        <a href="#" onclick="EditAccountNumber('@item.AccountId')"><i class="fa fa-edit"></i>@item.AccountNumber</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountName)
+                    </td>
+                    <td>
+
+                        @commonService.GetEnglishDate(item.RegisterDate)
+                    </td>
+                    <td>
+                        @if (item.AccountStatus == 6)
+                        {
+                            if (commonService.IsAuthotityToVerify(item.AccountId, 1))
+                            {
+                                <input type="button" value="Verify Account" class="btn btn-sm btn-success btn-account-verifier-confirmations" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1,Convert.ToInt64(item.AccountId))) ">
+                            }
+                        }
+
+                        else if (item.AccountStatus == 8)
+                        {
+                            @*<input type="button" value="Delete Account" class="btn btn-sm btn-warning btn-account-delete-confirmations" onclick="deleteAccount(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(1,Convert.ToInt64(item.AccountId))) ">
+                        }*@
+                            <p class="text-danger">Rejected!</p>
+                        }
+                    </td>
+
+                </tr>
+            }
+        @*}*@
+    </table>
+    @Html.Paging("PaginationAccountopenDetailsReport", "teller", Model.AccountOpenList.PageCount, Model.AccountOpenList.PageNumber, Model.AccountOpenList.PageSize)
+</div>
+<div id="account-pop-up-div2" class="modal" role='dialog'>
+</div>
+<div id="account-pop-up-div3" class="modal" role='dialog'>
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+
+

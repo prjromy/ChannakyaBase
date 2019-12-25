@@ -1,0 +1,112 @@
+﻿@model  ChannakyaBase.Model.ViewModel.LoanTransactionModel
+@using ChannakyaBase.BLL
+
+@{
+    decimal SumDr = 0;
+    decimal SumCr = 0;
+    decimal sumInterest = 0;
+    decimal sumPOnPr = 0;
+    decimal sumPOnInt = 0;
+    decimal sumIOnI = 0;
+    CommonService commonService = new CommonService();
+
+}
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>
+                    Account Number
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>Eng. Date</th>
+       
+               
+                <th>
+                    Prin Dr
+                </th>
+                <th>
+                    Prin Cr
+                </th>
+                <th>Int</th>
+                <th>POnPr</th>
+                <th>POnInt</th>
+                <th>IOnI</th>
+            </tr>
+        </thead>
+
+        @foreach (var item in Model.LoanTransList)
+            {
+
+            <tr>
+                <td>@item.ProductName</td>
+                <td>
+                    @item.Accno
+                </td>
+                <td>
+                    @item.AccountName
+                </td>
+                <td>@commonService.GetEnglishDate(item.vdate)</td>
+               
+
+              
+                <td style="text-align:right">
+                    @item.PriDr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.PriCr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.Interest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.POnPr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.POnInt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.IOnI.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+              
+               
+            </tr>
+            SumDr += item.PriDr;
+            SumCr += item.PriCr;
+            sumInterest += item.Interest;
+            sumPOnPr += item.POnPr;
+            sumPOnInt += item.POnInt;
+            sumIOnI += item.IOnI;
+        }
+        <tr>
+            <th colspan="4">Total</th>
+            <th style="text-align:right">@SumDr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@SumCr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumPOnPr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumPOnInt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumIOnI.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+        </tr>
+
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

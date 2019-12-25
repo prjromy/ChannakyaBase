@@ -1,0 +1,126 @@
+﻿@model ChannakyaAccounting.Models.Models.FinAcc
+@{
+    var test = Model;
+    var FinAccTypeClass = "bg-red";
+    if (Model.FinSys2.FinSys1.IsGroup == true)
+    {
+        FinAccTypeClass = "bg-yellow";
+    }
+    ChannakyaAccounting.Service.FinAcc.FinAccService finaccService = new ChannakyaAccounting.Service.FinAcc.FinAccService();
+    var totalBalance = finaccService.GetTotalLedgerBalance(Model.Fid);
+    var balanceType = "Dr: " + totalBalance;
+    if (totalBalance < 0)
+    {
+        balanceType = "Cr: " + (totalBalance * -1);
+    }
+
+}
+
+
+
+<div class="modal fade" id="getLedgerStatement" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" url='@Url.Action("ViewLedgerStatement", "VoucherReport")'></div>
+<div class="small-box bg-aqua @FinAccTypeClass">
+    @if (Model.Pid != 0)
+    {
+        <span class="deleteNode" id="@Model.Fid" style="right:0px;position:absolute;cursor:pointer;"> <i class="glyphicon glyphicon-remove"></i></span>
+    }
+    <div class="inner" FinAcc-caption="@Model.Fname">
+        <p id="FinAccCaption" data-toggle="tooltip" data-placement="top" title="@Model.Fname" style="cursor:pointer;"> @Model.Fname</p>
+        <p id="totalBalance" data-toggle="tooltip" data-placement="top" title="@balanceType" style="cursor:pointer;">@balanceType</p>
+    </div>
+
+    @if (Model.Pid != 0)
+    {
+        <div class="icon FinAccImage" id="@Model.Fid">
+            @if (Model.Content != null)
+            {<span id="imagefix"><img src="data:image;base64,@System.Convert.ToBase64String(Model.Content)" id="imgide" width="20" height="20" class="image" /></span> }
+            else
+            {
+                <img class="FinAccImage" id="@Model.Fid" src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" style="width:25px;height:25px;" />
+            }
+
+        </div>
+    }
+
+    <div class="card_footer">
+        @if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <div class="footer_content-right" title="Statement">
+
+                <img onclick="GetLedgerStatementPopUp(@Model.Fid)" src="~/Content/Icons/stat2.png" style="width:25px;height:16px;" />
+            </div>
+            @*<div class="footer_content-right" title="Drill">
+                    <span class="btndrill" id="@Model.Fid"><i class="glyphicon glyphicon-screenshot drill"></i></span>
+                </div>*@
+        }
+        else
+        {
+            <div class="footer_content-right" title="Drill">
+                <span class="btndrill" id="@Model.Fid"><i class="glyphicon glyphicon-screenshot drill"></i></span>
+
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card_footer {
+        display: flex;
+        justify-content: space-evenly;
+        background: #00acd7;
+        flex-wrap: wrap;
+    }
+
+        .card_footer [class^="footer_content"] {
+            flex: 1;
+        }
+
+            .card_footer [class^="footer_content"]:hover {
+                cursor: pointer;
+                background: #027a98;
+            }
+
+    .footer_content-left {
+        text-align: center;
+        border-right: #008aad 1px solid;
+        padding: 3px 0;
+    }
+
+        .footer_content-left img {
+            margin: auto;
+            display: block;
+        }
+
+    .footer_content-right {
+        text-align: center;
+        padding: 3px 0;
+    }
+
+    .deleteNode:hover {
+        background-color: indianred;
+    }
+
+    .inner > #FinAccCaption {
+        white-space: nowrap;
+        width: 8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .small-box .icon {
+        -webkit-transition: all .3s linear;
+        -o-transition: all .3s linear;
+        transition: all .3s linear;
+        /* position: absolute; */
+        top: -42px;
+        right: 10px;
+        z-index: 0;
+        font-size: 90px;
+        color: rgba(0,0,0,0.15);
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).tooltip();
+    });
+</script>

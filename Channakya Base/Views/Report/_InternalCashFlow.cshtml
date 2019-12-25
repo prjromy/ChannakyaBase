@@ -1,0 +1,76 @@
+﻿@model ChannakyaBase.Model.ViewModel.CashFlowViewModel
+@using ChannakyaBase.BLL
+
+@{
+    decimal sumDr = 0;
+    decimal sumCr = 0;
+    CommonService commonService = new CommonService();
+}
+<div class="box-body table-responsive no-padding table-click-account-open" style="font-size:12px;">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+
+                <th>
+                    User 1
+                </th>
+
+                <th>
+                    User 2
+                </th>
+                <th>
+                   Description
+                </th>
+                <th>
+                    Transaction Date
+                </th>
+               
+                <th>
+                   Tno
+                </th>
+                <th>Dr Amount</th>
+                <th>Cr Amount</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.CashFlowList)
+        {
+            <tr>
+
+                <td>
+                    @commonService.EmployeeInfoUserId(item.UserId1).EmployeeName
+                </td>
+                <td>
+                    @commonService.EmployeeInfoUserId(item.UserId2).EmployeeName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tdesc)
+                </td>
+
+                <td>
+                    @commonService.GetEnglishDate(item.TDate)
+                 
+                </td>
+              
+                <td>@item.Tno</td>
+                <td style="text-align:right">
+                    @item.Dramt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.Cramt.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
+            </tr>
+            sumDr = sumDr + item.Dramt;
+            sumCr = sumCr + item.Cramt;
+        }
+        <tr>
+            <th colspan="6">Total</th>
+            <th style="text-align:right">@sumDr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <th style="text-align:right">@sumCr.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)</th>
+            <td></td>
+        </tr>
+
+    </table>
+  
+</div>

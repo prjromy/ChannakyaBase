@@ -1,0 +1,88 @@
+﻿@model ChannakyaBase.Model.ViewModel.ChqRqstModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+    int eventId = 9;
+}
+
+<div class="box-body table-responsive no-padding table-click-event-message">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                Account No.
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Pics)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tdate)
+            </th>
+
+            <th></th>
+
+        </tr>
+
+        @foreach (var item in Model.ChequeRequestList)
+        {
+            <tr>
+
+                <td>
+                    @item.AccountNo
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pics)
+                </td>
+                <td>
+                    @{ CommonService commonService = new CommonService();}
+
+                    @commonService.GetDate(item.Tdate)
+
+
+                </td>
+                <td>
+@if (commonService.IsAuthotityToVerify(Convert.ToInt64(item.Rno), eventId))
+{
+                <a href="#" class="btn btn-adn" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(eventId, item.Rno))"><i class="fa fa-check" aria-hidden="true"></i>Verify</a>
+}
+                </td>
+
+            </tr>
+                        }
+
+    </table>
+    @Html.Paging("NewChequeIssueIndex", "Information", Model.ChequeRequestList.PageCount, Model.ChequeRequestList.PageNumber, Model.ChequeRequestList.PageSize)
+</div>
+<script>
+    $("div.table-cheque-issue-registration").on('click', 'input.btnPaging', function (e) {
+
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+       
+        var container = parentContainer.find(".table-cheque-issue-registration")      
+        getPageNumberBtnAction("", container, me)
+    });
+    $("div.table-cheque-issue-registration").on('change', 'input#pageNo', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var accountNumber = $('#AccountNo').val();
+        var container = parentContainer.find(".table-cheque-issue-registration")
+       
+        getPageNumberChangeData("", container, me)
+    });
+    $("div.table-cheque-issue-registration").on('change', 'input#pageSize', function (e) {
+        e.stopImmediatePropagation();
+        var parentContainer = $(this).parents()
+        var me = $(this);
+        var me = $(this);
+      
+        var container = parentContainer.find(".table-cheque-issue-registration")
+        
+        getPageSizeChangeData("", container, me)
+    });
+
+</script>

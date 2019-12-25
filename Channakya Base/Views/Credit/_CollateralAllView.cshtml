@@ -1,0 +1,28 @@
+﻿@model ChannakyaBase.Model.ViewModel.ALCollModel
+    @{ 
+        var mod = Model;
+    }
+    <div class="collateral-main-view">
+        @Html.Action("_AccountLoanCollateral", new { colId = Model.Sno })
+    </div>
+<div class="Collateral-view">
+   
+    @if (Model.NCID == 5 || Model.NCID == 6)
+    {
+        @Html.Action("_InternalFixedAccountCollateral", new { alFixedId = Model.fixedDepoId, isInternal = Model.IsInternal,Iaccno=Model.IAccno })
+    }
+
+    @if (Model.NCID == 14)
+    {
+        @Html.Action("_LandAndBuilding", new { landId = Model.LandId })
+    }
+
+    @if (Model.NCID == 17)
+    {
+        @Html.Action("_Vehicles", new { vechileId = Model.VehicleId })
+    }
+
+
+</div>
+
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>

@@ -1,0 +1,64 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqModel
+
+@{
+    Layout = null;
+
+}
+
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-striped table-hover">
+        <tr>
+
+            <th>
+                Cheque No.
+            </th>
+
+            <th>
+                Status
+            </th>
+            @if (Model.ShowWith != "hide")
+            {
+                <th>Select</th>
+            }
+
+        </tr>
+        @foreach (var item in Model.AchqHDetailsList)
+        {
+            item.ShowWith = Model.ShowWith;
+            item.IsSelectet = Model.IsSelectet;
+            item.SelectCheque = Model.SelectCheque;
+            @Html.Partial("_ChequeNumDetailRenderPartial", item)
+
+        }
+
+    </table>
+
+</div>
+
+<script>
+    $(".select-cheque-number").on("click", function () {
+
+        var currentRno = $(this).attr('Rno')
+        var currentHeadTr = $(this).parents().find('.table-cheque-block-unblock-deactive-status-chaqModel').find('#hide-show-' + currentRno).find('tr')
+        var len = $(currentHeadTr).find('input[type="checkbox"].select-cheque-number:checked').length;
+        var checkBoxLength = $(currentHeadTr).find('input[type="checkbox"].select-cheque-number').length;
+        var checkSelect = $(this).parents().find('.table-cheque-block-unblock-deactive-status-chaqModel').find('#tr-main-' + currentRno).find('.select-cheque');
+        var checkMainLenth = $(this).parents().find('.table-cheque-block-unblock-deactive-status-chaqModel').find('input[type="checkbox"].select-cheque:checked').length;
+        var appyStatus;
+        //if (checkMainLenth == 1) {
+        //    if (!$(checkSelect).is(':checked'))
+        //    {
+        //        $(checkSelect).prop('checked', false);
+        //        $(currentHeadTr).find('input[type="checkbox"].select-cheque-number').prop('checked', false)
+        //        return;
+        //    }
+        //}
+
+        if (checkBoxLength != len) {
+            $(checkSelect).prop('checked', false);
+            // $(this).prop('checked', false);
+        } else if (checkBoxLength == len) {
+            $(checkSelect).prop('checked', true);
+        }
+    })
+</script>

@@ -1,0 +1,230 @@
+﻿@model IEnumerable<ChannakyaAccounting.Models.ViewModel.SubsiSetUpViewModal>
+@*<script src="~/Scripts/ch-treeview.js"></script>*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Subsi Setup";
+    var test = Model;
+}
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div id="explorer" class="SubsiSetup-explore section-treeview ">
+            @Html.Hidden("viewType", 1)
+
+            <div id="explore-details" class="col-md-12 explore-details">
+                <div class="panel-create " id="create">
+
+                </div>
+                <div class="panel-list" id="list">
+                    @{Html.RenderPartial("_Details", Model);}
+                </div>
+            </div>
+
+
+
+        </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var test = $("input.btn.btn-box-tool.txtSearch");
+        $("input.btn.btn-box-tool.txtSearch").focus();
+
+    });
+    $('.SubsiSetup-explore').on('click', '.listView', function (event) {
+        debugger;
+
+        var viewId = $(this).closest('.SubsiSetup-explore').find('#viewType')
+        if (viewId.val() == 1) {
+            viewId.val(2)
+        }
+        else {
+            viewId.val(1)
+        }
+        var nodeId = $(this).closest('.panel-list').find('input#pSubsiSetupId').val();
+        if (nodeId == "") {
+            nodeId = 0;
+        }
+        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+
+    });
+
+    $('.panel-list').on('nodeClick', function (e, data) {
+        debugger;
+        e.stopPropagation();
+
+        var container = $(this).closest('.SubsiSetup-explore').find('.panel-list');
+        var listType = $(this).closest('.SubsiSetup-explore').find('#viewType').val();
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("_Details", "SubsiSetup")',
+            contentType: "application/json; charset=utf-8",
+            data: { ViewType: listType },
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+            },
+            error: function () {
+                alert("errorwwwwwwwwww");
+            }
+        });
+    });
+
+
+
+    $('.SubsiSetup-explore').on('click', "#btn-back", function (e) {
+
+        $(this).closest('.SubsiSetup-explore').find('.SubsiSetup-treeview').moveUp();
+        //$(this).closest('.SubsiSetup-explore').find('.SubsiSetup-treeview').updateTreeview("SubsiSetup", "_UpdateSubsiSetupTree", 1009,-1)
+    });
+
+    $('.SubsiSetup-explore').on('click', ".btndrill , .listDrill", function (e) {
+        var id = $(this).attr("id");
+        $(this).closest('.SubsiSetup-explore').find('.SubsiSetup-treeview').SelectNode(id);
+    });
+
+
+    $('.SubsiSetup-explore').on('click', '.SubsiSetupImage, .editList, .btn-create-SubsiSetups', function (e) {
+        debugger;
+        e.stopPropagation();
+        var container = $(this).closest('.SubsiSetup-explore').find('.panel-create');
+        //----------Select active element and Id--------------------------------------------//
+        //var activeElement = $(this).closest('.SubsiSetup-explore').find('.treeview-selected').text().trim();
+        //var activeId = $(this).closest('.SubsiSetup-explore').find('.treeview-selected').attr('nodeid');
+        var SubsiSetupId = 0;
+        if ($(this).attr('class') == 'SubsiSetupImage' || 'editList') {
+            SubsiSetupId = $(this).attr('id');
+        }
+        //var pSubsiSetupId = $('#pSubsiSetupId').val()
+        //if (pSubsiSetupId == "") {
+        //    pSubsiSetupId = 0;
+        //}
+        //-------------------------------------------------------------------------------------//
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Create", "SubsiSetup")',
+            data: { SubsiSetupId: SubsiSetupId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (html) {
+                $(container).html(html);
+                $(container).removeData("validator");
+                $(container).removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($(container));
+
+
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+    $('.SubsiSetup-explore').on('click', '.deleteNode', function (e) {
+        debugger;
+        var SubsiSetupId = $(this).attr('id');
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("Delete", "SubsiSetup")',
+            data: { id: SubsiSetupId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            success: function (deleteConfirm) {
+                $.MessageBox({
+                    buttonDone: "Yes",
+                    buttonFail: "No",
+                    message: "Are you sure you want to Delete?"
+                }).done(function () {
+
+                    debugger;
+                    if (deleteConfirm == 'true') {
+                        debugger;
+                        deleteSubsiSetup(SubsiSetupId);
+                    }
+                    else {
+                        ErrorAlert("Please Delete Child Nodes First", 5000);
+                    }
+                })
+            },
+            // $(container).html(html);
+
+            error: function () {
+                alert("error");
+            }
+        });
+
+
+    });
+    function deleteSubsiSetup(SubsiSetupId, nodeId) {
+        debugger;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteConfirm", "SubsiSetup")',
+            data: { SubsiSetupId: SubsiSetupId },
+            success: function () {
+                SuccessAlert("SubsiSetup Sucessfully Deleted", 5000)
+                $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+
+    $('.ch-treeview').on('filterTree', function (e, data) {
+        debugger;
+        //string filterString, bool allowSelectGroup, bool withCheckBox, bool withImageIcon
+        e.stopPropagation();
+        var TreeViewParam = {
+            Controller: '',
+            Action: '',
+            WithCheckBox: data.withCheckBox,
+            AllowSelectGroup: data.allowSelectGroupNode,
+            WithImageIcon: data.withImageIcon,
+            WithOutMe: 0,// data.withOutMe,
+            Title: data.Title,
+            SelectedNodeId: 0,
+            Filter: data.param.Filter,
+            SelectedNodeText: ''
+        }
+
+        var url = "/SubsiSetup/_GetSubsiSetupTree"
+        var container = $(this).closest('.SubsiSetup-explore').find('.treeview-area');
+
+        $(container).load(url, { param: TreeViewParam });
+
+    });
+
+    $('.panel-list').on('keyup', ".txtSearch", function (e) {
+        debugger;
+        var query = $('input.txtSearch').val();
+        var listType = $(this).closest('.SubsiSetup-explore').find('#viewType').val();
+        var container = $(this).closest('.SubsiSetup-explore').find('.panel-list').find('.bodycontent-and-paging');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("_DetailPartial", "SubsiSetup")',
+            data: { ViewType: listType, query: query },
+            success: function (data) {
+                debugger;
+                var test = $("input.btn.btn-box-tool.txtSearch");
+                $("input.btn.btn-box-tool.txtSearch").focus();
+                $(container).html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+</script>
+

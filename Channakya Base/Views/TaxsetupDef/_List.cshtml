@@ -1,0 +1,64 @@
+﻿@model List<ChannakyaBase.DAL.DatabaseModel.TaxsetupDef>
+@using ChannakyaBase.BLL.CustomHelper
+@using PagedList.Mvc
+@using PagedList
+<div class="box box-success">
+    <div class="box-header with-border">
+        <div class="box-tools col-md-3" style="padding:5px">
+
+            <div class="input-group input-group-sm pull-right" @*style="width: 250px;"*@>
+
+                @Html.TextBox("Tax-search", (string)ViewBag.searchedVal, htmlAttributes: new { @class = "form-control pull-right", @id = "txtsearch", @placeholder = "Tax Name" })
+                <div class="input-group-btn">
+                    <button type="button" id="searchsubmit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <p>
+            <h3>Tax Type List</h3>
+        </p>
+        <table class="table">
+            <tr>
+                <th class=col-md-8>
+                    @Html.DisplayNameFor(model => model.First().TaxName)
+                </th>
+                <th class=col-md-2>
+                    @Html.DisplayNameFor(model => model.First().TaxRate)
+                </th>
+                <th class=col-md-2>
+                    Action
+                </th>
+            </tr>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td>
+                        <b>No Records Found</b>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaxName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaxRate)
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm btn-edit glyphicon glyphicon-edit" data-id="@item.TaxID" data-toggle="tooltip" title="Edit"></button>
+                            <button type="button" class="btn btn-info btn-sm btn-sm btn-delete glyphicon glyphicon-trash danger" data-id="@item.TaxID" data-val="@item.TaxName" data-toggle="tooltip" title="Delete"></button>
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        @*@Html.Paging("_List", "TaxsetupDef", @Model.PageCount, @Model.PageNumber, @Model.PageSize)*@
+    </div>
+</div>

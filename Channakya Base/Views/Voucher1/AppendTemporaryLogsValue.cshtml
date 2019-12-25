@@ -1,0 +1,215 @@
+﻿@model List<ChannakyaAccounting.Models.Models.Voucher1T>
+
+@{ 
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    ViewBag.AppendValue = true;
+}
+@*<script src="~/Scripts/jquery-1.11.1.min.js"></script>*@
+
+
+ @Html.EditorFor(x => Model.First().Voucher2T)
+        @*@for (int i = 0; i < Model.Count(); i++)
+        {*@
+          
+            @*for (int j = 0; j < Model[i].Voucher2T.Count(); j++)
+            {
+
+                <tr class="newrow">
+                    <td style="display:none">
+                        @Html.TextBoxFor(x => Model[i].Voucher2T.ToList()[j].Fid, null, new { @id = "ledgerID-voucher" })
+                    </td>
+
+                    <td style="text-align:center">
+
+                        @Html.HiddenFor(x => Model[i].Voucher2T.ToList()[j].V2TId, new { @class = "rowId" })
+                        @Html.DropDownListFor(x => Model[i].Voucher2T.ToList()[j].VoucherTransType, voucherType, "Select", new { @class = "form-control", @id = "voucherSelect", })
+                    </td>
+
+
+
+                    <td style="text-align:center" class="ledger-search-container" id="append">
+                        @Html.TextBoxFor(x => Model[i].Voucher2T.ToList()[j].LedgerName, null, new { @class = "LedgerName", @style = "width:90%", @id = "ledgerSearch" })
+                     
+                        <i class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' style="cursor:pointer;"></i>
+
+                    
+                    </td>
+                    <td style="text-align:center" class="ledger-search-container" id="append">
+                        @Html.TextBoxFor(x => Model[i].Voucher2T.ToList()[j].Particulars, null, new { @class = " form-control Particulars", @id = "particularsSearch" })
+                       
+                    </td>
+
+                    <td style="text-align:center" class="ledger-search-container debit" id="append">
+                        @Html.TextBoxFor(x => Model[i].Voucher2T.ToList()[j].DebitAmount, null, new { @class = " form-control dbamnt" })
+                       
+                    </td>
+
+                    <td style="text-align:center;" class="ledger-search-container credit" id="append">
+                        @Html.TextBoxFor(x => Model[i].Voucher2T.ToList()[j].CreditAmount, null, new { @class = " form-control cramnt", @style = "display:none;" })
+                       
+                    </td>
+
+
+
+
+
+                    <td style="text-align: center">
+
+                        <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-disk ' id='btnSave' /> <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-save ' id='btnSaveandNext' /> <i class='btn btn-info btn-sm glyphicon glyphicon-trash' id='btnDelete' />
+
+
+                    </td>
+
+                </tr>
+            }*@
+        @*}*@
+
+
+
+<script>
+    jQuery.noConflict()
+    debugger;
+    var masterId = @Model.First().V1TId;
+    if (masterId != 0 && masterId != null) {
+        $("#V1TId").val(masterId);
+    }
+    $('select#voucherSelect').css('pointer-events','none');
+    
+
+    //$('#voucher2Table button#AddTableRow').click(function () {
+    //    debugger;
+    //    var container = $('.Voucher1-create').find('.voucher2-container')
+    //    var form = $(container).closest("form");
+    //    $.ajax({
+    //        url: '/Voucher1/AddTableRow/',
+    //        dataType: "html",
+    //        success: function (data) {
+    //            debugger;
+    //            $(container).show();
+    //            $(container).append(data);
+    //            $(form).removeData("validator");
+    //            $(form).removeData("unobtrusiveValidation");
+    //        }
+    //    });
+
+    //});
+    $('i#btnSave').click(function () {
+        debugger;
+        //var form = $("#createVoucherRow");
+        var saveMaster = 0;
+        var currentevent = $(this);
+        if ($('select#VTypeId').hasClass('makeDisable') == false) {
+            saveMaster = 1;
+        }
+        var masterId = $('input.voucher-master-Id').val();
+        if (masterId != 0 && masterId != null) {
+            $("#V1TId").val(masterId);
+        }
+        $('select#VTypeId').addClass('makeDisable');
+        $('select#CTId').addClass('makeDisable');
+        $('select#BatchNo').addClass('makeDisable');
+
+
+        //var container = $('.Voucher1-create').find('.voucher2-container')
+        var formData = new FormData($("#mainVoucher")[0]);
+
+        $.ajax({
+            url: '@Url.Action("SaveTableTemporary", "Voucher1")',
+            type: 'POST',
+            data: formData,
+            async: false,
+            success: function (data) {
+                debugger;
+                //var masterId = TempData["Voucher1Id"];
+                //$("input#V1Id").val(masterId);
+                $(currentevent).closest('tr.newrow').html(data);
+            },
+            error: function (data) {
+                debugger;
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+
+
+        return false;
+
+
+
+    });
+    //$('tbody.voucher2-container').on('keydown', 'input#ledgerSearch', function (event) {
+    //    debugger;
+    //    voucherEvent = $(this);
+    //    var currentEvent = $(this);
+    //    var text = $(this).val();
+    //    var checkevent = event.keyCode;
+    //    if (checkevent == 9) {
+    //        $.ajax({
+    //            url: '/Voucher1/SearchVoucherList/',
+    //            data: { text: text },
+    //            dataType: "json",
+    //            success: function (ledgerName) {
+    //                debugger;
+    //                var count = ledgerName.data.length;
+    //                if (count == 1) {
+    //                    var currentText = ledgerName.data[0].Fname;
+    //                    var currentId = ledgerName.data[0].Fid;
+    //                    currentEvent.val(currentText);
+    //                    var test = currentEvent.closest('.voucher2-container').find('input#VLedger-Id');
+    //                    var test = currentEvent.closest('.voucher2-container').find('input#VLedger-Id').val(currentId);
+    //                }
+    //                else {
+    //                    debugger;
+    //                    //$.each(ledgerName.data, function (key, value) {
+    //                    debugger;
+    //                    var url = "/Voucher1/AddSearchedVoucherDetails";
+    //                    var data = { "query": text };
+    //                    $.get(url, data, function (data) {
+
+    //                        $('#getVoucherDetails').html(data);
+    //                        debugger;
+
+    //                        $('#getVoucherDetails').modal('show');
+    //                    });
+
+    //                    // });
+    //                }
+
+    //            }
+    //        });
+
+    //    }
+
+
+
+
+
+    //});
+
+
+
+    $('select#VTypeId').change(function () {
+        debugger;
+        var voucherType = $(this).val();
+        var container = $(this).closest('.Voucher1-create').find('.batch-number');
+
+        var form = $(container).closest("form");
+        $.ajax({
+            url: '/Voucher1/GetBatch/',
+            data: { type: voucherType },
+            dataType: "html",
+            success: function (data) {
+                $(container).show();
+                $(container).html(data);
+                $(form).removeData("validator");
+                $(form).removeData("unobtrusiveValidation");
+
+            }
+        });
+
+
+    });
+</script>

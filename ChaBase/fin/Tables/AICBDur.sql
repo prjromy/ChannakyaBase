@@ -1,0 +1,7 @@
+﻿CREATE TABLE [fin].[AICBDur] (
+    [IAccno]   INT NOT NULL,
+    [ICBDurID] INT NOT NULL,
+    CONSTRAINT [PK_AICBDur] PRIMARY KEY CLUSTERED ([IAccno] ASC),
+    CONSTRAINT [FK_AICBDur_ADetail1] FOREIGN KEY ([IAccno]) REFERENCES [fin].[ADetail] ([IAccno])
+);
+

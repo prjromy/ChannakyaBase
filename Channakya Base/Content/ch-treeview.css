@@ -1,0 +1,87 @@
+﻿.treeview-icon {
+    width: 10px;
+    height: 15px;
+    background-repeat: no-repeat;
+    background-image: url('../images/ui-icons_454545_256x240.png');
+    background-position: -37px -14px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.treeview-expand {
+    background-position: -68px -13px;
+}
+
+.treeview-checkbox-container {
+    height: 20px;
+    top: 3px;
+    position: relative;
+}
+
+.treeview-image img {
+    position: relative;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+}
+
+.treeview-text {
+    position: relative;
+    max-width: 250px; 
+    cursor: pointer;
+    margin-left: 0px;
+}
+
+
+.treeview-child {
+    list-style-type: none;
+}
+
+div.treeview-area ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px 0px 2px 4px;
+}
+
+.ch-treeview {
+    list-style-type: none;
+}
+
+
+
+div.treeview-area li {
+    list-style-type: none;
+    border-left: 1px dotted grey;
+    margin: 0px 0px 2px 0px;
+    padding: 0px 0px 1px 9px;
+}
+
+.treeview-selected {
+    background-color: #605ca8;
+    color:white;
+}
+
+.content {
+ padding:2px;
+}
+.treeview-area {
+    list-style-type: none; 
+}
+
+.treeview-text:hover {
+    background-color: #f0f1cf;
+    color:black;
+} 
+
+.treeview-button {
+    background-color: black;
+    font-size: 20px;
+    font-weight: 100;
+    width: 8%;
+    text-align: center;
+    display: inline-block;
+    border-color: #468847;
+    border-style: solid;
+    color: white;
+    cursor: pointer;
+}

@@ -1,0 +1,22 @@
+﻿
+
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Index</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="box-body index-body" style="height: 1500px;">
+        <div class="container main-chart">
+            @{ Html.RenderAction("Index", "Chart"); }
+        </div>
+    <div class="container-compare-charts">
+        @{Html.RenderAction("CompareBarGraphIncomeExpenditure", "Chart"); }
+        @{Html.RenderAction("CompareBarGraphLiabAssests", "Chart"); }
+        @{Html.RenderAction("CompareBarGraphDepLoan", "Chart"); }
+    </div>
+       
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+

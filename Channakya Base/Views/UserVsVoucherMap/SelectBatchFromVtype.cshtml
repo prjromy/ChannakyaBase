@@ -1,0 +1,21 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.uservsvoucherViewModel
+<div style="overflow-y:scroll;max-height:210px;" id="checkdivs">
+    @for (int i = 0; i < Model.BatchList.Count(); i++)
+    {
+        <div>
+            @Html.HiddenFor(x => Model.BatchList[i].Id)
+            @Html.CheckBoxFor(x => Model.BatchList[i].IsSelected)
+            @Html.LabelFor(x => Model.BatchList[i].IsSelected, Model.BatchList[i].Name, htmlAttributes: new { @class = "control-label" })
+        </div>
+    }
+    @Html.ValidationMessageFor(model => model.BatchList, "", new { @class = "text-danger" })
+</div>
+<script>
+    $(document).ready(function () {
+        debugger;
+        var btnname = $("#btnBatchMapSave").text("Save");
+        $("#checkdivs input:checked").each(function () {
+            $("#btnBatchMapSave").text("Update");
+        });
+    });
+</script>

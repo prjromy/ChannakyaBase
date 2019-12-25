@@ -1,0 +1,65 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher5
+<script src="~/Scripts/jquery-1.11.1.min.js"></script>
+
+<script src="~/Scripts/jquery-1.11.1.ui.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+@{
+    ChannakyaAccounting.Service.Voucher1.Voucher1Service voucher1 = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    var fromVoucher = Model.fromVoucher;
+}
+@if (fromVoucher == 0)
+{
+    @Html.HiddenFor(x => x.V5Id)
+    @Html.HiddenFor(x => x.V2Id)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ChequeNo, new { @class = "col-sm-3  control-label col-form-label" })
+        <div class="col-sm-9">
+            @Html.TextBoxFor(m => m.ChequeNo, new { @class = "form-control" })
+        </div>
+    </div>
+
+
+    <div class="form-group ">
+        @Html.LabelFor(m => m.ChequeAmount, new { @class = "col-sm-3  control-label col-form-label" })
+        <div class="col-sm-9">
+            @Html.TextBoxFor(m => m.ChequeAmount, new { @class = "form-control" })
+        </div>
+    </div>
+
+
+    <div class="form-group ">
+        @Html.LabelFor(model => model.ChequeDate, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(model => model.ChequeDate, new { @class = "form-control dt", @Value = DateTime.Now.ToShortDateString() })
+            @Html.ValidationMessageFor(model => model.ChequeDate, "", new { @class = "text-danger" })
+        </div>
+
+      
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Payees, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(m => m.Payees, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Payees, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+}
+else
+{
+    @Html.HiddenFor(x=>x.ChequeAmount)
+    @Html.HiddenFor(x=>x.ChequeDate)
+    @Html.HiddenFor(x=>x.ChequeNo)
+    @Html.HiddenFor(x=>x.Payees)
+    @Html.HiddenFor(x => Model.Id)
+    @Html.HiddenFor(x => x.V5Id)
+    @Html.HiddenFor(x=>x.V2Id)
+}
+
+
+
+<script>
+    jQuery.noConflict();
+</script>

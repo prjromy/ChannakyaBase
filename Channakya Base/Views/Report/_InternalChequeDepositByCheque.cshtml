@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.InternalChequeDepositReportModel>
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+     
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.TrnxNo)
+                </th>
+                <th>
+                    @Html.DisplayName("Date")
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DrProduct)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CrProduct)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DrAccountNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DrName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CrAccountNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CrName)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Amount)
+                </th>
+
+
+            </tr>
+        
+        @foreach (var item in Model)
+        {
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TrnxNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DrProduct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CrProduct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DrAccountNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DrName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CrAccountNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CrName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+
+                </tr>
+            </tbody>
+        }
+
+    </table>
+    </div>

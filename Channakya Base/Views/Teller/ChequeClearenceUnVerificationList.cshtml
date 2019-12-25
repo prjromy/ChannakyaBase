@@ -1,0 +1,90 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ChequeClearenceViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{ 
+    CommonService commonService = new CommonService();
+}
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Cheque Clearence Verification</h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @*<div class="content-box table-responsive no-padding table-click-event-message">
+        <div class="pop-up-for-verify">  
+            </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>@Html.Label("Account No")</td>
+                    <td>@Html.Label("Cheque Account No ")</td>
+                    <td>@Html.DisplayNameFor(model => model.Bankname)</td>
+                    <td>@Html.Label("Cheque Amount")</td>
+                    <td>@Html.Label("Payee Name")</td>
+                    <td>@Html.Label("Remarks")</td>
+                    <td>@Html.Label("Verification", htmlAttributes: new { @class = "control-label" })</td>
+                </tr>
+            </thead>
+            @foreach (var item in Model.ChequeClearenceList)
+            {
+                <tbody>
+                    <tr>
+                        <td><a onclick="Detail(@item.rno)"><i class="fa fa-edit"></i>@commonService.GetAccountFullNameByIaccno(item.IAccno)</a></td>
+                        <td>
+                           @Html.DisplayFor(model => item.accno)
+                           </td>
+                        <td>@Html.DisplayFor(model => item.Bankname)</td>
+                        <td>@Html.DisplayFor(model => item.camount)</td>
+                        <td>@Html.DisplayFor(model => item.payee)</td>
+                        <td>@Html.DisplayFor(model => item.remarks)</td>
+                        <td>
+                            <input type="button" value="Verify" class="btn btn-sm btn-success btn-verify-cheque-clearence" onclick="directToRead(@BaseTaskUtilityService.TaskIdByEventIdAndEventValue(27, Convert.ToInt64(item.rno)))">
+                            </td>
+
+                    </tr>
+                </tbody>
+
+            }
+
+        </table>
+        @Html.Paging("_ClearedChequeList", "Teller", Model.ChequeClearenceWithIpageList.PageCount, Model.ChequeClearenceWithIpageList.PageNumber, Model.ChequeClearenceWithIpageList.PageSize)  
+    </div>*@
+    @Html.Partial("_ChequeClearenceUnVerificationList", Model)
+
+    </div>
+<script>
+    function verifiedcheckClearence( rno) {
+        $.ajax({
+            type: "GET",
+            data: {
+                rno: rno 
+            },
+            url: "Teller/VerifyChequeClearence",
+            success: function (result) {
+                debugger;
+                $(".pop-up-for-verify").html(result);
+
+            }
+        });
+
+    }
+    function Detail(rno) {
+        debugger;
+        $.ajax({
+            data: {rno: rno},
+            url: "/Teller/CheckClearenceDetail",
+            type: 'get',
+            async: false,
+            success: function (abc) {
+                debugger;
+                $(".content").html(abc)
+            }
+        })
+    }
+   
+    </script>

@@ -1,0 +1,338 @@
+﻿@model IEnumerable<ChannakyaBase.DAL.DatabaseModel.OccupationDef>
+
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+
+<div class="occupation-list">
+    <input type="button" value="New Occupation" id="btn-create" class="btn btn-md btn-primary btn-create border-0" />
+
+
+    <div class="section-create">
+    </div>
+
+    <div class="details" id="occupation-list">
+        @{Html.RenderAction("_List", "OccupationDef");}
+    </div>
+</div>
+
+@*<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/jquery.form.min.js"></script>*@
+
+<script>
+    function createSuccess() {
+        SuccessAlert("Occupation Succesfully created. ", 15000);
+        $.ajax({
+            url: '@Url.Action("_Create", "OccupationDef")',
+            type: 'GET',
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+
+
+
+
+
+    function editSuccess() {
+        SuccessAlert("Occupation Succesfully Edited. ", 15000);
+        debugger;
+        $('.occupation-list').find('.edit-section').empty();
+        $('.occupation-list').find(".btn-create").val('New Occupation');
+    }
+
+
+    $(document).ready(function () {
+        $('.occupation-list').on('click', '.btn-create', function () {
+            var thisVal = $(this).val();
+            if (thisVal == "Hide Section") {
+                $(this).val("New Occupation")
+                $(".section-create").hide();
+            }
+            else {
+                $(this).val("Hide Section")
+                $.ajax({
+                    type: "GET",
+                    url: "/OccupationDef/_Create",
+                    success: function (data) {
+                        $(".section-create").show();
+                        $('.section-create').html(data).find('.focusdiv').focus()
+
+                    }
+                })
+            }
+
+        });
+       
+        //create post
+        $.validator.unobtrusive.parse($("#createSubmitForm"));
+        $('.occupation-list').on('click', '#btn-save-submit', function () {
+            debugger;
+
+            $('#createSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#createSubmitForm"));
+
+            if ($("#createSubmitForm").valid() === false) {
+                InfoAlert("Please fill out the form", 6000);
+                return false;
+
+            }
+
+            var occupation = $('#occupation').val();
+            var occupationID = $('#Occpn').val();
+            $.ajax({
+                url: "/OccupationDef/CheckOccupation",
+                type: 'GET',
+                async: false,
+                data: { occpn: occupationID, occupation: occupation },
+                success: function (result) {
+                    debugger;
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert(message, 5000);
+
+                    }
+                    else {
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $('#createSubmitForm').ajaxSubmit({
+                                beforeSubmit: function () {
+
+                                },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/OccupationDef/Index",
+                                            type: 'GET',
+                                            async: false,
+                                            success: function (result) {
+                                                debugger
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+                            // return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                    }
+
+                }
+            });
+        });
+
+        $('.occupation-list').on('click', '.btn-edit', function () {
+            debugger
+            var container = $(this).closest('.occupation-list').find('.section-create');
+            var value = $(this).data('id');
+
+            $.ajax({
+                type: "GET",
+                url: "/OccupationDef/_Edit/" + value,
+                success: function (data) {
+                    $(".section-create").show();
+                    $('.section-create').html(data).find('.focusdiv').focus();
+                }
+            })
+
+        });
+
+
+        $.validator.unobtrusive.parse($("#editSubmitForm"));
+
+        $('.occupation-list').on('click', '#btn-edit-submit', function () {
+
+            $('#editSubmitForm').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($("#editSubmitForm"));
+            debugger;
+            if ($('#editSubmitForm').valid() == false) {
+                InfoAlert('Please Fill out the form correctly', 6000);
+                return false;
+            }
+            var occupation = $('#occupation').val();
+            var occupationID = $('#Occpn').val();
+
+            $.ajax({
+                url: "/OccupationDef/CheckOccupation",
+                type: 'GET',
+                async: false,
+                data: { occpn: occupationID, occupation: occupation },
+                success: function (result) {
+                    var message = $(this).closest("form").find(".field-validation-error").text();
+                    if (result == false) {
+                        debugger;
+                        InfoAlert(message, 5000);
+
+                    }
+                    else {
+                        debugger;
+                        $.MessageBox({
+                            buttonDone: "Yes",
+                            buttonFail: "No",
+                            message: "Are you sure?"
+                        }).done(function () {
+                            debugger
+                            $("#editSubmitForm").ajaxSubmit({
+                                beforeSubmit() {
+
+                                },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        $.ajax({
+                                            url: "/OccupationDef/Index",
+                                            async: false,
+                                            success: function (result) {
+                                                $('section.content').html(result);
+                                            }
+                                        })
+                                        SuccessAlert(result.Msg, 5000);
+                                        document.getElementById('alert-success').scrollIntoView();
+                                    }
+                                    else {
+                                        ErrorAlert(result.Msg, 5000);
+                                        document.getElementById('alert-error').scrollIntoView();
+                                    }
+                                },
+                                error: function () {
+                                    ErrorAlert(data.responseText, 15000)
+                                }
+                            })
+                        }).fail(function () {
+
+                        })
+                    }
+                }
+
+            })
+        })
+
+
+
+        $('.occupation-list').on('click', '.btn-cancel', function () {
+            var container = $(this).closest('.occupation-list').find(".section-create");
+            $(container).empty();
+            $(container).hide();
+            debugger;
+            $('.btn-create').val("New Occupation")
+        }
+      );
+
+        var occupationId;
+        var itmName;
+        $('#occupation-list').on('click', '.btn-delete', function () {
+            debugger;
+            var itmName = $(this).attr("data-val");
+            occupationId = $(this).attr("data-id");
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("Delete", "OccupationDef")',
+                data: { id: occupationId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (result) {
+                    if (result == "false") {
+
+                        ErrorAlert("Occupation Already In Use.", 5000);
+                    }
+                    else {
+                        if (result == "true") {
+                            debugger;
+                            $.MessageBox({
+                                buttonDone: "Yes",
+                                buttonFail: "No",
+                                message: "Are you sure you want to Delete?"
+                            }).done(function () {
+                                //alert(result)
+                                debugger;
+                                deleteMenu(occupationId);
+                            })
+                        }
+                    }
+
+
+
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+        function deleteMenu(occupationId) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteConfirm", "OccupationDef")',
+                data: { Id: occupationId },
+                success: function (result) {
+
+                    //if (result == "true") {
+
+                    SuccessAlert( "<span>&nbsp;Sucessfully Deleted </span>", 5000);
+                    $("#occupation-list").html(result);
+
+                    //}
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+        }
+
+        $(document).on('click', '#searchsubmit', function (event1) {
+            debugger;
+            var search = $('#txtsearch').val();
+            var url = '@Url.Action("_List", "OccupationDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+
+                $("#occupation-list").html(data);
+            });
+
+
+        });
+        $(document).on('change', '#txtsearch', function (event1) {
+            debugger;
+            var search = $('#txtsearch').val();
+            var url = '@Url.Action("_List", "OccupationDef")';
+            var data = { search: search };
+            $.get(url, data, function (data) {
+
+                $("#occupation-list").html(data);
+            });
+
+
+        });
+    
+    });
+</script>
+
+

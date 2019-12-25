@@ -1,0 +1,56 @@
+﻿<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title"> User Cash Limit</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+
+    <div class="box box-body">
+        <div id="cash-limit-create">
+            @{Html.RenderAction("InsertUpdateCashLimit", "FinanceParameter");}
+          
+        </div>
+
+        <div id="cash-limit-list">            
+           
+            @{Html.RenderAction("TellerCashLimitList", "FinanceParameter");}
+               
+        </div>
+    </div>
+</div>
+<script>
+      function createSuccess() {
+        SuccessAlert("Remittance Company Succesfully created. ", 5000);
+        $.ajax({
+            url: '@Url.Action("InsertUpdateCashLimit", "FinanceParameter")',
+            type: 'GET',
+
+
+            processData: false,
+            success: function (data) {
+                $(".section-create").html(data);
+                console.log(data)
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+
+        function EditCashLimit(cashLimitId) {
+            debugger
+            $.ajax({
+                type: "GET",
+                url: "/FinanceParameter/InsertUpdateCashLimit",
+                datatype: "Json",
+                data: { cashLimitId: cashLimitId },
+                success: function (result) {
+                    $('#cash-limit-create').html("");
+                    $('#cash-limit-create').html(result);
+                }
+            })
+        }
+
+</script>

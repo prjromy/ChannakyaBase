@@ -1,0 +1,99 @@
+﻿@model  ChannakyaBase.Model.ViewModel.UnVerifiedTransactionModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Verified Transaction Report</h3>
+
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <label>Branch Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.branchId, ReportUtilityService.GetBranchList(Convert.ToInt32(Model.branchId)), new { @class = "form-control" })
+                          
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Transaction Date</label>
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.tdate)
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label> Account Type</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.AccountType, ReportUtilityService.AccountType(), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <button type="button" name="btn-account-holder-search" id="btn-report-transaction-related" class="btn btn-primary pull-right" style="margin-left: 0px;" value="Generate">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+
+
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border with-transaction-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //var isTrue = $('#SingleBranch').val()
+        //if (isTrue == 'False') {
+        searchverifiedEvent()
+        //}
+    })
+    function searchverifiedEvent() {
+        var branchId = $('#branchId').val();
+        var tDate = $('#tdate').val();
+        var stype = $('#AccountType').val()
+        $.ajax({
+            type: "GET",
+            url: "/Report/_verifiedWithdrawDepositReport",
+            datatype: "HTML",
+            data: {
+                transDate:tDate,
+                branchId: branchId,
+                stype: stype
+            },
+            success: function (result) {
+                $('.with-transaction-Report-View').html("");
+                $('.with-transaction-Report-View').html(result);
+            }
+        })
+    }
+    $('#btn-report-transaction-related').on('click', function () {
+        searchverifiedEvent()
+    });
+
+
+</script>
+
+
+
+

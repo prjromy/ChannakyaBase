@@ -1,0 +1,102 @@
+﻿
+@model  ChannakyaBase.Model.ViewModel.DenoTransactionViewModel
+@using ChannakyaBase.BLL.Service
+@using ChannakyaCustomeDatePicker.Helper;
+@{
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Deno History</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="customer-main details">
+
+
+        <fieldset>
+            <div class="row">
+
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <label> Transaction Date</label>
+                        <div class="form-grop_padding">
+                            @Html.DatePicker(x => x.Date)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label> User Name</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.UserId, ReportUtilityService.VaultTellerAndCashierUser(), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Currency</label>
+                        <div class="form-grop_padding">
+                            @Html.DropDownListFor(x => x.CurrID, TellerUtilityService.GetAccountOpenCurrency(), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <input type="button" value="ExportToExcel" class="btn btn-info report-deno-by-user-and-history-export-to-excel pull-right"  data-toggle="tooltip"title="Export to Excel" />
+                        <button type="button" name="btn-account-holder-search" id="btn-report-deno-related" class="btn btn-primary pull-right" style="margin-left: 0px;" data-toggle="tooltip"title="Search" >
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="box-header with-border with-denoDetails-Report-View">
+
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+<script>
+
+
+    $('#btn-report-deno-related').on('click', function () {
+        debugger;
+        var currencyId = $('#CurrID').val();
+        var userId = $('#UserId').val();
+        var date = $('#Date').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Report/_DenoByUserAndTransactionHistory",
+            datatype: "HTML",
+            data: {
+                transactionDate: date,
+                userId: userId,
+                currencyId: currencyId,
+
+            },
+            success: function (result) {
+                $('.with-denoDetails-Report-View').html("");
+                $('.with-denoDetails-Report-View').html(result);
+            }
+        });
+
+    });
+
+
+    $('.report-deno-by-user-and-history-export-to-excel').on('click', function () {
+        debugger;
+        var currencyId = $('#CurrID').val();
+        var currencyText = $('#CurrID option:selected').text();
+        var userId = $('#UserId').val();
+        var userText = $('#UserId option:selected').text();
+        var date = $('#Date').val();
+        window.open("/Report/DenoReportByUserAndTransactionHistoryExportToExcel?currencyId=" + currencyId + "&currencyText=" + currencyText + "&userId=" + userId + "&userText=" + userText + "&date=" + date);
+
+    });
+
+</script>
+

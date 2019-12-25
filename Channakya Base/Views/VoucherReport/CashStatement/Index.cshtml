@@ -1,0 +1,207 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.LedgerStatementViewModel
+@using Loader.Helper
+@using ChannakyaCustomeDatePicker.Helper
+@using PagedList.Mvc;
+
+
+@{
+    ChannakyaAccounting.Service.VoucherReport.VoucherReportsService voucherReportObj = new ChannakyaAccounting.Service.VoucherReport.VoucherReportsService();
+    Loader.Service.UserVSBranchService usrBranchService = new Loader.Service.UserVSBranchService();
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    var fromDate = voucherReportObj.GetFromDate();
+    var toDate = voucherReportObj.GetToDate();
+    ViewBag.Title = "Cash Statement Report";
+    string url = "/VoucherReport/CashStatementReport";
+
+
+
+}
+
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<script src="~/Scripts/DatePicker/Channakya-DatePickerRange.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+<div class="box box-success" style="padding-bottom: 360px;">
+    <div class="box-header with-border">
+        <h3 class="box-title"> @ViewBag.Title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <form method="post" id="createLedgerReport">
+        <div class="box-body">
+            <div id="explorer" class="menu-explore">
+                <div id="explore-details" class="col-md-12 explore-details">
+                    <div class="panel-list" id="list">
+                        <div class="modal fade" id="getVoucherDetails" data-width="400" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true" data-url='@Url.Action("DisplayLedgerListCashStatement", "VoucherReport")'></div>
+                
+                        @*<div class="form-group">
+                            @Html.HiddenFor(x => x.FId, new { @id = "finaccId" })
+                            @Html.Label("Ledger")
+                            <div class="input-group add-on" style="width:99%;">
+                                @Html.TextBox("LedgerName", null, new { @class = "LedgerName form-control", @placeholder = "Search", @id = "ledgerSearch" })
+                                <div class="input-group-btn">
+                                    <button class="btn" style="background-color:#2aabd2!important" type="button"><i class="glyphicon glyphicon-search" id="btnledgersearch" style="color:white;"></i></button>
+                                </div>
+                            </div>
+
+                        </div>*@
+                        <div class="form-inline">
+                           @Html.Label("FromDate")
+                            @Html.DatePicker(x => fromDate)
+
+                            @Html.Label("ToDate")
+                            @Html.DatePicker(x => toDate)
+                        </div>
+                      
+                        @*<div class="form">
+                            @Html.Label("All Branch")
+                            @Html.CheckBox("IsAllBranch", new { @id = "is-all-branch",@class= "form-check-input" })
+                        </div>*@
+                       
+                        <input type="button" value="Submit" class="btn btn-success pull-right submitme" />
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.box-body -->
+    </form>
+</div><!-- /.box -->
+<script src="~/Scripts/DatePicker/Channakya-DatePicker.js"></script>
+<link href="~/Scripts/DatePicker/DatePicker.css" rel="stylesheet" />
+
+<style>
+    .state-icon {
+        left: -5px;
+    }
+
+    .list-group-item-primary {
+        color: rgb(255, 255, 255);
+        background-color: rgb(66, 139, 202);
+    }
+</style>
+<script type="text/javascript">
+  
+
+    $("#createLedgerReport").on('click', '.submitme', function (e) {
+        debugger;
+        e.stopImmediatePropagation();
+        //var formData = new FormData($(this)[0]);
+        var fromDate = $('#createLedgerReport').find('input#fromDate').val();
+        var toDate = $('#createLedgerReport').find('input#toDate').val();
+        //var fid = $('#createLedgerReport').find('input#finaccId').val();
+        var withallBranch =$('#createLedgerReport').find('input#finaccId').val();
+        
+        $.ajax({
+            url: '@url',
+            type: 'POST',
+            data: JSON.stringify({fromDate: fromDate, toDate: toDate, withallBranch: withallBranch }),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                debugger;
+                if (data == false || data == "false")
+                    SuccessAlert("No Data Are Available", 5000);
+                else
+                $('div#explore-details').html(data);
+
+            },
+            error: function (data) {
+                debugger;
+                ErrorAlert(data.responseText, 15000)
+            },
+        });
+
+    });
+
+</script>
+
+<script type="text/javascript">
+    $('#createTBReport').ready(function () {
+        $('.list-group.checked-list-box .list-group-item').each(function () {
+
+            // Settings
+            var $widget = $(this),
+                $checkbox = $('<input type="checkbox" class="hidden" />'),
+                color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                settings = {
+                    on: {
+                        icon: 'glyphicon glyphicon-check'
+                    },
+                    off: {
+                        icon: 'glyphicon glyphicon-unchecked'
+                    }
+                };
+
+            $widget.css('cursor', 'pointer')
+            $widget.append($checkbox);
+
+            // Event Handlers
+            $widget.on('click', function () {
+                $checkbox.prop('checked', !$checkbox.is(':checked'));
+                $checkbox.triggerHandler('change');
+                updateDisplay();
+            });
+            $checkbox.on('change', function () {
+                updateDisplay();
+            });
+
+
+            // Actions
+            function updateDisplay() {
+                var isChecked = $checkbox.is(':checked');
+
+                // Set the button's state
+                $widget.data('state', (isChecked) ? "on" : "off");
+
+                // Set the button's icon
+                $widget.find('.state-icon')
+                    .removeClass()
+                    .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                // Update the button's color
+                if (isChecked) {
+                    $widget.addClass(style + color + ' active');
+                } else {
+                    $widget.removeClass(style + color + ' active');
+                }
+            }
+
+            // Initialization
+            function init() {
+
+                if ($widget.data('checked') == true) {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                }
+
+                updateDisplay();
+
+                // Inject the icon if applicable
+                if ($widget.find('.state-icon').length == 0) {
+                    $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                }
+            }
+            init();
+        });
+
+        $('#get-checked-data').on('click', function (event) {
+            event.preventDefault();
+            var checkedItems = {}, counter = 0;
+            $("#check-list-box li.active").each(function (idx, li) {
+                checkedItems[counter] = $(li).text();
+                counter++;
+            });
+            $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+        });
+    });
+</script>
+<style>
+    img.dpCalBtn {
+        margin-bottom: 9px;
+    }
+</style>

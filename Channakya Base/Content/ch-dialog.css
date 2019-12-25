@@ -1,0 +1,72 @@
+﻿
+.dialog-alert {
+    position: fixed;
+    padding: 3px 5px;
+    top: 50px;
+    right: 10px;
+    z-index: 1000001;
+    width: 380px;
+}
+
+.alert-heading {
+    font-weight: bold;
+    padding-bottom: 15px;
+}
+
+#alert-success {
+    background-color: #C0EAC3;
+    border: 1px solid #78C864;
+    color: #33356F;
+}
+
+#alert-error {
+    background-color: #f5dfdf;
+    border: 1px solid #e1bebe;
+    color: #8d5d5e;
+}
+
+#alert-info {
+    background-color: #F7F8CB;
+    border: 1px solid #D5DD5F;
+    color: #46569C;
+}
+
+.dialog-alert-close {
+    height: 17px;
+    width: 16px;
+    text-align: center;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #069;
+    font-size: 11px;
+    padding-top: 0px;
+    float: right;
+    top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+}
+
+    .dialog-alert-close:hover {
+        background-color: #f8f8f8;
+        color: red;
+    }
+
+
+hrline {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #78C864;
+    margin-top: 2px;
+    padding-top: 0px;
+}
+
+.dialog-alert-body {
+    position: relative;
+    padding: 10px 2px 10px 2px;
+    overflow: auto;
+    text-align: center;
+    font-weight: 100;
+    /*max-height: 500px;*/
+}

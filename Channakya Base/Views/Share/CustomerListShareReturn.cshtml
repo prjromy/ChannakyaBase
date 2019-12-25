@@ -1,0 +1,88 @@
+﻿@model ChannakyaBase.Model.ViewModel.ShareCustomerDetailsViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@using ChannakyaBase.BLL.CustomHelper
+@{
+
+}
+ 
+<span style="color:#3636e4;font-family:'Century Gothic';padding-left:20px">Please click the share you want to return !!!</span>
+    <div class="box-body table-responsive no-padding table-click-share-return">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+             
+     
+                <tr>
+
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Certno
+                    </th>
+                    <th>
+                        From
+                    </th>
+                    <th>
+                        To
+                    </th>
+                    <th>
+                        Oust.Qty
+                    </th>
+
+
+                    <th>
+                        Type
+                    </th>
+                    @*<th>
+                        Balance
+                    </th>*@
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ShareCustomerDetailsList)
+            {
+
+                    <tr>
+
+                        <td>
+                            <span>@item.Name</span>
+                            @Html.HiddenFor(x => item.Name)
+                        </td>
+                        <td>
+                            <span>@item.Scrtno</span>
+                            @Html.HiddenFor(x => item.Scrtno)
+                        </td>
+                        <td>
+                            <span>@item.FSno</span>
+                            @Html.HiddenFor(x => item.FSno)
+                        </td>
+                        <td>
+                            <span>@item.TSno</span>
+                            @Html.HiddenFor(x => item.TSno)
+                        </td>
+                        <td>
+                            <span>@item.SQty</span>
+                            @Html.HiddenFor(x => item.SQty)
+                        </td>
+                        <td>
+                            <span>@item.Stype</span>
+                            @Html.HiddenFor(x => item.Stype)
+                        </td>
+                        @*<td>
+                            <span>@item.Balance.ToString("0.00")</span>
+                            @Html.HiddenFor(x => item.Balance)
+                        </td>*@
+                     @*<td class="hidden"><input type="checkbox" name="IsChecked" id="IsChecked"  /> </td>*@
+                        <td class="hidden"> @Html.CheckBoxFor(x=>item.IsChecked, new { @class="hidden"})</td>   
+                        <td class="hidden"> @Html.HiddenFor(x => item.ShareType)</td>
+                        <td class="hidden"> @Html.HiddenFor(x => item.Sid)</td>
+                       
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+ 

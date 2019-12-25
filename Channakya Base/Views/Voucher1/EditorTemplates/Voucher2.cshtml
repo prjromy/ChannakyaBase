@@ -1,0 +1,132 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher2
+@{
+    var test = Model;
+    List<SelectListItem> voucherType = new List<SelectListItem>();
+    voucherType.Add(new SelectListItem { Text = "By", Value = "0" });
+    voucherType.Add(new SelectListItem { Text = "To", Value = "1" });
+    Model.VoucherTransType = Convert.ToInt16(null);
+
+}
+
+
+<tr class="newrow">
+    <td style="display:none">
+            @Html.TextBoxFor(x => x.Fid, null, new { @id = "ledgerID-voucher" })
+        </td>
+
+    @*<td style="display:none;">
+        @Html.HiddenFor(x => x.Fid, new { @id = "VLedger-Id" })
+    </td>*@
+    <td style="text-align:center">
+
+        @Html.HiddenFor(x => x.V2Id, new { @class = "rowId" })
+        @Html.DropDownListFor(x=>x.VoucherTransType, voucherType, "Select", new { @class = "form-control", @id = "voucherSelect",})
+    </td>
+
+
+
+    <td style="text-align:center" class="ledger-search-container" id="append">
+        @Html.TextBoxFor(x => x.LedgerName, null, new { @class = "LedgerName", @style = "width:90%", @id = "ledgerSearch" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+        <i class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' style="cursor:pointer;"></i>
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+    <td style="text-align:center" class="ledger-search-container" id="append">
+        @Html.TextBoxFor(x => x.Particulars, null, new { @class = " form-control Particulars", @id = "particularsSearch" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+    
+        <td style="text-align:center" class="ledger-search-container debit" id="append">
+            @Html.TextBoxFor(x=>x.DebitAmount,null, new { @class = " form-control dbamnt" })
+            @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+            @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+        </td>
+    
+    <td style="text-align:center;" class="ledger-search-container credit" id="append" >
+        @Html.TextBoxFor(x=>x.CreditAmount,null, new { @class = " form-control cramnt",@style= "display:none;" })
+        @*@Html.TextBoxFor(x=>x.Particulars, new { @class = " form-control Particulars", @style = "width:90%" })*@
+
+        @*<input type="text" style="width:90%" id="ledgername" class="ledgername" name="ledgername" /><span class='glyphicon glyphicon-search' name='btnledgersearch' id='btnledgersearch' data-toggle='modal' data-target='#myModal' value='Search'></span>*@
+    </td>
+
+
+
+
+
+    <td style="text-align: center">
+
+        <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-disk ' id='btnSave' /> <i class='btn btn-info btn-sm glyphicon glyphicon-floppy-save ' id='btnSaveandNext' /> <i class='btn btn-info btn-sm glyphicon glyphicon-trash' id='btnDelete' />
+
+
+    </td>
+
+</tr>
+
+
+<script type="text/javascript">
+    $("i#btnDelete").click(function () {
+        debugger;
+        $(this).closest('tr.newrow').remove();
+
+
+    });
+
+    $('select#voucherSelect').change(function () {
+        debugger;
+        var voucherType = $(this).val();
+        
+        var debitcontainer = $(this).closest('tr.newrow').find('input.dbamnt')
+        var creditcontainer = $(this).closest('tr.newrow').find('input.cramnt')
+        if (voucherType == 0) {
+            $(debitcontainer).show();
+            $(creditcontainer).hide();
+        }
+
+        else
+        {
+            $(debitcontainer).hide();
+            $(creditcontainer).show();
+        }
+
+        //    var form = $(debitcontainer).closest("form");
+        //    $.ajax({
+        //        url: '/Voucher1/GetAmount/',
+        //        data: { type: voucherType },
+        //        dataType: "html",
+        //        success: function (data) {
+        //            $(debitcontainer).show();
+        //            $(debitcontainer).html(data);
+        //            $(creditcontainer).empty();
+        //            $(form).removeData("validator");
+        //            $(form).removeData("unobtrusiveValidation");
+
+        //        }
+        //    });
+        //}
+        //else {
+        //    var form = $(creditcontainer).closest("form");
+        //    $.ajax({
+        //        url: '/Voucher1/GetAmount/',
+        //        data: { type: voucherType },
+        //        dataType: "html",
+        //        success: function (data) {
+        //            $(creditcontainer).show();
+        //            $(creditcontainer).html(data);
+        //            $(debitcontainer).empty();
+        //            $(form).removeData("validator");
+        //            $(form).removeData("unobtrusiveValidation");
+
+        //        }
+        //    });
+
+        //}
+
+
+    });
+
+
+</script>

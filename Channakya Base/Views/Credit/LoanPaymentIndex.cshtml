@@ -1,0 +1,191 @@
+﻿ @model  ChannakyaBase.Model.ViewModel.LoanPaymentModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Payment</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="box box-body">
+        @using (Html.BeginForm("InsertLoanPayment", "Credit", FormMethod.Post, new { id = "Loan-Payment-form" }))
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+
+                        <div class="Loan-Payment-create">
+                            @* verifier section start *@
+                            @{
+                                bool isverified = new CommonService().isStrictlyVerifiable();
+                            }
+                            <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                            </div>
+                            @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                            @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                            @Html.Hidden("MessageEventID", 22)
+                            @*end *@
+                        </div>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                       
+                            <div class="form-group">
+                                @Html.Label("Account", new { @class = "control-label  col-md-1" })
+                                <div class="col-md-5">
+                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.LoanPayment.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                                </div>
+                            </div>
+                            <div class="customer-event-message">
+                                </div>
+                            <div class="load-loan-account-details-data">
+                            </div>
+                                         
+                        <div class="col-md-12">
+                            <div class="load-loan-account-payment-data">
+
+                            </div>
+                            <div class="form-group">
+
+                                <div class="col-md-2">
+                                    @Html.CheckBoxFor(m => m.ReadyToClose, new { @class = "ReadyToClose" })<label>ReadyToClose</label>
+                                </div>
+                                @Html.LabelFor(model => model.Notes, new { @class = "control-label  col-md-2" })
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                         
+                            <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                                @if (IsTransactionWithDeno)
+                {
+                        <div class="form-group">
+                            <div class="transaction-with-deno">
+
+                                @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription() });}
+                            </div>
+                        </div>
+                                        }
+                            </div>
+                        </div>
+
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <div class="col-md-offset-10 col-md-12">
+                                    <input type="button" value="Save" class="btn btn-default btn-Loan-payment-save" data-eventid="22" isMultiVerifier="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                                    }
+    </div>
+
+</div>
+<script>
+    $(function () {
+
+
+        $.validator.unobtrusive.parse('#Loan-Payment-form');
+        $(".btn-Loan-payment-save").on("click", function (e) {          
+            var balanceDiv = $(this).parents().find("#dataTransaction")
+            var strictVerifiable = $('.Loan-Payment-create').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            var ismultiVerify = $(this).attr('isMultiVerifier');
+            var actualPayment = $('.loan-total-amount-payment').val();
+
+            $('#Loan-Payment-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#Loan-Payment-form'));
+            if ($("#Loan-Payment-form").valid()) {
+                var IsDenoTransaction = $('.Loan-Payment-create').find('#transactionDeno').prop('checked');
+               
+                if (IsDenoTransaction == true) {
+                    var balanceInDeno = $('.balance-deno-div').find("#Balance").val();
+                    if (parseFloat(actualPayment) != parseFloat(Math.abs(balanceInDeno))) {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            message: "Payment amount is not match with deno balance!!"
+                        }).done(function () {
+                            $(balanceDiv).find("#Balance").focus();
+                            return false;
+                        }).fail(function () {
+                            //return false;
+                        })
+                        return;
+                    }
+
+                }
+
+                if (strictVerifiable == true) {
+
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    LoanPaymentTransaction();
+                }
+            }
+        })
+
+    });
+
+    function LoanPaymentTransaction() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#Loan-Payment-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Credit/LoanPaymentIndex',
+
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+    
+
+
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+

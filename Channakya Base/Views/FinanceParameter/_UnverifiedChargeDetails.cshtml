@@ -1,0 +1,35 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.ChargeTransactionViewModel
+@using ChannakyaBase.BLL.Service
+@{
+    var abc = Model;
+}
+<fieldset>
+    <legend style="font-size:large">Charge Details</legend>
+    <div class="form-horizontal">
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>Charge Name </th>
+
+                    <th> Financial Ledger </th>
+
+                    <th> Charge</th>
+                <tr>
+                    <td><span class="control-label"> @Model.ChgName</span></td>
+                    <td> <span class="control-label">@FinanceParameterUtilityService.LedgerNameByFid(Model.FID)</span></td>
+                    <td>@Model.Amt</td>
+                </tr>
+                <tr>
+            </table>
+
+        </div>
+    </div>
+</fieldset>
+@*@if (Model.Iaccno != null || Model.Iaccno != 0)
+{
+    @Html.Action("_AccountDetails", "Teller", new { IAccno = Model.Iaccno })
+}*@
+
+<br />
+<br />

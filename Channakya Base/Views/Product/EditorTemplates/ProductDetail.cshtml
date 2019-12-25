@@ -1,0 +1,269 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+
+
+@{
+    var accountType = Model.SchemeofProduct.SType;//Deposit Account
+}
+
+@Html.HiddenFor(m => m.PID, new { @class = "form-control" })
+@Html.HiddenFor(x => x.FID)
+@Html.HiddenFor(x => x.SDID)
+
+
+@if (accountType == 0) //Deposit Product
+{
+    @Html.Partial("_DepositProduct", Model)
+}
+
+else if (accountType == 1)
+{
+    @Html.Partial("_LoanProduct", Model)
+}
+
+
+<script type="text/javascript">
+    if(@Model.PID==0)
+    {
+        if(@accountType==1)
+        {
+            $(document).ready(function(){
+                debugger;
+
+                var loanProduct = $('.interest-main-container').find('.interest-list-container')
+                var policyPenaltyContainer = $('.penalty-interest-main-container').find('.policy-penalty-list')
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetLoanInterestContainer", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function(html) {
+                        $('.interest-main-container').show();
+                        $(loanProduct).html(html);
+
+                        $.ajax({
+                            type: "get",
+                            url: '@Url.Action("_GetPolicyPenaltyList", "FinAcc")',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "html",
+                            success: function(html) {
+
+                                $(policyPenaltyContainer).html(html);
+                                $('.penalty-interest-main-container').show();
+                            },
+                            error: function() {
+                                alert("error");
+                            }
+                        });
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+                var paymentMethodContainer = $('.payment-mode-main-container').find('.payment-mode-list')
+
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetPaymentRuleList", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function(html) {
+
+                        $(paymentMethodContainer).html(html);
+                        $('.payment-mode-main-container').show();
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+            });
+        }
+
+
+        $('.product-detail-container').on('change', 'input.multiple-deposit', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $('.product-detail-container').find('.interest-value-main-container');
+            var withdrawlCheck = $(this).closest(".product-detail-container").find("input.multiple-withdrawl").prop("checked");
+            //withdrawlcheck wala case chai remove gareko sir sanga discuss garera
+            if (this.checked && @Json.Encode(Model.SchemeofProduct.HasDuration)==true) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetValueContribution", "Product")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).empty();
+                        $('.interest-main-container').css("display","none");
+                        $('.interest-main-container').find('.interest-list-container').empty();
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }  
+                });
+            }
+            else {
+                $(container).html("");
+            }
+
+            if (!this.checked && @Json.Encode(Model.SchemeofProduct.HasDuration)==true) {
+                debugger;
+                var fixedDepositcontainer = $('.interest-main-container').find('.interest-list-container')
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetFixedDepositContainer", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $('.interest-main-container').show();
+                        $('.interest-main-container').find('ul.interest-tabs').css("display","none");
+                        $(fixedDepositcontainer).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });
+
+        @*$('.deposit-product-container').on('change', 'input.multiple-withdrawl', function (e) {
+            debugger;
+            e.stopPropagation();
+            var container = $('.deposit-product-container').find('.interest-value-main-container')
+            var depositCheck = $(this).closest(".deposit-product-container").find("input.multiple-deposit").prop("checked")
+            if (this.checked && depositCheck == true&& @Json.Encode(Model.SchemeofProduct.HasDuration)==true) {
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetValueContribution", "Product")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $(container).empty();
+                        $('.interest-main-container').css("display","none");
+
+                        $('.interest-main-container').find('.interest-list-container').empty();
+                        $(container).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+
+
+
+            if (!this.checked && depositCheck == false&& @Json.Encode(Model.SchemeofProduct.HasDuration)==true) {
+                debugger;
+                var fixedDepositcontainer = $('.interest-main-container').find('.interest-list-container')
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetFixedDepositContainer", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $('.interest-main-container').show();
+                        $('.interest-main-container').find('ul.interest-tabs').css("display","none");
+                        $(fixedDepositcontainer).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $(container).html("");
+            }
+        });*@
+
+        if(@Json.Encode(Model.SchemeofProduct.HasDuration)==false && @accountType==0)
+        {
+            $(document).ready(function(){
+
+                var normalDeposit = $('.interest-main-container').find('.interest-list-container')
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetNormalDepositContainer", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $('.interest-main-container').show();
+                        $(normalDeposit).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+
+            });
+
+        }
+
+        if (@Json.Encode(Model.SchemeofProduct.HasDuration) == true && @accountType==0 )
+        {
+
+            $(document).ready(function(){
+
+                var normalDeposit = $('.interest-main-container').find('.interest-list-container')
+
+                var fixedDepositcontainer = $('.interest-main-container').find('.interest-list-container')
+
+                $.ajax({
+                    type: "get",
+                    url: '@Url.Action("_GetFixedDepositContainer", "FinAcc")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html",
+                    success: function (html) {
+                        $('.interest-main-container').show();
+                        $('.interest-main-container').find('ul.interest-tabs').css("display","none");
+                        $(fixedDepositcontainer).html(html);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+        }
+        $('#loanCalculationRule').on('change', 'input#checkbox-loancalc', function (e) {
+            debugger;
+            var currentevent = $(this);
+            e.stopPropagation();
+            var container = $(this).closest('#loanCalculationRule');
+            var allLoanLists = $(container).find('td.loancalcboxcontainer');
+
+            $(allLoanLists).each(function (index, item) {
+                $(item).find('input[type="checkbox"]').prop('checked', false);
+
+            });
+            $(currentevent).prop('checked', true);
+
+        });
+
+        $('#loanCalculationPenaltyRule').on('change', 'checkbox-loancalcPenalty', function (e) {
+            debugger;
+            var currentevent = $(this);
+            e.stopPropagation();
+            var container = $(this).closest('#loanCalculationRule');
+            var allLoanLists = $(container).find('td.loancalcboxcontainer');
+
+            $(allLoanLists).each(function (index, item) {
+                $(item).find('input[type="checkbox"]').prop('checked', false);
+
+            });
+            $(currentevent).prop('checked', true);
+
+        });
+
+    }
+</script>

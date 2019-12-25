@@ -1,0 +1,77 @@
+﻿@model ChannakyaBase.Model.ViewModel.AChqHModel
+@using ChannakyaBase.BLL.Service
+@using HtmlHelpers.BeginCollectionItem
+@{
+
+    string Status = "";
+    string Color = "";
+    InformationService informationService = new InformationService();
+}
+<tr class="cheque-details-row-@Model.Rno">
+    @using (Html.BeginCollectionItem("AchqHDetailsList"))
+    {
+        if (Model.cstate == 2)
+        {
+            Status = "Active";
+            Color = "#5cb85c";
+        }
+        else if (Model.cstate == 4)
+        {
+            Status = "Pieces Blocked";
+            Color = "#ff3300";
+        }
+        else if (Model.cstate == 3)
+        {
+            Status = "Blocked";
+            Color = "#cc0000";
+        }
+        else if (Model.cstate == 5)
+        {
+            Status = "Deactive";
+            Color = "#cc0000";
+        }
+
+        @Html.HiddenFor(x => Model.Rno)
+        @Html.HiddenFor(x => Model.ChkNo, new { @class = "chequeNumber" })
+        @Html.HiddenFor(x => Model.AchqHId)
+
+        <td>
+            @Html.DisplayFor(model => Model.ChkNo)
+
+        </td>
+        <td>
+            <span class="btn-custome" style="background-color:@Color;color:white">@Status</span>
+        </td>
+        if (Model.ShowWith != "hide" && Model.cstate != 5)
+        {
+            if (Model.SelectCheque != null)
+            {
+                if (Model.SelectCheque.Where(x => x == Model.ChkNo).Count() != 0)
+                {
+                    Model.IsSelectet = true;
+                }
+            }
+            else
+            {
+                Model.IsSelectet = Model.IsSelectet;
+            }
+            <td>
+                @if (Model.ShowWith == "readOnly" || Model.cstate==3)
+                {
+                    @Html.CheckBoxFor(x => Model.IsSelectet, new { @class = "select-cheque-number hidden", Rno = Model.Rno })
+                    
+                }
+                else
+                {
+                    @Html.CheckBoxFor(x => Model.IsSelectet, new { @class = "select-cheque-number", Rno = Model.Rno })
+                }
+
+            </td>
+        }else
+        {
+            <td></td>
+        }
+
+    }
+</tr>
+

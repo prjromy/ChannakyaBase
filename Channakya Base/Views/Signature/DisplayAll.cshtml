@@ -1,0 +1,192 @@
+﻿
+@model ChannakyaBase.Model.ViewModel.ShareSignatureViewModel
+
+@{
+    Layout = Request.IsAjaxRequest() == true ? null : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box box-success signature-display">
+    <div class="box-header with-border">
+        <h3 class="box-title">Image View</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+
+    <div class="container">
+        <div class="col-md-12">
+            <div class="row">
+
+                <div class="col-md-4">
+                    @Html.RadioButton("Display", "1", true, new { @onclick = "loadPartial('/Signature/DisplayAccountSignaturePartial')" }) Account Signature
+                </div>
+
+                <div class="col-md-4">
+                    @Html.RadioButton("Display", "2", new { @onclick = "loadPartial('/Signature/DisplayCustomerPhoto')" })Member Photo
+                </div>
+                <div class="col-md-4">
+                    @Html.RadioButton("Display", "3", new { @onclick = "loadPartial('/Signature/DisplayShareSignaturePartial')" })Share Signature
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /.box-header -->
+
+    <div class="display-account-signature">
+
+
+        @{Html.RenderAction("DisplayAccountSignaturePartial", "Signature");}
+
+
+    </div>
+</div>
+
+
+<div class="box" style="margin-top:-20px;">
+    <div class="img-container">
+
+    </div>
+</div>
+<div class="box" style="margin-top:-20px;">
+    <div class="view-history-image">
+
+    </div>
+</div>
+
+<script>
+    function loadPartial(url) {
+        $('.img-container').hide();
+        $('.view-history-image').hide();
+        debugger;
+        var container = $(".signature-display").find('.display-account-signature');
+
+        $.get(url, function (data) {
+            debugger;
+            $(container).html(data);
+        });
+
+
+
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+    function LoadImage() {
+        debugger;
+        var flag = $('.signature-display').find('#Display:checked').val();
+        if (flag == 1) {
+            var id = $('.display-account-signature').find('.account-signature-create').find('.account-id').val();
+        }
+
+        else if (flag == 3) {
+            var id = $('.display-account-signature').find('.share-signature-create').find('.employeeId').val();
+        }
+        else {
+            var id = $('.display-account-signature').find('.customer-photo-create').find('.multiselectCustomer').find('option:selected').val();
+        }
+
+
+        $.ajax({
+            url: "/Signature/GetAll",
+            type: "GET",
+
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            data: { flag: flag, id: id },
+            failure: function (response) {
+                console.log(response);
+            },
+            error: function (response) {
+                console.log(response);
+            },
+            success: function (data) {
+                debugger;
+                $('.img-container').html(data);
+              
+                $('.img-container').fadeIn(3000);
+                //$('.view-history-image').show();
+
+            }
+
+
+        })
+    }
+
+</script>
+
+
+
+
+
+
+<script>
+
+
+    function clickbutton() {
+        debugger;
+
+        var flag = $('.signature-display').find('#Display:checked').val();
+
+        if (flag == 1) {
+            var id = $('.display-account-signature').find('.account-signature-create').find('.account-id').val();
+           
+           
+        }
+
+        else if (flag == 3) {
+            var id = $('.display-account-signature').find('.share-signature-create').find('.employeeId').val();
+           
+
+        }
+        else {
+            var id = $('.display-account-signature').find('.customer-photo-create').find('.multiselectCustomer').find('option:selected').val();
+         
+
+        }
+
+        $.ajax({
+            url: "/Signature/RetrieveHistoryImage",
+            type: "GET",
+
+            contentType: "application/json; charset=utf-8",
+            dataType: "html",
+            data: { flag: flag, id: id },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            },
+            success: function (data) {
+                debugger;
+               
+                $('.view-history-image').html(data);
+                //$('.img-container').show();
+                //$('.view-history-image').show();
+                $('.view-history-image').fadeIn(3000);
+
+            }
+        })
+    }
+    //});
+
+</script>
+
+<style>
+    .box-title {
+        color: #00a65a;
+        text-align: center;
+    }
+
+   
+</style>

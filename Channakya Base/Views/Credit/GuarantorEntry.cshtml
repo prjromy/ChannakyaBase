@@ -1,0 +1,174 @@
+﻿@model  ChannakyaBase.Model.ViewModel.GuarantorModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+
+@{
+    CommonService commonServices = new CommonService();
+    var modelFrom = ViewBag.ModelFrom;
+
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">Loan Guarantor</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="box box-body">
+        @using (Html.BeginForm("InsertUpdateGuarantor", "Credit", FormMethod.Post, new { id = "Gauarantor-Entry-form" }))
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal">                      
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 main-guarantor-account">
+
+                                @Html.Label("Account", new { @class = "control-label  col-md-1" })
+                                <div class="col-md-11">
+                                    @Html.AccountNumberSearch(x => x.LIaccno, EAccountDetailsShow.LoanPayment.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Guarantor-Entry-Details">
+                            @Html.Partial("_GuarantorEntry", new ViewDataDictionary(ViewData) { { "id", modelFrom } })
+                        </div>
+                    
+                       <div class="col-md-12 guarantor-Entry-add-display">
+                           <div class="guarantor-table-div">
+                               <table class="table table-bordered table-striped table-hover" id="guarantor-Entry-table-div">
+                                   <thead>
+                                       <tr>
+
+                                           <th>Account Number</th>
+                                           <th>Percent Or Amount</th>
+                                           
+                                           <th>Action</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                                       
+                                   </tbody>
+                               </table>
+                           </div>
+                       </div>
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <div class="col-md-offset-10 col-md-12">
+                                    <input type="button" value="Save" class="btn btn-default btn-Loan-payment-save" data-eventid="22" isMultiVerifier="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                                                }
+    </div>
+
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script>
+    $(function () {
+
+
+        $.validator.unobtrusive.parse('#Gauarantor-Entry-form');
+        $(".btn-Loan-payment-save").on("click", function (e) {
+            debugger;
+            var GIaccno = $('.Guarantor-Entry-Details').find('.guaranty-account').find('.account-id').val();
+
+            var BlockedAmt = $("#BlockedAmt").val();
+            var tr = $('table#guarantor-Entry-table-div').find("tr").find(".GuarantorIaccno");
+            var total = 0;
+            $.each(tr, function (index, item) {
+                debugger;
+                //if ($(item).val() == GIaccno) {
+                //    total = total + 1;
+                //}
+                total = total + 1;
+            })
+
+
+            var LoanAccountnumber = $('#LIaccno').val();
+            if (LoanAccountnumber == "") {
+                InfoAlert("Please Select Loan Account Number ", 3000);
+                return false;
+            }
+
+       
+            var strictVerifiable = $('.Loan-Payment-create').find('#strictlyverifiable').prop('checked');
+            eventid = $(this).data('eventid');
+            var ismultiVerify = $(this).attr('isMultiVerifier');
+            
+            
+
+            $('#Gauarantor-Entry-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#Gauarantor-Entry-form'));
+            if ($("#Gauarantor-Entry-form").valid()) {
+                if (total < 1)
+                {
+                    ErrorAlert("Gaurantor needed", 5000);
+                    return false;
+                    if (GIaccno == "") {
+                        ErrorAlert("Gaurantor Account Number needed", 5000);
+                        return false;
+                    }
+                    if (BlockedAmt == "") {
+                        ErrorAlert("Amount or Percent needed in Gaurantor", 5000);
+                        return false;
+                    }
+                  
+                }
+                GauarantorEntry();
+            }
+        })
+
+    });
+    
+    function GauarantorEntry() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#Gauarantor-Entry-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Credit/GuarantorEntry',
+
+                            success: function (result) {
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+

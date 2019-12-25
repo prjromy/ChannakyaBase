@@ -1,0 +1,278 @@
+﻿@model ChannakyaAccounting.Models.Models.ProductDetail
+@using ChannakyaAccounting.Models.Helper
+@{
+    Layout = null;
+    var test = ViewBag.Alias;
+    //var sType = Model.SType;
+    var title = "Create Product";
+    if (Model.SDID != 0)
+    {
+        title = "Edit Product";
+    }
+    ChannakyaAccounting.Service.DepositProduct.DepositProductService depService = new ChannakyaAccounting.Service.DepositProduct.DepositProductService();
+    var schemeList = depService.GetAllScheme();
+}
+<div class="box box-warning FinAcc-create">
+    <div class="box-header with-border">
+        <h3 class="box-title">@title </h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm("Create", "Product", FormMethod.Post, new { @id = "createProduct" }))
+    {
+        <div class="box-body">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @if (Model.PID == 0)
+                {
+                    <div class="scheme-container">
+                        <div class="form-group col-md-12">
+                            @Html.LabelFor(x => x.SDID, htmlAttributes: new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.DropDownListFor(model => model.SDID, schemeList, "Select Scheme", new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.SDID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.PName, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.PName, new { htmlAttributes = new { @class = "form-control",@required="required" } })
+                        @Html.ValidationMessageFor(model => model.PName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Apfix, new { @class = "col-md-3 control-label col-form-label" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(m => m.Apfix, new { @class = "form-control", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.Apfix, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(m => m.Alias, new { @class = "col-md-3 control-label col-form-label" })
+                    <div class="col-md-9">
+                        @Html.TextBox("Alias", (string)ViewBag.Alias, new { @class = "form-control", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.Alias, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+               
+                <div class="form-group">
+                    <div class="product-detail-container">
+                     @if (Model.SDID != 0)
+                     {
+                           @Html.EditorFor(x => x)
+                     }
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="col-md-offset-11">
+                <input type="button" id="backbtn" class="btn btn-link" onclick="loadPrevContent()" style="display:none;" value="Back" />
+                <input type="button" id="nextbtn" class="btn btn-link" onclick="loadnextContent()" style="display:none;" value="Next" />
+                <input type="button" id="btnSubmit" value="Create" class="btn btn-default" />
+            </div>
+        </div><!-- box-footer -->
+    }
+</div><!-- /.box -->
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var SDID = $("select#SDID option:selected").val();
+        var container = $('.FinAcc-create').find('.product-detail-container')
+        if(@Model.SDID==0)
+        {
+            $.ajax({
+                url: '/Product/AddDepositProduct/',
+                data: { schemeId: SDID },
+                dataType: "html",
+                success: function(data) {
+                    //$(container).show();
+                    $(container).html(data);
+                }
+            });
+        }
+        $('select#SDID').change(function () {
+            debugger
+            var SDID = $("select#SDID option:selected").val();
+            var container = $('.FinAcc-create').find('.product-detail-container')
+            $.ajax({
+                url: '/Product/AddDepositProduct/',
+                data: { schemeId: SDID },
+                dataType: "html",
+                success: function(data) {
+                    //$(container).show();
+                    $(container).html("");
+                    $(container).html(data);
+                }
+            });
+        });
+        $('#btnSubmit').on('click',function () {
+            debugger
+            var form = $("#createProduct");
+            form.validate();
+            if (form.valid() == false) {
+                InfoAlert("The Required Feild is Empty",3000);
+                return false;
+            }
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($("#createProduct")[0]);
+            var nodeId = $(this).closest('form#createProduct').find('.parent-FinAcc').find('div#Pid').find('input.internal-value').val();
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $.ajax({
+                    url: '@Url.Action("Create", "Product")',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+                        $('.panel-list').trigger('nodeClick', [{ nodeId: nodeId }]);
+                        //$.fn.updateTreeview('Product', '_UpdateFinAccTree', nodeId, -1)
+                        if (@Model.PID == 0)
+                        {
+                            SuccessAlert("Product Added Succesfully.",1500);
+                        }
+                        else
+                        {
+                            SuccessAlert("Product Edited Succesfully.",1500);
+                        }
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+            return false;
+        });
+        //$("#createFinAcc").submit(function () {
+        //    debugger;
+        //});
+
+        //$('.FinAcc-create').on('filterTree', '.section-treeview', function (e, data) {
+        //    debugger;
+        //    e.stopPropagation();
+
+        //    if (data.fromPopUp == 'false') {
+
+        //        $dlg_dpicker.load("/FinAcc/_GetFinAccTreePopup", { param: data.param })
+        //    }
+        //    else {
+        //        $dlg_dpicker.find('.treeview-area').load("/FinAcc/_GetFinAccTree", { param: data.param })
+        //    }
+        //});
+    });
+    $.fn.GetLayoutFinAcc = function () {
+        debugger;
+
+        $.ajax({
+            type: "POST",
+            url: "/FinAcc/GetLayoutFinAcc/",
+            dataType: "html",
+            success: function (data) {
+                $('aside.main-sidebar').html(data);
+            }
+        });
+    };
+</script>
+<style>
+    div#loadimage {
+        height: 49px;
+        width: 60px;
+        border: 1px solid;
+        margin: -17px 0px -8px 43px;
+    }
+
+    i.glyphicon.glyphicon-upload.uploadicon.upldimge {
+        margin-left: 1px;
+        top: 10px;
+        padding: 4px -1px -3px -4px;
+    }
+
+    input#backbtn {
+        position: absolute;
+        margin-left: -649px;
+    }
+</style>
+<script type="text/javascript">
+    function loadnextContent() {
+        $('.dimension-group').hide();
+        debugger;
+        var F2type = $("select#F2Type option:selected").text();
+        if (F2type == "Bank Account") {
+            $('.bank-info-container').show();
+        }
+        if (F2type == "Subsi Account") {
+            $('.subsititle-details-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.product-detail-container').show();
+        }
+        if (F2type == "Deposit Product") {
+            $('.product-detail-container').show();
+        }
+        $('#backbtn').show();
+        $('#btnSubmit').show();
+        $('#nextbtn').hide();
+
+    }
+    function loadPrevContent() {
+        $('#backbtn').hide();
+        $('.dimension-group').show();
+        $('.bank-info-container').hide();
+        $('.subsititle-details-container').hide();
+        $('.product-detail-container').hide();
+        $('.product-detail-container').hide();
+        $('#nextbtn').show();
+        $('#btnSubmit').hide();
+    }
+
+</script>
+@*@if (Model.FinSys2 != null)
+    {
+        if (Model.FinSys2.FinSys1.IsGroup == false)
+        {
+            <script type="text/javascript">
+                $('.dimension-group').show();
+
+            </script>
+            if (Model.BankInfoes.Count() != 0 || Model.SubsiTitles.Count() > 0)
+            {
+                var nodeId = Model.Fid;
+                <script type="text/javascript">
+                    $('.dimension-group').show();
+                    $("#nextbtn").show();
+
+                </script>
+            }
+
+        }
+    }*@
+<style>
+    .dimension-defination-controller {
+        left: 30%;
+        position: relative;
+    }
+
+    .add-dialog-finacc {
+        left: 296px;
+        top: -67px;
+    }
+</style>

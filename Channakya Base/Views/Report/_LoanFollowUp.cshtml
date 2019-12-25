@@ -1,0 +1,103 @@
+﻿@model IEnumerable<ChannakyaBase.Model.ViewModel.LoanFollowUpModel>
+@using ChannakyaBase.BLL.Service
+<div class="box-body table-responsive no-padding">
+    <table class="table table-bordered table-hover">
+        <tr>
+
+            <th>
+                ProductName
+            </th>
+
+            <th>
+                AccountNumber
+            </th>
+
+            <th>
+               AccountName
+            </th>
+            <th>
+                Out Standing Balance
+            </th>
+            <th>
+                Mature Principal
+            </th>
+            <th>
+                Interest Accured
+            </th>
+            <th>
+                Penalty
+            </th>
+            <th>
+                Other
+            </th>
+            <th>
+               Other Interest
+            </th>
+            <th>
+              Rate
+            </th>
+            <th>
+               No of Days
+            </th>
+            <th>
+               Future Interest
+            </th>
+            <th>
+                TotalDue
+            </th>
+            <th>
+                Contact
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountName)
+                </td>
+                <td style="text-align:right">
+                    @item.OutStandingBalance.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.MaturePrincipal.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.InterestAccured.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.Penalty.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.Other.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.OtherInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.Rate)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.NoDays)
+                </td>
+                <td style="text-align:right">
+                    @item.FutureInterest.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td style="text-align:right">
+                    @item.TotalDue.ToString("0,0.00", System.Globalization.CultureInfo.InvariantCulture)
+                </td>
+                <td>@ReportUtilityService.ContactDetails(item.IAccno)</td>
+            </tr>
+        }
+
+    </table>
+</div>

@@ -1,0 +1,252 @@
+﻿@model ChannakyaBase.DAL.DatabaseModel.ChargeDetail
+@using ChannakyaBase.BLL.Service
+
+@{
+    var check = Model;
+}
+
+@using (Ajax.BeginForm("_ChargeSetupCreate", "FinanceParameter", new AjaxOptions
+{
+    UpdateTargetId = "ChargeSetup-list",
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "Post",
+    OnSuccess = "ChargeSetupcreateSuccess"
+    //OnFailure = "errMessage"
+
+}, new { id = "ChargeSetupSubmitForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.ChgID)
+    <div class="box box-info">
+        <div class="box-header with-border">
+
+            <div class="row">
+                <div class="col-md-12">
+
+
+                    <div class="form-horizontal">
+                        <fieldset>
+                            <legend>Charge details</legend>
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.HiddenFor(model => model.ChgID);
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ChgName, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.ChgName, new { htmlAttributes = new { @class = "form-control focusdiv" } })
+                                    @Html.ValidationMessageFor(model => model.ChgName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Triggertype, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.Triggertype, FinanceParameterUtilityService.TriggerType(), "-Select-", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Triggertype, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Modules, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.Modules, FinanceParameterUtilityService.Modules(), "-Select Any-", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Modules, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Event", htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.ModEveID, FinanceParameterUtilityService.ModulesWiseEvents(Model.Modules), htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ModEveID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div id="product-checkbox" class="form-group col-md-10 col-md-push-2 table-responsive product-div" style="max-height:200px;">
+
+                                </div>
+                            </div>
+                          
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.FID, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.FID, FinanceParameterUtilityService.ChargeLedger(), htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.FID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ChrType, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.ChrType, FinanceParameterUtilityService.ChargeMode(), "-Select Any-", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ChrType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @{ Html.EnableClientValidation(false); }
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Ratio, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.Ratio, new { htmlAttributes = new { @class = "form-control Ratio" } })
+                                    @Html.ValidationMessageFor(model => model.Ratio, "", new { @class = "text-danger" })
+                                </div>
+                                @Html.LabelFor(model => model.CAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4">
+                                    @Html.EditorFor(model => model.CAmount, new { htmlAttributes = new { @class = "form-control CAmount" } })
+                                    @Html.ValidationMessageFor(model => model.CAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @{ Html.EnableClientValidation(true); }
+
+                            @*<div class="form-group">
+                                    @Html.LabelFor(model => model.ChrTempID, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.ChrTempID, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.ChrTempID, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Chngble, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.Chngble)
+                                        @Html.ValidationMessageFor(model => model.Chngble, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            @*<div class="form-group">
+                                    @Html.LabelFor(model => model.ChrDirect, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        <div class="checkbox">
+                                            @Html.EditorFor(model => model.ChrDirect)
+                                            @Html.ValidationMessageFor(model => model.ChrDirect, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.Status)
+                                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <span style="color:#3636e4;font-family:'Century Gothic';padding-left:20px">Note: To define New Charge Ledger Please go to LedgerSetup->Income->Charge Setup.</span>
+
+                        </fieldset>
+
+                        @if (Model.ChgID == 0)
+                        {
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="button" value="Save" id="btn-save-chargeSetup" class="btn btn-default btn-save " />
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="button" value="Save" id="btn-save-chargeSetup" class="btn btn-default btn-save " />
+                                    <input type="button" value="Cancel" id="btn-Cancel-chargeSetup" class="btn btn-default btn-Cancel " />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $("#Modules").change(function () {
+        debugger;
+        var id = $("#Modules option:selected").val();
+        var id1 = $(".ChargeSetupCreate").find("select#Triggertype").val();
+        if (id1 != "2" || id1 == "") {
+            $.ajax({
+                url: "/FinanceParameter/GetCascadedEvents",
+                data: { id: id },
+                success: function success(data) {
+                    $("#ModEveID").html("----loading-----");
+                    var items;
+
+
+                    $.each(data, function (i, state) {
+                        items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+
+                    });
+                    $('#ModEveID').html(items);
+                }
+            })
+
+        }
+        else if (id1 == 1) {
+            $(".ChargeSetupCreate").find("#ModEveID").html("");
+
+        }
+
+    });
+
+    $("#ModEveID").change(function () {
+        debugger;
+        var id = $("#ModEveID option:selected").val();
+        if (id == 4) {
+            $("#ChrType").html("<option value='1'>Fixed</option>");
+
+            $("#ChrType").trigger("change");
+        }
+
+    });
+
+    $("#Modules").change(function () {
+        debugger
+        var id = $("#Modules option:selected").val();
+        if (id != 3) {
+            $.ajax({
+                url: "/FinanceParameter/_ProductListByModules",
+                data: { id: id },
+                success: function success(data) {
+                    $('#product-checkbox').html(data);
+                }
+            })
+        }
+        else {
+            $('#product-checkbox').html("");
+        }
+
+    });
+
+    $("#Triggertype").change(function () {
+        debugger;
+        var id = $("#Triggertype option:selected").val();
+        var id1 = $(".ChargeSetupCreate").find("select#Modules").val();
+
+        if (id == 2) {
+            $(".ChargeSetupCreate").find("#ModEveID").attr("readonly", true);
+            $(".ChargeSetupCreate").find("#ModEveID").html("");
+        }
+        else if (id == 1) {
+            $(".ChargeSetupCreate").find("#ModEveID").prop("disabled",false);
+            $.ajax({
+                url: "/FinanceParameter/GetCascadedEvents",
+                data: { id: id1 },
+                success: function success(data) {
+                    $("#ModEveID").html("----loading-----");
+                    var items;
+                    $.each(data, function (i, state) {
+                        items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+
+                    });
+                    $('#ModEveID').html(items);
+                }
+            })
+        }
+    });
+</script>

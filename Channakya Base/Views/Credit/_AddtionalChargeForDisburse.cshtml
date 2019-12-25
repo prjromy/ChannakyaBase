@@ -1,0 +1,18 @@
+﻿@model ChannakyaBase.Model.ViewModel.DisburseChargeDepositViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+<fieldset>
+    <legend>Additional Charges</legend>
+
+   <div class="loan-charge-details-list" >
+     @{Html.RenderPartial("_AddtionalChargeList", Model);}
+
+
+   </div>
+    <div class="btn-groups modal-footer" style="padding:5px">
+
+        <button type="button" value="Add More Charges " class="btn btn-success btn-sm add-more-charge-type">Add More <i class="fa addtional-charge-plus  fa-plus" aria-hidden="true"></i></button>
+
+    </div>
+</fieldset>

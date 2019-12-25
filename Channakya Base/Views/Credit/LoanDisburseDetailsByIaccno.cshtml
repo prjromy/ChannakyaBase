@@ -1,0 +1,248 @@
+﻿@model ChannakyaBase.Model.ViewModel.LoanDisbursement
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    CommonService cmService = new CommonService();
+    var mod = Model;
+    
+
+}
+<fieldset>
+    <legend>Disburse Details</legend>
+    @Html.HiddenFor(model => model.IsChargeAvailable)
+    @Html.HiddenFor(model => model.Product.ProductId)
+    @Html.HiddenFor(model => model.ApprovedAmount)
+    <div class="form-group disburse-type">
+        <div class="form-group col-md-5">
+            @Html.Label("Deposit", new { @class = "control-label  col-md-3" })
+            <div class="col-md-1">
+                @Html.CheckBoxFor(x => x.Deposit, new { @class = "deposit-type" })
+            </div>
+         @if (cmService.isDisburseWithCashandBank())
+            {
+            @Html.Label("Bank", new { @class = "control-label  col-md-3" })
+            <div class="col-md-1">
+                @Html.CheckBoxFor(x => x.Bank, new { @class = "bank-type" })
+            </div>
+           
+                @Html.Label("Cash", new { @class = "control-label  col-md-3" })
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(x => x.Cash, new { @class = "cash-type" })
+                </div>
+            }
+        </div>
+     
+    </div>
+
+    @if (Model.IsOtherLoan == false)
+    {
+        <div class="form-group">
+            @*<div class="col-md-6">
+
+            </div>*@
+            <div class="col-md-12">
+
+                <div class="col-md-4">
+                    @Html.Label("DisbursableAmount: ", new { @class = "control-label" })
+
+                    @Html.EditorFor(model => model.DisbursableAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "pointer-events:none" } })
+                </div>
+                <div class="col-md-4">
+                    @Html.Label("Balance: ", new { @class = "control-label" })
+
+                    @Html.EditorFor(model => model.RemainingAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "pointer-events:none" } })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.Label("Disburse Amount :", htmlAttributes: new { @class = "control-label" })
+
+                    @Html.EditorFor(model => model.RegularLoan, new { htmlAttributes = new { @class = "form-control total-debit-amount" , @type = "number" } })
+                    @Html.ValidationMessageFor(model => model.RegularLoan, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    }
+    @if (Model.IsOtherLoan == true)
+    {
+        <div class="form-group">
+            <div class="col-md-6">
+
+            </div>
+            @Html.LabelFor(model => model.OtherLoan, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.OtherLoan, new { htmlAttributes = new { @class = "form-control total-debit-amount" } })
+                @Html.ValidationMessageFor(model => model.OtherLoan, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+    @Html.HiddenFor(x => x.HasCustomisedSchedule)
+</fieldset>
+
+
+
+<div class="cheque-details">
+</div>
+
+<div class="cash-details">
+</div>
+
+<div class="share-details">
+</div>
+
+
+@if (Model.IsChargeAvailable)
+{
+    if (Model.IsOtherLoan != true)
+    {
+        <fieldset>
+            <div class="chargeDeductionType  table-responsive table-hover table-striped">
+                @if (Model.IsRevolving == true)
+                {
+                    if (Model.PrevChargeDeductMode == 1)
+                    {
+                        @Html.Label("Charge On Sanction Amount", new { @class = "control-label  col-md-3" })
+                        <div class="col-md-1">
+                            @Html.CheckBoxFor(x => x.ChargeDeductOnSanction, new { @class = "charge-deduct-method-sanction", @readonly = "readonly", @disabled = true })
+                        </div>
+                    }
+                    @*else if (Model.PrevChargeDeductMode == 0)
+                    {
+                        @Html.Label("Charge On Disburse Amount", new { @class = "control-label  col-md-3" })
+                        <div class="col-md-1">
+                            @{
+                                Model.ChargeDeductOnDisburse = true;
+                            }
+
+                            @Html.CheckBoxFor(x => x.ChargeDeductOnDisburse, new { @class = "charge-deduct-method-disburse", @readonly = "readonly", @disabled = true })
+                        </div>
+                                }*@
+                                else if (Model.PrevChargeDeductMode == 2)
+                                {
+                                    @Html.Label("Charge On Sanction Amount", new { @class = "control-label  col-md-3" })
+                                    <div class="col-md-1">
+                                        @Html.CheckBoxFor(x => x.ChargeDeductOnSanction, new { @class = "charge-deduct-method-sanction", @readonly = "readonly" })
+                                    </div>
+                                    //@Html.Label("Charge On Disburse Amount", new { @class = "control-label  col-md-3" })
+                                    //<div class="col-md-1">
+                                       // @Html.CheckBoxFor(x => x.ChargeDeductOnDisburse, new { @class = "charge-deduct-method-disburse" })
+                                    //</div>
+                                    }
+                                }
+                                else if (Model.IsRevolving == false)
+                                {
+                                    if (Model.PrevChargeDeductMode == 1)
+                                    {
+                                        @Html.Label("Charge On Sanction Amount", new { @class = "control-label  col-md-3" })
+                                        <div class="col-md-1">
+                                            @Html.CheckBoxFor(x => x.ChargeDeductOnSanction, new { @class = "charge-deduct-method-sanction", @readonly = "readonly", @disabled = true })
+                                        </div>
+                                    }
+                                    else if (Model.PrevChargeDeductMode == 0)
+                                    {
+                                        @Html.Label("Charge On Disburse Amount", new { @class = "control-label  col-md-3", })
+                                        <div class="col-md-1">
+                                            @*@{
+                                                Model.ChargeDeductOnDisburse = true;
+                                            }*@
+                                            @Html.CheckBoxFor(x => x.ChargeDeductOnDisburse, new { @class = "charge-deduct-method-disburse", @readonly = "readonly"@* @disabled = true*@ })
+                                        </div>
+                                                }
+                                                else if (Model.PrevChargeDeductMode == 2)
+                                                {
+                                                    @Html.Label("Charge On Disburse Amount", new { @class = "control-label  col-md-3" })
+                                                    <div class="col-md-1">
+                                                        @Html.CheckBoxFor(x => x.ChargeDeductOnDisburse, new { @class = "charge-deduct-method-disburse" })
+                                                    </div>
+                                                    @Html.Label("Charge On Sanction Amount", new { @class = "control-label  col-md-3" })
+                                                    <div class="col-md-1">
+                                                        @Html.CheckBoxFor(x => x.ChargeDeductOnSanction, new { @class = "charge-deduct-method-sanction" })
+                                                    </div>
+                                                    }
+                                                }
+            </div>
+        </fieldset>
+                                                    }
+
+
+
+                                                }
+<div class="chargeDetails  table-responsive table-hover table-striped">
+
+</div>
+<div class="btn-groups modal-footer" style="padding:5px">
+
+    <button type="button" value="Addtional Charges " class="btn btn-success btn-sm add-addtional-charge-type">Addtional Charges <i class="fa addtional-charge-plus  fa-plus" aria-hidden="true"></i></button>
+
+</div>
+<div class="additional-charge-details">
+
+</div>
+
+<div class="nominee-accounts">
+</div>
+
+@*@if (Model.HasCustomisedSchedule == true)
+    {
+        Html.RenderAction("_CustomisedLoanSchedule", Model.AccountId);
+                        }*@
+@Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-1" })
+<div class="col-sm-11">
+    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        var isotherLoan = '@Model.IsOtherLoan'
+        if (isotherLoan == "True") {
+            $('.add-addtional-charge-type').hide();
+        }
+    });
+
+
+    //$(document).ready(function () {
+    //    debugger;
+    $('.disburse-loan-index').on(':checked', '#ChargeDeductOnDisburse', function (control) {
+        debugger;
+        //var checked = $(this).prop("checked");
+        //if (checked == true) {
+        //    $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", false);
+        //}
+        //else {
+        //    $('.disburse-loan-index').find('.charge-deduct-method-disburse').prop("checked", false);
+        //    $('.disburse-loan-index').find('.charge-deduct-method-sanction').prop("checked", true);
+        //}
+        var ischargeable = $(".loan-disburse-details").find("#IsChargeAvailable").val();
+        var productId = $(".loan-disburse-details").find("#Product_ProductId").val();
+        var disburseAmount = $(".loan-disburse-details").find("#RegularLoan").val();
+        var checkSanction = $(".loan-disburse-details").find("#ChargeDeductOnSanction").prop('checked');
+        var RegularLoan = $(".loan-disburse-details").find("#RegularLoan").val();
+        // var id = $(".disburse-loan-index").find(".account-number-div").find(".account-id").val();
+        // if (checked == true) {
+        //$(".disburse-loan-index").find(".bank-type").prop("checked", false)
+        //$(".disburse-loan-index").find(".bank-type").trigger('change');
+        //$(".disburse-loan-index").find(".deposit-type").prop("checked", false)
+        //$(".disburse-loan-index").find(".deposit-type").trigger('change');
+        $.ajax({
+            type: 'get',
+            url: '/FinanceParameter/_ChargeAutoTriggered',
+            data: { productId: productId, modevent: 20, AmountCharge: disburseAmount, checkSanction: checkSanction, RegularLoanCharge: RegularLoan },
+            datatype: "html",
+            success: function (result) {
+                debugger;
+                $(".disburse-loan-index").find(".chargeDetails").html("");
+                $(".disburse-loan-index").find(".chargeDetails").html(result);
+                //$(".disburse-loan-index").find(".cash-details").html(data);
+            }
+        })
+    })
+
+
+
+
+    //})
+</script>
+  

@@ -1,0 +1,83 @@
+﻿@model  ChannakyaBase.DAL.DatabaseModel.CustTypeCertificate
+@using HtmlHelpers.BeginCollectionItem
+
+@{
+    var yh = @Model;
+}
+
+<tr>
+    @using (Html.BeginCollectionItem("CustCertList"))
+    {
+        @*@Html.AntiForgeryToken()*@
+        @Html.HiddenFor(model => model.CCertID)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <td>
+            @Model.CertificateDef.CCCert
+            @Html.HiddenFor(model => model.CCCertID)
+           
+        </td>
+
+        <td>
+            @Html.CheckBoxFor(model => model.isSubmitted, new { @class = "checkboxCrt" })
+        </td>
+        //if (Model.isSubmitted == true)
+        //{
+        @*if (Model.CCState == 2)
+        {
+                <td>*@
+                    @*<input type="checkbox" value="model.isSubmitted" checked ="checked" class="checkboxCert"/>*@
+                  
+
+                @*</td>
+        }
+        else if (Model.CCState == 3)
+        {
+
+                <td>*@
+                    @*<input type="checkbox" value="model.isSubmitted" checked ="checked" class="checkboxCert"/>*@
+                    @*@Html.CheckBoxFor(model => model.isSubmitted, new { @class = "checkboxCert" })
+
+                </td>*@
+        @*}*@
+
+        @*else
+        {
+                <td>*@
+                    @*<input type="checkbox" value="model.isSubmitted" checked ="checked" class="checkboxCert"/>*@
+                    @*@Html.CheckBoxFor(model => model.isSubmitted, new { @class = "checkboxCert" })*@
+                @*</td>
+        }*@
+        @*}
+        else
+        {
+            <td>
+                @*<input type="checkbox" value="model.isSubmitted" checked ="checked" class="checkboxCert"/>*@
+                @*@Html.CheckBoxFor(model => model.isSubmitted, new { @class = "checkboxCert" })*@
+            @*</td>*@
+
+        @*}*@
+
+    if (Model.CCState == 1)
+    {
+            <td>
+                <span class="label label-success label-check">Optional</span>
+            </td>
+        }
+        else if (Model.CCState == 2)
+        {
+            <td>
+            <span class="label label-danger label-check">Compulsory</span>
+                </td>
+        }
+        else
+        {
+            <td>
+                <span class="label label-danger label-check">ID</span>
+            </td>
+        }
+    }
+</tr>
+<script>
+
+
+</script>

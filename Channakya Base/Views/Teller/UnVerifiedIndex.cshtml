@@ -1,0 +1,100 @@
+﻿@model  ChannakyaBase.Model.ViewModel.ASTrnViewModel
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@using ChannakyaBase.BLL.CustomHelper
+
+@{
+    Layout = null;
+}
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">UnVerified Transaction(For LoanPayment,Withdraw and Deposit)</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-2">Account Number</label>
+                        @*<div class="col-md-4 unverified-account-section">
+
+                                @Html.TextBoxFor(x => x.accountnumber, new { @class = "form-control" })
+
+                            </div>*@
+                        <div class="col-md-4 unverified-account-section">
+                            @*@Html.Label("Account Number", htmlAttributes: new { @class = "control-label col-md-3" })*@
+                            @Html.AccountNumberSearch(x => x.accountnumber, EAccountDetailsShow.AccountClose.GetDescription(), EAccountFilter.AccountClose.GetDescription(), EAccountType.Normal.GetDescription())
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class='input-group-btn'>
+
+                                <button type='button' id='btn-unverified-search' class='btn btn-default'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @Html.Partial("_UnVerifiedIndex", Model.transactionList)
+
+    </div>
+</div>
+
+<div id="account-pop-up-div3" class='modal' role='dialog'>
+
+
+</div>
+
+
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountOpen.js"></script>
+
+<script>
+    $("#btn-unverified-search").on("click", function () {
+        debugger;
+        var accountNumber = $("#accountnumber").val();
+        $.ajax({
+            type: "GET",
+            url: "/Teller/_UnVerifiedIndex",
+            datatype: "HTML",
+            data: {
+                accountNumber: accountNumber,
+
+            },
+            success: function (result) {
+
+                $(".unverified-deposit-list").html(result);
+
+            }
+        })
+    });
+    function depositDetails(tno) {
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Teller/VerifyTransaction",
+            datatype: "HTML",
+            data: {
+                utno: tno,
+                routeTo: "unverify"
+
+
+            },
+            success: function (result) {
+
+                $('section.content').html(result);
+            }
+        })
+    }
+
+</script>

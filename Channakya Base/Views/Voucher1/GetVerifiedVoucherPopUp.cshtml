@@ -1,0 +1,44 @@
+﻿@model ChannakyaAccounting.Models.Models.Voucher1
+    @{ 
+        ChannakyaAccounting.Service.Voucher1.Voucher1Service voucherService = new ChannakyaAccounting.Service.Voucher1.Voucher1Service();
+    }
+
+<div class="modal-dialog modal-lg verifier-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+            <h4 class="modal-title">
+
+                <span>Verified Voucher Details</span>
+
+            </h4>
+        </div>
+
+        <div class="modal-body verify-voucher">
+            <div class="content-box">
+                <fieldset>
+                    <legend style="font-size:large;font-weight:bold">Task Related Details</legend>
+                    @{Html.RenderAction("DisplayVoucherVerifyDetails", "Voucher1", new { V1Id = Convert.ToInt32(Model.V1Id) });}
+                    
+                </fieldset>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="btn-groups modal-footer" style="padding:5px">
+            
+                <span>Verified By:@voucherService.GetUserName((int )Model.ApprovedBy)</span>
+            
+
+         
+
+
+        </div>
+    </div>
+</div>
+
+

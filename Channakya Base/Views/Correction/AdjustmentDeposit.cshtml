@@ -1,0 +1,361 @@
+﻿
+
+@model ChannakyaBase.Model.ViewModel.CorrectionViewModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+
+@{
+
+    ViewBag.Title = "AdjustmentLoan";
+    CorrectionService correctionService = new CorrectionService();
+}
+
+<div class="box box-success adjustment">
+    <div class="box-header with-border">
+        <h3 class="box-title">Adjustment Deposit</h3>
+        <div class="box-tools pull-right">
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div><!-- /.box-tools -->
+        </div>
+    </div>
+    @using (Html.BeginForm("SaveAdjustment", "Correction", FormMethod.Post, new { id = "adjustment-form" }))
+    {
+
+        <div class="box-body">
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+
+                                @Html.LabelFor(x => x.Iaccno, new { @class = "control-label  col-md-3" })
+                                <div class="col-md-5">
+                                    @Html.AccountNumberSearch(x => x.Iaccno,EAccountDetailsShow.Adjustment.GetDescription(), EAccountFilter.AdjustmentAccept.GetDescription(), EAccountType.Normal.GetDescription())
+
+
+                                    @Html.ValidationMessageFor(model => model.Iaccno, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                        <div class="bottom-adjustment">
+                            <div class="col-md-12">
+                              
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.AdjustmentType, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-5">
+                                            @Html.DropDownListFor(x => x.AdjustmentType,
+                    new SelectList(string.Empty,
+                         "Value", "Text"),
+                    "Please select a AdjustmentType", new { @class = "form-control", @id = "adjustment-type" })
+                                        </div>
+                                    </div>
+                               
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row" style="padding:15px">
+                                    <div class="form-group">
+
+                                        @Html.LabelFor(x => x.OldBalance, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-5">
+                                            @Html.TextBoxFor(x => x.OldBalance, new { @class = "form-control oldbalance", @id = "old-balance" })
+                                            <div class="radio">
+                                                <label><input type="radio" name="optradio" id="plus" value="+" checked="checked" onclick="calculatesumdiff()">+</label>
+
+                                                <label><input type="radio" name="optradio" id="minus" value="-" onclick="calculatesumdiff()">-</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.AdjustmentAmount, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-5">
+                                            @Html.TextBoxFor(x => x.AdjustmentAmount, new { @class = "form-control", @id = "AdjustmentAmount" })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        @Html.LabelFor(x => x.Amt, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-5">
+                                            @Html.TextBoxFor(x => x.Amt, new { @class = "form-control", @id = "Amt" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                           
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.note, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-5">
+                                        @Html.TextAreaFor(x => x.note, new { @class = "form-control col-md-7", @cols = 0, @rows = 3 })
+                                    </div>
+                                </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="form-group">
+                    <div class="col-md-offset-10 col-md-12">
+                        <input type="button" value="Save" class="btn btn-success button-save-adjustment" />
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    }
+</div>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+
+<style>
+    .amount {
+        box-sizing: border-box;
+        border: 2px solid #94949c;
+    }
+</style>
+<script>
+
+
+    $(function () {
+        $('#AdjustmentAmount').on('input', function () {
+
+           
+            var getOldbalance = $('#adjustment-form').find('#old-balance').val();
+            var getAdjustmentAmount = $('#adjustment-form').find('#AdjustmentAmount').val()
+            if ($('#AdjustmentAmount').val() == "") {
+                $('#Amt').val(0);
+            }
+            else {
+                var actions = "";
+                if (document.getElementById('plus').checked) {
+                    actions = 'plus';
+                }
+                if (document.getElementById('minus').checked) {
+                    actions = 'minus';
+                }
+                if (actions == "plus") {
+                    $('#Amt').val(parseInt(getOldbalance) + parseInt(getAdjustmentAmount))/*.prop('disabled',true)*/;
+
+                }
+                else {
+                    $('#Amt').val(parseInt(getOldbalance) - parseInt(getAdjustmentAmount))/*.prop('disabled', true)*/;
+                }
+            }
+
+
+        });
+
+    });
+
+
+
+
+
+
+    $(function () {
+        $('#AdjustmentAmount').keydown(function (e) {
+            var key = e.keyCode;
+            if (e.shiftKey || e.ctrlKey || e.altKey) {
+                e.preventDefault();
+            } else if (!((key == 8) || (key == 9)||(key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
+                e.preventDefault();
+
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function calculatesumdiff() {
+
+
+
+        var getOldbalance = $('#adjustment-form').find('#old-balance').val();
+        var getAdjustmentAmount = $('#adjustment-form').find('#AdjustmentAmount').val();
+
+        if ($('#AdjustmentAmount').val() == "") {
+            $('#Amt').val("0");
+        }
+        else {
+            var actions = "";
+            if (document.getElementById('plus').checked) {
+                actions = 'plus';
+            }
+            if (document.getElementById('minus').checked) {
+                actions = 'minus';
+            }
+            if (actions == "plus") {
+                $('#Amt').val(parseInt(getOldbalance) + parseInt(getAdjustmentAmount));
+
+
+            }
+            else {
+                $('#Amt').val(parseInt(getOldbalance) - parseInt(getAdjustmentAmount));
+            }
+        }
+    }
+
+
+
+        //$('#Amt').on('input', function () {
+
+        //    debugger;
+
+        //    var getOldbalance = $('#old-balance').val();
+        //    var getAdjustmentAmount = $('#Amt').val();
+        //    if (getAdjustmentAmount=="") {
+        //        $('#AdjustmentAmount').val(0);
+        //    }
+        //    else {
+        //        var actions = "";
+        //        if (document.getElementById('plus').checked) {
+        //            actions = 'plus';
+        //        }
+        //        if (document.getElementById('minus').checked) {
+        //            actions = 'minus';
+        //        }
+        //        if (actions == "plus") {
+        //            $('#AdjustmentAmount').val(parseInt(getOldbalance) + parseInt(getAdjustmentAmount));
+
+        //        }
+        //        else {
+        //            $('#AdjustmentAmount').val(parseInt(getOldbalance) - parseInt(getAdjustmentAmount));
+        //        }
+        //    }
+
+
+
+
+        //});
+
+
+
+
+        //function calculatesumdiff() {
+
+
+
+        //    var getOldbalance = $('#old-balance').val();
+        //    var getAdjustmentAmount = $('#Amt').val();
+        //    var actions = "";
+        //    if (document.getElementById('plus').checked) {
+        //        actions = 'plus';
+        //    }
+        //    if (document.getElementById('minus').checked) {
+        //        actions = 'minus';
+        //    }
+        //    if (actions == "plus") {
+        //        $('#AdjustmentAmount').val(parseInt(getOldbalance) + parseInt(getAdjustmentAmount));
+
+        //    }
+        //    else {
+        //        $('#AdjustmentAmount').val(parseInt(getOldbalance) - parseInt(getAdjustmentAmount));
+        //    }
+
+        //}
+
+
+
+        $(function () {
+            $.validator.unobtrusive.parse('#adjustment-form');
+            $(".button-save-adjustment").on("click", function (e) {
+                
+                var accountId = $('#Iaccno').val()
+                var adjustmentType = $('#AdjustmentType').val();
+
+                var adjustmentAmount = $('#AdjustmentAmount').val();
+
+
+                if (accountId === "" || adjustmentType === "" || adjustmentAmount === "") {
+                    ErrorAlert("Please fill out form !!", 5000);
+                }
+                else{
+                e.stopImmediatePropagation();
+                $('#adjustment-form').removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($('#adjustment-form'));
+                if ($("#adjustment-form").valid()) {
+
+                   Adjustment();
+
+                } else {
+                    return false;
+                }
+                }
+            })
+
+        });
+
+        function Adjustment() {
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+                $('#adjustment-form').ajaxSubmit({
+                    beforeSubmit: function () {
+
+           },
+                    success: function (result) {
+                        if (result.Success) {
+
+                            $.ajax({
+                                url: "/Correction/AdjustmentDeposit",
+                                type: "GET",
+                                success: function (data) {
+                                    $('section.content').html(data);
+                                }
+
+                            });
+
+                            SuccessAlert(result.Msg, 5000);
+                            document.getElementById('alert-success').scrollIntoView();
+
+                        } else {
+                            ErrorAlert(result.Msg, 5000);
+                            document.getElementById('alert-error').scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        ErrorAlert(data.responseText, 15000)
+                    }
+                });
+
+            });
+        }
+
+
+</script>

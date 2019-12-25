@@ -1,0 +1,382 @@
+﻿@model ChannakyaBase.Model.ViewModel.InternalChequeDepositModel
+@using ChannakyaBase.BLL.CustomHelper
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.Service
+@{
+    ViewBag.Title = "Internal Cheque Deposit";
+    
+}
+
+
+<div class="box box-success Depost-transaction-create">
+    <div class="box-header with-border">
+
+        <h3 class="box-title">Internal Cheque Deposit </h3>
+
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"> <i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div>
+    @using (Html.BeginForm("InsertInternalChequeDeposit", "Information", FormMethod.Post, new { id = "internal-cheque-deposit-form" }))
+    { 
+
+        <div class="box-body">
+
+            <div class="cheque-good-for-payment">
+                @* verifier section start *@
+                @{
+                    bool isverified = new CommonService().isStrictlyVerifiable();
+                }
+                <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
+                </div>
+                @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
+                @*end *@
+                @Html.Hidden("MessageEventID", 14)
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-12">
+                            <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label  col-md-2">Account No</label>
+                            <div class="col-md-10">
+                                @Html.AccountNumberSearch(x => x.FIaccno, EAccountDetailsShow.WithAccount.GetDescription(), EAccountFilter.AllowCheque.GetDescription(), EAccountType.Normal.GetDescription())
+                                @Html.ValidationMessageFor(model => model.FIaccno, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="customer-event-message">
+                            </div>
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <div class="col-md-offset-9 col-md-12">
+                                    <input type="button" value="Report as Cheque Bounce" class="btn btn-default btn-report-as-cheque-bounce" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="cheque-for-good-payment-div">
+                            <fieldset>
+                                <legend>Internal Cheque Deposit</legend>
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.SlpNo, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.SlpNo, new { @class = "form-control text-right" })
+                                        @Html.ValidationMessageFor(model => model.SlpNo, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="activeAmount">
+                                        @Html.LabelFor(model => model.Amt, new { @class = "control-label  col-md-2" })
+                                        <div class="col-md-4">
+                                            @Html.TextBoxFor(model => model.Amt, new { @class = "form-control text-right " })
+                                            @Html.ValidationMessageFor(model => model.Amt, "", new { @class = "text-danger" })
+                                        </div>
+
+                                    </div>
+                                </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.TIAccno, new { @class = "control-label  col-md-2" })
+
+                                        <div class="col-md-4">
+                                            @Html.AccountNumberSearch(x => x.TIAccno, EAccountDetailsShow.NoDisplay.GetDescription(), EAccountFilter.DepositAccept.GetDescription(), EAccountType.Normal.GetDescription())
+                                            @Html.ValidationMessageFor(x=>x.TIAccno, "", new { @class = "text-danger" })
+                                        </div>
+                                        @Html.LabelFor(x => x.AccountName, new { @class = "control-label  col-md-2" })
+
+                                        <div class="col-md-4 commonName">
+                                            @Html.TextBoxFor(model => model.AccountName, new { @class = "form-control ",disabled= "disabled" })
+                                            @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                               
+                                <div class="box-footer">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-10 col-md-12">
+                                            <input type="button" value="Save" class="btn btn-default btn-internal-cheque-payment-save" data-eventid="14" data-val="withdraw transaction" isMultiVerifier="false" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div id="cheque-bounce-report" class="hide">
+                            <fieldset>
+                                @Html.CheckBoxFor(x => x.IsBounce, new { @class = "hide" })
+                                <legend>Report as cheque Bounce</legend>
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.BounceChequeNumber, new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.BounceChequeNumber, new { @class = "form-control text-right" })
+                                        @Html.ValidationMessageFor(model => model.BounceChequeNumber, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Cheque Bounce Reason", new { @class = "control-label  col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.TextAreaFor(model => model.ChqBounceReason, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ChqBounceReason, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-10 col-md-12">
+                                            <input type="button" value="Report" class="btn btn-default btn-cheque-internal-cheque-payment-bounce-save" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+                    }
+</div>
+<script>
+
+    //$('#internal-cheque-deposit-form').keyup('#Amt', function () {
+    //    var IAccno = $('#FIaccno').val();
+    //    if (IAccno == null) {
+    //        InfoAlert("Please select Account Number", 3000)
+    //        return false;
+    //    }
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: '/Information/CheckFixedDepositInternalCheque',
+    //        data: {
+    //            IAccno: IAccno,
+                
+    //        },
+    //        success: function (result) {
+    //            debugger;
+    //            if (result.Success == false) {
+    //                ErrorAlert(result.Msg, 5000);
+    //                $('#SlpNo').val('');
+    //                $('#SlpNo').focus();
+    //                $('#BounceChequeNumber').val('');
+    //                $('#BounceChequeNumber').focus();
+    //                document.getElementById('alert-error').scrollIntoView();
+    //            }
+
+    //        },
+    //    });
+    //})
+
+
+    $('#internal-cheque-deposit-form').keyup('#Amt', function () {
+        debugger;
+        var IAccno = $('#FIaccno').val();
+        if (IAccno == "") {
+            ErrorAlert("Account number is required!!", 3000);
+            document.getElementById('alert-error').scrollIntoView();
+            return false
+        }
+
+        var accountID = $('.account-id').val();
+        var Amount = $('#Amt').val();
+        debugger;
+        $.ajax({
+            url: '/Teller/CheckFixedDepositInternalCheque',
+            type: 'GET',
+            data: { accountId: accountID, Amount: Amount },
+            success: function (result) {
+                if (result == false) {
+                    debugger;
+                    ErrorAlert('Amount Inserted is greater than contribution amount', 3000);
+                    document.getElementById('alert-error').scrollIntoView();
+
+                }
+                else {
+                    $('#Amt').focus();
+                }
+            }
+
+        });
+    });
+
+    $('#internal-cheque-deposit-form').change('#Amt', function () {
+        debugger;
+        var IAccno = $('#FIaccno').val();
+        if (IAccno == "") {
+            ErrorAlert("Account number is required!!", 5000);
+            document.getElementById('alert-error').scrollIntoView();
+            return false
+        }
+        var accountID = $('.account-id').val();
+        var Amount = $('#Amt').val();
+        debugger;
+        $.ajax({
+            url: '/Teller/CheckFixedDepositInternalCheque',
+            type: 'GET',
+            data: { accountId: accountID, Amount: Amount },
+            success: function (result) {
+                if (result == false) {
+                    debugger;
+                    ErrorAlert('Amount Inserted is greater than contribution amount');
+                    document.getElementById('alert-error').scrollIntoView();
+
+                }
+                else {
+                    $('#Amt').focus();
+                }
+            }
+
+        });
+    });
+    $('.btn-report-as-cheque-bounce').click(function (e) {
+        debugger;
+        if ($(this).val() == "Report as Cheque Bounce") {
+            $('#cheque-bounce-report').removeClass('hide');
+            $(this).val('Internal Cheque Deposit');
+            var chequeNo = $('#SlpNo').val();
+            if (chequeNo != "") {
+                $('#BounceChequeNumber').val(chequeNo)
+            }
+            $('input#IsBounce').prop('checked', true);
+            $('#cheque-for-good-payment-div :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            $('#cheque-for-good-payment-div').addClass('hide');
+
+        } else {
+            $('#cheque-bounce-report :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            $('#cheque-bounce-report').addClass('hide');
+            $('#cheque-for-good-payment-div').removeClass('hide');
+            $('input#IsBounce').prop('checked', false);
+            $(this).val('Report as Cheque Bounce');
+        }
+
+    });
+
+    $('#SlpNo').on('change', function () {
+        debugger;
+        var chequeNumber = $(this).val();
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        duplicateChqNumber(accountId, chequeNumber);
+    })
+    $('#BounceChequeNumber').on('change', function () {
+        debugger;
+        var chequeNumber = $(this).val();
+        var accountId = $(this).parents().find('.account-number-div').find(".account-id").val();
+        duplicateChqNumber(accountId, chequeNumber);
+    })
+    function duplicateChqNumber(accountId, chequeNumber) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        debugger;
+        $.ajax({
+            type: 'GET',
+            url: '/Information/CheckCheque',
+            data: {
+                chequeNumber: chequeNumber,
+                accId: accountId,
+            },
+            success: function (result) {
+                debugger;
+                if (result.Success == false) {
+                    ErrorAlert(result.Msg, 5000);
+                    $('#SlpNo').val('');
+                    $('#SlpNo').focus();
+                    $('#BounceChequeNumber').val('');
+                    $('#BounceChequeNumber').focus();
+                    document.getElementById('alert-error').scrollIntoView();
+                }
+
+            },
+        });
+    }
+    $(function () {
+
+        $.validator.unobtrusive.parse('#internal-cheque-deposit-form');
+        $(".btn-internal-cheque-payment-save").on("click", function (e) {
+            debugger;
+            var strictVerifiable = $('.cheque-good-for-payment').find('#strictlyverifiable').prop('checked');
+            var eventid = $(this).data('eventid');
+            var ismultiVerify = $(this).attr('isMultiVerifier');
+            $('#internal-cheque-deposit-form').removeData("validator").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse($('#internal-cheque-deposit-form'));
+            if ($("#internal-cheque-deposit-form").valid()) {
+                if (strictVerifiable == true) {
+                    taskVerifierList(eventid, ismultiVerify);
+                }
+                else {
+                    internalChequeDeposit();
+                }
+            }
+        })
+
+    });
+    $(".btn-cheque-internal-cheque-payment-bounce-save").on("click", function (e) {
+
+        debugger;
+        $('#internal-cheque-deposit-form').removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse($('#internal-cheque-deposit-form'));
+        if ($("#internal-cheque-deposit-form").valid()) {
+
+            internalChequeDeposit();
+        }
+
+
+    });
+    function internalChequeDeposit() {
+        debugger;
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Are you sure?"
+        }).done(function () {
+            $('#internal-cheque-deposit-form').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (result) {
+                    debugger;
+                    if (result.Success) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Information/InsertInternalChequeDeposit',
+
+                            success: function (result) {
+                                debugger;
+                                $('section.content').html(result);
+
+                            },
+                        });
+                        SuccessAlert(result.Msg, 5000);
+                        document.getElementById('alert-success').scrollIntoView();
+
+                    } else {
+                        if (result.ReturnId == 1) {
+                            $('#cheque-bounce-report').removeClass('hide');
+                            $(this).val('Cheque for Good Payment');
+                            var chequeNo = $('#ChequeNumber').val();
+                            if (chequeNo != "") {
+                                $('#BounceChequeNumber').val(chequeNo)
+                            }
+                            $('input#IsBounce').prop('checked', true);
+                            $('#cheque-for-good-payment-div :input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+                            $('#cheque-for-good-payment-div').addClass('hide');
+                        }
+                        ErrorAlert(result.Msg, 5000);
+                        document.getElementById('alert-error').scrollIntoView();
+                    }
+                },
+                error: function () {
+                    ErrorAlert(data.responseText, 15000)
+                }
+            });
+        }).fail(function () {
+
+        });
+    }
+</script>
+<script src="~/Scripts/ChannakyaBaseJs/ChannakyaBasePage.js"></script>
+<script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
+
+<script src="~/Scripts/ChannakyaBaseJs/TaskVerification.js"></script>
+
+

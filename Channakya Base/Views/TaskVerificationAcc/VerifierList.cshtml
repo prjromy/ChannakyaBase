@@ -1,0 +1,181 @@
+﻿
+@model ChannakyaAccounting.Models.ViewModel.TaskVerificationList
+@using ChannakyaAccounting.Service
+@{
+    ViewBag.Title = "EmployeeList";
+}
+
+@using (Html.BeginForm("SaveTablePermanent", "Voucher1", FormMethod.Post, new { @id = "saveVoucherPermanent" }))
+{
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" id="closeTop" data-dismiss="modal" aria-hidden="true">&times;</span>
+                <h4 class="modal-title">Verifier</h4>
+            </div>
+            @Html.HiddenFor(x => x.Narration)
+            <div class="modal-body">
+                <div class="content-box">
+                    <div class="row">
+                        @Html.HiddenFor(x => x.Narration)
+                    </div>
+                    @if (ViewBag.IsStrictlyVerified == true)
+                {
+                        <div class="table-responsive table-click-verifier">
+                            @Html.HiddenFor(x => x.IsMultiVerifier)
+                            @Html.HiddenFor(x => x.EventId)
+                            @Html.HiddenFor(x => x.EmployeeId)
+                            @Html.HiddenFor(x => x.IsMultiVerifier)
+                            @Html.TextBoxFor(x => x.VoucherTempId, new { @value = ViewBag.V1TId, @style = "display:none;" })
+
+                            <table class="table table-bordered table-striped table-click-verifier-list table-hover">
+
+                                <thead>
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>Employee Name</th>
+                                        <th>Choose Name</th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model.VerifierList)
+                                    {
+                                        <tr class="for-checked">
+                                            <td> @item.UserName </td>
+                                            <td> @item.EmployeeName</td>
+                                            <td>  @Html.CheckBox(string.Format("VerifierList[{0}].IsSelected", Model.VerifierList.IndexOf(item)), item.IsSelected, new { @class = "IsSelected Check" })</td>
+                                            <td class="hidden">  @Html.Hidden(string.Format("VerifierList[{0}].UserId", Model.VerifierList.IndexOf(item)), item.UserId, new { @class = "IsSelected" })</td>
+                                        </tr>
+                                        @*@Html.Partial("_VerifierDetails", item)*@
+                                    }
+
+                                </tbody>
+                            </table>
+
+                            @Html.TextAreaFor(x => x.Message, new { @class = "form-control", @placeholder = "Message" })
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.IsMultiVerifier)
+                        @Html.HiddenFor(x => x.EventId)
+                        @Html.HiddenFor(x => x.EmployeeId)
+                        @Html.TextBoxFor(x => x.VoucherTempId, new { @value = ViewBag.V1TId, @style = "display:none;" })
+                        @Html.TextAreaFor(x => x.Message, new { @class = "form-control", @placeholder = "Message" })
+                    }
+                    <div class="btn-groups modal-footer">
+                        <input type="submit" value="Save" class="btn btn-default btn-account-verifier-save-check" eventid="@Model.EventId" />
+                        <input type="button" value="Close" class="btn btn-default btn-account-verifier-close" data-dismiss="modal" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function getFormObj(form) {
+        var formObj = {};
+        var inputs = $(form).serializeArray();
+        $.each(inputs, function (i, input) {
+            formObj[input.name] = input.value;
+        });
+        return formObj;
+    }
+    $('#saveVoucherPermanent').submit(function (e) {
+        e.stopImmediatePropagation();
+        debugger;
+        var form = $(this);
+        var container = $(this).closest('.panel-create');
+        var taskverificationModel = getFormObj(form);
+        $('.modal-backdrop').remove();
+      //  var checl=new
+        //var FormData = JSON.stringify({ taskverificationModel });
+        $.ajax({
+            url: '@Url.Action("SaveTablePermanent", "Voucher1")',
+            type: 'POST',
+            data: taskverificationModel,
+            async: false,
+            success: function (data) {
+                debugger;
+                SuccessAlert("Voucher Saved Successfully", 5000);
+                $(container).html(data).modal({
+                    'show': true,
+                    'backdrop':false
+                });
+            },
+            error:function(data){
+                ErrorAlert(data.responseText,5000);
+            }
+        });
+        return false;
+    });
+
+
+</script>
+<script>
+    $('#saveVoucherPermanent .modal-body .for-checked').click(function () {
+        debugger;
+        if ($(this).find('.Check').closest('td').find('input:nth-child(2)').val() == true || $(this).find('.Check').closest('td').find('input:nth-child(2)').val() == "true") {
+            $(this).find('.Check').closest('td').find('input:nth-child(2)').val(false);
+            $(this).css('cursor', 'pointer');
+        }
+        else {
+            $(this).find('.Check').closest('td').find('input:nth-child(2)').val(true);
+            //$(this).css('cursor', 'pointer');
+           
+        }
+
+    });
+
+</script>
+@*<script type="text/javascript">
+        $("#saveVoucherPermanent").submit(function () {
+            debugger;
+            var form = $(this);
+
+
+            var container = $(this).closest('.panel-create');
+            var formData = new FormData($(this)[0]);
+            //var nodeId = $(this).closest('form#createFinAcc').find('.parent-FinAcc').find('div#Pid').find('input.internal-value').val();
+
+
+            $.MessageBox({
+                buttonDone: "Yes",
+                buttonFail: "No",
+                message: "Are you sure?"
+            }).done(function () {
+
+
+                $.ajax({
+                    url: '@Url.Action("SaveTablePermanent", "Voucher1")',
+                    type: 'POST',
+                    data: {formData:formData,V1TId:@ViewBag.V1TId },
+                    async: false,
+                    success: function (data) {
+                        debugger;
+                        $(container).html(data);
+
+                    },
+                    error: function (data) {
+                        debugger;
+                        ErrorAlert(data.responseText, 15000)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }).fail(function () {
+                //$.MessageBox("you clicked no");
+            });
+
+            return false;
+        });
+    </script>*@
+<style>
+  #saveVoucherPermanent tr {
+    cursor:pointer
+    }
+
+</style>

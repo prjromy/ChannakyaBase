@@ -1,0 +1,47 @@
+﻿@model ChannakyaAccounting.Models.ViewModel.TaskViewModel
+@using ChannakyaAccounting.Service.TaskVerificationAcc
+@*@using ChannakyaCustomeDatePicker.Helper;*@
+@{
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Task Verification Details";
+    DateTime fromdate = DateTime.Now.AddMonths(-1);
+    DateTime todate = DateTime.Now;
+
+}
+
+
+<div class="box box-success task-verification-index">
+    <div class="box-header with-border">
+        <h3 class="box-title">Task Verification Details</h3>
+        <hr />
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+
+        </div><!-- /.box-tools -->
+
+        @*<div class="col-md-12">
+            @*<div class="box-tools col-md-4  form-group" id="search-Employee-Name">
+                @Html.TextBox("EmployeeSearch", "", htmlAttributes: new { @class = "form-control", @id = "txtEmployeeSearch", @placeholder = "Employee Name" })
+            </div>
+            <div class="col-md-3  form-group" id="search-Event-EventId">
+
+                @Html.DropDownListFor(x => x.EventId, TaskUtilityService.GetAllEventList(), "--Select Event--", new { @class = "form-control" })
+            </div>
+            <div class="col-md-4  form-group" id="search-date-range">
+               @* @Html.DateRangePicker(x => fromdate, x => todate)
+            </div>*@
+            @*<div class="input-group-btn form-group col-md-1 pull-left">
+                <button type="button" id="searchTaskedails" class="btn btn-searchTaskedetails btn-default"><i class="fa fa-search"></i></button>
+            </div>
+
+
+        </div>*@
+    </div>
+    <div class="pending-task-list">
+        @*@{Html.RenderAction("_ViewAllPendingTaskList", "TaskVerificationAcc");}*@
+        @Html.Partial("_ViewAllPendingTaskList", Model.TaskDetailWithIPageList)
+    </div>
+</div>
+
+
+
