@@ -207,7 +207,7 @@ $('#AgreementAmount').on('keyup', function () {
                 $('#AgreementAmount').focus();
             }
             else {
-                ErrorAlert("Agreement Amount must be less than Limit amount of product",3000);
+                ErrorAlert("Agreement Amount must be greater than Limit amount of product",3000);
             }
         }
     })
