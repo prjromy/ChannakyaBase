@@ -158,10 +158,10 @@ namespace ChannakyaBase.BLL.Service
         }
 
         public bool AgreementAmountWithLAmountProduct(decimal agreeAmount, int PID)
-        {
+      {
             var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == PID).Select(x => x.LAmt).FirstOrDefault();
             var result = true;
-            if (agreeAmount < LAMount)
+            if (agreeAmount <= LAMount)
             {
                 result = false;
                 return result;
@@ -784,13 +784,22 @@ namespace ChannakyaBase.BLL.Service
 
                     bool isFixedProduct = checkCondition.IsFixed;
                     bool isNominable = checkCondition.IsNomianable;
+<<<<<<< Updated upstream
                     var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
                     if (aModelDetails.AgreementAmount <= LAMount)
+=======
+                    if (aModelDetails.AgreementAmount.Equals(null))
+>>>>>>> Stashed changes
                     {
-                        returnMessage.Msg = "Agreement Amount must be greater than  Limit amount of product!!";
-                        returnMessage.Success = false;
-                        return returnMessage;
+                        //var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
+                        //if (aModelDetails.AgreementAmount <=LAMount)
+                        //{
+                        //    returnMessage.Msg = "Agreement Amount must be greater than  Limit amount of product!!";
+                        //    returnMessage.Success = false;
+                        //    return returnMessage;
+                        //}
                     }
+                  
                     foreach (var item in aModelDetails.ANominees)
                     {
                         totalShare += item.Share;

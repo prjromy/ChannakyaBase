@@ -21,12 +21,13 @@ namespace ChannakyaBase.Web.Controllers
         ReturnBaseMessageModel returnMessage = null;
         private CommonService commonService = null;
         private ReportService reportService = null;
-
+        private Loader.Service.ParameterService parameterService = null;
         public ReportController()
         {
             returnMessage = new ReturnBaseMessageModel();
             commonService = new CommonService();
             reportService = new ReportService();
+            parameterService = new Loader.Service.ParameterService();
         }
         #region Teller Report
         #region Account Details Reports
@@ -52,7 +53,7 @@ namespace ChannakyaBase.Web.Controllers
             {
                 accountType = 3;
             }
-  
+
             var date = commonService.GetBranchTransactionDate();
             accountReportView.FromDate = date.AddMonths(-1);
             accountReportView.ToDate = date;
@@ -102,10 +103,13 @@ namespace ChannakyaBase.Web.Controllers
 
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
-            string[] columns = { "AccountNumber", "AccountName", "ProductName", "Date", "AccountStatus", "ChangeOn","Changed By" };
+            var pathimag = Request.Url.GetLeftPart(UriPartial.Authority) + Request.ApplicationPath + parameterService.GetImageFromdatabase();
+
+
+            var company = reportService.CompanyNameDetails();
+            string[] columns = { "AccountNumber", "AccountName", "ProductName", "Date", "AccountStatus", "ChangeOn", "Changed By" };
             string[] parameterSearch = { "From Date:" + fromDate.ToShortDateString() + " - To Date:" + toDate.ToShortDateString(), "Account Status:" + accountStateText + "-Branch Name:" + branchIdText + "-Account Type:" + accountTypeText + "-Product Name:" + productIdText };
-            byte[] filecontent = ExcelExportHelper.ExportExcel(accountOpenDetailsSelectedList, company, parameterSearch, columns);
+            byte[] filecontent = ExcelExportHelper.ExportExcel(accountOpenDetailsSelectedList, company, parameterSearch,  columns);
             return File(filecontent, ExcelExportHelper.ExcelContentType, "AccountopenDetails.xlsx");
         }
         public ActionResult MatureDurationWiseAccount()
@@ -119,9 +123,9 @@ namespace ChannakyaBase.Web.Controllers
             accountReportView.ToDate = date.AddDays(7);
             accountReportView.BranchId = branchID;
             accountReportView.SType = 0;
-            var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 0,1,10);
+            var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 0, 1, 10);
             //accountReportView.AccountReportList = new StaticPagedList<AccountReportViewModel>(accountdetails, 1, 10, (accountdetails.Count == 0) ? 0 : accountdetails.FirstOrDefault().TotalCount);
-           accountReportView.AccountReportList = accountdetails;
+            accountReportView.AccountReportList = accountdetails;
             return PartialView(accountReportView);
 
         }
@@ -139,36 +143,36 @@ namespace ChannakyaBase.Web.Controllers
             accountReportView.ToDate = date.AddDays(7);
             accountReportView.BranchId = branchID;
             accountReportView.SType = 1;
-            var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 1,1,10);
-           //accountReportView.AccountReportList = new StaticPagedList<AccountReportViewModel>(accountdetails,1,5, (accountdetails.Count == 0) ? 0 : accountdetails.FirstOrDefault().TotalCount);
+            var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 1, 1, 10);
+            //accountReportView.AccountReportList = new StaticPagedList<AccountReportViewModel>(accountdetails,1,5, (accountdetails.Count == 0) ? 0 : accountdetails.FirstOrDefault().TotalCount);
             accountReportView.AccountReportList = accountdetails;
             return PartialView("MatureDurationWiseAccount", accountReportView);
 
         }
-        public ActionResult _MatureDurationWiseAccount(String fromDate, String toDate, int branchid , int productId , short sType = 0, int pageNo = 1, int pageSize = 10)
+        public ActionResult _MatureDurationWiseAccount(String fromDate, String toDate, int branchid, int productId, short sType = 0, int pageNo = 1, int pageSize = 10)
         {
             AccountReportViewModel accountReportView = new AccountReportViewModel();
 
-            var accountdetails = reportService.MatureDurationWiseAccount(Convert.ToDateTime(fromDate), Convert.ToDateTime(toDate), branchid, productId, sType,pageNo,pageSize);
+            var accountdetails = reportService.MatureDurationWiseAccount(Convert.ToDateTime(fromDate), Convert.ToDateTime(toDate), branchid, productId, sType, pageNo, pageSize);
 
             accountReportView.AccountReportList = accountdetails;
 
 
-        //    var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 0, 1, 3);
+            //    var accountdetails = reportService.MatureDurationWiseAccount(accountReportView.FromDate, accountReportView.ToDate, branchID, 0, 0, 1, 3);
             //accountReportView.AccountReportList = new StaticPagedList<AccountReportViewModel>(accountdetails, pageNo, pageSize, (accountdetails.Count == 0) ? 0 : accountdetails.FirstOrDefault().TotalCount);
             return PartialView(accountReportView);
 
         }
 
         [HttpGet]
-        public FileContentResult MatureDurationWiseAccountExporttoExcel(DateTime fromDate, DateTime toDate, string branchText, string productText, int branchid , int productId, short sType = 0)
+        public FileContentResult MatureDurationWiseAccountExporttoExcel(DateTime fromDate, DateTime toDate, string branchText, string productText, int branchid, int productId, short sType = 0)
         {
             //int branchID = 0;
             //if (!ReportUtilityService.IsAllowAllBranch())
             //{
             //    branchID = commonService.GetBranchIdByEmployeeUserId();
             //}
-            var MatureDurationWiseList = reportService.MatureDurationWiseAccount(fromDate, toDate, branchid, productId, sType,1,10).ToList();
+            var MatureDurationWiseList = reportService.MatureDurationWiseAccount(fromDate, toDate, branchid, productId, sType, 1, 10).ToList();
 
             var matureDurationWiseSelectedList = MatureDurationWiseList.Select(x => new MatureDurationWiseAccountExportToExcelViewModel()
             {
@@ -180,12 +184,14 @@ namespace ChannakyaBase.Web.Controllers
                 MatureDate = x.MatureDate,
                 Balance = x.Balance
             }).ToList();
-            var company = reportService.CompanyDetails(branchid);
+            //var company = reportService.CompanyDetails(branchid);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "AccountNumber", "AccountName", "ProductName", "Date", "MDate", "Balance" };
             string[] parameterSearch = { "From Date:" + fromDate.ToShortDateString() + " - To Date:" + toDate.ToShortDateString(), "Product Name:" + productText + "-Branch Name:" + branchText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(matureDurationWiseSelectedList, company, parameterSearch, columns);
             return File(filecontent, ExcelExportHelper.ExcelContentType, "MatureDuration.xlsx");
         }
+        #endregion
         #endregion
 
         #region  Deno Report
@@ -213,7 +219,8 @@ namespace ChannakyaBase.Web.Controllers
 
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            // var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Deno", "Pieces", "Amount" };
             string[] parameterSearch = { "Currency:" + currencyText + " - User:" + userText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(accountOpenDetailsSelectedList, company, parameterSearch, columns);
@@ -245,7 +252,8 @@ namespace ChannakyaBase.Web.Controllers
 
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            // var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Deno", "Pieces", "Amount" };
             string[] parameterSearch = { "Tno:" + tno + " - User:" + userText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(denoReportByTransactionSelectedList, company, parameterSearch, columns);
@@ -281,7 +289,8 @@ namespace ChannakyaBase.Web.Controllers
 
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Deno", "Pieces", "Amount" };
             string[] parameterSearch = { "Currency:" + currencyText + " - User:" + userText, "Date:" + date };
             byte[] filecontent = ExcelExportHelper.ExportExcel(DenoReportByUserAndTransactionSelectedList, company, parameterSearch, columns);
@@ -316,7 +325,8 @@ namespace ChannakyaBase.Web.Controllers
                 Tno = x.Tno
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number ", "Customer Name", "Dr Amount", "Cr Amount", "Description", "Trxn.No" };
             string[] parameterSearch = { "Transaction Date:" + tDate + " - User:" + ReportUserText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(UserReportSelectedList, company, parameterSearch, columns);
@@ -359,16 +369,17 @@ namespace ChannakyaBase.Web.Controllers
                 Remarks = x.Remarks
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            // var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "UserId1", "UserId2", "Tdesc", "TDate", "Tno", "Dramt", "Cramt", "Remarks" };
             string[] parameterSearch = { "Currency:" + CurrIDText + " - User:" + userIdText, "From  Date:" + fromDate + "-To Date :" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(internalCashFlowSelectedList, company, parameterSearch, columns);
             return File(filecontent, ExcelExportHelper.ExcelContentType, "InternalCashFlow.xlsx");
 
         }
+
         #endregion
-        #endregion
-        // GET: Report
+        // GET: Report.0
         #region Transaction Report
         public ActionResult ProductSummaryReport()
         {
@@ -398,7 +409,8 @@ namespace ChannakyaBase.Web.Controllers
                 Balance = x.Dramt - x.Cramt
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "ProductName", "Debit Amount", "Credit Amount ", "Balance" };
             string[] parameterSearch = { "Branch Name:" + branchText, "From  Date:" + fromDate + "-To Date :" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ProductSummarySelectedList, company, parameterSearch, columns);
@@ -433,7 +445,8 @@ namespace ChannakyaBase.Web.Controllers
                 NonCashOutFlow = x.NonCashOutFlow
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "ProductName", "Cash In Flow", "Non Cash In Flow", "Cash Out Flow", "Non Cash Out Flow" };
             string[] parameterSearch = { "Branch Name:" + branchText, "From  Date:" + fromDate + "-To Date :" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ProductTransactionSummarySelectedList, company, parameterSearch, columns);
@@ -461,22 +474,23 @@ namespace ChannakyaBase.Web.Controllers
         public FileContentResult ChequeWithdrawExportToExcel(int branchId, string branchText, DateTime fromDate, DateTime toDate)
         {
             var ChequeWithdrawList = reportService.GetChequeWithdrawTransaction(fromDate, toDate, branchId).ToList();
-            var ChequeWithdrawSelectedList = ChequeWithdrawList.Select(x => new ChequeWithdrawViewModelExportToExcel()
-            {
+           var ChequeWithdrawSelectedList = ChequeWithdrawList.Select(x => new ChequeWithdrawViewModelExportToExcel()
+           {
 
-                AccountNumber = x.AccountNumber,
-                TransactionDate = x.TransactionDate,
-                AccountName = x.AccountName,
+               AccountNumber = x.AccountNumber,
+               TransactionDate = x.TransactionDate,
+               AccountName = x.AccountName,
                 ChequeNo = x.ChequeNo,
                 Amount = x.Amount,
-                Notes = x.Notes
+               Notes = x.Notes
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            // var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "AccountNumber", "Date", "AccountName", "ChequeNo", "Amount", "Notes" };
-            string[] parameterSearch = { "Branch Name:" + branchText + "From  Date:" + fromDate + "-To Date :" + toDate };
-            byte[] filecontent = ExcelExportHelper.ExportExcel(ChequeWithdrawSelectedList, company, parameterSearch, columns);
-            return File(filecontent, ExcelExportHelper.ExcelContentType, "ChequeWithdraw.xlsx");
+           string[] parameterSearch = { "Branch Name:" + branchText + "From  Date:" + fromDate + "-To Date :" + toDate };
+           byte[] filecontent = ExcelExportHelper.ExportExcel(ChequeWithdrawSelectedList, company, parameterSearch, columns);
+           return File(filecontent, ExcelExportHelper.ExcelContentType, "ChequeWithdraw.xlsx");
 
         }
 
@@ -513,7 +527,8 @@ namespace ChannakyaBase.Web.Controllers
                 Amount = x.Amount
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "ProductName", "Accno", "AccountName", "Date", "TaxRate", "Tax", "Interest Amount", "Amount" };
             string[] parameterSearch = { "Branch Name:" + branchText, "From  Date:" + fromDate + "-To Date :" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(TransactionPayableSelectedList, company, parameterSearch, columns);
@@ -563,7 +578,8 @@ namespace ChannakyaBase.Web.Controllers
                 Balance = x.Balance
 
             }).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Number", "AccountName", "Balance" };
             string[] parameterSearch = { "Branch Name:" + branchText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(BalancePayableSelectedList, company, parameterSearch, columns);
@@ -606,7 +622,8 @@ namespace ChannakyaBase.Web.Controllers
                 IOnI = x.IOnI
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Number", "Name", "Date", "Prin Dr", "Prin Cr", "Int", "POnPr", "POnInt", "IonI" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date: " + fromDate + " - To Date:" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(loanTransactionExportExcel, company, parameterSearch, columns);
@@ -639,7 +656,9 @@ namespace ChannakyaBase.Web.Controllers
                 IOnIOut = x.IOnIOut
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+
+            // var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "PrinOut", "IntOut", "POnPrOut", "POnIOut", "IOnIOut" };
             string[] parameterSearch = { "Branch Name=" + branchIdText, " - From Date: " + fromDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(LoanBalanceTillDateExportExcel, company, parameterSearch, columns);
@@ -668,7 +687,8 @@ namespace ChannakyaBase.Web.Controllers
                 IOnIOut = x.IOnIOut
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Nunmber", "Account Name", "PrinOut", "IntOut", "POnPrOut", "POnIOut", "IOnIOut" };
             string[] parameterSearch = { "Branch Name:" + branchIdText + "PName:" + pName, " - From Date: " + fromDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(IndividualLoanBalanceTillDateExportExcel, company, parameterSearch, columns);
@@ -711,7 +731,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Number", "Account Name", "OutStandingBalance", "MaturePrincal", "InterestAccured", "Penalty", "Other", "Other Interest", "Rate", "No. Of Days", "Future Interest", "Total Due" };
             string[] parameterSearch = { "Branch Name:" + branchName + "Date: " + fromDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(LoanFollowupExcelList, company, parameterSearch, columns);
@@ -747,7 +768,8 @@ namespace ChannakyaBase.Web.Controllers
                 TotalAmount = x.TotalAmount
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Number", "Account Name", "MAccured", "UMAccured", "Total Amount" };
             string[] parameterSearch = { "Branch Name:" + branchName + "Date: " + fromDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(LoanFollowupExcelList, company, parameterSearch, columns);
@@ -786,7 +808,8 @@ namespace ChannakyaBase.Web.Controllers
                 IRate = x.IRate
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Product Name", "MDate", "Disbursed Amount", "Outstanding Amount", "Remaining To Disbursed", "Approved Amount", "Interest Rate" };
             string[] parameterSearch = { "Branch Name:" + branchName + " - From Date: " + fromDate + " - To Date: " + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(LoanOutstandingExcelList, company, parameterSearch, columns);
@@ -899,7 +922,8 @@ namespace ChannakyaBase.Web.Controllers
 
 
             //}).ToList();
-            var company = reportService.CompanyDetails(branchId);
+            // var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "LoaneeAccNo", "LoaneeName", "GuarantorAccNo", "GuarantorName", "Amount", "LoanApproved", "LoanBalance", "AccBalance" };
             string[] parameterSearch = { "Branch Name:" + branchIdText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(GuarantorReportModel, company, parameterSearch, columns);
@@ -972,7 +996,8 @@ namespace ChannakyaBase.Web.Controllers
                 Balance = x.Balance,
                 DC = x.DC
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Date ", "VDate", "Description", "Debit", "Credit", "Balance", "DC" };
             string[] parameterSearch = { "Transaction Date:" + DepositStatementWithDetails.Accno + " -Reg. Date" + DepositStatementWithDetails.RegisteredDate+"-Interest Date" + DepositStatementWithDetails.InterestRate +
                     "-Interest On Balance"+ DepositStatementWithDetails.IonBal ,"-A/C Holder"+DepositStatementWithDetails.Aname+"-Accured Interest"+DepositStatementWithDetails.Aname+"-Product Name"+DepositStatementWithDetails.ProductName+"-Sheme Name "+DepositStatementWithDetails.SchemeName
@@ -1035,7 +1060,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchid);
+            //var company = reportService.CompanyDetails(branchid);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Date", "Account Name", "Account Number", "From Cheque", "To Cheque", "Status" };
             string[] parameterSearch = { "Branch Name=" + branchName, " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ChequeIssueBlockAndBounceExcelExportList, company, parameterSearch, columns);
@@ -1072,7 +1098,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchid);
+            //var company = reportService.CompanyDetails(branchid);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "TrnxNo", "Date", "Dr Product", "Cr Product", "Dr Acount No.", "Dr Name", "Cr Account No", "Cr Name", "Amount" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(InternalChequeDepositExcelExportList, company, parameterSearch, columns);
@@ -1109,7 +1136,8 @@ namespace ChannakyaBase.Web.Controllers
                 notes = x.Remarks
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchid);
+            //var company = reportService.CompanyDetails(branchid);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Tno", "Account Name", "Account Number", "Date", "Cheque Number", "Amount", "Payee", "Notes" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ChequeIssueBlockAndBounceExcelExportList, company, parameterSearch, columns);
@@ -1145,7 +1173,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "IntToExp", "IntToCap", "Balance" };
             string[] parameterSearch = { "Branch=" + branchName, "- Date = " + date };
             byte[] filecontent = ExcelExportHelper.ExportExcel(DepositBalanceAmountWiseExportToExcelList, company, parameterSearch, columns);
@@ -1183,7 +1212,8 @@ namespace ChannakyaBase.Web.Controllers
                 ToAccNo = x.ToAccNo
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Name", "Account Number", "Date", "Tax Rate", "Tax Amount", "Interest Amount", "Capitalize", "Posted To A/C" };
             string[] parameterSearch = { "Branch=" + branchName, "From Date=" + fromDate + "- To Date = " + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(interestCapitalizationExportExcelList, company, parameterSearch, columns);
@@ -1225,7 +1255,8 @@ namespace ChannakyaBase.Web.Controllers
                 REMARK = x.REMARK
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Date", "Account Number", "Product Name", "Rate", "Int.Cal", "Balance", "Remarks" };
             string[] parameterSearch = { "Branch=" + branchName, "From Date=" + fromDate + "- To Date = " + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(InterestLogExcelExport, company, parameterSearch, columns);
@@ -1259,7 +1290,8 @@ namespace ChannakyaBase.Web.Controllers
                 Amount = x.Amount
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Tno", "TDate", "RemitCompany", "Particular", "Amount" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(RemittanceTransactionExcelExportList, company, parameterSearch, columns);
@@ -1295,7 +1327,8 @@ namespace ChannakyaBase.Web.Controllers
                 MatDat = x.MatDat
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Balance", "OD Interest", "Approve Amount", "Value Date", "Duration", "Mature Date" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - Date=" + Date.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(OverDraftBalanceExcelExportList, company, parameterSearch, columns);
@@ -1331,7 +1364,8 @@ namespace ChannakyaBase.Web.Controllers
                 vno = x.vno
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Trnx Date", "Capitalize Amount", "Transferred To", "Trnx Number", "Voucher Number" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(OverDraftInterestCapitalizationExcelExportList, company, parameterSearch, columns);
@@ -1366,7 +1400,8 @@ namespace ChannakyaBase.Web.Controllers
                 DInt = x.DInt
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            // var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Interest" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ProductWiseInterestLogExcelExportList, company, parameterSearch, columns);
@@ -1400,7 +1435,8 @@ namespace ChannakyaBase.Web.Controllers
                 IRate = x.IRate
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            // var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Product Name", "IntCapSchm", "Irate" };
             string[] parameterSearch = { "Branch Name=" + branchName + " - Date=" + Date.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(InterestToCapitalizeAccountExcelList, company, parameterSearch, columns);
@@ -1473,7 +1509,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            //var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Trxn No.", "Date", "Account Number", "Name", "Amount", "Notes" };
             string[] parameterSearch = { "Deposit/Withdraw: " + iSDepText + " - Verified/Unverified:" + isVerifyText, "Non-Cash/Cash:" + searchTypeText };
             byte[] filecontent = ExcelExportHelper.ExportExcel(ProductTransactionExportExcel, company, parameterSearch, columns);
@@ -1503,7 +1540,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            //var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Product Name", "Account Number", "Account Name", "Date", "PriDr", "OtherDr", "Notes" };
             string[] parameterSearch = { "From Date: " + FromDate + " - To Date:" + ToDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(LoanTransactionDisbursePaymentExportExcel, company, parameterSearch, columns);
@@ -1520,25 +1558,25 @@ namespace ChannakyaBase.Web.Controllers
             //var list = new ChannakyaAccounting.Repository.UnitOfWork.Implementation_Classes.GenericUnitOfWork().Repository<Models.Models.SubsiSetup>().GetAll().AsQueryable().OrderByDescending(x=>x.SSId);
             //var pagedList = new Pagination<Models.Models.SubsiSetup>(list, page, pageSize);
             //ViewBag.CountPager = new Pagination<Models.Models.SubsiSetup>(list, page, pageSize).TotalPages;
-            var pagedList = reportService.CollectionSheetTransReport(FDate, TDate, page, pageSize,search).ToList();
+            var pagedList = reportService.CollectionSheetTransReport(FDate, TDate, page, pageSize, search).ToList();
             ViewBag.CountPager = 0;
             if (pagedList.Count() > 0)
             {
-                ViewBag.CountPager = Math.Ceiling((Convert.ToDecimal( pagedList.FirstOrDefault().totalCount)) / (pageSize * 1));
+                ViewBag.CountPager = Math.Ceiling((Convert.ToDecimal(pagedList.FirstOrDefault().totalCount)) / (pageSize * 1));
             }
             ViewBag.ActivePager = page;
             return PartialView(pagedList);
             //return PartialView();
         }
 
-        public ActionResult _CollectionSheetReportPartial(DateTime FDate, DateTime TDate,int? page = 1, string search = null)
+        public ActionResult _CollectionSheetReportPartial(DateTime FDate, DateTime TDate, int? page = 1, string search = null)
         {
             int pageSize = 20;
 
             //var list = new ChannakyaAccounting.Repository.UnitOfWork.Implementation_Classes.GenericUnitOfWork().Repository<Models.Models.SubsiSetup>().GetAll().AsQueryable().OrderByDescending(x=>x.SSId);
             //var pagedList = new Pagination<Models.Models.SubsiSetup>(list, page, pageSize);
             //ViewBag.CountPager = new Pagination<Models.Models.SubsiSetup>(list, page, pageSize).TotalPages;
-            var pagedList = reportService.CollectionSheetTransReport(FDate, TDate, page, pageSize,search).ToList();
+            var pagedList = reportService.CollectionSheetTransReport(FDate, TDate, page, pageSize, search).ToList();
             ViewBag.CountPager = 0;
             if (pagedList.Count() > 0)
             {
@@ -1553,7 +1591,7 @@ namespace ChannakyaBase.Web.Controllers
         public FileContentResult CollectionSheetReportExporttoExcel(DateTime fromDate, DateTime toDate)
         {
             var fromtodate = reportService.CollectionSheetTransReport(fromDate, toDate); //just for now
-            var  collectionSelectedList = fromtodate.Select(x => new CollectionSheetTransExcelReportViewModel()
+            var collectionSelectedList = fromtodate.Select(x => new CollectionSheetTransExcelReportViewModel()
             {
                 TDate = x.TDate,
                 SheetNo = x.SheetNo,
@@ -1565,7 +1603,8 @@ namespace ChannakyaBase.Web.Controllers
                 DepositCount = x.DepositCount
 
             }).ToList();
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Transaction Date", "SheetNo", "EmployeeName", "TotalAmount", "LoanAmount", "DepositAmount", "LoanCount", "DepositCount" };
             string[] parameterSearch = { "From Date:" + fromDate.ToShortDateString() + " - To Date:" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(collectionSelectedList, company, parameterSearch, columns);
@@ -1584,7 +1623,7 @@ namespace ChannakyaBase.Web.Controllers
         }
         //public ActionResult _ProductWiseCollectionSheetPartial(DateTime fDate, DateTime tDate, int? page = 1)
         //{
-        //    int pageSize =10;
+        //    int pageSize = 10;
         //    ViewBag.fromDate = fDate;
         //    ViewBag.ToDate = tDate;
         //    ViewBag.Status = 1;
@@ -1604,9 +1643,9 @@ namespace ChannakyaBase.Web.Controllers
         //    var fromtodate = reportService.ProductWiseCollectionSheet(fromDate, toDate);
         //    var collectionSelectedList = fromtodate.ProductWiseCollectionSheetList.Select(x => new ProductWiseCollectionExportToExcelSheet()
         //    {
-        //       EmployeeName=x.EmployeeName,
-        //       TotalAmount=x.TotalAmount,
-        //       PName=x.PName
+        //        EmployeeName = x.EmployeeName,
+        //        TotalAmount = x.TotalAmount,
+        //        PName = x.PName
 
         //    }).ToList();
         //    var company = reportService.CompanyDetails(0);
@@ -1631,7 +1670,7 @@ namespace ChannakyaBase.Web.Controllers
         {
             return PartialView(reportService.AccountWiseCollectionSheetTransReport());
         }
-        public ActionResult _AccountWiseCollectionSheetReport(DateTime fDate, DateTime tDate, int collectorId, int page=1)
+        public ActionResult _AccountWiseCollectionSheetReport(DateTime fDate, DateTime tDate, int collectorId, int page = 1)
         {
             int pageSize = 10;
 
@@ -1679,7 +1718,8 @@ namespace ChannakyaBase.Web.Controllers
                 PName = x.PName
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            //var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Total Anmount", "Product Name" };
             string[] parameterSearch = { "From Date: " + fromDate + " - To Date:" + toDate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(shareHolderListExportExcel, company, parameterSearch, columns);
@@ -1731,7 +1771,8 @@ namespace ChannakyaBase.Web.Controllers
                 NepDate = x.NepDate
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            //var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Schdate", "InstallmentAmount", "Principal", "Interest", "Balance", "Date" };
             string[] parameterSearch = { "Account Name: "+loaninstallmentdetails.Aname+ " - Account Number: "+loaninstallmentdetails.Accno+" - Scheme Name: "+loaninstallmentdetails.schType+ " - Product Name: " + loaninstallmentdetails.PName+ " - Payment Rule: " + loaninstallmentdetails.PRule + " - Account State: " + loaninstallmentdetails.AccountState,
             "Registered Date: "+loaninstallmentdetails.Rdate+ " - Value Date: "+loaninstallmentdetails.valdat+ " - Matured Date: " +loaninstallmentdetails.matdat+ " - Revolving: " +loaninstallmentdetails.Revolving+ " - Duration:"+loaninstallmentdetails.duration+ " - Rate: "+loaninstallmentdetails.IRate+ " - Quotation Amount: "+loaninstallmentdetails.QuotAmt+" Approved Amount: "+loaninstallmentdetails.AppAmt};
@@ -1775,7 +1816,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "AccNo", "Name", "Product Name", "MDate", "Due Days", "Approved Amount", "Disbursed Amount", "Balance", "Total", "Principal Paid", "Principal Due", "Principal Total", "Interest Paid", "Interest Due", "Interest Total Due Balance" };
             string[] parameterSearch = { "Branch Name:" + branchName };
             byte[] filecontent = ExcelExportHelper.ExportExcel(loanMaturedExportExcel, company, parameterSearch, columns);
@@ -1798,8 +1840,8 @@ namespace ChannakyaBase.Web.Controllers
         public FileContentResult ShareTransactionExportToExcel(DateTime fromDate, DateTime toDate)
         {
             var technologies = reportService.ShareTransactionByDate(fromDate, toDate).ToList();
-            var company = reportService.CompanyDetails(0);
-
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Purchase-Return", "Name", "Date", "From", "To", "Qty", "Amount", "Stype" };
             string[] parameterSearch = { "From Date:" + fromDate.ToShortDateString() + " - To Date:" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(technologies, company, parameterSearch, columns);
@@ -1832,7 +1874,8 @@ namespace ChannakyaBase.Web.Controllers
                 Balance = x.Balance
             }).ToList();
 
-            var company = reportService.CompanyDetails(branchId);
+            //var company = reportService.CompanyDetails(branchId);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Reg Number", "Name", "Purchase Quantity", "Purchase Amount", "Return Quantity", "Return Amount", "Quantity", "Balance" };
             string[] parameterSearch = { "Branch=" + branchName, "Status =" + verifyStatusName };
             byte[] filecontent = ExcelExportHelper.ExportExcel(shareHolderListExportExcel, company, parameterSearch, columns);
@@ -1867,7 +1910,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "RegNo", "Name", "Date", "CertificateNo", "From", "To", "Quantity", "Amount", "Stype", "Note", "Cash/Non Cash" };
             string[] parameterSearch = { "From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(sharePurchaseExcelList, company, parameterSearch, columns);
@@ -1902,7 +1946,8 @@ namespace ChannakyaBase.Web.Controllers
                 Note = x.Note
             }).ToList();
 
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Name", "RegNo", "CertificateNo", "From", "To", "Quantity", "Amount", "Stype", "Cash/Non Cash", "SoldTo", "Date", "Note" };
             string[] parameterSearch = { "From Date=" + fromDate.ToShortDateString() + " - To Date=" + toDate.ToShortDateString() };
             byte[] filecontent = ExcelExportHelper.ExportExcel(shareReturnDetailsExcelList, company, parameterSearch, columns);
@@ -1938,7 +1983,8 @@ namespace ChannakyaBase.Web.Controllers
 
             }).ToList();
 
-            var company = reportService.CompanyDetails(0);
+            //var company = reportService.CompanyDetails(0);
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "PurchaseAndReturn", "RegNo", "Name", "Certificate No.", "Date", "From", "To", "Purchase Quantity", "Return Quantity", "Amount", "Grand Father Name", "Father Name", "Tno" };
             string[] parameterSearch = { "Registration No.:" + RegNo };
             byte[] filecontent = ExcelExportHelper.ExportExcel(shareStatementSelectedList, company, parameterSearch, columns);
@@ -2047,7 +2093,7 @@ namespace ChannakyaBase.Web.Controllers
             TempData["Pname"] = Pname;
 
             int pageSize = 8;
-            var pagedList = reportService.AccountOpenByCollectorDetail(collectorId, fdate, tdate, status, Pname,page,pageSize).ToList();
+            var pagedList = reportService.AccountOpenByCollectorDetail(collectorId, fdate, tdate, status, Pname, page, pageSize).ToList();
             ViewBag.CountPager = 0;
             if (pagedList.Count() > 0)
             {
@@ -2074,7 +2120,8 @@ namespace ChannakyaBase.Web.Controllers
                 SDName = x.SDName
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            // var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Account Number", "Account Name", "Register Date", "Balance", "Employee Name", "Product Name", "Scheme Name" };
             string[] parameterSearch = { "From Date: " + fromDate + " - To Date: :" };
             byte[] filecontent = ExcelExportHelper.ExportExcel(CollectorWiseAccountOpenDetailExportExcel, company, parameterSearch, columns);
@@ -2121,7 +2168,8 @@ namespace ChannakyaBase.Web.Controllers
                 PCount = x.NoOfCustomers
             }).ToList();
 
-            var company = reportService.CompanyDetails();
+            // var company = reportService.CompanyDetails();
+            var company = reportService.CompanyNameDetails();
             string[] columns = { "Name", "Product Total" };
             string[] parameterSearch = { "From Date: " + fdate + " - To Date:" + tdate };
             byte[] filecontent = ExcelExportHelper.ExportExcel(CollectorWiseAccountOpenListExportExcel, company, parameterSearch, columns);
@@ -2149,12 +2197,10 @@ namespace ChannakyaBase.Web.Controllers
 
         }
 
-        #region Excel Export
+     
 
 
-        #endregion
-
-
+    
 
 
     }
