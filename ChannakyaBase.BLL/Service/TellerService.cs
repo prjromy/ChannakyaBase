@@ -788,7 +788,7 @@ namespace ChannakyaBase.BLL.Service
                     var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
                     //if (aModelDetails.AgreementAmount <= LAMount)
 
-                    if (aModelDetails.AgreementAmount.Equals(null))
+                    if (!aModelDetails.AgreementAmount.Equals(null))
 
                     {
                             //var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
@@ -1091,7 +1091,7 @@ namespace ChannakyaBase.BLL.Service
                         financeParameterService.ChargeUnverifiedTransaction(commonService, ChargeDetailsList, iaccno, TaskVerifierList, 5);
                     }
                     transaction.Commit();
-                    returnMessage.Msg = "Account Created Successfully" + iaccno;
+                    returnMessage.Msg = "Account Created Successfully  #" + iaccno;
                     returnMessage.Success = true;
                 }
 
