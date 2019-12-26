@@ -785,7 +785,7 @@ namespace ChannakyaBase.BLL.Service
                     bool isFixedProduct = checkCondition.IsFixed;
                     bool isNominable = checkCondition.IsNomianable;
                     var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
-                    if (aModelDetails.AgreementAmount < LAMount)
+                    if (aModelDetails.AgreementAmount <= LAMount)
                     {
                         returnMessage.Msg = "Agreement Amount must be greater than  Limit amount of product!!";
                         returnMessage.Success = false;
