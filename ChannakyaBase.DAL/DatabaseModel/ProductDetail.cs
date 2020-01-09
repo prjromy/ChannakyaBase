@@ -28,6 +28,7 @@ namespace ChannakyaBase.DAL.DatabaseModel
             this.ProductPCIDs = new HashSet<ProductPCID>();
             this.ProductPSIDs = new HashSet<ProductPSID>();
             this.ProductTIDs = new HashSet<ProductTID>();
+            this.ProductVfins = new HashSet<ProductVfin>();
         }
     
         public byte SDID { get; set; }
@@ -92,5 +93,9 @@ namespace ChannakyaBase.DAL.DatabaseModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProductTID> ProductTIDs { get; set; }
         public virtual FinAcc FinAcc { get; set; }
+        public virtual ProductDetail ProductDetail1 { get; set; }
+        public virtual ProductDetail ProductDetail2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProductVfin> ProductVfins { get; set; }
     }
 }
