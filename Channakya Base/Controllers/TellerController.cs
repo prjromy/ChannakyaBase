@@ -907,7 +907,7 @@ namespace ChannakyaBase.Web.Controllers
             if (retId == 0)
             {
                 CollectionSheetViewModel CollectionSheet = new CollectionSheetViewModel();
-
+                CollectionSheet.TDate = commonService.GetBranchTransactionDate();
                 return PartialView(CollectionSheet);
 
             }
