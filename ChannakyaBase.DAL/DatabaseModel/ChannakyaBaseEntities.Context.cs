@@ -212,6 +212,9 @@ namespace ChannakyaBase.DAL.DatabaseModel
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<ParamValue> ParamValues { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<ProductVfin> ProductVfins { get; set; }
+        public virtual DbSet<SchemeVFin> SchemeVFins { get; set; }
+        public virtual DbSet<ReferenceTnoLink> ReferenceTnoLinks { get; set; }
     
         [DbFunction("ChannakyaBaseEntities", "FGetCustContact")]
         public virtual IQueryable<FGetCustContact_Result> FGetCustContact()
