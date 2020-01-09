@@ -4,8 +4,8 @@
 @using ChannakyaCustomeDatePicker.Helper;
 @using ChannakyaBase.BLL.Service
 @{
-    CommonService commonServices = new CommonService();
-    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+   
+    
 }
 <div class="box box-success">
     <div class="box-header with-border">
@@ -29,7 +29,7 @@
                             <div id='account-pop-up-div1' class='modal fade verfier-list' role='dialog'>
                             </div>
                             @Html.CheckBox("strictlyverifiable", isverified, new { @class = "hidden" })
-                            @Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
+                           
                             @Html.Hidden("MessageEventID", 22)
                             @*end *@
                         </div>
@@ -37,51 +37,38 @@
                             <div id='account-details-show-div' style="max-height: 350px; overflow: auto;"></div>
 
                         </div>
-                       
-                            <div class="form-group">
-                                @Html.Label("Account", new { @class = "control-label  col-md-1" })
-                                <div class="col-md-5">
-                                    @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.LoanPayment.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="form-group"></div>
+                                    @Html.Label("Account", new { @class = "control-label  col-md-1" })
+                                    <div class="col-md-5">
+                                        @Html.AccountNumberSearch(x => x.IAccno, EAccountDetailsShow.LoanPayment.GetDescription(), EAccountFilter.LoanAccept.GetDescription(), EAccountType.Loan.GetDescription())
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        @*<div class="radio-inline">*@
+
+                                        <input type="radio" name="Payment" id="Payment" class="Cash" value="0" checked="checked">Cash
+
+                                        @*</div>*@
+                                        @*<div class="radio-inline">*@
+
+                                        <input type="radio" name="Payment" id="Payment" class="Non-Cash" value="1">Non-Cash
+
+                                        @*</div>*@
+                                    </div>
                                 </div>
                             </div>
+                        </div>
                             <div class="customer-event-message">
                                 </div>
                             <div class="load-loan-account-details-data">
                             </div>
                                          
-                        <div class="col-md-12">
-                            <div class="load-loan-account-payment-data">
+                        <div class="load-loan-account-payment-data">
 
-                            </div>
-                            <div class="form-group">
-
-                                <div class="col-md-2">
-                                    @Html.CheckBoxFor(m => m.ReadyToClose, new { @class = "ReadyToClose" })<label>ReadyToClose</label>
-                                </div>
-                                @Html.LabelFor(model => model.Notes, new { @class = "control-label  col-md-2" })
-                                <div class="col-md-8">
-                                    @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-
-                         
-                            <div class="col-md-6">
-                            </div>
-                            <div class="col-md-6">
-                                @if (IsTransactionWithDeno)
-                {
-                        <div class="form-group">
-                            <div class="transaction-with-deno">
-
-                                @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription() });}
-                            </div>
                         </div>
-                                        }
-                            </div>
-                        </div>
-
                         <div class="box-footer">
                             <div class="form-group">
                                 <div class="col-md-offset-10 col-md-12">
@@ -182,7 +169,25 @@
         });
     }
     
+    $('input[type=radio][name=Payment]').change(function () {
+        debugger;
+        var radioPayment = $('input[name="Payment"]:checked').val();
+        var AccountId = $('#Loan-Payment-form').find('.account-id').val();
+        $.ajax({
+            type: 'GET',
+            url: '/Credit/LoanAccountPayment',
+            data: {
+                accountId: AccountId,
+                radioPayment: radioPayment,
+            },
+            success: function (payment) {
 
+                $('.load-loan-account-payment-data').html(payment)
+            },
+        });
+
+
+    });
 
 </script>
 <script src="~/Scripts/ChannakyaBaseJs/AccountNumberSearch.js"></script>
