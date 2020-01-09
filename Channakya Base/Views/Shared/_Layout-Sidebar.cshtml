@@ -3,15 +3,28 @@
 
     var test = Model;
     //Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+    Loader.Service.EmployeeService employeeService = new Loader.Service.EmployeeService();
+    Loader.Models.Employee EmployeeImage = employeeService.GetEmployeePhoto(Loader.Models.Global.UserId);
+
+
+
+    var CompanyName = employeeService.getCompanyName();
+
 }
 
 <div class="box-body" id="treeview-menu-area">
-    <section class="sidebar" style="height:initial !important;">
+    <section class="sidebar" style="height:initial !important">
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-
-                <img src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" />
+                @if (@EmployeeImage == null)
+                {
+                    @*EmployeeImage.StringPhoto = "~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png";*@
+                    <img src="~/Content/SBNJiAlSsx4AAAAASUVORK5CYII=.png" class="img-circle" alt="User Image">
+                }
+                else {
+                    <img src="@EmployeeImage.StringPhoto" class="img-circle" alt="User Image">
+                }
             </div>
             <div class="pull-left info">
                 <p>@Loader.Models.Global.UserName</p>
@@ -21,7 +34,7 @@
         <!-- search form -->
 
         <div class="input-group sidebar-form" style="margin: 15px 1px 16px 7px;">
-            <input type="text" name="q" class="form-control" placeholder="Search..." id="search-box">
+            <input type="text" name="q" class="form-control" placeholder="Search...">
             <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat">
                     <i class="fa fa-search"></i>
@@ -31,10 +44,11 @@
      
        
 
-            <li class="sidebar-menu header" style="margin-left: 14px;">MAIN NAVIGATION</li>
-            <div class="main-side-tree" >
-                @Html.EditorFor(x => x.LayoutTreedata)
-            </div>
+
+        <li class="sidebar-menu header" style="margin-left: 14px;"><b>MAIN NAVIGATION</b></li>
+        <div class="main-side-tree" style="margin-left: -20px">
+            @Html.EditorFor(x => x.LayoutTreedata)
+        </div>
 
 </section>
 </div><!-- /.box-body -->
@@ -75,16 +89,33 @@
     section.sidebar {
         height: initial !important;
     }
-</style> 
+    /*.img-circle {
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+}
+
+.img-circle img {
+  height: 100%;
+  transform: translateX(-50%);
+  margin-left: 50%;
+}*/
+</style>
 
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //$('.sidebar').find('.main-side-tree').find('.master').nextAll('li').slideToggle();
-
+        $('.sidebar').find('.main-side-tree').find('.master').nextAll('li').slideToggle();
+        //$(".sidebar-menu li").on("click", function () {
+        //    if ($(this).hasClass("active")) {
+        //        $(this).removeClass("active");
+        //    } else {
+        //        $(this).addClass("active");
+        //    }
+        //});
         $('.pull-right-container').click(function () {
             debugger;
-            var parent = $(this).closest('li.active.treeview');    
+            var parent = $(this).closest('li.active.treeview');
             var id = $(this).attr('id');
             var isMaster = parent.hasClass('master');
             if (isMaster == true) {
@@ -98,60 +129,25 @@
 
 
         });
-        
-        $('.treeview-menu-item').click(function (e) {
+        $('.treeview-menu-item').click(function () {
             debugger;
-            //jQuery.noConflict(e)
             var controller = $(this).attr("controller");
-            var isConflict = $("#ConflictScript").val();
-            if (isConflict)
-            {
-                jQuery.noConflict();
-            }
             var action = $(this).attr("acton");
-            var url = '/' + controller + '/' + action ;
+            var url = '/' + controller + '/' + action + '/';
             //window.location = url;
-            //if (e.ctrlKey) {
-            //    $.ajax({
-            //        type: "get",
-            //        url: url,
-            //        contentType: "application/json; charset=utf-8",
-            //        dataType: "html",
-            //        success: function (html) {
-            //            debugger;
-            //           window.open( $('section.content').html(html));
-            //            window.scrollTo(0, 0);
-            //            debugger;
-            //            //$('section.content').find('div:first').animate({ scrollTop: 0 }, 'slow');
-
-            //        },
-            //        error: function () {
-            //            alert("error");
-            //        }
-            //    });
-                
-               
-            //}
-            //else {
-                $.ajax({
-                    type: "get",
-                    url: url,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "html",
-                    success: function (html) {
-                        debugger;
-                        $('section.content').html(html);
-                        window.scrollTo(0, 0);
-                        debugger;
-                        //$('section.content').find('div:first').animate({ scrollTop: 0 }, 'slow');
-
-                    },
-                    error: function () {
-                        alert("error");
-                    }
-                });
-            //}
-    
+            $.ajax({
+                type: "get",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (html) {
+                    debugger;
+                    $('section.content').html(html);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
 
         });
         $('#treeview-menu-area').on('click', "button#search-btn", function (e) {
@@ -198,14 +194,9 @@
         });
 
 
-       // $('.sidebar').show();
+
 
     });
 
 
-
-    $('#search-box').on('change', function () {
-        debugger;
-        $('#search-btn').trigger('click');
-    });
 </script>
