@@ -218,6 +218,17 @@
           <Property Name="RegID" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RegionNam" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
+        <EntityType Name="ReferenceTnoLink">
+          <Key>
+            <PropertyRef Name="RefrenceTnoLinkID" />
+          </Key>
+          <Property Name="RefrenceTnoLinkID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fid" Type="int" />
+          <Property Name="IAccno" Type="int" />
+          <Property Name="Amount" Type="numeric" Precision="19" Scale="2" />
+          <Property Name="tno" Type="numeric" Precision="19" Scale="2" />
+          <Property Name="ReferenceTno" Type="numeric" Precision="19" Scale="2" />
+        </EntityType>
         <EntityType Name="AAdjustmnt">
           <Key>
             <PropertyRef Name="AAdjustmentID" />
@@ -1649,6 +1660,16 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.fin.ProductOPSID' do
           <Property Name="UpdatedBy" Type="int" />
           <Property Name="Flag" Type="bit" />
         </EntityType>
+        <EntityType Name="ProductVfin">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PID" Type="int" />
+          <Property Name="FID" Type="int" />
+          <Property Name="F1id" Type="int" />
+          <Property Name="CurrId" Type="int" />
+        </EntityType>
         <EntityType Name="ReferenceInfo">
           <Key>
             <PropertyRef Name="RIId" />
@@ -1777,6 +1798,16 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.fin.ProductOPSID' do
           <Property Name="RNWID" Type="tinyint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RenewRule" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="enable" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SchemeVFin">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SDID" Type="tinyint" />
+          <Property Name="FID" Type="int" />
+          <Property Name="F1Id" Type="int" />
+          <Property Name="IsLocal" Type="int" />
         </EntityType>
         <EntityType Name="SchmDetails">
           <Key>
@@ -3423,6 +3454,18 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Finacc_ProductVfin">
+          <End Role="FinAcc" Type="Self.FinAcc" Multiplicity="0..1" />
+          <End Role="ProductVfin" Type="Self.ProductVfin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinAcc">
+              <PropertyRef Name="Fid" />
+            </Principal>
+            <Dependent Role="ProductVfin">
+              <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FinSys2_FinSys1">
           <End Role="FinSys1" Type="Self.FinSys1" Multiplicity="1" />
           <End Role="FinSys2" Type="Self.FinSys2" Multiplicity="*" />
@@ -3636,6 +3679,30 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
             </Principal>
             <Dependent Role="ProductDetail">
               <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductDetail_ProductDetail">
+          <End Role="ProductDetail" Type="Self.ProductDetail" Multiplicity="1" />
+          <End Role="ProductDetail1" Type="Self.ProductDetail" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="ProductDetail">
+              <PropertyRef Name="PID" />
+            </Principal>
+            <Dependent Role="ProductDetail1">
+              <PropertyRef Name="PID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductDetail_ProductVfin">
+          <End Role="ProductDetail" Type="Self.ProductDetail" Multiplicity="0..1" />
+          <End Role="ProductVfin" Type="Self.ProductVfin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductDetail">
+              <PropertyRef Name="PID" />
+            </Principal>
+            <Dependent Role="ProductVfin">
+              <PropertyRef Name="PID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3900,6 +3967,30 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
             </Principal>
             <Dependent Role="RemittanceCustomers">
               <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SchemeVFin_Finacc">
+          <End Role="FinAcc" Type="Self.FinAcc" Multiplicity="0..1" />
+          <End Role="SchemeVFin" Type="Self.SchemeVFin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinAcc">
+              <PropertyRef Name="Fid" />
+            </Principal>
+            <Dependent Role="SchemeVFin">
+              <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SchemeVFin_SchmDetails">
+          <End Role="SchmDetails" Type="Self.SchmDetails" Multiplicity="0..1" />
+          <End Role="SchemeVFin" Type="Self.SchemeVFin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SchmDetails">
+              <PropertyRef Name="SDID" />
+            </Principal>
+            <Dependent Role="SchemeVFin">
+              <PropertyRef Name="SDID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4180,6 +4271,7 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <EntitySet Name="RemittanceCustomers" EntityType="Self.RemittanceCustomers" Schema="cust" store:Type="Tables" />
           <EntitySet Name="ADrlimitLog" EntityType="Self.ADrlimitLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LicenseRegion" EntityType="Self.LicenseRegion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReferenceTnoLink" EntityType="Self.ReferenceTnoLink" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AAdjustmnt" EntityType="Self.AAdjustmnt" Schema="fin" store:Type="Tables" />
           <EntitySet Name="ABal" EntityType="Self.ABal" Schema="fin" store:Type="Tables" />
           <EntitySet Name="AccountStatus" EntityType="Self.AccountStatus" Schema="fin" store:Type="Tables" />
@@ -4273,6 +4365,7 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <EntitySet Name="ProductPCID" EntityType="Self.ProductPCID" Schema="fin" store:Type="Tables" />
           <EntitySet Name="ProductPSID" EntityType="Self.ProductPSID" Schema="fin" store:Type="Tables" />
           <EntitySet Name="ProductTID" EntityType="Self.ProductTID" Schema="fin" store:Type="Tables" />
+          <EntitySet Name="ProductVfin" EntityType="Self.ProductVfin" Schema="fin" store:Type="Tables" />
           <EntitySet Name="ReferenceInfo" EntityType="Self.ReferenceInfo" Schema="fin" store:Type="Tables" />
           <EntitySet Name="RemitDeposit" EntityType="Self.RemitDeposit" Schema="fin" store:Type="Tables" />
           <EntitySet Name="RemitPayment" EntityType="Self.RemitPayment" Schema="fin" store:Type="Tables" />
@@ -4286,6 +4379,7 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <EntitySet Name="RulePenBalance" EntityType="Self.RulePenBalance" Schema="fin" store:Type="Tables" />
           <EntitySet Name="RuleRate" EntityType="Self.RuleRate" Schema="fin" store:Type="Tables" />
           <EntitySet Name="RuleRenew" EntityType="Self.RuleRenew" Schema="fin" store:Type="Tables" />
+          <EntitySet Name="SchemeVFin" EntityType="Self.SchemeVFin" Schema="fin" store:Type="Tables" />
           <EntitySet Name="SchmDetails" EntityType="Self.SchmDetails" Schema="fin" store:Type="Tables" />
           <EntitySet Name="SCrtDtls" EntityType="Self.SCrtDtls" Schema="fin" store:Type="Tables" />
           <EntitySet Name="SectorDef" EntityType="Self.SectorDef" Schema="fin" store:Type="Tables" />
@@ -4890,6 +4984,10 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
             <End Role="FinSys2" EntitySet="FinSys2" />
             <End Role="FinAcc" EntitySet="FinAcc" />
           </AssociationSet>
+          <AssociationSet Name="FK_Finacc_ProductVfin" Association="Self.FK_Finacc_ProductVfin">
+            <End Role="FinAcc" EntitySet="FinAcc" />
+            <End Role="ProductVfin" EntitySet="ProductVfin" />
+          </AssociationSet>
           <AssociationSet Name="FK_FinSys2_FinSys1" Association="Self.FK_FinSys2_FinSys1">
             <End Role="FinSys1" EntitySet="FinSys1" />
             <End Role="FinSys2" EntitySet="FinSys2" />
@@ -4961,6 +5059,14 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <AssociationSet Name="FK_ProductDetail_FinAcc1" Association="Self.FK_ProductDetail_FinAcc1">
             <End Role="FinAcc" EntitySet="FinAcc" />
             <End Role="ProductDetail" EntitySet="ProductDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductDetail_ProductDetail" Association="Self.FK_ProductDetail_ProductDetail">
+            <End Role="ProductDetail" EntitySet="ProductDetail" />
+            <End Role="ProductDetail1" EntitySet="ProductDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductDetail_ProductVfin" Association="Self.FK_ProductDetail_ProductVfin">
+            <End Role="ProductDetail" EntitySet="ProductDetail" />
+            <End Role="ProductVfin" EntitySet="ProductVfin" />
           </AssociationSet>
           <AssociationSet Name="FK_ProductDetail_RuleRenew" Association="Self.FK_ProductDetail_RuleRenew">
             <End Role="RuleRenew" EntitySet="RuleRenew" />
@@ -5049,6 +5155,14 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <AssociationSet Name="FK_RemittanceCustomers_FinAcc" Association="Self.FK_RemittanceCustomers_FinAcc">
             <End Role="FinAcc" EntitySet="FinAcc" />
             <End Role="RemittanceCustomers" EntitySet="RemittanceCustomers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SchemeVFin_Finacc" Association="Self.FK_SchemeVFin_Finacc">
+            <End Role="FinAcc" EntitySet="FinAcc" />
+            <End Role="SchemeVFin" EntitySet="SchemeVFin" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SchemeVFin_SchmDetails" Association="Self.FK_SchemeVFin_SchmDetails">
+            <End Role="SchmDetails" EntitySet="SchmDetails" />
+            <End Role="SchemeVFin" EntitySet="SchemeVFin" />
           </AssociationSet>
           <AssociationSet Name="FK_SchmDetails_FinAcc" Association="Self.FK_SchmDetails_FinAcc">
             <End Role="FinAcc" EntitySet="FinAcc" />
@@ -5900,6 +6014,29 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <EntitySet Name="Roles" EntityType="ChannakyaBaseModel.Role" />
           <EntitySet Name="ParamValues" EntityType="ChannakyaBaseModel.ParamValue" />
           <EntitySet Name="Users" EntityType="ChannakyaBaseModel.User" />
+          <EntitySet Name="ProductVfins" EntityType="ChannakyaBaseModel.ProductVfin" />
+          <EntitySet Name="SchemeVFins" EntityType="ChannakyaBaseModel.SchemeVFin" />
+          <AssociationSet Name="FK_Finacc_ProductVfin" Association="ChannakyaBaseModel.FK_Finacc_ProductVfin">
+            <End Role="FinAcc" EntitySet="FinAccs" />
+            <End Role="ProductVfin" EntitySet="ProductVfins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SchemeVFin_Finacc" Association="ChannakyaBaseModel.FK_SchemeVFin_Finacc">
+            <End Role="FinAcc" EntitySet="FinAccs" />
+            <End Role="SchemeVFin" EntitySet="SchemeVFins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductDetail_ProductDetail" Association="ChannakyaBaseModel.FK_ProductDetail_ProductDetail">
+            <End Role="ProductDetail" EntitySet="ProductDetails" />
+            <End Role="ProductDetail1" EntitySet="ProductDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductDetail_ProductVfin" Association="ChannakyaBaseModel.FK_ProductDetail_ProductVfin">
+            <End Role="ProductDetail" EntitySet="ProductDetails" />
+            <End Role="ProductVfin" EntitySet="ProductVfins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SchemeVFin_SchmDetails" Association="ChannakyaBaseModel.FK_SchemeVFin_SchmDetails">
+            <End Role="SchmDetail" EntitySet="SchmDetails" />
+            <End Role="SchemeVFin" EntitySet="SchemeVFins" />
+          </AssociationSet>
+          <EntitySet Name="ReferenceTnoLinks" EntityType="ChannakyaBaseModel.ReferenceTnoLink" />
           </EntityContainer>
         <ComplexType Name="FGetCustName_Result">
           <Property Type="Decimal" Name="CID" Nullable="false" Precision="10" Scale="0" />
@@ -7284,6 +7421,9 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <NavigationProperty Name="ProductPSIDs" Relationship="ChannakyaBaseModel.FK_ProductPSID_ProductDetail" FromRole="ProductDetail" ToRole="ProductPSID" />
           <NavigationProperty Name="ProductTIDs" Relationship="ChannakyaBaseModel.FK_ProductTID_ProductDetail" FromRole="ProductDetail" ToRole="ProductTID" />
           <NavigationProperty Name="FinAcc" Relationship="ChannakyaBaseModel.FK_ProductDetail_FinAcc1" FromRole="ProductDetail" ToRole="FinAcc" />
+          <NavigationProperty Name="ProductDetail1" Relationship="ChannakyaBaseModel.FK_ProductDetail_ProductDetail" FromRole="ProductDetail" ToRole="ProductDetail1" />
+          <NavigationProperty Name="ProductDetail2" Relationship="ChannakyaBaseModel.FK_ProductDetail_ProductDetail" FromRole="ProductDetail1" ToRole="ProductDetail" />
+          <NavigationProperty Name="ProductVfins" Relationship="ChannakyaBaseModel.FK_ProductDetail_ProductVfin" FromRole="ProductDetail" ToRole="ProductVfin" />
         </EntityType>
         <EntityType Name="ProductDurationInt">
           <Key>
@@ -7532,6 +7672,7 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <NavigationProperty Name="RuleICB" Relationship="ChannakyaBaseModel.FK_SchmDetails_RuleICB" FromRole="SchmDetail" ToRole="RuleICB" />
           <NavigationProperty Name="RuleMovement" Relationship="ChannakyaBaseModel.FK_SchmDetails_RuleMovement" FromRole="SchmDetail" ToRole="RuleMovement" />
           <NavigationProperty Name="FinAcc" Relationship="ChannakyaBaseModel.FK_SchmDetails_FinAcc" FromRole="SchmDetail" ToRole="FinAcc" />
+          <NavigationProperty Name="SchemeVFins" Relationship="ChannakyaBaseModel.FK_SchemeVFin_SchmDetails" FromRole="SchmDetail" ToRole="SchemeVFin" />
         </EntityType>
         <EntityType Name="SCrtDtl">
           <Key>
@@ -9717,6 +9858,8 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <NavigationProperty Name="ProductDetails" Relationship="ChannakyaBaseModel.FK_ProductDetail_FinAcc1" FromRole="FinAcc" ToRole="ProductDetail" />
           <NavigationProperty Name="RemittanceCustomers" Relationship="ChannakyaBaseModel.FK_RemittanceCustomers_FinAcc" FromRole="FinAcc" ToRole="RemittanceCustomer" />
           <NavigationProperty Name="SchmDetails" Relationship="ChannakyaBaseModel.FK_SchmDetails_FinAcc" FromRole="FinAcc" ToRole="SchmDetail" />
+          <NavigationProperty Name="ProductVfins" Relationship="ChannakyaBaseModel.FK_Finacc_ProductVfin" FromRole="FinAcc" ToRole="ProductVfin" />
+          <NavigationProperty Name="SchemeVFins" Relationship="ChannakyaBaseModel.FK_SchemeVFin_Finacc" FromRole="FinAcc" ToRole="SchemeVFin" />
         </EntityType>
         <EntityType Name="FinSys1">
           <Key>
@@ -10184,6 +10327,101 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ProductVfin">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PID" Type="Int32" />
+          <Property Name="FID" Type="Int32" />
+          <Property Name="F1id" Type="Int32" />
+          <Property Name="CurrId" Type="Int32" />
+          <NavigationProperty Name="FinAcc" Relationship="ChannakyaBaseModel.FK_Finacc_ProductVfin" FromRole="ProductVfin" ToRole="FinAcc" />
+          <NavigationProperty Name="ProductDetail" Relationship="ChannakyaBaseModel.FK_ProductDetail_ProductVfin" FromRole="ProductVfin" ToRole="ProductDetail" />
+        </EntityType>
+        <EntityType Name="SchemeVFin">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SDID" Type="Byte" />
+          <Property Name="FID" Type="Int32" />
+          <Property Name="F1Id" Type="Int32" />
+          <Property Name="IsLocal" Type="Int32" />
+          <NavigationProperty Name="FinAcc" Relationship="ChannakyaBaseModel.FK_SchemeVFin_Finacc" FromRole="SchemeVFin" ToRole="FinAcc" />
+          <NavigationProperty Name="SchmDetail" Relationship="ChannakyaBaseModel.FK_SchemeVFin_SchmDetails" FromRole="SchemeVFin" ToRole="SchmDetail" />
+        </EntityType>
+        <Association Name="FK_Finacc_ProductVfin">
+          <End Type="ChannakyaBaseModel.FinAcc" Role="FinAcc" Multiplicity="0..1" />
+          <End Type="ChannakyaBaseModel.ProductVfin" Role="ProductVfin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinAcc">
+              <PropertyRef Name="Fid" />
+            </Principal>
+            <Dependent Role="ProductVfin">
+              <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SchemeVFin_Finacc">
+          <End Type="ChannakyaBaseModel.FinAcc" Role="FinAcc" Multiplicity="0..1" />
+          <End Type="ChannakyaBaseModel.SchemeVFin" Role="SchemeVFin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinAcc">
+              <PropertyRef Name="Fid" />
+            </Principal>
+            <Dependent Role="SchemeVFin">
+              <PropertyRef Name="FID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductDetail_ProductDetail">
+          <End Type="ChannakyaBaseModel.ProductDetail" Role="ProductDetail" Multiplicity="1" />
+          <End Type="ChannakyaBaseModel.ProductDetail" Role="ProductDetail1" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="ProductDetail">
+              <PropertyRef Name="PID" />
+            </Principal>
+            <Dependent Role="ProductDetail1">
+              <PropertyRef Name="PID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductDetail_ProductVfin">
+          <End Type="ChannakyaBaseModel.ProductDetail" Role="ProductDetail" Multiplicity="0..1" />
+          <End Type="ChannakyaBaseModel.ProductVfin" Role="ProductVfin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductDetail">
+              <PropertyRef Name="PID" />
+            </Principal>
+            <Dependent Role="ProductVfin">
+              <PropertyRef Name="PID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SchemeVFin_SchmDetails">
+          <End Type="ChannakyaBaseModel.SchmDetail" Role="SchmDetail" Multiplicity="0..1" />
+          <End Type="ChannakyaBaseModel.SchemeVFin" Role="SchemeVFin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SchmDetail">
+              <PropertyRef Name="SDID" />
+            </Principal>
+            <Dependent Role="SchemeVFin">
+              <PropertyRef Name="SDID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ReferenceTnoLink">
+          <Key>
+            <PropertyRef Name="RefrenceTnoLinkID" />
+          </Key>
+          <Property Name="RefrenceTnoLinkID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fid" Type="Int32" />
+          <Property Name="IAccno" Type="Int32" />
+          <Property Name="Amount" Type="Decimal" Precision="19" Scale="2" />
+          <Property Name="tno" Type="Decimal" Precision="19" Scale="2" />
+          <Property Name="ReferenceTno" Type="Decimal" Precision="19" Scale="2" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -12743,6 +12981,40 @@ warning 6002: The table/view 'ChannakyabaseMigrationTesting.Trans.TransactionEdi
                 <ScalarProperty Name="UserDesignationId" ColumnName="UserDesignationId" />
                 <ScalarProperty Name="MTId" ColumnName="MTId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductVfins">
+            <EntityTypeMapping TypeName="ChannakyaBaseModel.ProductVfin">
+              <MappingFragment StoreEntitySet="ProductVfin">
+                <ScalarProperty Name="CurrId" ColumnName="CurrId" />
+                <ScalarProperty Name="F1id" ColumnName="F1id" />
+                <ScalarProperty Name="FID" ColumnName="FID" />
+                <ScalarProperty Name="PID" ColumnName="PID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SchemeVFins">
+            <EntityTypeMapping TypeName="ChannakyaBaseModel.SchemeVFin">
+              <MappingFragment StoreEntitySet="SchemeVFin">
+                <ScalarProperty Name="IsLocal" ColumnName="IsLocal" />
+                <ScalarProperty Name="F1Id" ColumnName="F1Id" />
+                <ScalarProperty Name="FID" ColumnName="FID" />
+                <ScalarProperty Name="SDID" ColumnName="SDID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReferenceTnoLinks">
+            <EntityTypeMapping TypeName="ChannakyaBaseModel.ReferenceTnoLink">
+              <MappingFragment StoreEntitySet="ReferenceTnoLink">
+                <ScalarProperty Name="ReferenceTno" ColumnName="ReferenceTno" />
+                <ScalarProperty Name="tno" ColumnName="tno" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="IAccno" ColumnName="IAccno" />
+                <ScalarProperty Name="Fid" ColumnName="Fid" />
+                <ScalarProperty Name="RefrenceTnoLinkID" ColumnName="RefrenceTnoLinkID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
