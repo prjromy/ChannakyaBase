@@ -18,11 +18,13 @@ namespace ChannakyaBase.BLL.Service
         private GenericUnitOfWork uow = null;
         ReturnBaseMessageModel returnMessage = null;
         private CommonService commonService = null;
+        private Loader.Repository.GenericUnitOfWork luw = null;
         public ReportService()
         {
             uow = new GenericUnitOfWork();
             returnMessage = new ReturnBaseMessageModel();
             commonService = new CommonService();
+            luw = new Loader.Repository.GenericUnitOfWork();
         }
         public List<AccountReportViewModel> AccountOpenCloseDetailsReportAllList(DateTime? fromDate, DateTime? toDate, int branchID, int productId, int accountStatus, int accountType,int pageNo, int pageSize)
         {
@@ -1141,6 +1143,16 @@ namespace ChannakyaBase.BLL.Service
             return company;
         }
 
+        public CompanyViewModel CompanyNameDetails()
+        {
+            CompanyViewModel companyViewModel = new CompanyViewModel();
+            var company = luw.Repository<Loader.Models.ParamValue>().FindBy(x => x.PId == 26).Select(x => x.PValue).SingleOrDefault();
+            companyViewModel.CompanyName = company;
 
+
+
+
+            return companyViewModel;
+        }
     }
 }
