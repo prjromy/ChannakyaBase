@@ -325,18 +325,37 @@ $(".account-aumber").on('change', function (e) {
                     })
                 }
                 if (data == "LoanPayment") {
+                    var radioPayment = $('input[name="Payment"]:checked').val();
+                    var AccountId=$('#Loan-Payment-form').find('.account-id').val();
+                    //if (radioPayment == "0") {
+                    //    $.ajax({
+                    //        type: 'GET',
+                    //        url: '/Credit/',
+                    //        data: {
+                    //            accountId: result[0].IAccno,
+                    //        },
+                    //        success: function (payment) {
 
-                    $.ajax({
-                        type: 'GET',
-                        url: '/Credit/LoanAccountPayment',
-                        data: {
-                            accountId: result[0].IAccno,
-                        },
-                        success: function (payment) {
+                    //            $('.load-loan-account-payment-data').html(payment)
+                    //        },
+                    //    });
+                    //}
+                    //else {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Credit/LoanAccountPayment',
+                            data: {
+                                accountId: AccountId,
+                                radioPayment: radioPayment,
+                            },
+                            success: function (payment) {
 
-                            $('.load-loan-account-payment-data').html(payment)
-                        },
-                    });
+                                $('.load-loan-account-payment-data').html(payment)
+                            },
+                        });
+
+
+                    //}
                     $.ajax({
                         type: 'GET',
                         url: '/Credit/_LoanAccountDetailsInformationShow',
@@ -877,15 +896,17 @@ $(".account-aumber").on('keyup', function (e) {
                         })
                     }
                     if (data == "LoanPayment") {
-
+                        var radioPayment = $('input[name="Payment"]:checked').val();
+                        var AccountId = $('#Loan-Payment-form').find('.account-id').val();
                         $.ajax({
                             type: 'GET',
                             url: '/Credit/LoanAccountPayment',
                             data: {
-                                accountId: result[0].IAccno,
+                                accountId: AccountId,
+                                radioPayment: radioPayment,
                             },
                             success: function (payment) {
-                                debugger;
+
                                 $('.load-loan-account-payment-data').html(payment)
                             },
                         });
@@ -893,7 +914,7 @@ $(".account-aumber").on('keyup', function (e) {
                             type: 'GET',
                             url: '/Credit/_LoanAccountDetailsInformationShow',
                             data: {
-                                accountId: result[0].IAccno,
+                                accountId: result[0].AccountId,
                             },
                             success: function (paymentdetails) {
                                 debugger;
@@ -1553,14 +1574,17 @@ $(document).on('click', '.table-click-account-number-search table tr', function 
             }
             if (data == "LoanPayment") {
                 debugger;
+                  var radioPayment = $('input[name="Payment"]:checked').val();
+                  var AccountId = $('#Loan-Payment-form').find('.account-id').val();
                 $.ajax({
                     type: 'GET',
                     url: '/Credit/LoanAccountPayment',
                     data: {
-                        accountId: result.AccountId,
+                        accountId: AccountId,
+                        radioPayment: radioPayment,
                     },
                     success: function (payment) {
-                        debugger;
+
                         $('.load-loan-account-payment-data').html(payment)
                     },
                 });
