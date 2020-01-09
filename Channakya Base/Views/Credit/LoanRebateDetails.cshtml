@@ -1,5 +1,9 @@
 ﻿
 @model  ChannakyaBase.Model.ViewModel.LoanRebateModel
+  @using ChannakyaBase.BLL
+    @{ 
+        CommonService commonService = new CommonService();
+    }
 <table class="table table-bordered table-striped table-hover loan-rebate-detail">
 
     <thead>
@@ -114,12 +118,19 @@
 
     <div class="form-group">
         @Html.Label("Link Account ", new { @class = "control-label col-sm-2" })
-        <div class="col-sm-5">
-            @Html.TextBoxFor(x => x.OldLinkAccount, new { @class = "form-control", @readonly = "readonly" })
+        @{ 
+            var accountnumber = commonService.GetAccountNumberToString(Model.OldLinkAccount);
+        }
+        @Html.HiddenFor(x=>x.OldLinkAccount)
+        <div class="col-sm-3">
+            @Html.TextBoxFor(x=>accountnumber, new { @class = "form-control", @readonly = "readonly", @Value = accountnumber })
+        </div>
+        <div class="col-sm-3">
+            @Html.TextBoxFor(x => x.OldLinkBalance, new { @class = "form-control", @readonly = "readonly" })
             </div>
-        <div class="col-sm-5">
+        <div class="col-sm-3">
 
-            @Html.TextBoxFor(x => x.NewLinkAccount, new { @class = "form-control" })
+            @Html.TextBoxFor(x => x.NewLinkBalance, new { @class = "form-control" })
         </div>
         </div>
 
