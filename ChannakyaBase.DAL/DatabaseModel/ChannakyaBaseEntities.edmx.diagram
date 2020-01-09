@@ -328,6 +328,14 @@
         <EntityTypeShape EntityType="ChannakyaBaseModel.Role" Width="1.5" PointX="7.375" PointY="28.75" />
         <EntityTypeShape EntityType="ChannakyaBaseModel.ParamValue" Width="1.5" PointX="30.375" PointY="0.75" />
         <EntityTypeShape EntityType="ChannakyaBaseModel.User" Width="1.5" PointX="30.375" PointY="3.75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ProductVfin" Width="1.5" PointX="7.5" PointY="75" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.SchemeVFin" Width="1.5" PointX="5.25" PointY="73.75" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_Finacc_ProductVfin" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_SchemeVFin_Finacc" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDetail_ProductDetail" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_ProductDetail_ProductVfin" />
+        <AssociationConnector Association="ChannakyaBaseModel.FK_SchemeVFin_SchmDetails" />
+        <EntityTypeShape EntityType="ChannakyaBaseModel.ReferenceTnoLink" Width="1.5" PointX="30.375" PointY="9.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
