@@ -18,6 +18,7 @@ namespace ChannakyaBase.DAL.DatabaseModel
         public SchmDetail()
         {
             this.ProductDetails = new HashSet<ProductDetail>();
+            this.SchemeVFins = new HashSet<SchemeVFin>();
         }
     
         public byte SDID { get; set; }
@@ -49,5 +50,7 @@ namespace ChannakyaBase.DAL.DatabaseModel
         public virtual RuleICB RuleICB { get; set; }
         public virtual RuleMovement RuleMovement { get; set; }
         public virtual FinAcc FinAcc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SchemeVFin> SchemeVFins { get; set; }
     }
 }
