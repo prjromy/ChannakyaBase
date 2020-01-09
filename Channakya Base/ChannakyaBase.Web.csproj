@@ -3277,6 +3277,7 @@
     <Content Include="Views\Credit\LoanRebate.cshtml" />
     <Content Include="Views\Credit\LoanRebateDetails.cshtml" />
     <Content Include="Views\Credit\SingleRebate.cshtml" />
+    <Content Include="Views\Credit\NonCashLoanPayment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
