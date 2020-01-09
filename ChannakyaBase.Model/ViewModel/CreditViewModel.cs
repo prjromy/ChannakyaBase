@@ -779,6 +779,16 @@ namespace ChannakyaBase.Model.ViewModel
         public double FatureInterest { get; set; }
         public double CurrentInterest { get; set; }
     }
+    public class NonCashLoanPayment
+    {
+        public int ShareIaccno { get; set; }
+        public int DepositIaccno { get; set; }
+        public int OtherIaccno { get; set; } 
+
+        public decimal ShareAmount { get; set; }
+        public decimal DepositAmount { get; set; }
+        public decimal OtherAmount { get; set; }
+    }
     public class LoanRebateModel
     {
         public int IAccno { get; set; }
@@ -834,9 +844,11 @@ namespace ChannakyaBase.Model.ViewModel
 
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:N2}")]
-        public Nullable<decimal> OldLinkAccount { get; set; }//Old Principal Out
+        public Nullable<decimal> OldLinkBalance { get; set; }//Old Principal Out
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:N2}")]
-        public Nullable<decimal> NewLinkAccount { get; set; }//Old Principal Out
+        public Nullable<decimal> NewLinkBalance { get; set; }//Old Principal Out
+
+        public int OldLinkAccount { get; set; }
     }
 }
