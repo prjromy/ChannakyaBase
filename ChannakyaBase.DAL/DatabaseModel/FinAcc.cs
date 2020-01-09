@@ -20,6 +20,8 @@ namespace ChannakyaBase.DAL.DatabaseModel
             this.ProductDetails = new HashSet<ProductDetail>();
             this.RemittanceCustomers = new HashSet<RemittanceCustomer>();
             this.SchmDetails = new HashSet<SchmDetail>();
+            this.ProductVfins = new HashSet<ProductVfin>();
+            this.SchemeVFins = new HashSet<SchemeVFin>();
         }
     
         public int Fid { get; set; }
@@ -39,5 +41,9 @@ namespace ChannakyaBase.DAL.DatabaseModel
         public virtual ICollection<RemittanceCustomer> RemittanceCustomers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SchmDetail> SchmDetails { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProductVfin> ProductVfins { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SchemeVFin> SchemeVFins { get; set; }
     }
 }
