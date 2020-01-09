@@ -788,7 +788,7 @@ namespace ChannakyaBase.BLL.Service
                     var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
                     //if (aModelDetails.AgreementAmount <= LAMount)
 
-                    if (!aModelDetails.AgreementAmount.Equals(null))
+                    if (!aModelDetails.AgreementAmount.Equals(null) && !aModelDetails.AgreementAmount.Equals(0))
 
                     {
                             //var LAMount = uow.Repository<ProductDetail>().FindBy(x => x.PID == aModelDetails.PID).Select(x => x.LAmt).FirstOrDefault();
@@ -2704,7 +2704,7 @@ namespace ChannakyaBase.BLL.Service
                                 bool isMature = TellerUtilityService.IsAlreadyMatured(withdrawModel.AccountId);
                                 if (AccountDetails.AccState != 7)
                                 {
-                                    if (isMature) // !isMature replace with isMature
+                                    if (isMature==false) // !isMature replace with isMature
                                     {
                                         returnMessage.Msg = "Withdraw is not Allowed.! \n Account NOT Matured Yet..!!";
                                         returnMessage.Success = false;
