@@ -264,57 +264,30 @@ namespace ChannakyaBase.BLL.Service
 
                 {
                     #region ForRebate
-
-                    ChannakyaAccounting.Models.Models.Voucher2T voucher2TDebit = new ChannakyaAccounting.Models.Models.Voucher2T();
-                    ChannakyaAccounting.Models.Models.Voucher2T voucher2TCredit = new ChannakyaAccounting.Models.Models.Voucher2T();
-
-
-
-                    #region Voucher 1tentry
-
-
-                    ChannakyaAccounting.Models.Models.Voucher1T voucher1T = new ChannakyaAccounting.Models.Models.Voucher1T();
-                    var currencyid = uow.Repository<ADetail>().FindBy(x => x.IAccno == loanRebate.IAccno).Select(x => x.CurrID).FirstOrDefault();
-                    var tDate = commonService.GetBranchTransactionDate();
-                    var batchId = uow.Repository<DAL.DatabaseModel.ParamValue>().FindBy(x => x.PId == 7011).Select(x => x.PValue).SingleOrDefault();
-                    var vType = uow.Repository<DAL.DatabaseModel.ParamValue>().FindBy(x => x.PId == 7012).Select(x => x.PValue).SingleOrDefault();
-                    var FyId = uow.Repository<string>().SqlQuery("select fyid from lg.FiscalYears where @tdate=" + tDate + " between startdt and enddt");
-                    var VNId = uow.Repository<ChannakyaAccounting.Models.Models.VoucherNo>().FindBy(x => x.FYID == Convert.ToInt32(FyId) && x.CompanyId == Global.BranchId && x.BId == Convert.ToInt32(batchId) && x.VTypeId == Convert.ToInt32(vType)).SingleOrDefault();
-                    var vno = uow.GetContext().Database.SqlQuery<int>("select isnull(max(vno), 0) + 1 as Vno from acc.Voucher1T where Vnid = " + VNId + "");
-                    voucher1T.TDate = tDate;
-                    voucher1T.PostedBy = Global.UserId;
-                    voucher1T.PostedOn = DateTime.Now;
-                    voucher1T.CTId = currencyid;
-                    voucher1T.Narration = "Rebate";
-                    voucher1T.VerifiedOn = DateTime.Now;
-                    uow.Repository<ChannakyaAccounting.Models.Models.Voucher1T>().Add(voucher1T);
-                    uow.Commit();
-                    #endregion
-                  
-
-                    Int64 transactionNumber = commonService.GetUtno();
+                    var pid = uow.Repository<ADetail>().FindBy(x => x.IAccno == loanRebate.IAccno).Select(x=>x.PID).FirstOrDefault();
+                     Int64 transactionNumber = commonService.GetUtno();
                     ASTrn asTransaction = new ASTrn();
                     asTransaction.IAccno = loanRebate.IAccno;
                     asTransaction.notes = "Rebate";
                     asTransaction.slpno = 0;
-                    asTransaction.VNO = voucher1T.V1TId;
+                  
                     asTransaction.tdate = commonService.GetBranchTransactionDate();
 
                     ASTransLoan objAstransLoanRowSingle = new ASTransLoan();
 
                     if (loanRebate.RebateInterestOnOther != 0 && loanRebate.RebateInterestOnOther != null)
                     {
-                        voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebateInterestOnOther);//for entry in voucher2t
+                       
                         objAstransLoanRowSingle.tno = transactionNumber;
                         asTransaction.dramt = Convert.ToDecimal(loanRebate.RebateInterestOnOther);
                         objAstransLoanRowSingle.PId = 2;
                         objAstransLoanRowSingle.Amt = Convert.ToDecimal(loanRebate.InterestOnOther);
                         uow.Repository<ASTransLoan>().Add(objAstransLoanRowSingle);
-                        uow.Commit();
+                        
                     }
                     else if (loanRebate.RebateIntrestOnInterest != 0 && loanRebate.RebateIntrestOnInterest != null)
                     {
-                        voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebateIntrestOnInterest); //for entry in voucher2t
+                       
                         objAstransLoanRowSingle.tno = transactionNumber;
                         asTransaction.dramt = Convert.ToDecimal(loanRebate.RebateIntrestOnInterest);
                         objAstransLoanRowSingle.PId = 1;
@@ -324,7 +297,7 @@ namespace ChannakyaBase.BLL.Service
                     }
                     else if (loanRebate.RebatePenaltyOnPrincipal != 0 && loanRebate.RebatePenaltyOnPrincipal != null)
                     {
-                        voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebatePenaltyOnPrincipal); //for entry in voucher2t
+                        //voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebatePenaltyOnPrincipal); //for entry in voucher2t
                         objAstransLoanRowSingle.tno = transactionNumber;
                         asTransaction.dramt = Convert.ToDecimal(loanRebate.RebatePenaltyOnPrincipal);
 
@@ -335,7 +308,7 @@ namespace ChannakyaBase.BLL.Service
                     }
                     else if (loanRebate.RebatePenaltyOnInterest != 0 && loanRebate.RebatePenaltyOnInterest != null)
                     {
-                        voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebatePenaltyOnInterest); //for entry in voucher2t
+                        //voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebatePenaltyOnInterest); //for entry in voucher2t
                         objAstransLoanRowSingle.tno = transactionNumber;
                         asTransaction.dramt = Convert.ToDecimal(loanRebate.RebatePenaltyOnInterest);
 
@@ -345,7 +318,7 @@ namespace ChannakyaBase.BLL.Service
                     }
                     else
                     {
-                        voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebateInterestOnPrincipal);//for entry in voucher2t
+                        //voucher2TDebit.DebitAmount = Convert.ToDecimal(loanRebate.RebateInterestOnPrincipal);//for entry in voucher2t
                         objAstransLoanRowSingle.tno = transactionNumber;
                         asTransaction.dramt = Convert.ToDecimal(loanRebate.RebateInterestOnPrincipal);
 
@@ -360,172 +333,149 @@ namespace ChannakyaBase.BLL.Service
                     asTransaction.tno = transactionNumber;
                     asTransaction.PostedOn = DateTime.Now;
                     uow.Repository<ASTrn>().Add(asTransaction);
+                   
                     uow.Commit();
                     #endregion
 
                     #region For Principal Out,Other Balance
-                    Int64 OtherPrincipalTno = commonService.GetUtno();
+                    ReferenceTnoLink referenceTnoLink = new ReferenceTnoLink();
                     ASTrn asTransactionForPrincipalAndOther = new ASTrn();
-                    asTransactionForPrincipalAndOther.IAccno = loanRebate.IAccno;
-                    asTransactionForPrincipalAndOther.notes = "PrincipalOut or Other Balance";
-                    asTransactionForPrincipalAndOther.slpno = 0;
-                    asTransactionForPrincipalAndOther.tdate = commonService.GetBranchTransactionDate();
-                    if (loanRebate.NewPrincpalOut != 0 && loanRebate.NewPrincpalOut != null && loanRebate.NewOtherBalance != 0 && loanRebate.NewOtherBalance != null)
+                    if (loanRebate.NewPrincpalOut != 0 && loanRebate.NewPrincpalOut != null)
                     {
-                        asTransactionForPrincipalAndOther.cramt = Convert.ToDecimal(loanRebate.NewPrincpalOut + loanRebate.NewOtherBalance);
+
+
+
+                        Int64 OtherPrincipalTno = commonService.GetUtno();
+                       
+                       
+                        asTransactionForPrincipalAndOther.IAccno = loanRebate.IAccno;
+                        asTransactionForPrincipalAndOther.notes = "PrincipalOut";
+                        asTransactionForPrincipalAndOther.slpno = 0;
+                        asTransactionForPrincipalAndOther.tdate = commonService.GetBranchTransactionDate();
+                      
+
+
+                      
+                            asTransactionForPrincipalAndOther.cramt = Convert.ToDecimal(loanRebate.NewPrincpalOut);
+                        
+                        asTransactionForPrincipalAndOther.ttype = 5;
+                        asTransactionForPrincipalAndOther.postedby = Global.UserId;
+                        asTransactionForPrincipalAndOther.IsSlp = false;
+                        asTransactionForPrincipalAndOther.brnhno = Global.BranchId;
+                        asTransactionForPrincipalAndOther.tno = OtherPrincipalTno;
+                        asTransactionForPrincipalAndOther.PostedOn = DateTime.Now;
+
+                        uow.Repository<ASTrn>().Add(asTransactionForPrincipalAndOther);                   
+                            var fid = uow.Repository<ProductVfin>().FindBy(x => x.PID == pid && x.F1id == 126).Select(x => x.FID).FirstOrDefault();
+                            ASTransLoan objAstransLoanPrn = new ASTransLoan();
+                            objAstransLoanPrn.tno = OtherPrincipalTno;
+                            objAstransLoanPrn.PId = 13;
+                            objAstransLoanPrn.Amt = Convert.ToDecimal(loanRebate.NewPrincpalOut);                         
+                            uow.Repository<ASTransLoan>().Add(objAstransLoanPrn);
+                        referenceTnoLink.Amount = Convert.ToDecimal(loanRebate.NewPrincpalOut);
+                        referenceTnoLink.Fid = fid;//for now
+                            referenceTnoLink.ReferenceTno = transactionNumber;
+                        referenceTnoLink.tno = OtherPrincipalTno;
+                        referenceTnoLink.IAccno = loanRebate.IAccno;
+                        uow.Repository<ReferenceTnoLink>().Add(referenceTnoLink);
+                        uow.Commit();
                     }
-                    else if (loanRebate.NewPrincpalOut != 0 && loanRebate.NewPrincpalOut != null) {
+                    #endregion
+                    #region newotherbalance
+
+
+                    if (loanRebate.NewOtherBalance != 0 && loanRebate.NewOtherBalance != null)
+                    {
+
+
+
+                        Int64 OtherBalanceTno = commonService.GetUtno();
+                      
+                        asTransactionForPrincipalAndOther.IAccno = loanRebate.IAccno;
+                        asTransactionForPrincipalAndOther.notes = "Other Balance";
+                        asTransactionForPrincipalAndOther.slpno = 0;
+                        asTransactionForPrincipalAndOther.tdate = commonService.GetBranchTransactionDate();
+
+
+
+
                         asTransactionForPrincipalAndOther.cramt = Convert.ToDecimal(loanRebate.NewPrincpalOut);
-                    }
-                    asTransactionForPrincipalAndOther.ttype = 5;
-                    asTransactionForPrincipalAndOther.postedby = Global.UserId;
-                    asTransactionForPrincipalAndOther.IsSlp = false;
-                    asTransactionForPrincipalAndOther.brnhno = Global.BranchId;
-                    asTransactionForPrincipalAndOther.tno = OtherPrincipalTno;
-                    asTransactionForPrincipalAndOther.PostedOn = DateTime.Now;
-                    asTransactionForPrincipalAndOther.VNO = voucher1T.V1TId;
-                    uow.Repository<ASTrn>().Add(asTransactionForPrincipalAndOther);
-                    uow.Commit();
-                    if (loanRebate.NewPrincpalOut != null)
-                    {
-                        //for principleout in astransloan
-                        ASTransLoan objAstransLoanPrn = new ASTransLoan();
-                        objAstransLoanPrn.tno = OtherPrincipalTno;
-                        objAstransLoanPrn.PId = 13;
-                        objAstransLoanPrn.Amt = Convert.ToDecimal(loanRebate.NewPrincpalOut);
-                        voucher2TCredit.CreditAmount = Convert.ToDecimal(loanRebate.NewPrincpalOut);
-                        uow.Repository<ASTransLoan>().Add(objAstransLoanPrn);
+                       
 
+                        asTransactionForPrincipalAndOther.ttype = 5;
+                        asTransactionForPrincipalAndOther.postedby = Global.UserId;
+                        asTransactionForPrincipalAndOther.IsSlp = false;
+                        asTransactionForPrincipalAndOther.brnhno = Global.BranchId;
+                        asTransactionForPrincipalAndOther.tno = OtherBalanceTno;
+                        asTransactionForPrincipalAndOther.PostedOn = DateTime.Now;
+
+                        uow.Repository<ASTrn>().Add(asTransactionForPrincipalAndOther);
+
+
+                      //for other in astransloan
+
+                            var fid = uow.Repository<ProductVfin>().FindBy(x => x.PID == pid && x.F1id == 249).Select(x => x.FID).FirstOrDefault();
+
+                            ASTransLoan objAstransLoanPrnOther = new ASTransLoan();
+                            objAstransLoanPrnOther.tno = OtherBalanceTno;
+                            objAstransLoanPrnOther.PId = 14;
+                            objAstransLoanPrnOther.Amt = Convert.ToDecimal(loanRebate.NewOtherBalance);
+                        
+                            uow.Repository<ASTransLoan>().Add(objAstransLoanPrnOther);
+                            referenceTnoLink.Fid = fid;
+                        referenceTnoLink.tno = OtherBalanceTno;
+                        referenceTnoLink.Amount = Convert.ToDecimal(loanRebate.NewOtherBalance);
+                        referenceTnoLink.ReferenceTno = transactionNumber;
+                        referenceTnoLink.IAccno = loanRebate.IAccno;
+                        uow.Repository<ReferenceTnoLink>().Add(referenceTnoLink);
                         uow.Commit();
                     }
+                  
+               
 
-                    if (loanRebate.NewOtherBalance != null)
-                    {
-                        //for other in astransloan
-                        ASTransLoan objAstransLoanPrnOther = new ASTransLoan();
-                        objAstransLoanPrnOther.tno = OtherPrincipalTno;
-                        objAstransLoanPrnOther.PId = 14;
-                        objAstransLoanPrnOther.Amt = Convert.ToDecimal(loanRebate.NewOtherBalance);
-                        voucher2TCredit.CreditAmount = Convert.ToDecimal(loanRebate.NewOtherBalance);
-                        uow.Repository<ASTransLoan>().Add(objAstransLoanPrnOther);
-                        uow.Commit();
-                    }
-
-
+                  
+                    
                     #endregion
 
                     #region AlinkLoan
 
-                    Int64 OtherLinkAccountTno = commonService.GetUtno();
-                    if (loanRebate.NewLinkAccount != 0 && loanRebate.NewLinkAccount != null)
+                   
+                    if (loanRebate.NewLinkBalance != 0 && loanRebate.NewLinkBalance != null)
                     {
+                        Int64 OtherLinkAccountTno = commonService.GetUtno();
+                        var linkPid = uow.Repository<ADetail>().FindBy(x => x.IAccno == loanRebate.OldLinkAccount).Select(x => x.PID).FirstOrDefault();//link account number
+
+                        var fid = uow.Repository<ProductVfin>().FindBy(x => x.PID == linkPid && x.F1id == 126).Select(x => x.FID).FirstOrDefault();
                         ASTrn asTransactionAlinkLoan = new ASTrn();
                         asTransactionAlinkLoan.IAccno = loanRebate.IAccno;
                         asTransactionAlinkLoan.notes = "ALinkLoan";
                         asTransactionAlinkLoan.slpno = 0;
                         asTransactionAlinkLoan.tdate = commonService.GetBranchTransactionDate();
-                        asTransactionAlinkLoan.cramt = Convert.ToDecimal(loanRebate.NewLinkAccount);
-                        voucher2TCredit.CreditAmount = Convert.ToDecimal(loanRebate.NewLinkAccount);
+                        asTransactionAlinkLoan.cramt = Convert.ToDecimal(loanRebate.NewLinkBalance);
+                       
                         asTransactionAlinkLoan.ttype = 5;
                         asTransactionAlinkLoan.postedby = Global.UserId;
                         asTransactionAlinkLoan.IsSlp = false;
                         asTransactionAlinkLoan.brnhno = Global.BranchId;
                         asTransactionAlinkLoan.tno = OtherLinkAccountTno;
                         asTransactionAlinkLoan.PostedOn = DateTime.Now;
-                        asTransactionAlinkLoan.VNO = voucher1T.V1TId;
-                        commonService.InsertAvailableBalance(1, Convert.ToInt32(loanRebate.IAccno), Convert.ToDecimal(loanRebate.NewLinkAccount));
+                      
+                        commonService.InsertAvailableBalance(1, Convert.ToInt32(loanRebate.IAccno), Convert.ToDecimal(loanRebate.NewLinkBalance));
                         uow.Repository<ASTrn>().Add(asTransactionAlinkLoan);
+                        referenceTnoLink.ReferenceTno = transactionNumber;
+                        referenceTnoLink.Fid = fid;
+                        referenceTnoLink.IAccno = loanRebate.OldLinkAccount;
+                        referenceTnoLink.tno = OtherLinkAccountTno;
+                        uow.Repository<ReferenceTnoLink>().Add(referenceTnoLink);
                         uow.Commit();
 
                     }
                     #endregion
 
-                    #region Voucher2tentry
-
-
-                    ////voucher 2t entry
-
-                    if (loanRebate.RebateInterestOnOther != 0 && loanRebate.RebateInterestOnOther != null)
-                    {
-                        voucher2TDebit.Fid = 1; //for now
-                    }
-                    else
-                    {
-                        voucher2TDebit.Fid = 1; //for now
-                    }
-                    voucher2TDebit.Particulars = "Rebate for account no" + loanRebate.IAccno;
-
-                    if (loanRebate.NewPrincpalOut != 0 && loanRebate.NewPrincpalOut != null)
-                    {
-                        voucher2TCredit.Fid = 1; //for now
-                    }
-                    else if (loanRebate.NewOtherBalance != 0 && loanRebate.NewOtherBalance != null)
-                    {
-                        voucher2TCredit.Fid = 1; //for now
-                    }
-                    else
-                    {
-                        voucher2TCredit.Fid = 1; //for now
-                    }
-
-                    voucher1T.Voucher2T.Add(voucher2TDebit);
-                    voucher1T.Voucher2T.Add(voucher2TCredit);
-
-                    uow.Commit();
-                    #endregion
-
+                   
                     transaction.Commit();
-                    taskUow.SaveTaskNotification(TaskVerifierList, loanRebate.IAccno, 32);
-                    //voucher1T.VNId
-                    //voucher
-
-                    //if (loanRebate.NewPrincpalOut != 0 && loanRebate.NewPrincpalOut != null)
-                    //{
-                    //    ALoan aloan = uow.Repository<ALoan>().FindBy(x => x.IAccno == loanRebate.IAccno).SingleOrDefault();
-
-                    //    if (aloan == null)
-                    //    {
-                    //        aloan = new ALoan();
-                    //        aloan.PrincipleLoanOut = loanRebate.NewPrincpalOut;
-                    //        uow.Repository<ALoan>().Add(aloan);
-
-                    //    }
-                    //    else
-                    //    {
-                    //        aloan.PrincipleLoanOut = aloan.PrincipleLoanOut+loanRebate.NewPrincpalOut;
-                    //        uow.Repository<ALoan>().Edit(aloan);
-                    //    }
-
-
-                    //}
-
-                    //if (loanRebate.NewOtherBalance != 0 && loanRebate.NewOtherBalance != null)
-                    //{
-                    //    ALoan aloan = uow.Repository<ALoan>().FindBy(x => x.IAccno == loanRebate.IAccno).SingleOrDefault();
-
-                    //    if (aloan == null)
-                    //    {
-                    //        aloan = new ALoan();
-                    //        aloan.OthrBal = loanRebate.NewOtherBalance;
-                    //        uow.Repository<ALoan>().Add(aloan);
-
-                    //    }
-                    //    else
-                    //    {
-                    //        aloan.OthrBal = aloan.OthrBal+loanRebate.NewOtherBalance;
-                    //        uow.Repository<ALoan>().Edit(aloan);
-                    //    }
-                    //}
-                    //if (loanRebate.NewLinkAccount != 0 && loanRebate.NewLinkAccount != null)
-                    //{
-
-                    //    string alinkloan = uow.Repository<string>().SqlQuery("select b.Bal as varchar(100) from fin.ALinkloan a inner join fin.adetail b on a.ILinkAc=b.IAccno where a.IAccno="+ loanRebate.IAccno+ "and a.priority=1").SingleOrDefault();
-                    //    decimal decialinkloan = Convert.ToDecimal(alinkloan);
-                    //    alinkloan = alinkloan + loanRebate.NewLinkAccount;
-                    //}
-
-
-
+                    taskUow.SaveTaskNotification(TaskVerifierList, transactionNumber, 32);
+  
                     returnMessage.Msg = "Rebate Added Successfully";
                     returnMessage.Success = true;
                     return returnMessage;
@@ -2801,7 +2751,8 @@ namespace ChannakyaBase.BLL.Service
                                 Duration = pd.Duration,
                                 //DurState = SqlFunctions.StringConvert((decimal)pd.durState),
                                 //DurState=Convert.ToString (pd.durState),
-                                DurState = pd.durState == 0 ? "0" : pd.durState.ToString(),
+                                // DurState = pd.durState == 0 ? "0" : pd.durState.ToString()|| pd.durState == 0 ? "0" : pd.durState.ToString(),
+                                DurState = pd.durState == 0 ? "0" : pd.durState == null?  "0" : pd.durState.ToString(),
                                 HasIndividualDuration = pd.HasIndDuration == null ? false : true,
                                 ProductName = pd.PName,
                                 DurationType = pd.durState == null ? 0 : pd.durState,
@@ -3581,12 +3532,14 @@ namespace ChannakyaBase.BLL.Service
                         }
 
                     }
-
-                    if (totalAmount > disbursableAmount)
+                    if (loanDisbursement.IsOtherLoan == false)
                     {
-                        returnMessage.Msg = "Loan Disbursable Amount Exceeds";
-                        returnMessage.Success = false;
-                        return returnMessage;
+                        if (totalAmount > disbursableAmount)
+                        {
+                            returnMessage.Msg = "Loan Disbursable Amount Exceeds";
+                            returnMessage.Success = false;
+                            return returnMessage;
+                        }
                     }
                     #endregion
                     #region For Mode Dictionary
