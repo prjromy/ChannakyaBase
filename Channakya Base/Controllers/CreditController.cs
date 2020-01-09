@@ -1,4 +1,5 @@
-﻿using ChannakyaBase.BLL;
+﻿
+using ChannakyaBase.BLL;
 using ChannakyaBase.BLL.CustomHelper;
 using ChannakyaBase.BLL.Service;
 using ChannakyaBase.DAL.DatabaseModel;
@@ -261,11 +262,20 @@ namespace ChannakyaBase.Web.Controllers
                 return PartialView("~/Views/Shared/UserNoActivated.cshtml", new HandleErrorInfo(new HttpException(403, "Please activate user to access loan payment!!" + returnMessage.Msg), this.ControllerContext.RouteData.Values["controller"].ToString(), this.ControllerContext.RouteData.Values["action"].ToString()));
 
         }
-        public ActionResult LoanAccountPayment(int accountId)
+        public ActionResult LoanAccountPayment(int accountId, string radioPayment)
         {
-            var showLoanPayment = creditService.GetAccountLoanPaymentDetails(accountId);
-            showLoanPayment.IsMature = commonService.IsShowMatureInterestOnly();
-            return PartialView(showLoanPayment);
+            if (radioPayment == "0")
+            {
+                var showLoanPayment = creditService.GetAccountLoanPaymentDetails(accountId);
+                showLoanPayment.IsMature = commonService.IsShowMatureInterestOnly();
+                return PartialView(showLoanPayment);
+
+            }
+            else
+            {
+                return PartialView("NonCashLoanPayment");
+            }
+         
         }
         public ActionResult _LoanAccountDetailsInformationShow(int accountId)
         {
@@ -356,6 +366,46 @@ namespace ChannakyaBase.Web.Controllers
             asTransModel = tellerService.GetSingleUnverifiedTransaction(utno);
             asTransModel.ASTransLoanList = creditService.GetASTransLoanList(utno);
             return PartialView(asTransModel);
+        }
+
+        public ActionResult GetLedgerDetails( string flag , int? page = 1)
+        {
+
+            const int pageSize = 12;
+            IQueryable<FinAcc> finaccList;
+            if (flag == "1")
+            {
+                finaccList = new BLL.Repository.GenericUnitOfWork().Repository<FinAcc>().FindBy(x => x.FinSys2.FinSys1.IsGroup == false).Where(x => x.FinSys2.FinSys1.F1id == 15).AsQueryable();
+
+            }
+            else if (flag == "2")
+            {
+                finaccList = new BLL.Repository.GenericUnitOfWork().Repository<FinAcc>().FindBy(x => x.FinSys2.FinSys1.IsGroup == false).Where(x => x.FinSys2.FinSys1.F1id == 300).AsQueryable();
+
+            }
+            else
+            {
+                finaccList = new BLL.Repository.GenericUnitOfWork().Repository<FinAcc>().FindBy(x => x.FinSys2.FinSys1.IsGroup == false).Where(x => x.FinSys2.FinSys1.F1id == 2 || x.FinSys2.FinSys1.F1id == 7 || x.FinSys2.FinSys1.F1id == 5).AsQueryable();
+
+            }
+
+            //if (fId != 0)
+            //{
+            //    finaccList = new ChannakyaAccounting.Repository.UnitOfWork.Implementation_Classes.GenericUnitOfWork().Repository<FinAcc>().FindBy(x => x.Fid == fId && x.FinSys2.FinSys1.IsGroup == false).Where(x => x.FinSys2.FinSys1.F1id != 3).AsQueryable();
+            //}
+            ViewBag.ActivePager = page;
+            //if (!string.IsNullOrEmpty(query))
+            //{
+            //    finaccList = finaccList. Where(m => m.Fname.Contains(query));
+            //    ViewBag.Query = query;
+            //}
+            var dataList = finaccList.OrderBy(m => m.Fname);
+            //var pagedList = new Pagination<FinAcc>(dataList, page ?? 0, pageSize);
+            //ViewBag.CountPager = new Pagination<Models.Models.FinAcc>(dataList, page ?? 0, pageSize).TotalPages;
+            //ViewBag.CountPager = pagedList.TotalPages;
+            //ViewBag.ActivePager = page;
+            return Json(dataList, JsonRequestBehavior.AllowGet);
+
         }
 
 
