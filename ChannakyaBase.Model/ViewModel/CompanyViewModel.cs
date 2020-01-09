@@ -24,5 +24,7 @@ namespace ChannakyaBase.Model.ViewModel
         public string Email { get; set; }
         
         public string FaxNo { get; set; }
+
+        public string CompanyName { get; set; }
     }
 }
