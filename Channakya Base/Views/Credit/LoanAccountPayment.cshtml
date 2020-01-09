@@ -1,6 +1,8 @@
 ﻿@model  ChannakyaBase.Model.ViewModel.LoanPaymentModel
 @using ChannakyaBase.BLL.Service
 @using ChannakyaCustomeDatePicker.Helper;
+@using ChannakyaBase.BLL
+@using ChannakyaBase.BLL.CustomHelper
 @{
     Layout = null;
 
@@ -20,8 +22,12 @@
     {
         Interest = true;
     }
-
+    CommonService commonServices = new CommonService();
+    bool IsTransactionWithDeno = commonServices.IsTransactionWithDeno();
+    var ih = Model;
 }
+}
+@Html.CheckBox("transactionDeno", IsTransactionWithDeno, new { @class = "hidden" })
 <div class="table-responsive">
     <table class="table table-bordered table-striped table-hover table-payment-input-list">
         <thead>
@@ -366,6 +372,38 @@
     </table>
 
 </div>
+<div class="col-md-12">
+  
+    <div class="form-group">
+
+        <div class="col-md-2">
+            @Html.CheckBoxFor(m => m.ReadyToClose, new { @class = "ReadyToClose" })<label>ReadyToClose</label>
+        </div>
+        @Html.LabelFor(model => model.Notes, new { @class = "control-label  col-md-2" })
+        <div class="col-md-8">
+            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+    <div class="col-md-6">
+    </div>
+    <div class="col-md-6">
+        @if (IsTransactionWithDeno)
+        {
+            <div class="form-group">
+                <div class="transaction-with-deno">
+
+                    @{Html.RenderAction("DenoTransaction", "Teller", new { currencyId = commonServices.DefultCurrency(), denoInOut = EDeno.DenoIn.GetDescription() });}
+                </div>
+            </div>
+                        }
+    </div>
+</div>
+
+
 <style>
     .custome-control {
         height: 28px;
