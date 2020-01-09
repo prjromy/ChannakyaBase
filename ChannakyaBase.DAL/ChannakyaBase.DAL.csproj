@@ -541,7 +541,13 @@
     <Compile Include="DatabaseModel\ProductTID.cs">
       <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="DatabaseModel\ProductVfin.cs">
+      <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseModel\ReferenceInfo.cs">
+      <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseModel\ReferenceTnoLink.cs">
       <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="DatabaseModel\RemitDeposit.cs">
@@ -584,6 +590,9 @@
       <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="DatabaseModel\RuleRenew.cs">
+      <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseModel\SchemeVFin.cs">
       <DependentUpon>ChannakyaBaseEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="DatabaseModel\SchmDetail.cs">
