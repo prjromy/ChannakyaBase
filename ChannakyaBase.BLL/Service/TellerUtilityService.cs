@@ -130,7 +130,7 @@ namespace ChannakyaBase.BLL.Service
         public static bool IsFixedAccount(int productId)
         {
             var SchemeDetails = tellerService.GetFixedOrRecurringDepositDuration(productId);
-            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == false /*&& SchemeDetails.AllowWithdraw == false*/)
+            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == false && SchemeDetails.AllowWithdraw == false)
             {
                 return true;
             }
@@ -143,7 +143,7 @@ namespace ChannakyaBase.BLL.Service
         public static bool IsRecurringDeposit(int productId)
         {
             var SchemeDetails = tellerService.GetFixedOrRecurringDepositDuration(productId);
-            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == true /*&& SchemeDetails.AllowWithdraw == true*/)
+            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == true && SchemeDetails.AllowWithdraw == true)
             {
                 return true;
             }
@@ -155,7 +155,7 @@ namespace ChannakyaBase.BLL.Service
         public static bool IsOtherTypeOfRecurringDeposit(int productId)
         {
             var SchemeDetails = tellerService.GetFixedOrRecurringDepositDuration(productId);
-            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == true /*&& SchemeDetails.AllowWithdraw == false*/)
+            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == true && SchemeDetails.AllowWithdraw == false)
             {
                 return true;
             }
@@ -167,7 +167,7 @@ namespace ChannakyaBase.BLL.Service
         public static bool IsOtherTypeOfRemainingProducts(int productId)
         {
             var SchemeDetails = tellerService.GetFixedOrRecurringDepositDuration(productId);
-            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == false/* && SchemeDetails.AllowWithdraw == true*/)
+            if (SchemeDetails.HasDuration == true && SchemeDetails.MultiDeposit == false && SchemeDetails.AllowWithdraw == true)
             {
                 return true;
             }
@@ -954,6 +954,34 @@ namespace ChannakyaBase.BLL.Service
         public static ReturnBaseMessageModel GetCheckValidAccountStatus(int iaccNo)
         {
             ReturnBaseMessageModel returnMessage = new ReturnBaseMessageModel();
+            using (GenericUnitOfWork uow = new GenericUnitOfWork())
+            {
+                var AccountDetails = uow.Repository<ADetail>().FindBy(x => x.IAccno == iaccNo).Select(x => new AccountDetailsViewModel()
+                {
+                    BrchID = x.BrchID,
+                    Bal = x.Bal,
+                    PID = (x.PID),
+                    AccState = x.AccState
+
+                }).FirstOrDefault();
+
+                bool isFixedAccount = TellerUtilityService.IsFixedAccount(AccountDetails.PID);
+                bool isRecurring = TellerUtilityService.IsOtherTypeOfRecurringDeposit(AccountDetails.PID);
+
+                if (isFixedAccount || isRecurring)
+                {
+                    bool isMature = TellerUtilityService.IsAlreadyMatured(iaccNo);
+                    if (AccountDetails.AccState != 7)
+                    {
+                        if (isMature == false) // !isMature replace with isMature
+                        {
+                            returnMessage.Msg = "Withdraw is not Allowed.! \n Account NOT Matured Yet..!!";
+                            returnMessage.Success = false;
+                            return returnMessage;
+                        }
+                    }
+                }
+            }
             int AccountStatus = tellerService.GetSingleAccount(iaccNo).AccState;
 
             if (AccountStatus == 2)
